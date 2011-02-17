@@ -25,9 +25,6 @@ import org.apache.tools.ant.Project;
 
 /**
  * This class provides a few helper methods to deal with build configurations
- * 
- * @author Jean Louis Boudart
- * 
  */
 public class BuildConfigurationHelper {
 

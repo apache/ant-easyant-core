@@ -23,8 +23,6 @@ import org.apache.ivy.core.module.descriptor.InheritableItem;
 /**
  * Interface for elements that can be inherited from a parent descriptor by a child descriptor
  * This interface provides some useful methods to have fine grain control on inheritable elements
- * @author neoverflow
- *
  */
 public interface AdvancedInheritableItem  extends InheritableItem {
 	
