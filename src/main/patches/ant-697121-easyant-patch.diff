@@ -1,0 +1,461 @@
+Index: src/main/org/apache/tools/ant/helper/AntXMLContext.java
+===================================================================
+--- src/main/org/apache/tools/ant/helper/AntXMLContext.java	(révision 697121)
++++ src/main/org/apache/tools/ant/helper/AntXMLContext.java	(copie de travail)
+@@ -95,6 +95,9 @@
+ 
+     /** Keeps track of targets in files */
+     private Map currentTargets = null;
++    
++    /** The prefix to use in import 'use' mode */
++    private String usePrefix = null;
+ 
+     /**
+      * constructor
+@@ -362,6 +365,24 @@
+         this.currentTargets = currentTargets;
+     }
+ 
++    /**
++	 * Get the prefix to use in import 'use' mode.
++	 * 
++	 * @return the prefix to use in import 'use' mode, <code>null</code> if we
++	 *         are not parsing file in import 'use' mode.
++	 */
++	public String getUsePrefix() {
++		return usePrefix;
++	}
++    
++    /**
++	 * Set the prefix to use in import 'use' mode.
++	 * 
++	 * @param usePrefix the prefix to use in import 'use' mode.
++	 */
++    public void setUsePrefix(String usePrefix) {
++		this.usePrefix = usePrefix;
++	}
+ }
+ 
+ 
+Index: src/main/org/apache/tools/ant/helper/ProjectHelper2.java
+===================================================================
+--- src/main/org/apache/tools/ant/helper/ProjectHelper2.java	(révision 697121)
++++ src/main/org/apache/tools/ant/helper/ProjectHelper2.java	(copie de travail)
+@@ -47,6 +47,7 @@
+ import java.util.Hashtable;
+ import java.util.Map;
+ import java.util.Stack;
++import java.util.StringTokenizer;
+ 
+ /**
+  * Sax2 based project reader
+@@ -139,6 +140,7 @@
+             context = new AntXMLContext(project);
+             project.addReference(REFID_CONTEXT, context);
+             project.addReference(REFID_TARGETS, context.getTargets());
++            setContext(context);
+         }
+         if (getImportStack().size() > 1) {
+             // we are in an imported file.
+@@ -727,6 +729,16 @@
+                         MagicNames.ANT_FILE + "." + context.getCurrentProjectName(), context
+                                 .getBuildFile().toString());
+             }
++            String usePrefix = context.getUsePrefix();
++            if ("${ant.project.name}".equals(usePrefix)) {
++            	// the use prefix to use is the default one: the current project name
++            	context.setUsePrefix(usePrefix = context.getCurrentProjectName());
++            }
++            if (usePrefix != null) {
++            	project.log("importing project in 'use' mode: "
++            			+ "all targets will be prefixed with '" + usePrefix +"'", 
++            			Project.MSG_VERBOSE);
++            }
+             if (context.isIgnoringProjectTag()) {
+                 // no further processing
+                 return;
+@@ -773,7 +785,8 @@
+          */
+         public AntHandler onStartChild(String uri, String name, String qname, Attributes attrs,
+                                        AntXMLContext context) throws SAXParseException {
+-            return name.equals("target") && (uri.equals("") || uri.equals(ANT_CORE_URI))
++            return (name.equals("target") || name.equals("phase")) 
++            			&& (uri.equals("") || uri.equals(ANT_CORE_URI))
+                     ? ProjectHelper2.targetHandler : ProjectHelper2.elementHandler;
+         }
+     }
+@@ -807,12 +820,15 @@
+                                    AntXMLContext context) throws SAXParseException {
+             String name = null;
+             String depends = "";
++            String phase = "";
+ 
+             Project project = context.getProject();
+             Target target = new Target();
+             target.setProject(project);
+             target.setLocation(new Location(context.getLocator()));
+             context.addTarget(target);
++            
++            target.setType(tag);
+ 
+             for (int i = 0; i < attrs.getLength(); i++) {
+                 String attrUri = attrs.getURI(i);
+@@ -829,6 +845,8 @@
+                     }
+                 } else if (key.equals("depends")) {
+                     depends = value;
++                } else if (key.equals("phase")) {
++                    phase = value;
+                 } else if (key.equals("if")) {
+                     target.setIf(value);
+                 } else if (key.equals("unless")) {
+@@ -839,6 +857,8 @@
+                     }
+                 } else if (key.equals("description")) {
+                     target.setDescription(value);
++                } else if (key.equals("type")) {
++                    target.setType(value);
+                 } else {
+                     throw new SAXParseException("Unexpected attribute \"" + key + "\"", context
+                             .getLocator());
+@@ -849,6 +869,18 @@
+                 throw new SAXParseException("target element appears without a name attribute",
+                         context.getLocator());
+             }
++            
++            boolean isPhase = "phase".equals(target.getType());
++            
++            String targetPrefix = isPhase ? null : context.getUsePrefix();
++            
++			// check if we should prefix the target name
++            if (targetPrefix != null) {
++            	project.log("import 'use' mode: prefixing target '" + name + "' with '"
++            			+ targetPrefix + "'", Project.MSG_DEBUG);
++            	
++            	name = targetPrefix + name;
++            }
+ 
+             // Check if this target is in the current build file
+             if (context.getCurrentTargets().get(name) != null) {
+@@ -867,10 +899,93 @@
+                 usedTarget = true;
+             }
+             if (depends.length() > 0) {
+-                target.setDepends(depends);
++            	if (targetPrefix != null) {
++            		// parse depends to add prefix to all dependencies
++            		// the parsing logic is copied from Target#setDepends(String), which is
++            		// not a good thing, but I don't want to make Target 'use' mode aware.
++            		// We could move the parsing logic in all cases over here if it wasn't part of 
++            		// Target public API.
++                    StringTokenizer tok =
++                        new StringTokenizer(depends, ",", true);
++                    while (tok.hasMoreTokens()) {
++                        String token = tok.nextToken().trim();
++
++                        // Make sure the dependency is not empty string
++                        if ("".equals(token) || ",".equals(token)) {
++                            throw new BuildException(
++                            		"Syntax Error: depends " + "attribute of target \""
++                                    + name + "\" has an empty string as dependency.");
++                        }
++
++                        Target t = (Target) project.getTargets().get(token);
++                        if (t != null && "phase".equals(t.getType())) {
++                        	target.addDependency(token);
++                        } else {
++                        	target.addDependency(targetPrefix + token);
++                        }
++
++                        // Make sure that depends attribute does not
++                        // end in a ,
++                        if (tok.hasMoreTokens()) {
++                            token = tok.nextToken();
++                            if (!tok.hasMoreTokens() || !",".equals(token)) {
++                                throw new BuildException("Syntax Error: Depend "
++                                        + "attribute for target \"" + name
++                                        + "\" ends with a , character");
++                            }
++                        }
++                    }
++            	} else {
++            		target.setDepends(depends);
++            	}
+             }
++            if (phase.length() > 0) {
++            	if (isPhase) {
++            		throw new SAXParseException(
++            				"phase not allowed on phase", context.getLocator());
++            	}
++                StringTokenizer tok =
++                    new StringTokenizer(phase, ",", true);
++                while (tok.hasMoreTokens()) {
++                    String token = tok.nextToken().trim();
++
++                    // Make sure the dependency is not empty string
++                    if ("".equals(token) || ",".equals(token)) {
++                        throw new BuildException(
++                        		"Syntax Error: phase " + "attribute of target \""
++                                + name + "\" has an empty string as phase.");
++                    }
++
++                    Target p = (Target) projectTargets.get(token);
++                    if (p == null) {
++                        throw new BuildException(
++                        		"Syntax Error: unknown phase \""
++                                + token + "\" referenced by \"" + name + "\".");
++                    } else if (!"phase".equals(p.getType())) {
++                        throw new BuildException(
++                        		"Syntax Error: phase \""
++                                + token + "\" referenced by \"" + name 
++                                + "\" is not a phase.");
++                    } else {
++                    	p.addDependency(name);
++                    }
++
++                    // Make sure that phase attribute does not
++                    // end in a ,
++                    if (tok.hasMoreTokens()) {
++                        token = tok.nextToken();
++                        if (!tok.hasMoreTokens() || !",".equals(token)) {
++                            throw new BuildException("Syntax Error: Phase "
++                                    + "attribute for target \"" + name
++                                    + "\" ends with a , character");
++                        }
++                    }
++                }
++            }
++            
+             if (context.isIgnoringProjectTag() && context.getCurrentProjectName() != null
+-                    && context.getCurrentProjectName().length() != 0) {
++                    && context.getCurrentProjectName().length() != 0
++                    && !isPhase) {
+                 // In an impored file (and not completely
+                 // ignoring the project tag)
+                 String newName = context.getCurrentProjectName() + "." + name;
+Index: src/main/org/apache/tools/ant/ProjectHelper.java
+===================================================================
+--- src/main/org/apache/tools/ant/ProjectHelper.java	(révision 697121)
++++ src/main/org/apache/tools/ant/ProjectHelper.java	(copie de travail)
+@@ -28,6 +28,7 @@
+ 
+ import org.xml.sax.AttributeList;
+ 
++import org.apache.tools.ant.helper.AntXMLContext;
+ import org.apache.tools.ant.helper.ProjectHelper2;
+ import org.apache.tools.ant.util.LoaderUtils;
+ 
+@@ -129,6 +130,20 @@
+     public Vector getImportStack() {
+         return importStack;
+     }
++    
++    private AntXMLContext context = null;
++    
++    /**
++     * Returns the current parsing context
++     * @return the current parsing context
++     */
++    public AntXMLContext getContext() {
++		return context;
++	}
++    
++    protected void setContext(AntXMLContext context) {
++		this.context = context;
++	}
+ 
+     // --------------------  Parse method  --------------------
+     /**
+Index: src/main/org/apache/tools/ant/taskdefs/ImportTask.java
+===================================================================
+--- src/main/org/apache/tools/ant/taskdefs/ImportTask.java	(révision 697121)
++++ src/main/org/apache/tools/ant/taskdefs/ImportTask.java	(copie de travail)
+@@ -18,15 +18,16 @@
+ 
+ package org.apache.tools.ant.taskdefs;
+ 
++import java.io.File;
++import java.util.Vector;
++
+ import org.apache.tools.ant.BuildException;
++import org.apache.tools.ant.Project;
+ import org.apache.tools.ant.ProjectHelper;
+-import org.apache.tools.ant.Project;
+ import org.apache.tools.ant.Task;
++import org.apache.tools.ant.helper.AntXMLContext;
+ import org.apache.tools.ant.util.FileUtils;
+ 
+-import java.io.File;
+-import java.util.Vector;
+-
+ /**
+  * Task to import another build file into the current project.
+  * <p>
+@@ -55,6 +56,9 @@
+ public class ImportTask extends Task {
+     private String file;
+     private boolean optional;
++	private String mode = "extends";
++	private String as;
++	
+     private static final FileUtils FILE_UTILS = FileUtils.getFileUtils();
+ 
+     /**
+@@ -79,6 +83,22 @@
+     }
+ 
+     /**
++     * The import mode to use. It can be either 'use' or 'extends'
++     * @param mode the import mode to use
++     */
++	public void setMode(String mode) {
++		this.mode = mode;
++	}
++
++	/**
++	 * The prefix to use when importing in 'use' mode.
++	 * @param as the prefix for 'use' mode
++	 */
++	public void setAs(String as) {
++		this.as = as;
++	}
++	
++    /**
+      *  This relies on the task order model.
+      *
+      */
+@@ -134,19 +154,45 @@
+                 throw new BuildException(message);
+             }
+         }
+-
+-        if (importStack.contains(importedFile)) {
++        //here we suppose that using import "as" mode you know what you do
++        if ((!"use".equals(mode)) && importStack.contains(importedFile)) {
+             getProject().log(
+                 "Skipped already imported file:\n   "
+                 + importedFile + "\n", Project.MSG_VERBOSE);
+             return;
+         }
+ 
++        AntXMLContext context = helper.getContext();
++        String oldUsePrefix = null;
+         try {
++        	if ("use".equals(mode)) {
++        		if (context == null) {
++        			throw new IllegalStateException("null context while calling import in use mode."
++        				+ " The ProjectHelper implementation you use may not support 'use' mode");
++        		}
++        		oldUsePrefix = context.getUsePrefix();
++        		if (as != null) {
++        			if (oldUsePrefix != null) {
++        				context.setUsePrefix(oldUsePrefix + as);
++        			} else { 
++        				context.setUsePrefix(as);
++        			}
++        		} else {
++        			if (oldUsePrefix != null) {
++        			context.setUsePrefix(oldUsePrefix + "${ant.project.name}");
++        			} else {
++        				context.setUsePrefix("${ant.project.name}");	
++        			}
++        		}
++        	}
+             helper.parse(getProject(), importedFile);
+         } catch (BuildException ex) {
+             throw ProjectHelper.addLocationToBuildException(
+                 ex, getLocation());
++        } finally {
++        	if ("use".equals(mode) && context != null) {
++        		context.setUsePrefix(oldUsePrefix);
++        	}
+         }
+     }
+ 
+Index: src/main/org/apache/tools/ant/Main.java
+===================================================================
+--- src/main/org/apache/tools/ant/Main.java	(révision 697121)
++++ src/main/org/apache/tools/ant/Main.java	(copie de travail)
+@@ -1044,6 +1044,8 @@
+         Vector topNames = new Vector();
+         Vector topDescriptions = new Vector();
+         Vector subNames = new Vector();
++        Vector phases = new Vector();
++        Vector phasesDescriptions = new Vector();
+ 
+         for (Iterator i = ptargets.values().iterator(); i.hasNext();) {
+             currentTarget = (Target) i.next();
+@@ -1057,17 +1059,28 @@
+                 int pos = findTargetPosition(subNames, targetName);
+                 subNames.insertElementAt(targetName, pos);
+             } else {
+-                int pos = findTargetPosition(topNames, targetName);
+-                topNames.insertElementAt(targetName, pos);
+-                topDescriptions.insertElementAt(targetDescription, pos);
+-                if (targetName.length() > maxLength) {
+-                    maxLength = targetName.length();
+-                }
++            	if (currentTarget.getType().equals("phase")) {
++            		int pos = findTargetPosition(phases, targetName);
++            		phases.insertElementAt(targetName, pos);
++            		phasesDescriptions.insertElementAt(targetDescription, pos);
++            	} else {
++            		int pos = findTargetPosition(topNames, targetName);
++                    topNames.insertElementAt(targetName, pos);
++                    topDescriptions.insertElementAt(targetDescription, pos);
++                  
++            	}
++            	  if (targetName.length() > maxLength) {
++                      maxLength = targetName.length();
++                  }	
++                
+             }
+         }
+ 
++        printTargets(project, phases,phasesDescriptions,"Main phases:",maxLength);
+         printTargets(project, topNames, topDescriptions, "Main targets:",
+                      maxLength);
++        
++        
+         //if there were no main targets, we list all subtargets
+         //as it means nothing has a description
+         if (topNames.size() == 0) {
+Index: src/main/org/apache/tools/ant/Target.java
+===================================================================
+--- src/main/org/apache/tools/ant/Target.java	(révision 697121)
++++ src/main/org/apache/tools/ant/Target.java	(copie de travail)
+@@ -56,6 +56,9 @@
+ 
+     /** Description of this target, if any. */
+     private String description = null;
++    
++    /** The type of target ("target" or "phase") */
++    private String type = "target";
+ 
+     /** Default constructor. */
+     public Target() {
+@@ -172,6 +175,24 @@
+     public String getName() {
+         return name;
+     }
++    
++    /**
++     * Returns the type of this target.
++     * 
++     * @return the type of this target
++     */
++    public String getType() {
++		return type;
++	}
++    
++    /**
++     * Sets the type of this target.
++     * 
++     * @param type the new type of this target
++     */
++    public void setType(String type) {
++		this.type = type;
++	}
+ 
+     /**
+      * Adds a task to this target.

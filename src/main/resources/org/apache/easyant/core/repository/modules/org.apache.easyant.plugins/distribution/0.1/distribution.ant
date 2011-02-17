@@ -1,0 +1,186 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.  
+-->
+<project name="org.apache.easyant.plugins;distribution" xmlns:ac="antlib:net.sf.antcontrib" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+
+	<macrodef name="generate-bundle-checksum" description="generate checksum files for a given file">
+		<attribute name="usechecksum" description="Defines if checksum files need to be generated" default="true" />
+		<attribute name="file" description="The file to generate checksum for." />
+		<attribute name="algorithm" default="MD5" description="Specifies the algorithm to be used to compute the checksum. Defaults to 'MD5'. Other popular algorithms like 'SHA' or 'SHA-512' may be used as well. " />
+		<sequential>
+			<ac:if>
+				<istrue value="@{usechecksum}" />
+				<ac:then>
+					<checksum file="@{file}" algorithm="@{algorithm}" />
+				</ac:then>
+			</ac:if>
+		</sequential>
+	</macrodef>
+
+	<!-- macro for generating distribution zip -->
+	<macrodef name="bundle" description="Generate tar.gz, tar.bz2, zip, and corresponding MD5 hash files for a release directory">
+
+		<attribute name="destfile" description="Destination file for the generated archives, without extensions" />
+		<attribute name="archivetype" description="Defines the archivetype to generate (zip, tar.gz, tar.bz2)" default="zip" />
+		<attribute name="usechecksum" description="Defines if checksum files need to be generated" default="true" />
+		<element name="contents" description="nested include, exclude, or pattern directives" implicit="true" optional="true" />
+
+		<sequential>
+
+			<ac:if>
+				<contains string="@{archivetype}" substring="zip" />
+				<ac:then>
+					<zip destfile="@{destfile}.zip">
+						<contents />
+					</zip>
+					<generate-bundle-checksum file="@{destfile}.zip" usechecksum="@{usechecksum}" />
+				</ac:then>
+			</ac:if>
+			<ac:if>
+				<contains string="@{archivetype}" substring="tar.gz" />
+				<ac:then>
+					<tar destfile="@{destfile}.tar.gz" compression="gzip">
+						<contents />
+					</tar>
+					<generate-bundle-checksum file="@{destfile}.tar.gz" usechecksum="@{usechecksum}" />
+				</ac:then>
+			</ac:if>
+			<ac:if>
+				<contains string="@{archivetype}" substring="tar.bz2" />
+				<ac:then>
+					<tar destfile="@{destfile}.tar.bz2" compression="bzip2">
+						<contents />
+					</tar>
+					<generate-bundle-checksum file="@{destfile}.tar.bz2" usechecksum="@{usechecksum}" />
+				</ac:then>
+			</ac:if>
+			<ac:if>
+				<contains string="@{archivetype}" substring="jar" />
+				<ac:then>
+					<jar destfile="@{destfile}.jar" filesetmanifest="merge">
+						<contents />
+					</jar>
+					<generate-bundle-checksum file="@{destfile}.jar" usechecksum="@{usechecksum}" />
+				</ac:then>
+			</ac:if>
+
+			
+		</sequential>
+
+	</macrodef>
+
+	<target name=":init" phase="validate">
+		<ea:parameter property="target.distributions" default="${target}/distributions" description="directory where distribution packages will be generated" />
+		<ea:parameter property="project.basedir" default="${basedir}" description="defines the project base directory" />
+		<ea:parameter property="project.prefix" default="" description="defines the project prefix, used as distribution root directory" />
+		<ea:parameter property="target.artifacts" default="${basedir}/target/artifacts" description="destination directory for target artifacts"/>
+		<ea:parameter property="project.bin.dir" default="${basedir}/bin" description="directory of project binaries (scripts, executables, etc...)"/>
+		<ea:parameter property="lib.main" default="${basedir}/lib/main" description="directory where main libraries are picked up" />		
+
+		
+		<!-- project artifacts -->
+		<zipfileset id="project.artifacts.zipfileset" dir="${target.artifacts}" prefix="${project.prefix}/lib">
+			<exclude name="**/*-test.jar"/>
+		</zipfileset>
+		<!-- project dependencies -->
+		<zipfileset id ="project.dependencies.zipfileset" dir="${lib.main}" prefix="${project.prefix}/lib" erroronmissingdir="false"/>
+		<!-- make scripts executable -->
+		<zipfileset id="project.executables.zipfileset" dir="${project.bin.dir}" prefix="${project.prefix}/bin" filemode="744" erroronmissingdir="false"/>
+		<!-- ship the documentation -->
+		<zipfileset id="project.documentation.zipfileset" dir="${target.documentation.dir}" prefix="${project.prefix}/doc" erroronmissingdir="false"/>
+		<!--additional files -->
+		<zipfileset id="project.additionalfiles.zipfileset" dir="${project.basedir}" prefix="${project.prefix}" >
+			<include name="README" />
+			<include name="NOTICE" />
+			<include name="LICENSE" />
+		</zipfileset>
+		
+		<!-- all project files -->
+		<zipfileset id="project.allfiles.zipfileset" dir="${project.basedir}" prefix="${project.prefix}" >
+			<exclude name="**/target/**"/>
+			<exclude name="${project.bin.dir}/**"/>
+			<exclude name="**/lib/**"/>
+			<exclude name="**/.git/**"/>
+		</zipfileset>
+		
+		<mkdir dir="${target.distributions}" />
+	</target>
+
+	<target name=":clean" description="clean distribution dir">
+		<delete dir="${target.distributions}"/>
+	</target>
+	
+	<target name="-force-retrieve" depends="validate">
+		<property name="retrieve.dependencies" value="true"/>
+	</target>
+	
+	<target name=":bin" depends="-force-retrieve,package" description="create a binary distribution">
+		<bundle destfile="${target.distributions}/${module.name}-bin">
+			<!-- project artifacts -->
+			<zipfileset refid="project.artifacts.zipfileset" />
+			<!-- project dependencies -->
+			<zipfileset refid="project.dependencies.zipfileset"/>
+			<!-- make scripts executable -->
+			<zipfileset refid="project.executables.zipfileset"/>
+			<!-- ship the documentation -->
+			<zipfileset refid="project.documentation.zipfileset"/>
+			<!--additional files -->
+			<zipfileset refid="project.additionalfiles.zipfileset"/>
+		</bundle>
+	</target>
+
+	<target name=":jar-with-dependencies" depends="-force-retrieve,package" description="create a jar archive which contains the binary output of your project, along its the unpacked dependencies (only works on jar projects)">
+		<condition property="target.main.artifact.exist">
+			<and>
+				<isset property="target.main.artifact"/>
+				<available file="${target.main.artifact}"/>
+			</and>		
+		</condition>
+		<fail unless="${target.main.artifact.exist}" message="${target.main.artifact} not found"/>
+		<ea:parameter property="bundle.withdependencies.excludes.pattern" default="META-INF/MANIFEST.MF" 
+					description="Pattern describing files excluded in the bundle jar with dependencies" />
+		<bundle destfile="${target.distributions}/${module.name}-with-dependencies" archivetype="jar">
+			<zipfileset excludes="${bundle.withdependencies.excludes.pattern}" >
+				<fileset dir="${lib.main}" includes="**/*.jar"/>
+			</zipfileset>
+			<zipfileset>
+				<fileset file="${target.main.artifact}"/>
+			</zipfileset>
+		</bundle>
+	</target>
+	
+	<target name=":source" depends="package" description="create a source distribution">
+		<bundle destfile="${target.distributions}/${module.name}-source">
+			<!-- project artifacts -->
+			<zipfileset refid="project.artifacts.zipfileset" />
+			<!-- project dependencies -->
+			<zipfileset refid="project.dependencies.zipfileset"/>
+			<!-- make scripts executable -->
+			<zipfileset refid="project.executables.zipfileset"/>
+			<!-- ship the documentation -->
+			<zipfileset refid="project.documentation.zipfileset"/>
+			<!-- all project files -->
+			<zipfileset refid="project.allfiles.zipfileset" />
+		</bundle>
+	</target>
+	
+	<!-- define a generic default target for this plugin -->
+	<target name="doit" depends="validate" />
+</project>

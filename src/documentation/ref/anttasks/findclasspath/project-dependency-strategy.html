@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 3};</script>	
+	<script type="text/javascript" src="../../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>project-dependency-strategy</h1>
+
+<h2>Description</h2>
+<p>This strategy can be used to check if the classpath entry is in project dependencies. 
+</p>
+
+<p>
+It will look if one project dependency matches with given organisation and given module name. 
+If found, it will use the revision specified in the dependency.
+If not found it will look if one project dependency matches with given organisation. If found it will use both module name and revision specified in the dependency
+</p>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr>
+      <th>Parameter name</th>
+      <th class="unsortable">Description</th>
+      <th>Mandatory</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>pathid</td>
+      <td>name of the path id to fill</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>organisation</td>
+      <td>organisation name to search</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>module</td>
+      <td>module name to search</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>conf</td>
+      <td>configuration name<br/><i>Default: default</i></td>
+      <td> </td>
+    </tr>
+
+    <tr>
+      <td>settingsRef</td>
+      <td>A reference to the ivy settings that must be used by this task<br/><i>Default: ${project.ivy.instance}</i></td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Example</h2>
+<code type="xml">
+<ea:project-dependency-strategy org="org.codehaus.groovy" module="groovy-all" revision="1.0" />
+</code>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

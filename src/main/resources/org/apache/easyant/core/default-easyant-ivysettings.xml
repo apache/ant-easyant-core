@@ -1,0 +1,39 @@
+<!--
+   Copyright 2008-2010 the EasyAnt project
+
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<ivysettings>
+	<settings defaultResolver="easyant-default-chain"/>
+	<caches defaultCacheDir="${user.home}/.easyant/easyant-cache" useOrigin="true" />
+	<typedef name="jar" classname="org.apache.easyant.core.ivy.resolvers.JarResolver"/>
+	<resolvers>
+		<jar name="easyant-core-modules">
+			<ivy pattern="${easyant.core.repo.url}/[organisation]/[module]/[revision]/[module].ivy"/>
+			<artifact pattern="${easyant.core.repo.url}/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+		</jar>
+		<filesystem name="easyant-shared-modules">
+			<ivy pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[module].ivy"/>
+			<artifact pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+		</filesystem>
+		<ibiblio name="public-maven" m2compatible="true"/> 
+		<chain name="easyant-default-chain" returnFirst="true">
+			<resolver ref="easyant-core-modules" />
+            <resolver ref="easyant-shared-modules"/>
+			<resolver ref="public-maven"/>
+		</chain>
+	</resolvers>
+</ivysettings>

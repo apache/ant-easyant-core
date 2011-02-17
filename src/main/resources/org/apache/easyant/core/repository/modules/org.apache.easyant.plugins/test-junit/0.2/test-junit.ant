@@ -1,0 +1,233 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#test-junit"
+	xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+
+	<ea:include mrid="org.apache.easyant.plugins#abstract-test;0.1" as=":abstract-junit-test"/>
+    <ea:include mrid="org.apache.easyant.plugins#antcontrib-activator;0.1" as=":ac"/>
+
+	<target name="/skip" description="skip tests">
+		<property name="skip.test" value="true" />
+		<property name="skip.test.integration" value="true" />
+	</target>
+
+	<target name=":init" phase="validate" depends=":abstract-junit-test:init">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="test" />
+		<ea:parameter phase="integration-test" />
+
+		<ea:parameter property="test.run.includes.pattern" 
+			default="**/*" description="Pattern describing class files included in test run" /> 
+		<ea:parameter property="test.run.excludes.pattern" 
+			default="" description="Pattern describing class files excluded in test run" />
+		
+		<ea:parameter property="test.integration.run.includes.pattern" 
+			default="**/*" description="Pattern describing class files included in integration test run" /> 
+		<ea:parameter property="test.integration.run.excludes.pattern" 
+			default="" description="Pattern describing class files excluded in integration test run" />
+
+		<ea:parameter property="test.run.forkmode"
+			default="perTest" description="The forkmode for junit tests; 'perTest' or 'once'"/>
+		<ea:parameter property="test.run.fork"
+			default="true" description="Run the tests in a separate VM. (true/false)"/>
+		<ea:parameter property="test.run.jvmargs"
+			default="" description="Extra parameters to pass to the test JVM, for example to enable debugging"/>
+	
+		<ea:parameter property="test.integration.run.forkmode"
+			default="perTest" description="The forkmode for junit integration tests; 'perTest' or 'once'"/>
+		<ea:parameter property="test.integration.run.fork"
+			default="true" description="Run integration tests in a separate VM. (true/false)"/>
+		<ea:parameter property="test.integration.run.jvmargs"
+			default="" description="Extra parameters to pass to the integration test JVM, for example to enable debugging"/>
+		
+		
+		<ea:parameter property="target.test.xml" required="true" 
+			description="Directory were xml test reports will be generated"/>
+		<ea:parameter property="test.run.dir"
+			default="${basedir}" description="working directory for unit test process, defaults to the project basedir"/>
+		<ea:parameter property="test.integration.run.dir"
+			default="${basedir}" description="working directory for integration test process, defaults to the project basedir"/>
+
+        <ea:parameter property="test.scan.path" default="false"
+                      description="if true, the full test classpath will be scanned for additional test cases to run"/>
+        <ea:parameter property="test.jar.pattern" default=".*-test.jar"
+                      description="when test.scan.path is enabled, identifies which jars should be examined for test cases"/>
+
+        <ea:parameter property="test.integration.scan.path" default="false"
+                      description="if true, the full integration test classpath will be scanned for additional test cases to run"/>
+        <ea:parameter property="test.integration.jar.pattern" default=".*-test.jar"
+                      description="when test.scan.path is enabled, identifies which jars should be examined for test cases"/>
+
+		<ea:path pathid="run.test.classpath" overwrite="append-if-not-exist">
+            <pathelement location="${target.test.classes}" />
+            <path refid="compile.test.classpath" />
+        </ea:path>
+
+        <ea:path pathid="run.test.integration.classpath" overwrite="append-if-not-exist">
+            <pathelement location="${target.test.integration.classes}" />
+            <path refid="compile.test.classpath" />
+        </ea:path>
+
+	</target>
+
+    <macrodef name="compute-test-path" description="Compute the set of test cases to run.">
+        <attribute name="prefix" description="one of 'test' or 'test.integration'"/>
+        <attribute name="test-archive-pattern" default=".*-test.jar" description="Name pattern for jar files on the input class path that may contain test cases."/>
+        <element name="test-path" implicit="true" description="the classpath to search for test cases"/>
+        <sequential>
+
+            <!-- declare test case resource set -->
+            <resources id="target.@{prefix}.set">
+                <fileset dir="${target.@{prefix}.classes}"
+                         includes="${@{prefix}.run.includes.pattern}"
+                         excludes="${@{prefix}.run.excludes.pattern}"
+                         erroronmissingdir="false"/>
+            </resources>
+
+            <if>
+                <istrue value="${@{prefix}.scan.path}"/>
+                <then>
+                    <for param="test.collection">
+                        <test-path/>
+                        <sequential>
+                            <echo level="verbose">Examining @{test.collection} for test cases</echo>
+                            <if>
+                                <and>
+                                    <available file="@{test.collection}" type="file"/>
+                                    <matches string="@{test.collection}" pattern="${@{prefix}.jar.pattern}"/>
+                                </and>
+                                <then>
+                                    <echo level="verbose">Adding test cases from test jar @{test.collection}</echo>
+                                    <augment id="target.@{prefix}.set">
+                                        <zipfileset src="@{test.collection}" includes="${@{prefix}.run.includes.pattern}" excludes="${@{prefix}.run.excludes.pattern}"/>
+                                    </augment>
+                                </then>
+                                <else>
+                                    <if>
+                                        <available file="@{test.collection}" type="dir"/>
+                                        <then>
+                                            <echo level="verbose">Adding test cases from test class directory @{test.collection}</echo>
+                                            <augment id="target.@{prefix}.set">
+                                                <fileset dir="@{test.collection}" includes="${@{prefix}.run.includes.pattern}" excludes="${@{prefix}.run.excludes.pattern}"/>
+                                            </augment>
+                                        </then>
+                                        <else>
+                                            <echo level="verbose">Test path entry @{test.collection} does not appear to be a directory or a test jar, skipping</echo>
+                                        </else>
+                                    </if>
+                                </else>
+                            </if>
+                        </sequential>
+                    </for>
+                </then>
+                <else>
+                    <echo level="verbose">Test path scanning disabled by property @{prefix}.scan.path</echo>
+                </else>
+            </if>
+
+            <condition property="skip.@{prefix}">
+                <resourcecount refid="target.@{prefix}.set" when="equal" count="0"/>
+            </condition>
+
+        </sequential>
+    </macrodef>
+	
+	<macrodef name="junit-test">
+		<attribute name="prefix"/>
+		<sequential>
+			<mkdir dir="${target.test.xml}" />
+			<mkdir dir="${@{prefix}.run.dir}"/>
+			
+	        <junit
+	           haltonfailure="off"
+	           haltonerror="off"
+	           errorproperty="@{prefix}.failed"
+	           failureproperty="@{prefix}.failed"
+	           showoutput="no"
+	           printsummary="yes"
+	           includeantruntime="yes"
+	           dir="${@{prefix}.run.dir}"
+	           fork="${@{prefix}.run.fork}" forkmode="${@{prefix}.run.forkmode}">
+
+				<jvmarg line="${@{prefix}.run.jvmargs}"/>
+
+	            <classpath>
+	                <path refid="run.@{prefix}.classpath" />
+	            </classpath>
+	            
+	            <formatter type="xml"/>
+	            <batchtest todir="${target.test.xml}">
+	            	<resources refid="target.@{prefix}.set"/>
+	            </batchtest>
+	        </junit>
+
+		</sequential>
+	</macrodef>
+
+    <target name="-compute-test-sets" depends="test-compile" description="compute the set of test cases to run">
+
+        <compute-test-path prefix="test">
+            <path refid="compile.test.classpath" />
+        </compute-test-path>
+
+        <compute-test-path prefix="test.integration">
+            <path refid="compile.test.classpath" />
+        </compute-test-path>
+
+    </target>
+
+	<target name="-test" depends="-compute-test-sets" unless="skip.test">
+		<junit-test prefix="test"/>
+    </target>
+
+	<target name="-integration-test" depends="-compute-test-sets" unless="skip.test.integration">
+		<junit-test prefix="test.integration"/>
+	</target>
+	
+	<target name=":run" if="test.mode.run" unless="skip.test" depends="-test"
+		 phase="test" description="run junit tests">
+		<check-test-result propertytocheck="test.failed" 
+			message="At least one test has failed. See logs in ${target.test.xml} for details or use the report target to run the test with a report"/>
+	</target>
+
+	<target name=":run-integration" if="test.mode.run" unless="skip.test.integration" depends="-integration-test"
+		 phase="integration-test" description="run junit integration tests">
+		<check-test-result propertytocheck="test.integration.failed"
+			message="At least one integration test has failed. See logs in ${target.test.xml} for details or use the report target to run the test with a report" />
+	</target>
+
+    <target name=":report" if="test.mode.report" unless="skip.test" depends="-test,-integration-test"
+    	 phase="report" description="generate junit report">
+        <junitreport todir="${target.test.xml}">
+            <fileset dir="${target.test.xml}">
+            	<include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="${target.test.html}" />
+        </junitreport>
+        <fail if="test.failed"
+              message="At least one test has failed. See logs in ${target.test.xml} or report in ${target.test.html}" />
+        <fail if="test.integration.failed"
+              message="At least one integration test has failed. See logs in ${target.test.xml} or report in ${target.test.html}" />
+    </target>
+	
+	<target name=":doit" depends=":run, :run-integration, :report" />
+
+</project>

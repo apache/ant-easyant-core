@@ -1,0 +1,87 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#javadoc" xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="report" />
+
+		<ea:parameter property="src.main.java" required="true" description="directory where sources to be compiled are" />
+		<ea:parameter property="src.test.java" required="true" description="directory where test sources to be compiled are" />
+		<ea:parameter path="compile.main.classpath" required="true" description="path used to compile main sources" />
+		<ea:parameter path="compile.test.classpath" required="true" description="path used to compile test sources" />
+		<ea:parameter property="javadoc.file.encoding" default="UTF-8" description="encoding used for generated javadoc" />
+	
+		<ea:parameter property="target.report" default="${target}/report" description="base directory for reports"/>
+		<ea:parameter property="target.javadoc" default="${target.report}/javadoc" description="base directory where javadoc will be generated" />
+		<ea:parameter property="target.javadoc.main" default="${target.javadoc}/main" description="directory where javadoc will be generated" />
+		<ea:parameter property="target.javadoc.test" default="${target.javadoc}/test" description="directory where javadoc for tests will be generated" />
+
+		<!-- javadoc task seems to be sensible to empty directory -->
+		<!-- if src.test.java does not exit OR is an empty dir we set the empty.src.test.java.dir property that will skip the javadoc generation -->
+		<condition property="empty.src.test.java.dir">
+			<or>
+				<not>
+					<available file="${src.test.java}"/>
+				</not>
+				<length length="0" >
+					<fileset dir="${src.test.java}"/> 
+				</length>
+			</or> 
+		</condition>
+		<!-- if src.main.java does not exit OR is an empty dir we set the empty.src.main.java.dir property that will skip the javadoc generation -->
+		<condition property="empty.src.main.java.dir">
+			<or>
+				<not>
+					<available file="${src.main.java}" />
+				</not>
+				<length length="0" >
+					<fileset dir="${src.main.java}"/> 
+				</length>
+			</or>
+		</condition>
+	</target>
+
+	<target name="-main" unless="empty.src.main.java.dir">
+		<path id="java.source.path">
+			<dirset dir="${src.main.java}" />
+		</path>
+		<javadoc encoding="${javadoc.file.encoding}" docencoding="${javadoc.file.encoding}" destdir="${target.javadoc.main}" sourcepathref="java.source.path" classpathref="compile.main.classpath" />
+	</target>
+
+	<target name="-test" unless="empty.src.test.java.dir">
+		<path id="java.source.path">
+			<dirset dir="${src.test.java}" />
+		</path>
+		<javadoc encoding="${javadoc.file.encoding}" docencoding="${javadoc.file.encoding}" destdir="${target.javadoc.test}" sourcepathref="java.source.path" classpathref="compile.test.classpath" />
+	</target>
+
+	<target name=":package" depends=":javadoc" description="generate a package containing javadoc" unless="skip.javadoc.package">
+		<mkdir dir="${target.artifacts}"/>
+		<zip destfile="${target.artifacts}/${ivy.module}-javadoc.zip">
+			<fileset dir="${target.javadoc}" erroronmissingdir="false"/>
+		</zip>
+		<ea:registerartifact type="javadoc" ext="zip" classifier="javadoc" settingsRef="${project.ivy.instance}"/>
+	</target>
+
+	<target name=":javadoc" depends="validate,-main,-test" phase="report" description="generate javadoc report for main classes and test classes" />
+	<target name="doit" depends=":javadoc" />
+</project>

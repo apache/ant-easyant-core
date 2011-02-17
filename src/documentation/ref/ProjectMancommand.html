@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>ProjectMan commands</h1>
+EasyAnt 0.7 cames with a few new switches usable from the command line that allow you to obtain several informations on a given project.
+
+<ul>
+  <li>listTargets : Lists all targets available</li>
+  <li>listTargets [arg] : Lists all targets associated with the specified phase / plugin as argument</li>
+  <li>listPhases : Lists all phases available</li>
+  <li>listPugins : Lists all plugins imported in the current project</li>
+  <li>listProps [plugin] : Lists all properties available in the specified plugin</li>
+  <li>describe [arg] : Describes a phase / target / property specified by argument</li>
+</ul>
+
+<h2>listTargets</h2>
+Lists all targets available :
+<code type="shell">
+> easyant -listTargets
+</code>
+Should print :
+<code type="shell">
+--- Available Targets for current project: standard-java-app ---
+
+No Phase / Plugin specified. Listing all targets available in the project.
+	Target: doit		Phase: NONE
+		Description: NONE
+		Depends: verify
+		IF: NONE
+		UNLESS: NONE
+...
+	Target: run:doit
+		Phase: NONE
+		Description: NONE
+		Depends: :init, :run
+		IF: NONE
+		UNLESS: NONE
+
+--- End Of (Phases Listing) ---
+
+</code>
+
+<h2>listTargets [arg]</h2>
+Lists all targets associated with the specified phase / plugin as argument :
+<code type="shell">
+> easyant -listTargets package
+</code>
+Should print :
+<code type="shell">
+Project Manual
+--------------
+
+--- Available Targets for current project: standard-java-app ---
+Targets for Phase: package
+	Target: jar:jar
+		Phase: package
+		Description: NONE
+		Depends: validate, compile,prepare-package
+		IF: NONE
+		UNLESS: skip.jar.package
+
+Targets for Module: package
+	Target: :init
+		Phase: validate
+		Description: NONE
+		Depends: NONE
+		IF: NONE
+		UNLESS: NONE
+	Target: :run
+		Phase: NONE
+		Description: run the application
+		Depends: validate, compile, process-resources
+		IF: NONE
+		UNLESS: NONE
+	Target: :doit
+		Phase: NONE
+		Description: NONE
+		Depends: :init, :run
+		IF: NONE
+		UNLESS: NONE
+
+
+For more information on a Phase, run:
+	 easyant -describe <PHASE>
+
+--- End Of (Phases Listing) ---
+</code>
+
+
+<h2>listPhases</h2>
+Lists all phases available:
+<code type="shell">
+> easyant -listPhases
+</code>
+Should print :
+<code type="shell">
+Project Manual
+--------------
+
+--- Available Phases for current project: standard-java-app ---
+	clean
+	validate
+	provision
+	generate-sources
+	process-sources
+	generate-resources
+	process-resources
+	compile
+	process-classes
+	test-provision
+	test-generate-sources
+	test-process-sources
+	test-generate-resources
+	test-process-resources
+	test-compile
+	test
+	prepare-package
+	package
+	pre-integration-test
+	integration-test
+	post-integration-test
+	verify
+	generate-local-version
+	generate-shared-version
+	generate-release-version
+	publish-local
+	publish-shared
+	release
+	report
+	process-documentation-resources
+	documentation
+
+
+For more information on a Phase, run:
+	 easyant -describe <PHASE>
+
+--- End Of (Phases Listing) ---
+</code>
+
+
+<h2>listPlugins</h2>
+Lists all plugins imported in the current project:
+<code type="shell">
+> easyant -listPlugins
+</code>
+Should print :
+<code type="shell">
+Project Manual
+--------------
+
+--- Available Plugins for current project: standard-java-app ---
+	org.apache.easyant.buildtypes#build-std-java;0.2
+	org.apache.easyant.plugins#run-java;0.1: Known as run
+
+
+For more information on a Plugin, run:
+	 easyant -describe <PLUGIN>
+
+--- End Of (Plugins Listing) ---
+</code>
+
+
+<h2>listProps [plugin]</h2>
+Lists all properties available in the specified plugin:
+<code type="shell">
+> easyant -listProps run
+</code>
+Should print :
+<code type="shell">
+Project Manual
+--------------
+
+--- Available Properties for current project: standard-java-app:: Plugin: run ---
+	Property: run.main.classname
+	Property: target.main.classes
+
+
+For more information on a Property, run:
+	 easyant -describe <PROPERTY>
+
+--- End Of (Properties Listing) ---
+</code>
+
+
+
+
+<h2>describe [arg]</h2>
+Describes a phase / target / property specified by argument:
+<h3>Example with a property</h3>
+<code type="shell">
+> easyant -describe run.main.classname
+</code>
+Should print :
+<code type="shell">
+Project Manual
+--------------
+
+--- Available references for: run.main.classname in current project: standard-java-app ---
+	No Phase found for name: run.main.classname
+	No Target found for name: run.main.classname
+	Property: run.main.classname
+		Description: name of the main class to run
+		Default: NONE
+		Required: true
+
+--- End Of (Describe) ---
+</code>
+
+
+<h3>Example with a phase</h3>
+<code type="shell">
+> easyant -describe package
+</code>
+Should print :
+<code type="shell">
+Project Manual
+--------------
+
+--- Available references for: package in current project: standard-java-app ---
+	Phase: package
+		Description: take the compiled code and package it in its distributable format, such as a JAR.
+		Depends: prepare-package
+
+		For information on targets attached to this phase, run:
+		easyant -listTargets package
+	No Target found for name: package
+	No Property found for name: package
+
+--- End Of (Describe) ---
+</code>
+
+
+<h3>Example with a target</h3>
+<code type="shell">
+> easyant -describe run:run
+</code>
+Should print :
+<code type="shell">
+Project Manual
+--------------
+
+--- Available references for: run:run in current project: standard-java-app ---
+	No Phase found for name: run:run
+	Target: run:run
+		Phase: NONE
+		Description: NONE
+		Depends: validate, compile, process-resources
+		IF: NONE
+		UNLESS: NONE
+	No Property found for name: run:run
+
+--- End Of (Describe) ---
+
+</code>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

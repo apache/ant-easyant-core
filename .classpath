@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/resources"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/main/ant-launcher.jar"/>
+	<classpathentry kind="lib" path="lib/main/ant-nodeps.jar"/>
+	<classpathentry kind="lib" path="lib/main/ant.jar"/>
+	<classpathentry kind="lib" path="lib/main/ivy.jar" sourcepath="/ivy"/>
+	<classpathentry kind="lib" path="lib/main/ant-contrib.jar"/>
+	<classpathentry kind="lib" path="lib/test/ant-testutil-1.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/test/junit-4.4.jar"/>
+	<classpathentry kind="output" path="target/main/classes"/>
+</classpath>

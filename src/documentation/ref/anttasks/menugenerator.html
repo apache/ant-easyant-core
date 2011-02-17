@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>menugenerator task</h1>
+
+<h2>What is a menu generator ?</h2>
+
+A menu generator is supposed to generate menu. It provides some methods to write menu entries in a given menu file.
+
+<h2>Writing your own menugenerator</h2>
+To write your own menu generator you must write a java class implementing the org.apache.easyant.core.menu.MenuGenerator interface.
+This interface allow you to implements the logic to generate menu entries in a menu file.
+
+When you're own implementation is ready you'll need to register it in easyant this is done through a menu generator registry.
+
+<h2>What is a menu generator registry ?</h2>
+A menu generator registry is used to reference all the menu generator for a given context.
+As explained before a menu generator is supposed to generate menu entries in one given file.
+But maybe in a project we can have multiple menu files.
+Let's take the example of easyant documentation, we have a root menu and we also have submenus for plugins and buildtypes.
+So behind we have three different files :
+<ul>
+  <li>the root menu</li>
+  <li>submenu for plugins</li>
+  <li>submenu for buildtypes</li>
+
+How can we handle this with easyant ?
+The answer is by using context.
+
+We can ask easyant to manage a registry by context (if not specified the default context will be "default").
+Plugins can register their menugenerator implementation is the registry for a given context.
+
+<h2>Registering a menugenerator</h2>
+
+The syntax looks like this
+<code type="xml">
+<ea:registermenugenerator classname="org.mycompany.menugenerators.MyOwnMenuGenerator" file="my.file" context="root"/>
+</code>
+
+The <b>registermenugenerator</b> task support classpath and classpathref attribute.
+<code type="xml">
+<ea:registermenugenerator classname="org.mycompany.menugenerators.MyOwnMenuGenerator" file="my.file" context="root" classpathref="my.classpath"/>
+</code>
+
+It also support nested classpath
+<code type="xml">
+<ea:registermenugenerator classname="org.mycompany.menugenerators.MyOwnMenuGenerator" file="my.file" context="root">
+     <classpath>
+          <fileset dir="/path/to/directory" incluse="**/*.jar"/>
+     </classpath>
+</ea:registermenugenerator>
+</code>
+So get back to our example talking about easyant documentation to understand the meaning of context.
+We have three files so we need to register three menugenerators in different context.
+Here we consider that i only uses Xooki as a documentation layer.
+So the xooki plugins should do :
+<code type="xml">
+<ea:registermenugenerator classname="org.mycompany.menugenerators.XookiMenuGenerator" file="${basedir}/toc.json" context="root"/>
+<ea:registermenugenerator classname="org.mycompany.menugenerators.XookiMenuGenerator" file="/path/to/plugins/toc.json" context="plugins"/>
+<ea:registermenugenerator classname="org.mycompany.menugenerators.XookiMenuGenerator" file="/path/to/buildtypes/toc.json" context="buildtypes"/>
+</code>
+Here we've registered the same implementation for three different context.
+
+We will now play with menu entries
+
+<h2>Adding a simple menu entry</h2>
+
+The syntax looks like this :
+<code type="xml">
+<ea:addmenuentry context="test" title="mytitle" targetlink="foobar"/>
+</code>
+The title is the label of the link in the menu. The target link means is a URL(can be relative).
+The context similar as the one in <ea:registermenugenerator> task.
+
+What happens behind ?
+EasyAnt will retrieve the right registry for this context, loop and all registered menu generator implementation, and process the generation of the link.
+
+This task also supported nested <menuentry> elements.
+
+<h2>Adding a multiple menu entries</h2>
+<code type="xml">
+<ea:addmenuentry context="test">
+    <ea:menuentry title="foo" targetlink="bar"/>
+    <ea:menuentry title="bla" targetlink="plop"/>
+    <ea:menuentry title="test" targetlink="test"/>
+</ea:addmenuentry>
+</code>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

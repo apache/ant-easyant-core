@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Setting up a simple EasyAnt project</h1>
+<p />
+In the course of this write up, you will be taken through basics of EasyAnt and a simple-and-live example of setting up an EasyAnt web application project as an example only.
+<p />
+Prerequisite to your setting up an Easyant project means you have to have the Easyant environment correctly configured.
+<p />
+You need to set up EASYANT_HOME property. Point it to your EasyAnt path. For Windows users, do:
+<code type="xml">
+> set EASYANT_HOME=path\to\easyant
+</code>
+For Unix,
+<code type="xml">
+> export EASYANT_HOME=path/to/easyant
+</code>
+<p />
+Then add %EASYANT_HOME%/bin to your PATH variable.
+<p />
+Let us try to setup a project that builds to a Web Application Archive, or a WAR. Say, PROJECT_ROOT is the root directory for your project.
+<p />
+<h3>Module IVY</h3>
+<p />
+Your project is expected to have a module.ivy to define the build of your project. This is <i>nearly</i> a regular IVY specification file.
+<p />
+<code type="xml">
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra" xmlns:ea="http://www.easyant.org">
+	<info organisation="my.easyant.project" module="my-webapp" status="integration" >
+		<description>
+			This project is a sample of a java webapplication
+		</description>
+		<ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
+			<ea:property name="test.framework" value="testng"/>
+		</ea:build>
+	</info>
+	<configurations>
+		<conf name="default" visibility="public"/>
+		<conf name="test" visibility="private"/>
+	</configurations>
+	<publications>
+		<artifact type="war"/>
+		<artifact e:classifier="source"/>
+	</publications>
+	<dependencies>
+		<dependency org="org.testng" name="testng" rev="5.7" conf="test->master">
+			<artifact name="testng" type="jar" e:classifier="jdk15"/>
+		</dependency>
+	</dependencies>
+</ivy-module>
+
+</code>
+<p />
+The above is a standard ivy specification file, other than the 'ea:build' tag. Note also the use of the 'ea' namespace. The type attribute takes the build type the project wants to use. In our case, we intend to set up a standard WAR build project. The type attribute has a pattern - repository#artifact;version.
+<p />
+The above file is a sufficient instruction to easyant to build a WAR using the current project. Only, you need to mind the source structure for this build to work.
+<p />
+<h3>Source Structure</h3>
+<p />
+Similar, to Maven, by default, if you are using a standard build type, you need to follow a standard directory structure. This should be as the build type expects to pick different resources to be present in different directories. Use the following:
+<p />
+<img src="../images/java-webapp-src-structure.gif" />
+<p />
+In the above directory structure, all your java sources should go into src/main/java directory. Create a DummyMain.java file inside src/java/my/test directory.
+<p />
+All resources that should move into WEB-INF/classes directory should go inside src/main/resources.
+<p />
+Entire src/main/webapp directory moves into the root of the web application WAR. For instance, you may keep WEB-INF directory inside this directory.
+<p />
+The module.ivy file should reside inside 'testproj' directory.
+<p />
+Any external dependencies of your project should be specified inside your module.ivy file, dependencies section.
+<h3>Building the Project</h3>
+<p />
+The project is now ready to be built. You can simply run: easyant. You should see a 'target' directory created in your project root. The built war will reside inside the target/artifacts directory.
+<p />
+You can go ahead and deploy it in your app-server.
+<h3>Build Plugins</h3>
+<p />
+EasyAnt provides plugins that you can selectively choose to use in your project. These provide you convenience functionalities. E.g. Quick WAR deployments in Jetty, Xooki documentation, Coverage tools etc.
+<p />
+In this tutorial, let us quickly take a look over how we may integrate Jetty with our current war.
+<p />
+Let us first include a 'Hello World' index.htm inside the src/main/webapp directory. These are the contents of our index.htm:
+<p />
+<code type="xml">
+<html>
+	<head></head>
+	<body>
+		<h3>Hello World !!</h3>
+	</body>
+</html>
+</code>
+<p />
+Our module.ivy is the repository of all plugins that our project uses. So, we go ahead and include the Jetty plugin in our module.ivy.
+<p />
+<code type="xml">
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra" xmlns:ea="http://www.easyant.org">
+	<info organisation="my.easyant.project" module="my-webapp" status="integration" >
+		<description>
+			This project is a sample of a java webapplication
+		</description>
+		<ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
+			<ea:property name="test.framework" value="testng"/>
+			<ea:plugin organisation="org.apache.easyant.plugins" module="jetty-deploy" revision="0.1" as="jetty"/>
+		</ea:build>
+	</info>
+	<configurations>
+		<conf name="default" visibility="public"/>
+		<conf name="test" visibility="private"/>
+	</configurations>
+	<publications>
+		<artifact type="war"/>
+		<artifact e:classifier="source"/>
+	</publications>
+	<dependencies>
+		<dependency org="org.testng" name="testng" rev="5.7" conf="test->master">
+			<artifact name="testng" type="jar" e:classifier="jdk15"/>
+		</dependency>
+	</dependencies>
+</ivy-module>
+</code>
+<p />
+Note the addition of the <b>ea:plugin</b> tag.
+<p />
+The above line instructs easyant to make the jetty-deploy plugin artifact inside the 'org.apache.easyant.plugins' repository, version 0.1, to be available in the current project.
+<p />
+The jetty-deploy module exposes a target called ':run' (by convention all public targets in EasyAnt start with a ':' and all private targets start with a '-'). Further, this target depends on the package phase of EasyAnt, which means that by the time this target is executed, the WAR would have been created and available for deployment on Jetty.
+<p />
+Because, in the new line added to module.ivy, the jetty-deploy module was added with an 'alias' jetty, you can run 'easyant jetty:run' to build and package your web application, and deploy it on jetty. The command launches jetty, and keeps displaying Jetty logs on console. You can now access your web application on browser. Try hitting http://localhost:8080 !
+<p />
+<h3>module.ant</h3>
+<p />
+If you want to add something to the default build types that come packaged with EasyAnt, you can write a module.ant file in your project root. This is called before EasyAnt executes any of its core build scripts.
+<p />
+You can also include any convenience targets you find useful, that are specific to your project and do not come included in EasyAnt. </textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

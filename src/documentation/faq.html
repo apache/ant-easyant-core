@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 0};</script>	
+	<script type="text/javascript" src="xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Frequently Asked Questions</h1>
+
+<h2>How can i configure a new repository?</h2>
+Reporitories are defined in the <i>resolvers</i> node of an ivysettings file.
+Each dependency resolver is identified by its name, given as an attribute.
+The child tag used for the dependency resolver must be equal to a name of a dependency resolver type (either built-in or added with the typedef tag).
+
+Ivy comes with a set of built-in dependency resolvers able to answer to the most common needs like (non exhaustive)  :
+<ul>
+  <li>filesystem</li>
+  <li>ssh</li>
+  <li>ftp</li>
+  <li>url</li>
+  <li>ibiblio (maven repository)</li> 
+</ul>
+Example
+<code type="xml">
+<resolvers>
+  <filesystem name="1" cache="cache-1">
+    <ivy pattern="${ivy.settings.dir}/1/[organisation]/[module]/ivys/ivy-[revision].xml"/>
+    <artifact pattern="${ivy.settings.dir}/1/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
+  </filesystem>
+  <chain name="chain1">
+    <resolver ref="1"/>
+    <ivyrep name="ivyrep"/>
+  </chain>
+  <chain name="chain2" returnFirst="true" dual="true">
+    <resolver ref="1"/>
+    <ibiblio name="ibiblio"/>
+  </chain>
+</resolvers>
+</code>
+Defines a filesystem resolver, named '1', which is then used in two chains, the first which seconds the filesystem resolver with an ivyrep resolver, and second which seconds the filesystem resolver with an ibiblio resolver, and which returns the first module found, and uses the whole chain to download artifacts (see corresponding resolvers documentation for details about them). Resolver 1 will use a cache named 'cache-1' which should have been defined under the caches element.
+You can find more details <a href="http://ant.apache.org/ivy/history/latest-milestone/settings/resolvers.html">here</a>
+
+<h2>Does EasyAnt support Maven repositories?</h2>
+Yes you can use Maven-like repositories by configuring an ibiblio resolver.
+<code type="xml">
+<ibiblio name="my-maven-repository" m2compatible="true"/>
+</code>
+
+<h2>How can i reuse my maven local repository</h2>
+If you find yourself wanting to reuse artifacts that you already have locally in your Maven2 repository, then you can add this line to your ivysettings :
+<code type="xml">
+<ibiblio name="maven-local" root="file:${user.home}/.m2/repository/" m2compatible="true"/>
+</code>
+<h2>Can i publish to a maven repository?</h2>
+No, unfortunately this feature will be available in 0.8 release.
+
+<h2>How can i disable a module?</h2>
+You can disable a module by setting a magic property composed with the following syntax  like :
+<ul>
+  <li>skip.[mrid]</li>
+  <li>skip.[organisation]#[module];[revision]</li>
+  <li>skip.[as] (where as is the module alias name)</li>
+</ul>
+Example : 
+Suppose we have a plugin declared like
+<code type="xml">
+<plugin org="mycompany" module="foobar" rev="0.1" as="myalias"/>
+</code>
+You can disable the plugin by setting one of the following property to true:
+<ul>
+  <li>skip.mycompany#foobar;0.1</li>
+  <li>skip.myalias</li>
+</ul>
+<code type="shell">> easyant -Dskip.mycompany#foobar;0.1=true</code>
+or 
+<code type="shell">> easyant -Dskip.myalias=true</code>
+
+<h2>How can i generate publish a javadoc.jar ?</h2>
+To generate the javadoc you have to declare the plugin in your module.ivy file.
+<code type="xml">
+  <ea:plugin module="javadoc" rev="0.1" as="javadoc" />
+</code>
+This plugin provides a few targets related to the javadoc.
+Then you can ask easyant that you want the javadoc to be part of your project lifecycle. For example you may want to generate and publish a javadoc.jar.
+This can be done by using bindtarget like this :
+<code type="xml">
+  <ea:bindtarget target="javadoc:package" tophase="package" />
+</code>
+What happens behind ? The javadoc:package target is attached to package phase. The jar is produced, if we're in a publication context (when calling publish-local, publish-shared, release) the right informations are generated on the published module.ivy file.
+
+<h2>I have an existing ant distribution installed can i reused it ?</h2>
+Since EasyAnt 0.8, we use an ant distribution shipped with easyant by default.
+
+If you want to reuse your own ant installation you will add the "--use-custom-ant-" argument on the command line.
+<code type="shell">
+  > easyant --use-custom-ant
+</code>
+
+Then, if ANT_HOME environment variable is correctly set or if you have a standard ant installation, easyant will use it.
+
+If your ant distribution is 1.8.0 or higher, you can reuse it.
+Otherwise you can't because EasyAnt uses features introduced in ant 1.8 (like include / extentionOf).
+
+<h2>I have files in my $HOME/.ant/lib directory that seems to be in conflict with easyant. How can i avoid this ? </h2>
+You just need to use the "-nouserlib" option
+exemple :
+<code type="shell">
+  > easyant -nouserlib
+</code>
+
+<h2>Why does EasyAnt uses two ivy instance?</h2>
+As you should know EasyAnt uses ivy as a dependency manager.
+EasyAnt uses two ivy instance :
+<ol>
+  <li>used to resolve/retrieve EasyAnt modules (which can be buildtypes/ plugins or skeletons) dependencies</li>
+  <li>used to resolve/retrieve project dependencies</li>
+</ol>
+There is a strong separation of context, this means that plugins dependencies will not be polluting your project.
+Both instance are configurable. 
+<ul>
+  <li>Project ivy instance can be configured through an ivysettings file defined through properties. Click <a href="ref/ProjectIvyInstance.html">here</a> if you want more details.</li>
+  <li>EasyAnt ivy instance can be configured through an ivysettings file defined in easyant-config. Click <a href="ref/EasyAntconfigurationfile.html">here</a> if you want more details.</li>
+</ul>
+
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

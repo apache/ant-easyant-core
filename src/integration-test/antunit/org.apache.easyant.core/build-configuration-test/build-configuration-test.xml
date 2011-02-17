@@ -1,0 +1,81 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="build-configuration-test" 
+		xmlns:au="antlib:org.apache.ant.antunit">
+	
+	<dirname file="${ant.file.build-configuration-test}" property="test.dir"/>
+	<import file="${test.dir}/../../common/test-utils.ant"/>
+
+	<target name="clean" description="remove stale build artifacts before / after each test">
+		<delete dir="${basedir}" includeemptydirs="true">
+			<include name="**/target/**"/>
+			<include name="**/lib/**"/>
+			<include name="test.properties"/>
+		</delete>
+	</target>
+	
+	<target name="setUp" depends="clean"/>
+	<target name="tearDown" depends="clean"/>
+
+	<target name="testDefaultConfiguration" description="test default classpath and property settings">
+
+		<au:assertFileDoesntExist message="clean test environment" file="lib"/>
+		<au:assertFileDoesntExist message="clean test environment" file="test.properties"/>
+		<easyant target="compile" args="-Dretrieve.dependencies=true"/>
+
+		<au:assertFileExists message="custom compile target was run" file="test.properties"/>
+		<property file="test.properties" prefix="default."/>
+		<au:assertEquals message="default property setting was used" expected="foo" actual="${default.prop}"/>
+		
+		<au:assertFileExists message="default dependency retrieved" file="lib/main/hsqldb-1.8.0.7.jar"/>
+		<au:assertFileDoesntExist message="alternate dependency skipped" file="lib/main/junit-4.4.jar"/>
+		
+		<au:assertTrue message="compile path includes default dependency">
+			<and>
+				<contains string="${default.path}" substring="hsqldb-1.8.0.7.jar"/>
+				<not><contains string="${default.path}" substring="junit"/></not>
+			</and>
+		</au:assertTrue>
+		
+	</target>
+	
+	<target name="testAlternateConfiguration" description="test alternate configuration">
+
+		<au:assertFileDoesntExist message="clean test environment" file="lib"/>
+		<au:assertFileDoesntExist message="clean test environment" file="test.properties"/>
+
+		<easyant target="compile" args="-Dretrieve.dependencies=true -C alpha"/>
+		
+		<au:assertFileExists message="custom compile target was run" file="test.properties"/>
+		<property file="test.properties" prefix="alpha."/>
+		<au:assertEquals message="alternate property setting was used" expected="bar" actual="${alpha.prop}"/>
+		
+		<au:assertFileExists message="default dependency retrieved" file="lib/main/hsqldb-1.8.0.7.jar"/>
+		<au:assertFileExists message="alternate dependency also retrieved" file="lib/main/junit-4.4.jar"/>
+		
+		<au:assertTrue message="compile path includes default dependency">
+			<and>
+				<contains string="${alpha.path}" substring="hsqldb-1.8.0.7.jar"/>
+				<contains string="${alpha.path}" substring="junit-4.4.jar"/>
+			</and>
+		</au:assertTrue>
+		
+	</target>
+	
+</project>

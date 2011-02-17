@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<project name="easyant-test-utils" xmlns:ea="antlib:org.apache.easyant">
+
+	<description>Macros and targets to assist in writing AntUnit test cases for EasyAnt</description>
+
+    <dirname file="${ant.file.easyant-test-utils}" property="easyant.common.dir"/>
+
+    <property name="easyant.project.dir" location="${easyant.common.dir}/../../../.."/>
+    <property name="plugin.src.dir"
+              location="${easyant.project.dir}/src/main/resources/org/apache/easyant/core/repository/modules/org.apache.easyant.plugins"/>
+
+    <property name="extra.repo.dir"
+              location="${easyant.project.dir}/repository/extra-modules"/>
+    <property name="extra.plugins.dir"
+              location="${extra.repo.dir}/org.apache.easyant.plugins"/>
+
+    <macrodef name="load-plugin" description="load an unpublished easyant plugin for testing">
+        <attribute name="repository" description="repository root for plugin modules" default="${plugin.src.dir}"/>
+        <attribute name="name" description="the name of the plugin"/>
+        <attribute name="rev" description="the revision of the plugin to test"/>
+        <attribute name="as" description="the namespace prefix for the loaded plugin"/>
+        <sequential>
+            <echo>Importing plugin @{name};@{rev} as @{as}</echo>
+            <ea:include file="@{repository}/@{name}/@{rev}/@{name}.ivy" as="@{as}"/>
+        </sequential>
+    </macrodef>
+
+</project>

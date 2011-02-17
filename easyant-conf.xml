@@ -1,0 +1,8 @@
+<easyant-config>
+	<ivysettings file="${easyant.home}/ivysettings.xml"/>
+	<system-plugins>
+		<plugin mrid="org.apache.easyant.plugins#skeleton;0.2" as="skeleton"/>
+		<plugin mrid="org.apache.easyant.plugins#ivy-repo-management;0.1" as="repo-management"/>
+		
+	</system-plugins>
+</easyant-config>

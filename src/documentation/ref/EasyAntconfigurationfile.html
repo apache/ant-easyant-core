@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>EasyAnt configuration file</h1>
+The configuration file named easyant-conf.xml allow you to tune :
+<ul>
+  <li>easyant ivy instance (used to retrieve build types / plugins)</li>
+  <li>system plugins</li>
+  <li>properties</li>
+</ul>
+<code type="xml">
+<easyant-config>
+        <!-- Configure the easyant ivy instance -->
+	<ivysettings file="${easyant.home}/ivysettings.xml"/>
+        <!-- Configure system plugins -->
+	<system-plugins>
+		<plugin organisation="org.apache.easyant.plugins" module="skeleton" revision="0.1" as="skeleton"/>
+		<plugin organisation="org.apache.easyant.plugins" module="ivy-repo-management" revision="0.1" as="repo-management"/>
+	</system-plugins>
+        <!-- Configuring user properties -->
+        <properties>
+        	<property name="my.property" value="foobar"/>
+        </properties>
+</easyant-config>
+</code>
+
+<h2>Configuring easyant ivy instance</h2>
+By default, easyant ivy instance is configured to use a set of repositories based on your file system that are deployed with the easyant distribution. These repositories are supposed to be available online in a future release of easyant, and contain the build modules available to the user.
+
+Easyant ivy instance is not used to retrieve project dependencies.
+If you want to configure the project ivy instance you should look at <a href="ref/ProjectIvyInstance.html">this page</a>.
+
+You can configure / override the easyant ivy instance through the following tag
+<code type="xml">
+<ivysettings file="/path/to/ivysettings.xml"/>
+</code>
+or
+<code type="xml">
+<ivysettings url="/path/to/ivysettings.xml"/>
+</code>
+
+
+<table class="sortable" id="anyid">
+  <thead>
+  <tr>
+    <td>attribute name</td>
+    <td class="unsortable">description</td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>file</td>
+    <td>a file referecing a ivysettings file for easyant ivy instance</td>
+  </tr>
+
+  <tr>
+    <td>url</td>
+    <td>an url referencing a ivysettings file for easyant ivy instance</td>
+  </tr>
+  </tbody>
+</table>
+
+By default easyant ivy instance is configured to use the default ivysettings provided by easyant-core.jar.
+
+<h3>default ivy settings provided by easyant-core.jar</h3>
+You can reference this default ivysettings file through the property <i>easyant.default.ivysettings.url</i>.
+This file preconfigure :
+<ul>
+  <li>easyant cache in $USER_HOME/.easyant/easyant-cache</li>
+  <li>default repositories:
+     <ul>
+       <li><i>easyant-core-modules</i> shipped in easyant-core.jar</li>
+       <li><i>easyant-shared-modules</i> pointing to "${user.home}/.easyant/repository/easyant-shared-modules" used to store users plugins/buildtypes</li>
+       <li><i>public-maven</i> used to retrieved plugins/buildtypes dependencies</li>
+       <li><i>easyant-default-chain</i> the default chain containing the 3 previous repositories</li>
+     </ul>
+  </li>
+</ul>
+
+<h3>Using easyant-extra-modules</h3>
+If you want to use easyant-extra-modules.jar (containing additional plugins/buildtypes) you can use the property <i>easyant.extra.ivysettings.url</i>.
+
+<h3>Extending the default configuration</h3>
+In an enterprise context it can make sense to configure a enteprise repository to store easyant plugins/ easyant skeletons etc...
+
+This can be done writting your own ivysettings including if necessary the default configuration :  
+<code type="xml">
+<ivysettings>
+        <!-- import the default ivy settings -->
+	<include url="${easyant.default.ivysettings.url}"/>
+	<!-- define your own default resolver, here a chain that include a new repo + the default chain provided by easyant -->
+	<settings defaultResolver="my-chain"/>
+	<resolvers>
+		<filesystem name="my-custom-repo">
+		        <ivy pattern="/path/to/your/repo/[organisation]/[module]/ivy-[revision].xml"/>
+        		<artifact pattern="/path/to/your/repo/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
+      		</filesystem>
+
+		<chain name="my-chain">
+			<resolver ref="my-custom-repo" />
+			<resolver ref="easyant-default-chain" />
+		</chain>
+	</resolvers>
+</ivysettings>
+</code>
+
+<h2>Configuring system plugins</h2>
+A system plugin can provide some additionnal functionnalities that can be used from everywhere.
+To reference a set of plugins you can use the following syntax :
+<code type="xml">
+<plugin organisation="org.apache.easyant.plugins" module="skeleton" revision="0.1" as="skeleton"/>
+</code>
+<h3>Plugin attributes</h3>
+<table class="sortable" id="pluginattribute">
+  <thead>
+  <tr>
+    <td>attribute name</td>
+    <td class="unsortable">description</td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>organisation</td>
+    <td>plugin organisation name</td>
+  </tr>
+  <tr>
+    <td>org</td>
+    <td>shorter form to set plugin organisation name</td>
+  </tr>
+  <tr>
+    <td>module</td>
+    <td>plugin module name</td>
+  </tr>
+
+  <tr>
+    <td>module</td>
+    <td>plugin module name</td>
+  </tr>
+  <tr>
+    <td>revision</td>
+    <td>plugin revision number</td>
+  </tr>
+  <tr>
+    <td>rev</td>
+    <td>shorter form to define plugin revision number</td>
+  </tr>
+  <tr>
+    <td>mrid</td>
+    <td>a module revision id.<br/>This argument can be used to define a plugin using a module revision id (Syntax: [organisation]#[module];[revision])</td>
+  </tr>
+  <tr>
+    <td>as</td>
+    <td>an alias to prefix plugin's targets</td>
+  </tr>
+  <tr>
+    <td>mandatory</td>
+    <td>plugin module name</td>
+  </tr>
+
+  <tr>
+    <td>mode</td>
+    <td>define if we should <i>import</i> or <i>include</i> the plugin</td>
+  </tr>
+  </tbody>
+</table>
+<code type="xml">
+<!-- Using exploded style -->
+<plugin organisation="org.apache.easyant.plugins" module="skeleton" revision="0.1" as="skeleton"/>
+<!-- shorter form -->
+<plugin org="org.apache.easyant.plugins" module="skeleton" rev="0.1" as="skeleton"/>
+<!-- Using a mrid style -->
+<plugin mrid="org.apache.easyant.plugins#skeleton;0.1" as="skeleton"/>
+</code>
+
+<h2>Defining user properties</h2>
+You can also define user properties. Those properties will be available from everywhere when invoking easyant.
+<code type="xml">
+<property name="my.property" value="foobar"/>
+<property file="/path/to/mycompany.properties"/>
+<property url="/path/to/mycompany.properties"/>
+</code>
+<h3>Properties attribute</h3>
+<table class="sortable" id="propertiesAttribute">
+  <thead>
+  <tr>
+    <td>attribute name</td>
+    <td class="unsortable">description</td>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>name</td>
+    <td>a property name</td>
+  </tr>
+  <tr>
+    <td>value</td>
+    <td>a property value</td>
+  </tr>
+  <tr>
+    <td>url</td>
+    <td>an url referencing a property file</td>
+  </tr>
+  <tr>
+    <td>file</td>
+    <td>a property file</td>
+  </tr>
+  </tbody>
+</table></textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

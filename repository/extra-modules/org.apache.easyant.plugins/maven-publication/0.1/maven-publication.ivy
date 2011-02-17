@@ -1,0 +1,77 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.  
+-->
+<ivy-module version="2.0"> 
+	<info organisation="org.apache.easyant.plugins"
+	       module="maven-publication"
+	       status="milestone"
+	       revision="0.1">
+		<description>
+			<p>
+				This module provides functionalities to publish a pom.xml. 
+				This is really usefull if some maven based projects wants to reuse your artifacts.
+			</p>
+			<p>
+				In some cases we may want to define a different repository url for easyant (or ivy based) artifacts (published by ivy-publication plugin), 
+				and another one for maven artifacts (published through maven-publication plugin) this can be done by setting "maven.remote.repo.url" property.
+				If this property is unset, artifacts will be republished with maven descriptor on the 
+				same repository as ivy-publication module (artifacts will be overwritten).
+			</p>
+			<p>
+				This plugin is based on <a href="http://easyant.org/projects/mavenivy-adapters">mavenivy-adapters tasks</a>.
+			</p>
+			<p>
+				It uses a TypeMapping to define the mapping between ivy world and maven world (like type, ext, mavenPackaging, mavenClassifier).
+				Example :
+				<code type="xml">
+					<typeMappings id="maven.type.mappings.ref">
+ 						<mapping type="myType" mvnPackaging="jar"/>
+ 					</typeMappings>
+				</code>
+				You can override the default typeMappings by using <a href="">AugmentTask</a> like this :
+				<code type="xml">
+					<augment id="maven.type.mappings.ref">
+ 						<mapping type="myType" mvnPackaging="jar"/>
+ 					</augment>
+				</code>
+			</p>
+			<p>
+				It also uses a ScopeMapping to define the mapping between ivy configurations and maven scopes.
+				Example :
+				<code type="xml">
+					<scopeMappings id="maven.scope.mappings.ref">
+						<mapping scope="compile" conf="myIvyConfiguration"/>
+					</scopeMappings>				
+				</code>
+				You can override the default scopeMappings by using <a href="">AugmentTask</a> like this :
+				<code type="xml">
+					<augment id="maven.scope.mappings.ref">
+						<mapping scope="compile" conf="myIvyConfiguration"/>
+					</augment>				
+				</code>
+			</p>
+			
+		</description>
+	</info>
+	<publications>
+		<artifact type="ant" />
+	</publications>
+	<dependencies>
+ 		<dependency org="org.apache.easyant.tasks" name="mavenivy-adapters" rev="0.1"/>	
+ 	</dependencies>
+</ivy-module>

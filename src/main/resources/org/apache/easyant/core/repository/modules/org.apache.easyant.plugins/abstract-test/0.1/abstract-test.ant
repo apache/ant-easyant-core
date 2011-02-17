@@ -1,0 +1,122 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#abstract-test"
+	xmlns:ac="antlib:net.sf.antcontrib"
+	xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="compile" />
+		<ea:parameter phase="test-compile" />
+		<ea:parameter phase="test" />
+
+		<ea:parameter property="src.test.java" required="true" 
+			description="directory with unit test source files" />
+		<ea:parameter property="src.test.integration.java" default="${basedir}/src/integration-test/java" 
+				description="directory for integration test source files" />
+
+        <ea:parameter property="src.test.resources" default="${basedir}/src/test/resources"
+            description="directory with unit test resource files (configuration files, data files, etc)" />
+        <ea:parameter property="src.test.integration.resources" default="${basedir}/src/integration-test/resources"
+                description="directory for integration test resources (configuration files, data files, etc)"/>
+
+		<ea:parameter property="target.main.classes" required="true" 
+			description="directory where main compiled classes are" />
+		<ea:parameter property="target.test.classes" required="true" 
+			description="destination directory for compiled unit test classes" />
+		<ea:parameter property="target.test.integration.classes" default="${basedir}/target/integration-test/classes" 
+				description="destination directory for compiled integration test classes" />
+
+		
+		<ea:parameter property="target.test.xml" required="true" 
+			description="destination directory for xml test report" />
+		<ea:parameter property="target.test.html" required="true" 
+			description="destination directory for html test report" />
+		
+		<ea:parameter property="test.mode" default="run"
+			description="mode to use to execute tests: 'run' to only run tests, 'report' to generate html report" />
+		<ea:parameter property="javac.debug.mode" default="true" 
+			description="javac debug mode, true or false" />
+		<ea:parameter property="test.compile.includes.pattern" default="**/*.java" 
+			description="Pattern describing files included in test compilation process" />
+		<ea:parameter property="test.compile.excludes.pattern" default="" 
+			description="Pattern describing files excluded in test compilation process" />
+		<ea:parameter property="test.integration.compile.includes.pattern" default="**/*.java" 
+			description="Pattern describing files included in integration test compilation process" />
+		<ea:parameter property="test.integration.compile.excludes.pattern" default="" 
+			description="Pattern describing files excluded in integration test compilation process" />
+		
+		<ea:parameter property="test.run.failonerror" default="true"
+			description="specify if the build should be stopped when tests are failed. Typically this property should be set to false in continuous environmnent systems"/>
+				
+		
+		<ea:parameter path="compile.main.classpath" required="true" 
+			description="path used to compile main sources" />
+		
+		<path id="compile.test.classpath">
+	            <pathelement location="${target.main.classes}" />
+        	    <path refid="compile.main.classpath" />
+        </path>
+
+		<available file="${src.test.java}" property="has.src.test.java" />
+		<available file="${src.test.integration.java}" property="has.src.test.integration.java"/>
+		
+		<condition property="test.mode.run">
+			<equals arg1="${test.mode}" arg2="run" />
+		</condition>
+		
+		<condition property="test.mode.report">
+			<equals arg1="${test.mode}" arg2="report" />
+		</condition>
+
+        <!-- shouldn't this be in junit plugin? -->
+		<taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask" 
+			classpathref="org.apache.easyant.plugins#abstract-test.classpath" />
+		<taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator"
+			classpathref="org.apache.easyant.plugins#abstract-test.classpath" />
+
+	</target>
+	
+	<macrodef name="check-test-result" description="check test results">
+		<attribute name="propertytocheck"/>
+		<attribute name="message" />
+		<attribute name="echolevel" default="error"/>
+		<sequential>
+			<ac:if>
+				<istrue value="${test.run.failonerror}"/>
+				<ac:then>
+		        	<fail if="@{propertytocheck}" message="@{message}" />
+				</ac:then>
+				<ac:else>
+					<ac:if>
+						<isset property="@{propertytocheck}"/>
+						<ac:then>
+							<echo message="@{message}" level="@{echolevel}"/>
+						</ac:then>
+					</ac:if>
+				</ac:else>
+			</ac:if>
+		</sequential>		
+		
+	</macrodef>
+
+
+</project>

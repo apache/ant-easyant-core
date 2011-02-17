@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>buildtype task</h1>
+This task is an extension of <a href="Importtask.html">import</a> task that specify the default organisation for build types(org.apache.easyant.buildtypes).
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr>
+      <th>Parameter name</th>
+      <th class="unsortable">Description</th>
+      <th>Mandatory</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>organisation</td>
+      <td>plugin organisation name (default value: org.apache.easyant.buildtypes)</td>
+      <td> </td>
+    </tr>
+    <tr id="mandatory">
+      <td>module</td>
+      <td>plugin module name</td>
+      <td rowspan="2">true (if using exploded style)</td>
+    </tr>
+    <tr id="mandatory">
+      <td>revision</td>
+      <td>plugin revision id</td>
+    </tr>
+
+    <tr id="mandatory">
+      <td>mrid</td>
+      <td>a module revision id(Syntax: organisation#module;revision)</td>
+      <td>true (if using mrid style)</td>
+    </tr>
+    <tr>
+      <td>as</td>
+      <td>an alias for imported/included targets</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>mode</td>
+      <td>specify if we want to import or include</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>modulesDir</td>
+      <td>specify a directory where modules will be retrieved</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>buildConfigurations</td>
+      <td>specify one a many build configurations separated by a comma</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Example</h2>
+<code type="xml">
+<ea:build module="build-std-java" revision="0.2"/>
+</code>
+
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

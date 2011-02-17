@@ -1,0 +1,25 @@
+<ivy-module version="2.0" xmlns:ea="http://www.easyant.org">
+	<info organisation="org.apache.easyant.tasks" module="mavenivy-adapters" revision="0.1" status="release" publication="20100806201003">
+		<ea:build module="build-std-java" revision="0.2">
+			<ea:property name="project.ivy.instance" value="easyant.ivy.instance"/>
+			<ea:property name="release.resolver" value="easyant-shared-modules"/>
+			<ea:property name="shared.resolver" value="easyant-shared-modules"/>
+			<ea:property name="local.resolver" value="easyant-shared-modules"/>
+		</ea:build>
+	</info>
+	<configurations>
+		<conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
+		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+		<conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
+
+	</configurations>
+	<dependencies>
+		<dependency org="org.apache.maven" name="maven-ant-tasks" rev="2.1.0" conf="default->default">
+			<exclude org="ant" module="ant"/>
+		</dependency>
+		<dependency org="org.apache.ivy" name="ivy" rev="2.1.0" conf="provided->default"/>
+		<dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
+		<dependency org="org.apache.ant" name="ant" rev="1.8.1" conf="provided->default"/>
+       		<dependency org="org.apache.ant" name="ant-testutil" rev="1.8.1" conf="test->default" transitive="false"/>
+	</dependencies>
+</ivy-module>

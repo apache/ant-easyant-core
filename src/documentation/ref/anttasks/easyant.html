@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>easyant task</h1>
+
+<h2>Description</h2>
+<p>
+Runs EasyAnt on a supplied buildmodule. This can be used to build easyant subprojects. 
+When the buildmodule attribute is omitted, the file "module.ivy" in the supplied directory (dir attribute) is used.
+
+If no target attribute is supplied, the default target of the new project is used.
+</p>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr>
+      <th>Parameter name</th>
+      <th class="unsortable">Description</th>
+      <th>Mandatory</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>targets</td>
+      <td>targets to run</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>fork</td>
+      <td>specify if the easyant process should be in a separated ant context or use the current one<br/> <i>Default: true</i></td>
+      <td> </td>
+    </tr>
+  
+    <tr>
+      <td>buildModule</td>
+      <td>name of the build module <br/> <i>Default: module.ivy</i></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>buildFile</td>
+      <td>name of the additional ant file <br/> <i>Default: module.ant</i></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>buildConfiguration</td>
+      <td>activate some <a href="../../howto/BuildConfigurations.html">build configurations</a></td>
+      <td> </td>
+    </tr>
+
+    <tr>
+      <td>configurationFile</td>
+      <td>path to easyant configuration file. This File is used to configure system plugins, global properties, etc... See this <a href="../EasyAntconfigurationfile.html">page</a> for more informations. If not set easyant will use the default one.</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>configurationUrl</td>
+      <td>path to easyant configuration url. This File is used to configure system plugins, global properties, etc... See this <a href="../EasyAntconfigurationfile.html">page</a> for more informations. If not set easyant will use the default one.</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Example</h2>
+Run package phase in a separated context (forked)
+<code type="xml">
+  <ea:easyant targets="package" />
+<code>
+
+Run default targets in a separated context (forked)
+<code type="xml">
+  <ea:easyant fork="false" targets="package"/>
+</code>
+
+Import easyant build types plugins and execute package phase in the current ant context  
+<code type="xml">
+  <ea:easyant fork="false" targets="package"/>
+</code>
+
+Import easyant build types and plugins in current ant context without executing any targets. Everything defined in easyant project will be accessible trough easyant. You can compare this with <i>ant import</i> mechanism.
+<code type="xml">
+  <ea:easyant fork="false"/>
+</code>
+
+Suppose you have the following build.xml
+<code type="xml">
+<project name="myAntProject"
+  <ea:easyant fork="false"/>
+</project>
+</code>
+Running ant -p will display all targets, phases defined by easyant.
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

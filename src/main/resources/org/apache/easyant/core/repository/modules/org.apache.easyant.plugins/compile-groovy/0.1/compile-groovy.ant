@@ -1,0 +1,89 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#compile-groovy" xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="compile" />
+
+		<ea:parameter property="src.main.groovy" required="true" description="directory where sources to be compiled are" />
+		<ea:parameter property="target.main.classes" required="true" description="destination directory for compiled test classes" />
+
+		<ea:parameter property="compile.groovy.includes.pattern" default="**/*.groovy" description="Pattern describing files included in compilation process" />
+		<ea:parameter property="compile.groovy.excludes.pattern" default="" description="Pattern describing files excluded in compilation process" />
+
+		<available file="${src.main.groovy}" property="has.src.main.groovy" />
+
+		<ea:path pathid="compile.main.classpath" overwrite="false" />
+		
+	</target>
+	
+	<target name="-configure" phase="provision">
+		<ea:findclasspath pathid="resolved.groovy.classpath" organisation="org.codehaus.groovy" module="groovy-all" revision="1.6.0">
+			<ea:project-dependency-strategy />
+			<ea:environment-strategy env="GROOVY_HOME"/>
+			<ea:basic-configuration-strategy />
+		</ea:findclasspath>
+
+		<taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="resolved.groovy.classpath" />
+
+	</target>
+
+	<target name=":compile" depends="validate" if="has.src.main.groovy" phase="compile">
+		<mkdir dir="${target.main.classes}" />
+		<!--
+		<groovyc> Attributes
+		Attribute 	Description 	Required
+		srcdir 	Location of the Groovy (and possibly Java) source files. 	Yes
+		destdir 	Location to store the class files. 	Yes
+		classpath 	The classpath to use. 	No
+		classpathref 	The classpath to use given as a path references. 	No
+		sourcepath 	The sourcepath to use. 	No
+		sourcepathref 	The sourcepath to use given as a path reference. 	No
+		encoding 	Encoding of source files. 	No
+		verbose 	Asks the compiler for verbose output; defaults to no. 	No
+		includeAntRuntime 	Whether to include the Ant run-time libraries in the classpath; defaults to yes. 	No
+		includeJavaRuntime 	Whether to include the default run-time libraries from the executing VM in the classpath; defaults to no. 	No
+		fork 	Whether to execute groovyc using a spawned instance of the JVM; defaults to no. 	No
+		memoryInitialSize 	The initial size of the memory for the underlying VM, if using fork mode; ignored otherwise. Defaults to the standard VM memory setting. (Examples: 83886080, 81920k, or 80m) 	No
+		memoryMaximumSize 	The maximum size of the memory for the underlying VM, if using fork mode; ignored otherwise. Defaults to the standard VM memory setting. (Examples: 83886080, 81920k, or 80m) 	No
+		failonerror 	Indicates whether compilation errors will fail the build; defaults to true. 	No
+		listfiles 	Indicates whether the source files to be compiled will be listed; defaults to no. 	No
+		stacktrace 	if true each compile error message will contain a stacktrace 	No
+		jointCompilationOptions 	Enable joint compilation, specifying the command line options. (Using a nested javac task is preferred.) 	No
+
+		Notes: Joint compilation is only available since 1.1-beta-2
+		<groovyc> Nested Elements
+		element 	kind 	Required 	Replaces Attribute
+		src 	a path structure 	Yes (unless srcdir is used) 	srcdir
+		classpath 	a path structure 	No 	classpath
+		javac 	javac task 	No 	jointCompilationOptions
+		-->
+		<groovyc srcdir="${src.main.groovy}" destdir="${target.main.classes}" 
+			classpathref="compile.main.classpath" 
+			includeantruntime="no" 
+			includes="${compile.groovy.includes.pattern}" 
+			excludes="${compile.groovy.excludes.pattern}" />
+	</target>
+
+
+	<target name="doit" depends=":init" />
+</project>

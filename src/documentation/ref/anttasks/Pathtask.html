@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>path task</h1>
+
+<h2>Description</h2>
+<p>
+This task is similar to path task provided by ant but add an override attribute with these values:
+<ul>
+  <li>true: new definition will take precedence over preceding one if any</li>
+  <li>false: new definition will be discarded if any definition already exists</li>
+  <li>append: new definition will be added to the existing one if any</li>
+  <li>prepend: new definition will be added at the beginning of the existing one if any</li>
+</ul>
+</p>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr><th>Parameter name</th><th class="unsortable">Description</th><th>Mandatory</th></tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>pathid</td>
+      <td>used to give a name to the path</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>overwrite</td>
+      <td>specify if easyant should overwrite the path (Possible values are true/false/append/prepend)</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Examples</h2>
+<code type="xml">
+<ea:path pathid="compile.main.classpath" overwrite="true">
+        <fileset dir="foobar"/>
+</ea:path>
+</code>
+Here we overwrite the path "compile.main.classpath"</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+**********************
+* Welcome to easyant * 
+**********************
+
+Easyant is a toolbox focusing on easing project build processes.
+It's based on Apache Ant and Apache Ivy, and allows for maximum flexibily, improved integration in existing build systems and provides conventions and guidelines.
+
+Our goals are :
+
+    * to simplify build process by providing a set of ready to use build scripts (or modules) to ease the implementation of build system.
+    * to provide conventions and guidelines
+    * to leverage your ant knowledge (no need to learn another language)
+    * to remain adaptable :
+          o what about conventions ? : Even if Easyant comes with a lot of conventions, we never lock you in.
+          o what about modules ? : You can easily adapt it to your projects. The architecture of Easyant allows you to easily extends existing modules and to provide your own one.
+          o what if you already have an existing project ? Since Easyant is fully based on top of ant, you can keep your existing project along with the "old school" ant scripts. This should ease the migration to Easyant. 
+
+************************
+* How to run examples  *
+************************
+
+The Easyant source has a few sample projects that demonstrate how Easyant may be used in a project. Check the 'example' directory for all such examples.
+
+    * standard-java-app use build-std-java build type.
+    * webapp-java use build-webapp-java build type and jetty-deploy plugin.
+    * standard-scala-app uses build-std-scala build type
+    * example-multimodule shows a multi-module project.
+    * std-java-with-documentation shows another project using build-std-java build type with documentation samples. 
+
+To run the build of an example, you should first set up in your environment the EASYANT_HOME variable :
+
+    * for windows users : set EASYANT_HOME=path\to\easyant
+    * for unix users : export EASYANT_HOME=path/to/easyant 
+
+Then go to the example directory, and run:
+
+    * for windows users : %EASYANT_HOME%\bin\easyant -p
+    * for unix users : $EASYANT_HOME/bin/easyant -p 
+
+You may also add EASYANT_HOME to your path :
+
+    * for windows users : set PATH=%EASYANT_HOME%\bin;%PATH%
+    * for unix users : export PATH=$EASYANT_HOME/bin:$PATH 
+
+Then you should see all the available targets, which include all build phases inspired by maven 2, and some additional targets contributed by some plugins. 
+Main phases:
+
+ clean                                           delete any artifacts from previous builds
+ compile                                         compile the source code of the project
+ documentation                                   generate documentation
+ generate-local-version                          generate a local version number
+ generate-release-version                        generate a version number for a release
+ generate-resources                              generate resources for inclusion in the package
+ generate-shared-version                         generate a version number for shared publication
+ generate-sources                                generate any source code for inclusion in compilation
+ integration-test                                process and deploy the package if necessary into an environment where integration tests can be run
+ org.apache.easyant.plugins#phases-std.validate  validate the project is correct and all necessary information is available
+ package                                         take the compiled code and package it in its distributable format, such as a JAR.
+ post-integration-test                           perform actions required after integration tests have been executed. This may including cleaning up the environment
+ pre-integration-test                            perform actions required before integration tests are executed. This may involve things such as setting up the required environment
+ prepare-package                                 perform any operations necessary to prepare a package before the actual packaging. This often results in an unpacked, processed version of the package
+ prepare-publish-local                           prepare a publish for a local repository
+ prepare-publish-shared                          prepare a publish for a shared repository (snapshot)
+ prepare-release                                 prepare a release
+ process-classes                                 post-process the generated files from compilation, for example to do bytecode enhancement on Java classes
+ process-documentation-resources                 copy and process the documentation resources into the destination directory
+ process-resources                               copy and process the resources into the destination directory, ready for packaging
+ process-sources                                 process the source code, for example to filter any values
+ provision                                       supply provision required by this project
+ publish-local                                   publish the package into the local repository, for use as a dependency in other projects locally
+ publish-shared                                  done in an integration environment, copies the final package to the remote repository for sharing with other developers and projects
+ release                                         done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects
+ report                                          generate report
+ test                                            run tests using a suitable unit testing framework. These tests should not require the code be packaged or deployed
+ test-compile                                    compile the test source code into the test destination directory
+ test-generate-resources                         create resources for testing
+ test-generate-sources                           generate any test source code for inclusion in compilation
+ test-process-resources                          copy and process the resources into the test destination directory
+ test-process-sources                            process the test source code, for example to filter any values
+ test-provision                                  supply provision required to test this project
+ validate                                        validate the project is correct and all necessary information is available
+ verify                                          run any checks to verify the package is valid and meets quality criteri
+
+Default target: doit
+
+Then run: %EASYANT_HOME%\bin\easyant
+
+The example should be compiled, as well as unit tests, which should then be executed, and a jar should be produced in target/artifacts.
+
+To find more informations check the online documentation (http://www.easyant.org/doc/) or download it through our website.
+
+
+***************
+* Source code *
+***************
+Easyant is released under Apache License 2.0.
+
+Sources can be found here
+SVN Url : http://svn.easyant.org
+
+****************
+* Google group *
+**************** 
+
+A google group is accessible here http://groups.google.com/group/easyant
+
+************************
+* Others Notifications *
+************************
+notifications@easyant.org is a fairly high traffic mailing list for ticket changes. Every time a easyant ticket is modified a new message is posted on this list. You can subscribe to this list here : http://easyant.org/mailman/listinfo/notifications. Archives are available here : http://easyant.org/pipermail/notifications
+
+**************************************
+* IRC Channel (#easyant on freenode) *
+**************************************
+We've registered an IRC channel on the freenode network for informal easyant discussions, asking questions or just hanging out and "socializing".
+
+The channel is #easyant on irc.freenode.net.
+
+Drop by if you are interested in the development of easyant, have a quick question or just want to get to know the people developing and using it. If you're new to IRC, be sure to learn how to get answers. A free web irc client is available here http://www.mibbit.com/ 
+

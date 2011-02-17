@@ -1,0 +1,77 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#compile-scala"
+	xmlns:ea="antlib:org.apache.easyant">
+	
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="compile" />
+		<property environment="env"/>
+		<ea:parameter property="src.main.scala" required="true"
+			description="directory where sources to be compiled are" />
+		<ea:parameter property="target.main.classes" required="true" 
+			description="destination directory for compiled test classes" />
+		<ea:parameter property="scalac.debug.mode" default="true" 
+			description="scalac debug mode, true or false" />
+		<ea:parameter property="scala.home" default="${env.SCALA_HOME}"
+			description="scala home directory"/>
+		<ea:parameter property="compile.scala.includes.pattern" default="**/*.scala"
+					description="Pattern describing files included in compilation process"/>
+		<ea:parameter property="compile.scala.excludes.pattern" default=""
+							description="Pattern describing files excluded in compilation process"/>
+		
+		<available file="${src.main.scala}" property="has.src.main.scala" />
+
+		<ea:path pathid="compile.main.classpath" overwrite="false" />
+	</target>
+	
+	<target name="-configure" phase="provision">
+		<ea:findclasspath pathid="resolved.scala.classpath" organisation="org.scala-lang" module="scala-compiler" revision="2.7.7">
+			<ea:project-dependency-strategy />
+			<ea:environment-strategy env="SCALA_HOME"/>
+			<ea:basic-configuration-strategy />
+		</ea:findclasspath>
+		<taskdef resource="scala/tools/ant/antlib.xml" classpathref="resolved.scala.classpath"/>
+
+        <!-- when you specify classpath parameter to <scalac /> task it overrides class path 
+        defined inside <taskdef /> rather then adds to it. So just add scala jars to your own class path.
+        	source http://www.softwaresecretweapons.com/jspwiki/scalatoolsnscfatalerror-object-scala-not-found -->
+        <ea:path pathid="compile.main.classpath" overwrite="prepend">
+            <path refid="resolved.scala.classpath"/>
+        </ea:path>
+	</target>
+	
+	<target name=":compile" depends="validate" if="has.src.main.scala"
+		phase="compile">
+		
+		<mkdir dir="${target.main.classes}" />
+        <scalac  srcdir="${src.main.scala}"
+                destdir="${target.main.classes}"
+                scalacdebugging="${scalac.debug.mode}" 
+        	    classpathref="compile.main.classpath"
+        	    includes="${compile.scala.includes.pattern}"
+        	    excludes="${compile.scala.excludes.pattern}">
+		
+        </scalac>	
+	</target>	
+	
+	<target name="doit" depends=":compile" />
+</project>

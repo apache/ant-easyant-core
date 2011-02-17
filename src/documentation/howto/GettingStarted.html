@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Getting Started</h1>
+<p />
+Here is a Quick Start tutorial to undestand how to use EasyAnt in your project.
+
+<h2>The Command Line</h2><p />
+<h3>Running default target</h3>
+Running easyant without arguments will execute the default target of a project.
+Example : 
+<code type="xml">
+> easyant
+</code>
+
+<h3>Running a specific phase</h3>
+Running EasyAnt with a phase name will execute ALL the targets bound to this phase.
+Example:
+<code type="xml">
+> easyant package
+</code>
+All targets related to the package phase will be executed. 
+Supposing your build is composed of several modules that generate packages (jar + source.jar + documentation.jar). All such packages will be generated.
+If your need is just to create the first jar, maybe you should call the explicit target instead.
+
+<h3>Running a specific target</h3>
+Running EasyAnt with a target name or a list of names will execute only the specified targets.
+Example:
+<code type="xml">
+> easyant jar:jar
+</code>
+
+<h3>Displaying project help</h3>
+Running EasyAnt with "-p" argument will display a project help (ie. show all phases / target available)
+Example:
+<code type="xml">
+> easyant -p
+</code>
+
+A project using EasyAnt MUST contain a file named module.ivy and an optional file named module.ant.
+
+<h2>The module.ivy file</h2>
+<p />
+This file is the module descriptor of your project. 
+It contains information like your company name, the module name, dependencies, and Easyant build information.
+
+<h3>A short example</h3>
+<code type="xml">
+<ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
+  <info organisation="org.mycompany" module="myJavaApp" status="integration" >
+    <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+  </info>
+  <configurations>
+    <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+    <conf name="test" visibility="private" description="this scope indicates
+ that the dependency is not required for normal use of the application, and is 
+only available for the test compilation and execution phases."/>
+  </configurations>
+</ivy-module>
+</code>
+In this module descriptor, we have an application named myJavaApp created by org.mycompany.
+To use easyant you must declare the easyant namespace 
+<code type="xml">
+xmlns:ea="http://www.easyant.org"
+</code>
+Pay attention to the <b>ea:build</b> tag.
+This tags define which build-type is used for your project. In this example we use <b>build-std-java</b> which provides all the targets necessary to compile / package a standard java application.
+<div id="note">Note: The organisation argument in <b>ea:build</b> tag is optional. If not specified easyant will use the default one (org.apache.easyant.buildtypes).</div>
+
+Running easyant with this example will run the default target (package).
+A few seconds later, you will have the generated jar in your_project/target/artifacts/myJavaApp.jar.
+
+<h3>Changing build-system properties</h3>
+So now we want to change several things on this build system.
+For example, we want to use the "run:run" feature that allows a user to compile/start a standard java application (ie. a project with a main class).
+And we want to have the generated jar in "dist" directory instead of "targets/artifacts".
+We will add additional informations inside <easyant> tag.
+<code type="xml">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+ <ea:property name="target.artifacts" value="dist"/>
+</ea:build>
+</code>
+Running "easyant" will generate the output jar in "dist" directory.
+
+<h3>Using additional plugins</h3>
+In some cases, we want to use several features that are not included in the default build-type provided by easyant.
+If your project needs to use a specific plugin, you can use the <ea:plugin> tag inside <ea:build> tag.
+Example: 
+Suppose we want to use code coverage feature.
+<code type="xml">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+ <ea:property name="target.artifacts" value="dist"/>
+ <ea:plugin org="org.apache.easyant.plugins" module="emma" revision="0.1"/>
+</ea:build>
+</code>
+Calling to "easyant -p" we should see the emma public target :
+<code type="xml">
+org.apache.easyant.plugins#emma.:emma     generate emma covera report
+</code>
+As you can see the target is prefixed by the project name.
+Most of the time the project name is quite long so easyant allows you to define aliases for the project names. Such an alias can be used in place of the complete project name. You can define an alias for a plugin using "as" argument as below.
+<code type="xml">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+ <ea:property name="target.artifacts" value="dist"/>
+ <ea:plugin org="org.apache.easyant.plugins" module="emma" revision="0.1" as="emma"/>
+</ea:build>
+</code>
+Calling to "easyant -p" we should see the emma public target :
+<code type="xml">
+emma:emma generate emma covera report
+</code>
+<div id="note">Note: The organisation argument in <b>ea:plugin</b> tag is optional. If not specified easyant will use the default one (org.apache.easyant.plugins).</div>
+
+<h3>Going further ?</h3>
+If you want more information we strongly recommend you to read the <a href="../ref/Modulefiles.html">Module files documentation</a></textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

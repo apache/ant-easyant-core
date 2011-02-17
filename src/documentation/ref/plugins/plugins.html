@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+	<title>EasyAnt Plugins</title>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Plugins</h1>
+
+<p>An EasyAnt plugin defines a single small "task" performed by EasyAnt, for example: run unit tests, generate a build report, or package a jar.  Plugins can then be included into buildtypes or other plugins to define more complicated tasks (like "build a complete web application").  You can also include a plugin directly into your project's Ivy file to customize the way your project is built.</p>
+
+<p>A typical plugin consists of an Ivy descriptor and a short Ant script, and is stored in the EasyAnt Ivy repository.  The Ivy descriptor indicates which libraries are required by your plugin; for example, the junit jar is needed by the test-junit plugin.  The Ant script contributes logic to one or more <a href="../phases.html">build phases</a>.  Most plugins can be fine-tuned with Ant property settings.</p>
+
+<p>If you want to add support for a new build tool to EasyAnt, you should probably start by writing a plugin for it.  See the <a href="../../howto/writePlugins.html">Plugins Tutorial</a> to get started.  Before writing your own plugin, be sure to check here to see if a plugin doesn't already exist.</p>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#ivy-provisioning" 
+	xmlns:ivy="antlib:org.apache.ivy.ant" 
+	xmlns:ac="antlib:net.sf.antcontrib"
+	xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="provision" />
+		<ea:parameter property="lib.main" default="${basedir}/lib/main" description="directory where main libraries are picked up" />
+		<ea:parameter property="lib.test" default="${basedir}/lib/test" description="directory where test libraries are picked up" />
+		<ea:parameter property="lib.provided" default="${basedir}/lib/provided" description="directory where provided libraries are picked up" />
+		<ea:parameter property="main.confs" default="default" description="confs used for main librairies" />
+		<ea:parameter property="test.confs" default="test" description="confs used for test librairies" />
+		<ea:parameter property="provided.confs" default="provided" description="confs used for provided librairies" />
+		<ea:parameter property="project.ivy.instance" default="project.ivy.instance" description="the ivy instance name for your project" />
+		<ea:parameter property="project.ivy.file" required="true" description="the name of the file containing dependencies of your project" />
+		<ea:parameter property="retrieve.dependencies" default="false" description="defines if dependencies should be retrieve dependencies in the lib directory"/>
+	
+		<ea:parameter property="retrieve.pattern.lib.main" default="${lib.main}/[artifact]-[revision].[ext]" description="retrieve pattern for main artifacts" />
+		<ea:parameter property="retrieve.pattern.lib.test" default="${lib.test}/[artifact]-[revision].[ext]" description="retrieve pattern for test artifacts" />
+		<ea:parameter property="retrieve.pattern.lib.provided" default="${lib.provided}/[artifact]-[revision].[ext]" description="retrieve pattern for provided artifacts" />
+			
+		<ea:parameter property="sync.lib.dir" default="true" description="a boolean that define if lib dir should be synchronized or not"/>
+
+		<!-- is project ivy settings configured ? -->
+		<ea:parameter property="project.ivy.settings.file" description="the ivysettings file used by your project" />
+		<ea:parameter property="project.ivy.settings.url" description="the ivysettings url used by your project" />
+		
+		<condition property="is.project.ivy.settings.configured">
+			<isreference refid="${project.ivy.instance}"/>
+		</condition>
+		<fail unless="is.project.ivy.settings.configured" message="project ivy instance is not configured, at least one of the following property must be set : project.ivy.settings.file, project.ivy.settings.url"/>
+		<!-- define empty *.lib.fileset that will be override by configuration classpath -->
+		<fileset id="lib.main.fileset" dir="${lib.main}" erroronmissingdir="false"/>
+		<fileset id="lib.test.fileset" dir="${lib.test}" erroronmissingdir="false"/>
+		<fileset id="lib.provided.fileset" dir="${lib.provided}" erroronmissingdir="false"/>
+		
+		<path id="project.lib.main.classpath"/>
+		<path id="project.lib.test.classpath"/>
+		<path id="project.lib.provided.classpath"/>
+	</target>
+
+	<!-- ================================= 
+	          target: resolve              
+	         ================================= -->
+	<target name="-resolve" depends="validate">
+		<ivy:resolve file="${project.ivy.file}" settingsRef="${project.ivy.instance}" />
+		<condition property="project.contains.main.confs">
+			<matches string="${ivy.configurations}" pattern="${main.confs}"/>
+		</condition>
+		<condition property="project.contains.test.confs">
+			<matches string="${ivy.configurations}" pattern="${test.confs}"/>
+		</condition>
+		<condition property="project.contains.provided.confs">
+			<matches string="${ivy.configurations}" pattern="${provided.confs}"/>
+		</condition>
+	</target>
+	
+	<target name=":resolve" depends="-resolve,-resolve-main-confs,-resolve-test-confs,-resolve-provided-confs" description="resolve and retrieve dependencies with ivy" unless="skip.resolve" phase="provision"/>
+			
+			
+	<target name="-resolve-main-confs" if="project.contains.main.confs">
+		<ivy:cachepath pathid="cache.main.classpath" conf="${main.confs}" settingsRef="${project.ivy.instance}"/>
+		<ea:path pathid="compile.main.classpath" overwrite="append-if-not-exist">
+					<path refid="cache.main.classpath"/>
+		</ea:path>
+		<ac:if>
+			<istrue value="${retrieve.dependencies}"/>
+			<ac:then>
+				<mkdir dir="${lib.main}" />
+				<ivy:retrieve pattern="${retrieve.pattern.lib.main}" settingsRef="${project.ivy.instance}" conf="${main.confs}" sync="${sync.lib.dir}"/>
+				<ea:path pathid="project.lib.main.classpath" overwrite="append">
+					<fileset dir="${lib.main}" includes="*.jar" erroronmissingdir="false"/>
+				</ea:path>
+			</ac:then>
+		</ac:if>
+	</target>
+
+	<target name="-resolve-test-confs" if="project.contains.test.confs">
+		<ivy:cachepath pathid="cache.test.classpath" conf="${test.confs}" settingsRef="${project.ivy.instance}"/>
+		<ea:path pathid="compile.test.classpath" overwrite="append-if-not-exist">
+					<path refid="cache.test.classpath"/>
+		</ea:path>
+		<ac:if>
+			<istrue value="${retrieve.dependencies}"/>
+			<ac:then>
+				<mkdir dir="${lib.test}"/>
+				<!-- resolve test dependencies -->
+				<ivy:retrieve pattern="${retrieve.pattern.lib.test}" settingsRef="${project.ivy.instance}" conf="${test.confs}" sync="${sync.lib.dir}"/>
+				<ea:path pathid="project.lib.test.classpath" overwrite="append">
+                	<fileset dir="${lib.test}" includes="*.jar" erroronmissingdir="false"/>
+                </ea:path>
+			</ac:then>
+		</ac:if>
+	</target>
+	
+	<target name="-resolve-provided-confs" if="project.contains.provided.confs">
+		<ivy:cachepath pathid="cache.provided.classpath" conf="${provided.confs}" settingsRef="${project.ivy.instance}"/>
+		<ea:path pathid="compile.main.classpath" overwrite="append-if-not-exist">
+			<path refid="cache.provided.classpath"/>
+		</ea:path>
+
+
+		<ac:if>
+			<istrue value="${retrieve.dependencies}"/>
+			<ac:then>
+				<mkdir dir="${lib.provided}"/>
+				<!-- resolve provided dependencies -->
+				<ivy:retrieve pattern="${retrieve.pattern.lib.provided}" settingsRef="${project.ivy.instance}" conf="${provided.confs}" sync="${sync.lib.dir}"/>
+				<ea:path pathid="project.lib.provided.classpath" overwrite="append">
+                	<fileset dir="${lib.provided}" includes="*.jar" erroronmissingdir="false"/>
+                </ea:path>
+			</ac:then>
+		</ac:if>
+	</target>
+		
+
+
+</project>

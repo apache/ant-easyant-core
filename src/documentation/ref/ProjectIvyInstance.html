@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Project Ivy Instance</h2>
+The project ivy instance is in charge to configure the ivy instance used by your project (configure the repositories used to retrieve your projects dependencies for example).
+
+In order to work as you want, EasyAnt sometimes need some settings. Actually, EasyAnt can work with no specific settings at all, see the default settings documentation for details about that. But ivy is able to work in very different contexts. You just have to configure it properly.
+
+Settings are specified through an xml file, usually called ivysettings.xml. 
+Here is an example of settings file :
+<code type="xml">
+<ivysettings>
+        <properties file="${ivy.settings.dir}/ivysettings-file.properties" />
+        <settings defaultCache="${cache.dir}" defaultResolver="ibiblio" checkUpToDate="false" />
+        <resolvers>
+                <ibiblio name="ibiblio" />
+                <filesystem name="internal">
+                        <ivy pattern="${repository.dir}/[module]/ivy-[revision].xml" />
+                        <artifact pattern="${repository.dir}/[module]/[artifact]-[revision].[ext]" />
+                </filesystem>
+        </resolvers>
+        <modules>
+                <module organisation="jayasoft" name=".*" resolver="internal" />
+        </modules>
+</ivysettings>
+</code>
+
+Mainly, the settings enable to configure the default cache directory used by ivy and the dependency resolvers that it will use to resolve dependencies.
+<i>Note: To work, this settings file needs a property file named ivysettings-file.properties in the same directory as the settings file, with ivy variables you want in it.</i>
+If you want to have more details on this settings file we strongly recommend you to read the <a href="http://ant.apache.org/ivy/history/2.1.0-rc1/settings.html">reference documentation of settings file</a>
+
+<h2>How to configure a custom project ivy settings ?</h2>
+If you just need to add a resolver for your current project you just need to put a "valid" ivysettings.xml file a the root level of your project.
+
+If this doesn't feel your need because you need to factorise this configuration somewhere you can still configure the location of this file through proeprties:
+Example:
+a property pointing to a file:
+<code type="xml">
+   <ea:property name="project.ivy.settings.file" value="/path/to/ivysetings.xml"/>
+</code>
+or a property pointing to an URL:
+<code type="xml">
+  <ea:property name="project.ivy.settings.url" value="http://url/to/ivysetings.xml"/>
+</code>
+
+If no one is specified, easyant will use the default one provided by ivy. See above to have more details.
+
+<h2>Default configuration of project ivy instance</h2>
+This default settings mainly consist of 3 kind of repositories:
+<ul>
+  <li>local: a repository which is private to the user.</li>
+  <li>shared: a repository which is shared between all the member of a team public</li>
+  <li>public: a repository on which most modules, and especially third party modules, can be found</li>
+</ul>
+
+<i>Note that if you work alone, the distinction between local and shared repository is not very important, but there are some things to know to distinguish them.</i>
+
+Now let's describe each of these repositories concept in more details. We will describe how they are setup physically later.
+<h3>Local</h3>
+The local repository is particularly useful when you want to do something without being disturbed by anything else happening in the environment. This means that whenever ivy is able to locate a module in this repository it will be used, no matter of what is available in others.
+
+For instance, if you have a module declaring a dependency on the module foo in revision latest.integration, then if a revision of foo is found in the local repository, it will be used, even if a more recent revision is available in other repositories.
+
+This may be disturbing for some of you, but imagine you have to implement a new feature on a project, and in order to achieve that you need to modify two modules: you add a new method in module foo and exploit this new method in module bar. Then if you publish the module foo to your local repository, you will be sure to get it in your bar module, even if someone else publish a new revision of foo in the shared repository (this revision not having the new method you are currently adding).
+
+But be careful, when you have finished your development and publish it on the shared you will have to clean your local repository to benefit from new versions published in the shared repository.
+
+Note also that modules found in the local repository must be complete, i.e. they must provide both a module descriptor and the published artifacts.
+<h3>Shared</h3>
+As its name suggest, the shared repository is aimed to be shared among a whole development team. It is a place where you can publish your team private modules for instance, and it's also a place where you can put modules not available in the public repository (sun jars, for instance), or simply not accurate (bad or incomplete module descriptors for instance).
+
+Note that modules can be split across the shared repository and the public one: you can have the module descriptor in the shared repository and the artifacts in the public one, for instance.
+<h3>Public</h3>
+The public repository is the place where most modules can be found, but which sometimes lack the information you need. It's usually a repository available through an internet connection only, even if this is not mandatory.
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="1.0" xmlns:m="http://ant.apache.org/ivy/maven">
+	<info organisation="org.codehaus.groovy"
+		module="groovy-all"
+		revision="1.6.0"
+		status="release"
+	>
+		<description homepage="http://groovy.codehaus.org/">
+		Groovy: A powerful, dynamic language for the JVM
+		</description>
+	</info>
+</ivy-module>

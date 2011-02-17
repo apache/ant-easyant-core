@@ -1,0 +1,54 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#deps-lib"
+	xmlns:ea="antlib:org.apache.easyant">
+	
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="provision" />
+
+		<ea:parameter property="lib.main" required="true" 
+				description="directory where main libraries are picked up" />
+		<ea:parameter property="lib.test" required="true" 
+				description="directory where test libraries are picked up" />
+		
+		<fileset id="lib.main.fileset" dir="${lib.main}">
+                	<include name="*.jar" />
+            	</fileset>
+		
+            	<fileset id="lib.test.fileset" dir="${lib.test}">
+                	<include name="*.jar" />
+            	</fileset>
+	</target>	
+	
+	<target name=":plugin" phase="provision">
+		<ea:parameter path="compile.main.classpath"  
+			description="main compilation path" />
+		<ea:parameter path="compile.test.classpath"  
+			description="test compilation path" />
+		<ea:path pathid="compile.main.classpath" overwrite="append">
+	            	<fileset refid="lib.main.fileset" />
+        	</ea:path>
+		<ea:path pathid="compile.test.classpath" overwrite="append">
+	            	<fileset refid="lib.test.fileset" />
+        	</ea:path>
+	</target>	
+</project>

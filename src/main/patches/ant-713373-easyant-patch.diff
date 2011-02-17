@@ -1,0 +1,211 @@
+Index: src/main/org/apache/tools/ant/helper/ProjectHelper2.java
+===================================================================
+--- src/main/org/apache/tools/ant/helper/ProjectHelper2.java	(révision 713424)
++++ src/main/org/apache/tools/ant/helper/ProjectHelper2.java	(copie de travail)
+@@ -769,7 +769,7 @@
+          */
+         public AntHandler onStartChild(String uri, String name, String qname, Attributes attrs,
+                                        AntXMLContext context) throws SAXParseException {
+-            return name.equals("target") && (uri.equals("") || uri.equals(ANT_CORE_URI))
++            return (name.equals("target") || name.equals("phase")) && (uri.equals("") || uri.equals(ANT_CORE_URI))
+                     ? ProjectHelper2.targetHandler : ProjectHelper2.elementHandler;
+         }
+     }
+@@ -803,12 +803,15 @@
+                                    AntXMLContext context) throws SAXParseException {
+             String name = null;
+             String depends = "";
++            String phase = ""; 
+ 
+             Project project = context.getProject();
+             Target target = new Target();
+             target.setProject(project);
+             target.setLocation(new Location(context.getLocator()));
+             context.addTarget(target);
++            
++            target.setType(tag); 
+ 
+             for (int i = 0; i < attrs.getLength(); i++) {
+                 String attrUri = attrs.getURI(i);
+@@ -825,6 +828,8 @@
+                     }
+                 } else if (key.equals("depends")) {
+                     depends = value;
++                } else if (key.equals("phase")) { 
++                 	phase = value; 
+                 } else if (key.equals("if")) {
+                     target.setIf(value);
+                 } else if (key.equals("unless")) {
+@@ -835,12 +840,17 @@
+                     }
+                 } else if (key.equals("description")) {
+                     target.setDescription(value);
++                } else if (key.equals("type")) {
++                	target.setType(value);
++
+                 } else {
+                     throw new SAXParseException("Unexpected attribute \"" + key + "\"", context
+                             .getLocator());
+                 }
+             }
+-
++            
++            boolean isPhase = "phase".equals(target.getType()); 
++         	
+             if (name == null) {
+                 throw new SAXParseException("target element appears without a name attribute",
+                         context.getLocator());
+@@ -849,9 +859,10 @@
+             String prefix = null;
+             boolean isInIncludeMode =
+                 context.isIgnoringProjectTag() && isInIncludeMode();
++
+             String sep = getCurrentPrefixSeparator();
+ 
+-            if (isInIncludeMode) {
++            if (isInIncludeMode && !isPhase) {
+                 prefix = getTargetPrefix(context);
+                 if (prefix == null) {
+                     throw new BuildException("can't include build file "
+@@ -888,12 +899,40 @@
+                     for (Iterator iter =
+                              Target.parseDepends(depends, name).iterator();
+                          iter.hasNext(); ) {
+-                        target.addDependency(prefix + sep + iter.next());
++                    	String token = (String) iter.next();
++                    	Target t = (Target) project.getTargets().get(token); 
++                     	if (t != null && "phase".equals(t.getType())) { 
++                     		target.addDependency(token); 
++                     	} else { 
++                     		target.addDependency(prefix + sep + token); 
++                     	} 
+                     }
+                 }
+             }
++            if (phase.length() > 0) {
++				if (isPhase) {
++					throw new SAXParseException("phase not allowed on phase",
++							context.getLocator());
++				}
++				for (Iterator iter = Target.parseDepends(phase, name)
++						.iterator(); iter.hasNext();) {
++					String token = (String) iter.next();
++					Target p = (Target) projectTargets.get(token);
++					if (p == null) {
++						throw new BuildException(
++								"Syntax Error: unknown phase \"" + token
++										+ "\" referenced by \"" + name + "\".");
++					} else if (!"phase".equals(p.getType())) {
++						throw new BuildException("Syntax Error: phase \""
++								+ token + "\" referenced by \"" + name
++								+ "\" is not a phase.");
++					} else {
++						p.addDependency(name);
++					}
++				}
++			}
+             if (!isInIncludeMode && context.isIgnoringProjectTag()
+-                && (prefix = getTargetPrefix(context)) != null) {
++                && (prefix = getTargetPrefix(context)) != null && !isPhase) {
+                 // In an imported file (and not completely
+                 // ignoring the project tag or having a preconfigured prefix)
+                 String newName = prefix + sep + name;
+@@ -906,9 +945,11 @@
+ 
+         private String getTargetPrefix(AntXMLContext context) {
+             String configuredValue = getCurrentTargetPrefix();
++            /*
+             if (configuredValue != null && configuredValue.length() == 0) {
+                 configuredValue = null;
+             }
++            */
+             if (configuredValue != null) {
+                 return configuredValue;
+             }
+Index: src/main/org/apache/tools/ant/Main.java
+===================================================================
+--- src/main/org/apache/tools/ant/Main.java	(révision 713424)
++++ src/main/org/apache/tools/ant/Main.java	(copie de travail)
+@@ -1058,6 +1058,8 @@
+         Vector topNames = new Vector();
+         Vector topDescriptions = new Vector();
+         Vector subNames = new Vector();
++        Vector phases = new Vector();
++        Vector phasesDescriptions = new Vector();
+ 
+         for (Iterator i = ptargets.values().iterator(); i.hasNext();) {
+             currentTarget = (Target) i.next();
+@@ -1071,17 +1073,28 @@
+                 int pos = findTargetPosition(subNames, targetName);
+                 subNames.insertElementAt(targetName, pos);
+             } else {
+-                int pos = findTargetPosition(topNames, targetName);
+-                topNames.insertElementAt(targetName, pos);
+-                topDescriptions.insertElementAt(targetDescription, pos);
+-                if (targetName.length() > maxLength) {
+-                    maxLength = targetName.length();
+-                }
++            	if (currentTarget.getType().equals("phase")) {
++            		int pos = findTargetPosition(phases, targetName);
++            		phases.insertElementAt(targetName, pos);
++            		phasesDescriptions.insertElementAt(targetDescription, pos);
++            	} else {
++            		int pos = findTargetPosition(topNames, targetName);
++                    topNames.insertElementAt(targetName, pos);
++                    topDescriptions.insertElementAt(targetDescription, pos);
++                  
++            	}
++            	  if (targetName.length() > maxLength) {
++                      maxLength = targetName.length();
++                  }	
++                
+             }
+         }
+ 
++        printTargets(project, phases,phasesDescriptions,"Main phases:",maxLength);
+         printTargets(project, topNames, topDescriptions, "Main targets:",
+                      maxLength);
++        
++        
+         //if there were no main targets, we list all subtargets
+         //as it means nothing has a description
+         if (topNames.size() == 0) {
+Index: src/main/org/apache/tools/ant/Target.java
+===================================================================
+--- src/main/org/apache/tools/ant/Target.java	(révision 713424)
++++ src/main/org/apache/tools/ant/Target.java	(copie de travail)
+@@ -55,6 +55,9 @@
+ 
+     /** Description of this target, if any. */
+     private String description = null;
++    
++    /** The type of target ("target" or "phase") */
++    private String type = "target";
+ 
+     /** Default constructor. */
+     public Target() {
+@@ -186,6 +189,24 @@
+     public String getName() {
+         return name;
+     }
++    
++    /**
++     * Returns the type of this target.
++     * 
++     * @return the type of this target
++     */
++    public String getType() {
++		return type;
++	}
++    
++    /**
++     * Sets the type of this target.
++     * 
++     * @param type the new type of this target
++     */
++    public void setType(String type) {
++		this.type = type;
++	}
+ 
+     /**
+      * Adds a task to this target.

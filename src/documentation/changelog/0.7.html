@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>What's new in 0.7 ?</h1>
+<ul>
+  <li>use latest official ant (no more a patched version)</li>
+  <li>refactor antcontrib usage, antcontrib is now considered as a dependency of easyant-core</li>
+  <li>add the capabilty to override target/phases defined in module.ivy (override.module.ant)</li>
+  <li>enhanced multimodule support
+    <ul>
+      <li>full support for all standard build phases</li>
+      <li>full support for Ivy descriptor "extends"</li>
+      <li>build-scoped repository should allow overwrites (#74)</li>
+      <li>meta-build: better support for custom ivysettings.xml (#75)</li>
+    </ul>
+  </li>
+  <li>use two cache instance (one for easyant plugins/buildtypes, one for project)</li>
+  <li>use cache by default instead of retrieving in lib directory</li>
+  <li>simplify version management : uses revision attribute in module.ivy instead of a specific property (#81)</li>
+  <li>simplify syntax of easyant tags, plugins/buildtypes now support two ways to be imported (#84):
+     <ul>
+       <li>using mrid <code type="xml"><plugin mrid="org.apache.easyant.plugins#run-java;0.1"/></code></li>
+       <li>using exploded style <code type="xml"><plugin org="org.apache.easyant.plugins" module="run-java" revision="0.1"/></code></li>
+     </ul>
+  </li>
+  <li>support Shortcut on buildtypes / plugins / skeletons in mrid style (#73)</li>
+  <li>make the help more helpful (#13) introduce new useful command line lines switches (listTargets, listPlugins, listPhases, listProps, describe)</li>
+  <li>add validation on easyant config files</li>
+  <li>refactor the repository structure : default plugins/buildtypes are now shipped in easyant-core.jar, additional plugins are now shipped in easyant-extra-plugins.jar (#80)</li>
+  <li>add support for provided artifacts (#83)</li>
+  <li>performance improvement</li>
+  <li>javadoc/scaladoc are no more imported in default buildtypes</li>
+  <li>enhanced clean cache mechanism (can now clean easyant-cache or project cache) (#79, #80)</li>
+  <li>add default skeleton for :
+    <ul>
+      <li>standard java application</li>
+      <li>standard java webapplication</li>
+    </ul>
+  </li>
+  <li>add new plugins
+    <ul>
+      <li>a small webstart plugins (Thanks to Nicolas Gapaillard for the contrib !)</li>
+      <li>docbook plugin (#62)</li>
+      <li>cobertura coverage plugin / "abstract-coverage" support (#67)</li>
+      <li>a new build type for easyant plugin (simplify easyant plugin development) #85</li>
+    </ul>
+  </li>
+  <li>improve skeleton plugin (#86)</li>
+  <li>add support for LICENSE/NOTICE files in package-jar / package-war plugins (#87)</li>
+  <li>support executable jar attributes in manifest plugin (#76)</li>
+  <li>several bugfix on
+    <ul>
+      <li>emma</li>
+      <li>cobertura</li>
+      <li>junit (#78)</li>
+      <li>javadoc (#77)</li>
+      <li>xooki / eadoc</li>
+    </ul>
+  </li>
+</ul></textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

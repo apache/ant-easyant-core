@@ -1,0 +1,177 @@
+/*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+body, p, td, li, ul, ol  {
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-size: small;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Trebuchet MS", Geneva, Arial, Helvetica, SunSans-Regular, Verdana, sans-serif;
+}
+
+h1 {
+  padding-top: 0;
+  margin-top: 0;
+  padding-left: 10px;
+  font-size: 1.4em;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+}
+
+h2 {
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 1.1em;
+}
+
+h4 {
+  font-size: 1.0em;
+}
+
+/*
+** Page layout blocks / IDs
+*/
+#body  {
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    background-color: silver;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#inner_body  {
+    background-color: white;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    height: 100%;
+}
+
+#frame_logo {
+	height: 70px;
+	width: 100%;
+}
+
+#frame_logo .logo {
+	float: left;
+	width: 30%;
+	padding-top: 0;
+}
+
+#frame_logo .title {
+    float: right;
+    width: 60%;
+    font-size: 1.6em;
+    color: silver;
+    margin-top: 15px;
+}
+
+#empty_header {
+	clear: both;
+	width: 100%;
+	height: 21px;
+	background: #E9E9E9;
+}
+
+#content_wrapper {
+    width: 100%;
+    height: 800px;
+    background: white;
+    margin-top: 3px;
+}
+
+#content_wrapper .nav_left {
+    float: left;
+	width: 15%;
+}
+
+#content_wrapper .nav_left  h1 {
+    font-size: 12px;
+    text-align: left;
+    color: white;
+    margin-left: 2px;
+    margin-bottom: 0;
+    background-color: silver;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+}
+
+#content_wrapper .nav_left ul {
+    font-size: 10px;
+    margin-left: 2px;
+    margin-top: 0;
+    border-bottom: 1px solid silver;
+    border-left: 1px solid silver;
+    border-right: 1px solid silver;
+    padding-top: 4px;
+}
+
+a.menu_item {
+    font-size: 12px;
+    color: black;
+    padding-top: 4px;
+    text-decoration: none;
+}
+
+a.menu_item:hover {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+#content_wrapper .content {
+    margin-left: 5px;
+    float: left;
+    width: 83%;
+}
+#section_heading {
+    color: white;
+    background-color: silver;
+    font-weight: bold;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    -moz-border-radius-bottomright: 5px;
+}
+
+#subsection_heading {
+    color: white;
+    background-color: silver;
+}
+
+#footer {
+    text-align: center;
+    margin-top: 5px;
+    height: 10%;
+    width: 100%;
+}
+
+td.detail-table-header {
+    background-color: silver;
+    color: white;
+}
+
+td.detail-table {
+    background-color: white;
+    color: black;
+}

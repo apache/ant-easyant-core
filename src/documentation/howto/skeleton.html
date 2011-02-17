@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Working with skeletons of project</h1>
+<p>EasyAnt comes with a module named skeleton that allows you to create or install project skeletons. This could be pretty useful to quickstart a project.</p>
+<p>By default, this module works in interactive mode, which means that easyant will ask you questions for every required property. But you can still give parameters on the command line using -Dproperty.
+Interactive mode can be disabled by setting skeleton.interactive.mode=false.</p>
+
+<h2>How to create a new project using a project skeleton ?</h2>
+<h3>Selecting from a list of all available skeletons</h3>
+Since easyant 0.8 skeleton plugin provides a target allowing to chose a skeleton from a list. This target is named ":select"
+Example:
+<code type="screen">> easyant skeleton:select</code>
+<code type="screen">
+skeleton-select:
+  [echo] Choose a skeleton in the following list:
+  [ea:searchmodule] 0: std-java-webapplication v0.1 (Skeleton for creating standard java web application)
+[ea:searchmodule] 1: std-ant-plugin v0.1 (Skeleton for creating ant based plugin for easyant)
+[ea:searchmodule] 2: std-java-application v0.1 (Skeleton for creating standard java application)
+[ea:searchmodule] 3: std-skeleton v0.1 (Emtpy skeleton structure)
+[ea:searchmodule] Choose a number: (0, 1, 2, 3)
+</code>
+Then easyant will prompt you to set information related to the generated project like organisation name, module name revision.
+<code type="screen">
+    [input] The path where the skeleton project will be unzipped [.]
+
+    [input] Organisation name of YOUR project
+org.mycompany
+    [input] Module name of YOUR project
+myProject
+    [input] Revision number of YOUR project [0.1]
+</code>
+
+<h3>Generate a project structure using skeleton's properties</h3>
+EasyAnt also provides an alternative way to use skeletons. It can be used by settings properties. 
+When runnning in interactive mode (default behavior) easyant will prompt you to set many properties to define which skeleton should be used and some properties related to the generated project (like organisation name, module name, and revision).
+<p>If you prefer to use it in that way you should use ":generate" target.
+Example if your skeleton module is imported as "skeleton", you should use :</p>
+<code type="screen">> easyant skeleton:create</code>
+<code type="screen">
+[input] Organisation name of the skeleton project
+	org.apache.easyant.skeletons
+[input] Module name of the skeleton project
+	std-java-skeleton
+[input] Revision number of the skeleton project
+	0.1
+[input] The path where the skeleton project will be unzipped [.]
+	.
+[input] Organization name of YOUR project
+org.mycompany
+[input] Module name of YOUR project
+myProject
+[input] Revision number of YOUR project [0.1]
+	0.1
+</code>
+After a few seconds you get your future project ready.
+
+<h2>How can i create my own skeleton ?</h2>
+Ask easyant to create a new skeleton by using ":newskeleton" target
+<code type="screen">> easyant skeleton:newskeleton</code>
+Then easyant will prompt you to set a few information like the skeleton organisation name, skeleton name, and the future revision.
+<code type="screen">
+    [input] The path where the skeleton project will be unzipped [.]
+    [input] Organisation name of YOUR project [org.apache.easyant.skeletons]
+
+    [input] Module name of YOUR project
+myskeleton
+    [input] Revision number of YOUR project [0.1]
+
+</code>
+After a few second you get an ready to use structure for your skeleton.
+<code type="screen">
+.
+|-- module.ivy
+`-- src
+    |-- main
+    |   `-- resources
+    |       `-- module.ivy.tpl
+    `-- test
+        `-- antunit
+            `-- myskeleton-test.xml
+</code>
+The module.ivy is the module descriptor of your skeleton.
+src/main/resources is the content of your skeleton.
+
+If you need to use pattern replacement, you must add a .tpl at the end of your file.
+
+<p>Example :
+Supposing we want to create a project called "std-java-skeleton".
+<ul>
+  <li>we need to create a directory structure (src/main/java, src/main/resources etc...)</li>
+  <li>then we will update module.ivy template namedmodule.ivy.tpl
+    This file will look like this
+<code type="xml">
+<ivy-module version="2.0"> 
+	<info organisation="@project.organization.name@" module="@project.module.name@" revision="@project.revision.number@" status="integration" >
+		<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+	</info>
+	<configurations>
+		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+		<conf name="test" visibility="private" description="this scope
+                  indicates that the dependency is not required for normal use of 
+                  the application, and is only available for the test compilation 
+                  and execution phases."/>
+	</configurations>
+	<dependencies/>
+</ivy-module>
+</code>
+</li>
+</ul>
+By default easyant comes with 3 replacement patterns:
+    <ul>
+      <li>project.organisation</li>
+      <li>project.module</li>
+      <li>project.revision</li>
+    </ul>
+Every .tpl file that contains one of those 3 patterns between @ delimiter will be replaced when extracting the skeleton.
+
+<code type="screen">
+.
+|-- module.ivy
+`-- src
+    |-- main
+    |   `-- resources
+    |       |-- module.ivy.tpl
+    |       `-- src
+    |           |-- main
+    |           |   `-- resources
+    |           |       `-- temp-plugin.ant.tpl
+    |           `-- test
+    |               `-- antunit
+    |                   `-- temp-plugin-test.xml.tpl
+    `-- test
+        `-- antunit
+</code>
+
+Optionnaly you can add a post install script that will be run after unpacking the skeleton. This is pretty usefull to enhance skeleton behavior and do some post processing.
+This post install script is named skeleton.postinstall.ant (but can be configured through "skeleton.postinstall.script" property).
+
+<h2>List of existing project skeletons</h2>
+Here you can find a list of skeletons provided by easyant distribution.
+<table>
+  <thead>
+     <tr>
+        <td>Organisation</td>
+        <td>Module</td>
+        <td>Revision</td>
+        <td>Description</td>
+     </tr>
+  </thead>
+  <tbody>
+
+     <tr>
+        <td>org.apache.easyant.skeletons</td>
+        <td>std-java-application</td>
+        <td>0.1</td>
+        <td>Project skeleton used to create standard java application</td>
+     </tr>
+
+     <tr>
+        <td>org.apache.easyant.skeletons</td>
+        <td>std-java-webapplication</td>
+        <td>0.1</td>
+        <td>Project skeleton used to create standard java web application</td>
+     </tr>
+     <tr>
+        <td>org.apache.easyant.skeletons</td>
+        <td>std-ant-plugin</td>
+        <td>0.1</td>
+        <td>Project skeleton used to create easyant plugins</td>
+     </tr>
+     <tr>
+        <td>org.apache.easyant.skeletons</td>
+        <td>std-skeleton</td>
+        <td>0.1</td>
+        <td>Project skeleton used to create new skeletons</td>
+     </tr>
+  </tbody>
+</table></textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

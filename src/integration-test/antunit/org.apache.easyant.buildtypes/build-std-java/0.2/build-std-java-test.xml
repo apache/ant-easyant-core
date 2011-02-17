@@ -1,0 +1,65 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="build-std-java-test" 
+		xmlns:au="antlib:org.apache.ant.antunit">
+	
+	<dirname file="${ant.file.build-std-java-test}" property="test.dir"/>
+	<import file="${test.dir}/../../../common/test-utils.ant"/>
+
+	<target name="clean" description="remove stale build artifacts before / after each test">
+		<delete dir="${basedir}" includeemptydirs="true">
+			<include name="**/target/**"/>
+			<include name="**/lib/**"/>
+		</delete>
+	</target>
+	
+	<target name="setUp" depends="clean"/>
+	<target name="tearDown" depends="clean"/>
+
+	<target name="testExecutableJar" description="test the ability to generate an executable jar file.">
+		
+		<!-- verify test preconditions -->
+		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/executable/target"/>
+
+		<easyant dir="${basedir}/executable"/>
+		
+		<au:assertFileExists message="jar has been built" file="${basedir}/executable/target/artifacts/build-std-java-test.jar"/>
+		<au:assertFileExists message="dependencies delivered to target area" file="${basedir}/executable/target/artifacts/lib/junit-4.4.jar"/>
+		
+		<!-- verify the format of the class-path and main-class attributes -->
+		<loadfile property="manifest.content" srcFile="${basedir}/executable/target/MANIFEST.MF"/>
+		<au:assertMatches message="Main-Class included in manifest" 
+			pattern="Main-Class:\s+org\.apache\.easyant\.test\.Main" 
+			string="${manifest.content}"/>
+		<au:assertMatches message="Class-Path included in manifest" 
+			pattern="Class-Path:\s+lib${file.separator}junit-4\.4\.jar" 
+			string="${manifest.content}"/>
+
+		<!-- verify that the generated Jar can be executed -->
+		<java jar="${basedir}/executable/target/artifacts/build-std-java-test.jar" 
+			dir="${basedir}/executable/target/artifacts"
+			fork="yes" outputproperty="test.output"/>
+			  
+		<au:assertEquals message="Jar executed successfully"
+			expected="Successfully loaded: org.junit.Assert"
+			actual="${test.output}"/>
+
+	</target>
+	
+</project>

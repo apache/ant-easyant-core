@@ -1,0 +1,47 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#abstract-coverage"
+	xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<target name=":init" phase="validate" description="defines a common set of configuration parameters used by code coverage tools">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="process-classes" />
+		<ea:parameter phase="report" />
+
+		<ea:parameter property="target.main.classes" required="true" description="destination directory for compiled test classes" />
+		<ea:parameter property="target.test.classes" required="true" description="destination directory for compiled coverage test classes" />
+		
+		<ea:parameter property="target" default="target" description="the target directory" />
+		<ea:parameter property="target.report" default="${target}/report" description="the target report directory" />
+	
+		<ea:parameter property="coverage.exclude.filter" default="" description="a list of pattern that coverage framework will ignore during instrumentation phase" />
+		<ea:parameter property="coverage.verbosity" default="info" description="coverage verbosity" />
+		<ea:parameter property="coverage.report.name" default="coverage" description="the name of the generated report (without file type)" />
+
+		<ea:parameter property="target.coverage.classes" default="${target}/coverage/classes" description="directory where coverage classes will be generated" />
+		<ea:parameter property="target.coverage.report" default="${target.report}/coverage" description="directory where coverage report will be generated" />
+		
+		<ea:parameter path="compile.test.classpath" required="true" description="test compilation path" />
+		
+		<available file="${src.test.java}" property="has.src.test.java" />
+	</target>
+
+</project>

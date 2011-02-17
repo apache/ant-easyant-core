@@ -1,0 +1,68 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#checkstyle" xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<dirname file="${ant.file.org.apache.easyant.plugins#checkstyle}" property="ant.dir.org.apache.easyant.plugins#checkstyle" />
+	
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="verify"/>
+		<ea:parameter phase="report" />
+
+		<ea:parameter property="checkstyle.xsl.file" default="${ant.dir.org.apache.easyant.plugins#checkstyle}/checkstyle.xsl" description="checkstyle xsl, used to transform XML -> HTML" />
+		<ea:parameter property="checkstyle.config.file" default="${ant.dir.org.apache.easyant.plugins#checkstyle}/checkstyle.xml" description="checkstyle rules file" />
+		<ea:parameter property="target.checkstyle.report" default="${target.report}/checkstyle" description="directory where checkstyle report will be generated" />
+		<ea:parameter property="checkstyle.report.name" default="checkstyle_report" description="the name of the generated report (without file type)" />
+
+		<available property="checkstyle.available" classname="com.puppycrawl.tools.checkstyle.CheckStyleTask" classpathref="org.apache.easyant.plugins#checkstyle.classpath" />
+
+		<fail unless="checkstyle.available" message="Checkstyle is unavailable!" />
+		<condition property="xslt.available">
+			<available classname="org.apache.tools.ant.taskdefs.optional.TraXLiaison" />
+		</condition>
+		<fail message="Ant xslt was not found. Please install ant-nodeps in your ANT_HOME" unless="xslt.available" />
+
+		<taskdef resource="checkstyletask.properties" classpathref="org.apache.easyant.plugins#checkstyle.classpath" />
+
+
+		<available file="${src.main.java}" property="has.src.main.java" />
+	</target>
+			
+	<target name=":checkstyle" unless="skip.checkstyle" phase="report" depends="validate" description="generate checkstyle report">
+		<mkdir dir="${target.checkstyle.report}"/>
+
+		<checkstyle config="${checkstyle.config.file}" failureProperty="checkstyle.failure" failOnViolation="false">
+			<fileset dir="${src.main.java}" includes="**/*.java" />
+			<formatter type="xml" toFile="${target.checkstyle.report}/${checkstyle.report.name}.xml" />
+		</checkstyle>
+	</target>
+
+	<target name=":report-html" phase="report" depends=":checkstyle" unless="checkstyle.failure">
+		<xslt in="${target.checkstyle.report}/${checkstyle.report.name}.xml" out="${target.checkstyle.report}/${checkstyle.report.name}.html" style="${checkstyle.xsl.file}" />
+	</target>
+		
+	<target name="-check" depends=":checkstyle" unless="skip.checkstyle" phase="verify">
+		<fail if="checkstyle.failure" message="There is checkstyle violation(s), please check your ${target.checkstyle.report}/${checkstyle.report.name}.html" />
+	</target>
+
+
+	<target name="doit" depends=":checkstyle" />
+</project>

@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>How To write a plugin for easyant</h1>
+
+<p>A module in Easyant is a logical unit that provides additional pluggable functionality to your build set up. You may choose to use or ignore such a plugin when running the build. A module is composed, in the least, of a ant script associated with a ivy specs file.
+So let's write a Hello World plugin.</p>
+
+<h2>Generating plugin from a skeleton</h2>
+First we need to create a plugin structure. To ease plugin development easyant came with a skeleton for plugins.
+<code type="shell">> easyant skeleton:newplugin</code>
+It will then ask you a few questions 
+<code type="shell">
+    [input] The path where the skeleton project will be unzipped [.]
+
+    [input] Organisation name of YOUR project [org.apache.easyant.plugins]
+org.mycompany
+    [input] Module name of YOUR project
+myplugin
+    [input] Revision number of YOUR project [0.1]
+
+</code>
+That's all !
+We've a ready to use plugin structure.
+<code type="shell">
+<!--replace me by an image -->
+|-- module.ivy
+`-- src
+    |-- main
+    |   `-- resources
+    |       `-- myplugin.ant
+    `-- test
+        `-- antunit
+            |-- common
+            |   `-- test-utils.ant
+            `-- myplugin-test.xml
+
+</code>
+
+<h2>Ant script</h2>
+The skeleton has generated the plugin main script in src/main/resources/[MYPLUGIN].ant
+<code type="xml">
+<project name="org.mycompany;myplugin" 
+		xmlns:ivy="antlib:org.apache.ivy.ant" 
+     	xmlns:ea="antlib:org.apache.easyant">
+     	
+	<!-- Force compliance with easyant-core to 0.7 or higher -->
+	<!-- <ea:core-version requiredrevision="[0.7,+]" /> -->
+
+	<!-- Sample init target -->
+	<target name=":init" phase="validate">
+		<!-- you should remove this echo message -->
+		<echo level="debug">This is the init target of myplugin</echo>
+	</target>
+	
+	<!-- define a generic default target for this plugin -->
+	<target name="doit" depends="validate"/>
+</project>
+</code>
+By convention, projectname of the plugin should be formed like 
+<code type="xml">
+[organisation]#[module]
+</code>
+Example: 
+<code type="xml">
+org.mycompany#myplugin
+</code>
+
+<h3>Understanding Phases</h3>
+Phases are high-level build activities, like "package" or "documentation".  Plugins typically add low-level tasks to one or more phases. For example, a plugin might add a "build jar" task to the "package" phase, or a "generate javadoc" task to the "documentation" phase.  Less typically, a plugin can also define new phases for other plugins to use.
+In standard build types the project-lifecycle is defined by a plugin named <a href="../ref/plugins/phases-std.html">phases-std</a>.
+
+<h3>Pre conditions</h3>
+A build module should always check that a set of pre conditions is met in the validate phase (for static pre conditions) or at execution (for dynamic pre conditions).
+By convention, this target should be named ":init" and associated to the "validate" phase.
+
+Pre conditions, including for example - checking the existence of a file or a directory, could be performed inside this target. Additionally, this target is a great place to do global initializations that are needed for the rest of the build. This could include a taskdef initialization.
+Pre conditions can be performed by using <a href="../ref/anttasks/Parametertask.html">parameter task</a>.
+Example :
+<code type="xml">
+<target name=":init" phase="validate">
+	<!-- Our plugin need at least the existance of "validate" phase" -->
+	<ea:parameter phase="validate" />
+        <ea:parameter property="username" required="false" description="the username used to display en 'hello Username' by calling :hello target"/>
+</target>
+</code>
+
+<h3>Target Naming Conventions</h3>
+There is a conventional difference in the way public and private targets are named in Easyant. A <i>public target</i> is one that makes sense for the end user to be aware of, while a <i>private target</i> should be hidden from the end user.
+
+Conventionally, a public target should always have an associated 'description' attribute. Further, it's name should always begin with a ':'. 
+
+Example :
+<code type="xml">
+<target name=":helloworld" depends="validate" description="display an hello world">
+	<echo>hello world !</echo>
+</target>
+
+<target name=":hello" depends="validate" depends="-check-username" description="display an hello to current user">
+	<echo mess="Hello ${username}"/>
+</target>
+</code>
+
+Whereas a private target name should begin with '-'.
+
+Example :
+<code type="xml">
+<!-- this target initialize username property if it's not already set -->
+<target name="-check-username" unless="username">
+	<echo>You can also add a "-Dusername=YOU" on the commandline to display a more personal hello message</echo>
+	<property name="username" value="${user.name}"/>
+</target>
+</code>
+
+<h3>The 'doit' Target</h3>
+Each module should have a target called <i>doit</i>. This is an important convention. This target should perform the essential purpose of the module when invoked independently.
+Example: 
+<code type="xml">
+<target name="doit" depends=":helloworld"/>
+</code>
+
+<h3>What a build module should document</h3>
+<ul>
+<li>phases on which it relies</li>
+<li>parameters (properties, resource collections, paths).  For each parameter specify name, description, whether it is required, and optionally a default value.</li>
+<li>expected environment (files in a directory, a server up and running, ...)</li>
+<li>results produced</li>
+</ul>
+
+A build module should always check that the set of pre conditions is met in the validate phase (for static pre conditions) or at execution (for dynamic pre conditions).
+
+If ever what is considered static pre condition by a module is actually generated by another one, it is still possible to assign the build module validate phase to a phase triggered after the execution of the other build module (using phase mapping with the 'use' task).
+
+<h2>Publishing your plugin</h2>
+You can easily publish your plugin to an easyant repository using the standard phases <i>publish-shared (for snapshot)</i> or <i>release</i>
+<code type="shell">>  easyant publish-local</code>
+<code type="shell">>  easyant publish-shared</code>
+<code type="shell">>  easyant release</code>
+
+By default plugins are published to a repository named <i>easyant-shared-modules</i> stored in $USER_HOME/.easyant/repository/easyant-shared-modules/.
+
+You can specify the repository name using one of the following property 
+<ul>
+  <li>release.resolver</li>
+  <li>snapshot.resolver</li>
+</ul>
+<div id="note">Note: Repository must exist in easyant ivy instance. See <a href="../ref/ConfigureEasyantIvySettings.html">configure easyant ivy instance</a> man page for more informations.</div>
+
+<h2>Using your plugin in your project</h2>
+Considering that you published your plugin in a easyant repository, you could use it in your project.
+<code type="xml">
+<ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
+	<info organisation="org.mycompany" module="myproject" 
+			status="integration" revision="0.1">
+		<ea:build module="build-std-java" revision="0.2">
+			<ea:plugin organisation="org.mycompany" module="myplugin" revision="0.1" as="myplugin"/>
+		</ea:build>	
+	</info>
+	<publications>
+                <artifact name="myplugin" type="ant"/>
+        </publications>
+</ivy-module>
+</code>
+And now running 
+<code type="shell">> easyant -p </code>
+We should see myplugin's target.
+<code type="shell">
+Main targets:
+...
+ mygplugin:hello                   display an hello to current user
+ mygplugin:helloworld              display an hello world
+...
+</code>
+
+<h2>Getting further</h2>
+
+<h3>Adding additional files to your module</h3>
+Sometimes, we need to have a .properties files related to a given plugin.
+Sometimes it could be an additional file (an .xsl file for example).
+
+Before using it we must declare the new file in the plugin module descriptor.
+Open the module.ivy at the root level of plugin structure.
+<code type="xml">
+<ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
+	<info organisation="org.mycompany" module="myplugin" 
+			status="integration" revision="0.1">
+                <!-- here we use build-std-ant-plugin build type that provide everything we need for plugin development -->
+		<ea:build module="build-std-ant-plugin" revision="0.1"/>
+	</info>
+	<configurations>
+		<conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
+		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+		<conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
+	</configurations>
+	<publications>
+                <!--Defines the plugin main script -->
+                <artifact name="myplugin" type="ant"/>
+                <!--Defines a property file -->
+                <artifact name="myplugin" type="properties"/>
+                <artifact name="myfile" type="xsl"/>
+        </publications>
+</ivy-module>
+</code>
+Here we defined that our plugin is composed of 3 files :
+<ul>
+<li>myplugin.ant (if name argument is not specified the module name will be used)</li>
+<li>myplugin.properties</li>
+<li>myfile.xsl</li>
+</ul>
+
+Now we will see how we can use those files in our plugin script.
+Considering that a plugin must be generic and can be retrieved from different repository (filesystem, url, ftp, etc...) we should take care of how we reference those additional files in our script.
+To avoid any problems due to repository layout configuration, easyant gives you gives you access to properties containing the absolute path of a declared artifact. Those properties are composed with the following syntax :
+<code type="xml">
+[organisation].[module].[artifact].[type].file
+</code>
+Example: 
+<code type="xml">
+org.mycompany.myplugin.myfile.xsl.file
+</code>
+
+The '.artifact' is optional when module name and artifact name are the same. 
+<code type="xml">
+[organisation].[module].[type].file
+</code>
+Example: 
+<code type="xml">
+org.mycompany#myplugin.properties.file
+</code>
+
+So loading a property file could be easy as :
+<code type="xml">
+<property file="${org.mycompany#myplugin.properties.file}" />
+</code>
+
+If you want to copy / use an additional file
+<code type="xml">
+<copy file="${org.mycompany.myplugin.myfile.xsl.file}" tofile="..."/>
+</code>
+
+<h3>Using third party libraries</h3>
+Most of the time when we write plugins we want to use third party ant tasks.
+
+<h4>Declaring dependencies in module.ivy</h4>
+First we need to declare the dependency in the plugin module.ivy.
+<code type="xml">
+<ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
+	<info organisation="org.mycompany" module="myplugin" 
+			status="integration" revision="0.1">
+		<ea:build module="build-std-ant-plugin" revision="0.1"/>
+	</info>
+	<configurations>
+		<conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
+		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+		<conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
+	</configurations>
+	<publications>
+                <artifact name="myplugin" type="ant"/>
+        </publications>
+
+	<dependencies>
+		<!-- your plugin dependencies goes here -->
+		<dependency org="foobar" name="amazingAntTask" rev="4.4" conf="default->default" />
+		<dependency org="foobar" name="myOtherAntTask" rev="4.4" conf="default->default" />
+	</dependencies>
+</ivy-module>
+</code>
+Here we depend on amazingAntTask and myOtherAntTask provided by foobar organisation.
+<h4>Using dependency in your plugin ant script?</h4>
+Easyant automatically creates a classpath specific for each plugin, this classpath contains all the required dependency <i>.jars</i>.
+
+The classpath is named 
+<code tyep="xml">
+[organisation]#[module].classpath
+</code>
+Example:
+<code type="xml">
+org.mycompany#myplugin.classpath
+</code> 
+Since this classpath is auto-created you can use it to reference your taskdef.
+<code type="xml">
+<target name=":init" phase="validate">
+	<ea:parameter phase="validate"/>
+	...
+	<taskdef resource="amazingAntTask.properties" classpathref="org.mycompany#myplugin.classpath" />
+	<taskdef resource="anotherAntTask.properties" classpathref="org.mycompany#myplugin.classpath" />
+</target>
+</code>
+
+<h3>Compatibilty with core revision</h3>
+A module can be dependent on features available in Easyant core. As such, it is possible for a module to be functional with particular versions of Easyant only.
+Easyant provides a way for modules to explicitly specify their dependency on core revisions. 
+A module may use the ea:core-version task to specify such a dependency.
+A task may depend on: 
+<ul>
+<li>static version (Example : 0.5)</li>
+<li>dynamic version (Example : latest.revision) even if we do not recommand to use it</li>
+<li>listed version (Example : (0.1,0.3,0.5) )</li>
+<li>range version (Example : [0.5,0.8] means from 0.5 to 0.8. Example2 : [0.5,+] means all version superior to 0.5)</li>
+</ul>
+<code type="xml">
+<project name="org.mycompany;myplugin" 
+		xmlns:ivy="antlib:org.apache.ivy.ant" 
+     	xmlns:ea="antlib:org.apache.easyant">
+     	
+	<!-- Force compliance with easyant-core to 0.7 or higher -->
+        <ea:core-version requiredrevision="[0.7,+]" />
+
+	<!-- Sample init target -->
+	<target name=":init" phase="validate">
+		<!-- you should  remove this echo message -->
+		<echo level="debug">This is the init target of myplugin</echo>
+	</target>
+
+	...
+
+	<!-- define a generic default target for this plugin -->
+	<target name="doit" depends="validate"/>
+</project>
+</code>
+
+<h3>Writing plugin test case</h3>
+By default the skeleton has generated a antunit test file in src/test/antunit/[module]-test.ant.
+
+So in our case let's open "src/test/antunit/myplugin-test.xml"
+<code type="xml">
+<project name="org.mycompany;myplugin-test" xmlns:au="antlib:org.apache.ant.antunit">
+	
+	<!-- Mocking required phase --> 
+	<phase name="validate"/>
+		
+	<!-- Import your plugin -->	
+	<import file="../../main/resources/myplugin.ant"/>
+	
+	<!-- Defines a setUp / tearDown (before each test) that cleans the environment --> 
+	<target name="clean" description="remove stale build artifacts before / after each test">
+		<delete dir="${basedir}" includeemptydirs="true">
+			<include name="**/target/**"/>
+			<include name="**/lib/**"/>
+		</delete>
+	</target>
+	
+	<target name="setUp" depends="clean"/>
+	<target name="tearDown" depends="clean"/>
+	
+	<!-- init test case --> 		
+	<target name="testInit">
+		<antcall target=":init"/>
+		<au:assertLogContains level="debug" text="This is the init target of myplugin"/>
+	</target>
+	
+</project>   
+</code>
+Considering that our plugin relies on an externally defined phase (validate in our example) we must mock it in our test.
+Then we :
+<ul>
+  <li>import the plugin</li>
+  <li>define a generic tearDown, setUp method that cleans the target and lib directories.</li>
+  <li>define a test case for the init target that check that the output log contains "This is the init target of myplugin"</li>
+</ul>
+
+All targets prefixed by "test" will be executed as a test case (similar to junit 3 behavior).
+
+Now we will write a test case for our ":helloworld" target.
+<code type="xml">
+<target name="testHelloWorld">
+	<antcall target=":helloworld"/>
+	<au:assertLogContains text="hello world !"/>
+</target>
+</code>
+
+Tests can be executed by running :
+<code type="shell">> easyant test</code>
+
+You can access test-report at "target/antunit/html/index.html" or if you prefer the brut result "target/antunit/xml/TEST-src.test.antunit.myplugin-test_xml.xml".</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

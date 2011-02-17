@@ -1,0 +1,77 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#source-jar" xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="package" />
+
+		<ea:parameter property="target.artifacts.main.source.jar.name" default="${module.name}-sources.jar" description="main source artifact file name" />
+
+		<ea:parameter property="target.artifacts.test.source.jar.name" default="${module.name}-test-sources.jar" description="test source artifact file name" />
+		<ea:parameter property="target.artifacts" required="true" description="destination directory for target artifacts"/>
+
+
+		<ea:parameter property="src.main.java" required="true" description="directory where main java files are stored" />
+		<ea:parameter property="src.test.java" required="true" description="directory where test java files are stored" />
+
+		<ea:parameter property="src.main.resources" required="true" description="directory where main resources files are stored" />
+		<ea:parameter property="src.test.resources" required="true" description="directory where test resources files are stored" />
+
+		<condition property="has.src.main">
+			<or>
+				<available file="${src.main.java}" />
+				<available file="${src.main.resources}" />
+			</or>
+		</condition>
+
+		<condition property="has.src.test">
+			<or>
+				<available file="${src.test.java}" />
+				<available file="${src.test.resources}" />
+			</or>
+		</condition>
+	</target>
+
+	<!-- Main Sources -->
+
+	<target name=":main" depends="validate" description="package main source as a JAR" if="has.src.main" unless="skip.source">
+		<mkdir dir="${target.artifacts}" />
+		<jar destfile="${target.artifacts}/${target.artifacts.main.source.jar.name}">
+			<fileset dir="${src.main.resources}" erroronmissingdir="false" />
+			<fileset dir="${src.main.java}" erroronmissingdir="false" />
+		</jar>
+		<ea:registerartifact type="source" ext="jar" classifier="sources" settingsRef="${project.ivy.instance}"/>
+	</target>
+
+	<!-- Test sources -->
+
+	<target name=":test" depends="validate" description="package test source as a JAR" if="has.src.test" unless="skip.source">
+		<mkdir dir="${target.artifacts}" />
+		<jar destfile="${target.artifacts}/${target.artifacts.test.source.jar.name}">
+			<fileset dir="${src.test.resources}" erroronmissingdir="false" />
+			<fileset dir="${src.test.java}" erroronmissingdir="false" />
+		</jar>
+		<ea:registerartifact type="test-source" ext="jar" classifier="test-sources" settingsRef="${project.ivy.instance}"/>
+	</target>
+
+	<target name="doit" depends=":main" />
+</project>

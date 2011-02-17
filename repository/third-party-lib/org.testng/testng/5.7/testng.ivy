@@ -1,0 +1,3 @@
+<ivy-module version="1.0">
+    <info organisation="org.testng" module="testng" revision="5.7" status="release"/>
+</ivy-module>

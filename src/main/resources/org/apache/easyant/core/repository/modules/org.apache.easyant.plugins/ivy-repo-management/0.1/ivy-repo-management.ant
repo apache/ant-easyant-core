@@ -1,0 +1,150 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#ivy-repo-management" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter property="project.ivy.instance" default="project.ivy.instance" description="the ivy instance name for your project" />
+		<ea:parameter property="default.from.resolver" default="public" description="the repository name where the artifact will be picked up" />
+		<ea:parameter property="default.to.resolver" default="local" description="the repository name where the artifact will be installed" />
+		<ea:parameter property="install.override" default="false" description="specify if the install targets should override an artifact on a repository if it already exists" />
+		<ea:parameter property="install.ivy.template" default="${org.apache.easyant.plugins#ivy-repo-management.ivy.xml.tpl.file}" description="specify a template ivy file used when you call install-artifact" />
+		<ea:parameter property="install.temp.directory" default="${target}/install" description="specify a temporary directory used to make replacement in the template ivy file" />
+		<ea:parameter property="install.status" default="integration" description="specify the status of the artifact that will be installed with the install-artifact target" />
+		<ea:parameter property="install.interactive.mode" default="true" description="specify if easyant should ask questions instead of using -Dproperties" />
+		<condition property="install.is.interactive">
+			<istrue value="${install.interactive.mode}"/>
+		</condition>
+		
+		<!-- is project ivy settings configured ? -->
+		<ea:parameter property="project.ivy.settings.file" description="the ivysettings file used by your project" />
+		<ea:parameter property="project.ivy.settings.url" description="the ivysettings url used by your project" />
+		
+		<condition property="is.project.ivy.settings.configured">
+			<isreference refid="${project.ivy.instance}"/>
+		</condition>
+		<fail unless="is.project.ivy.settings.configured" message="project ivy instance is not configured, at least one of the following property must be set : project.ivy.settings.file, project.ivy.settings.url"/>
+
+	
+	</target>
+	
+	<!--
+		This target is just here to intialize default value if install.interactive.mode is not set
+	-->
+	<target name="-check-interactive-mode" unless="install.is.interactive">
+		<property name="from.resolver" value="${default.from.resolver}"/>
+		<property name="to.resolver" value="${default.to.resolver}"/>
+	</target>
+
+	<!-- ================================= 
+		          target: copy-artifact              
+		         ================================= -->
+	<target name="-check-copy-artifact" depends="-check-interactive-mode" if="install.is.interactive">
+		<input message="Please enter the module name:" addproperty="module" />
+		<input message="Please enter the organasization name :" addproperty="org" />
+		<input message="Please enter the revision number :" addproperty="rev" />
+		<input message="Please enter the repository name where the artifact will be picked up :" addproperty="from.resolver" defaultvalue="${default.from.resolver}" />
+		<input message="Please enter the repository name where the artifact will be installed :" addproperty="to.resolver" defaultvalue="${default.to.resolver}" />
+	</target>
+	
+	<target name=":copy-artifact" depends="validate,-check-copy-artifact" description="copy an artifact from an external repository in our repository">
+		<property name="mess" value="Usage: copy-artifact{line.separator}
+				easyant copy-artifact -Dorg=myOrgName -Dmodule=myModuleName -Drev=myRevisionNumber${line.separator}
+				Exemple:${line.separator} 		
+				easyant copy-artifact -Dorg=apache -Dmodule=commons-lang -Drev=1.0${line.separator}
+				${line.separator}
+				Docs:${line.separator} 		
+				org=Organization name (cf groupId in Maven)${line.separator} 		
+				module= Module name (cf artifactId in Maven)${line.separator} 		
+				rev= Revision number${line.separator}" />
+		<fail unless="org">org property is not defined${line.separator}${mess}</fail>
+		<fail unless="module">module property is not defined${line.separator}${mess}</fail>
+		<fail unless="rev">revision property is not defined${line.separator}${mess}</fail>
+		<ea:checkresolver resolver="from.resolver" settingsRef="${project.ivy.instance}" description="the repository name where the artifact will be picked up"/>
+		<ea:checkresolver resolver="to.resolver" settingsRef="${project.ivy.instance}" description="the repository name where the artifact will be installed"/>
+		<ivy:install settingsRef="${project.ivy.instance}" organisation="${org}" module="${module}" revision="${rev}" from="${from.resolver}" to="${to.resolver}" transitive="true" overwrite="${install.override}" />
+	</target>
+
+	<!-- ================================= 
+					          target: install-artifact
+					         ================================= -->
+	<target name="-check-install-artifact" depends="-check-interactive-mode" if="install.is.interactive">
+		<input message="Please enter the module name:" addproperty="module" />
+		<input message="Please enter the organasization name :" addproperty="org" />
+		<input message="Please enter the revision number :" addproperty="rev" />
+		<input message="Please enter a path to the artifact :" addproperty="artifact" />
+		<input message="Please enter the repository name where the artifact will be installed :" addproperty="to.resolver" defaultvalue="${default.to.resolver}" />
+	</target>
+
+	<target name=":install-artifact" depends="validate,-check-install-artifact" description="install a new artifact in your repository">
+		<property name="mess" value="Usage: install-artifact${line.separator}
+							easyant install-artifact -Dorg=myOrgName -Dmodule=myModuleName -Drev=myRevisionNumber -Dartifact=myFile${line.separator}
+							Exemple:${line.separator} 		
+							easyant install-artifact -Dorg=apache -Dmodule=commons-lang -Drev=1.0 -Dartifact=commons-lang.jar${line.separator}
+							${line.separator}
+							Docs:${line.separator} 		
+							org=Organization name (cf groupId in Maven)${line.separator} 		
+							module= Module name (cf artifactId in Maven)${line.separator} 		
+							rev= Revision number${line.separator} 		
+							artifact=File to import in the repository${line.separator}
+							You can also override to.resolver property to define on which repository you will publish your file 
+						" />
+		<fail unless="org">org property is not defined${line.separator}${mess}</fail>
+		<fail unless="module">module property is not defined${line.separator}${mess}</fail>
+		<fail unless="rev">revision property is not defined${line.separator}${mess}</fail>
+
+		<fail unless="artifact">artifact property is not defined${line.separator}${mess}</fail>
+		<available file="${artifact}" property="artifact.available"/>
+		<fail unless="artifact.available">unable to find artifact at ${artifact}${line.separator}${mess}</fail>
+		<ea:checkresolver resolver="to.resolver" settingsRef="${project.ivy.instance}" description="the repository name where the artifact will be installed"/>
+		
+		<basename file="${artifact}" property="artifact.to.install.file" />
+
+		<echo message="Creating ivy temp directory in ${install.temp.directory}" />
+		<mkdir dir="${install.temp.directory}" />
+
+		<echo message="Copying ${artifact} in  the ivy temp directory" />
+		<copy file="${artifact}" tofile="${install.temp.directory}/${artifact.to.install.file}" overwrite="true" />
+
+		<echo message="Generating ivy file for ${artifact}" />
+		<filterset id="artifact.filter">
+			<filter token="organisation" value="${org}" />
+			<filter token="module" value="${module}" />
+			<filter token="revision" value="${rev}" />
+		</filterset>
+		<copy file="${install.ivy.template}" tofile="${install.temp.directory}/${artifact.to.install.file}.xml" overwrite="true">
+			<filterset refid="artifact.filter" />
+		</copy>
+
+		<echo message="Publishing artifact in ${to.resolver} repository" />
+		<ivy:publish artifactspattern="${install.temp.directory}/${artifact.to.install.file}" organisation="${org}" module="${module}" revision="${rev}" srcivypattern="${install.temp.directory}/${artifact.to.install.file}.xml" resolver="${to.resolver}" pubrevision="${rev}" status="${install.status}" settingsRef="${project.ivy.instance}" overwrite="${install.override}" />
+
+		<echo message="Cleaning ${install.temp.directory}" />
+		<delete>
+			<fileset dir="${install.temp.directory}" includes="*" />
+		</delete>
+
+		<echo message="${artifact.to.install.file} succefully installed in your ${to.resolver} repository" />
+	</target>
+
+
+	<target name="doit" depends=":init" />
+</project>

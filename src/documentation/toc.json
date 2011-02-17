@@ -1,0 +1,285 @@
+{
+  "children": [
+      {
+        "id":"index",
+        "title":"Documentation",
+        "children": [
+            {
+              "id":"tutorials",
+              "title":"Tutorials",
+              "children": [
+                  {
+                    "id":"howto/GettingStarted",
+                    "title":"Getting Started",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"howto/SettingupasimpleEasyAntproject",
+                    "title":"Setting up a simple EasyAnt Project",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"howto/writePlugins",
+                    "title":"Writing plugins",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"howto/skeleton",
+                    "title":"Working with skeletons of project",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"howto/multimodules",
+                    "title":"Working with multi-modules",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"howto/BuildConfigurations",
+                    "title":"Build configurations",
+                    "children": [
+
+                      ]
+                  }
+                ]
+            },
+            {
+              "id":"reference",
+              "title":"Reference",
+              "children": [
+                  {
+                    "id":"ref/features",
+                    "title":"Features",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"ref/Defaultlifecycle",
+                    "title":"Default lifecycle",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"ref/Directorystructure",
+                    "title":"Directory structure",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"ref/Modulefiles",
+                    "title":"Module files",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"ref/ProjectMancommand",
+                    "title":"ProjectMan commands",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"ref/phases",
+                    "title":"Understanding phases",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"ref/anttasks",
+                    "title":"Ant Tasks",
+                    "children": [
+                        {
+                          "id":"ref/anttasks/BindTarget",
+                          "title":"bindtarget",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/checkresolver",
+                          "title":"checkresolver",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/CoreVersiontask",
+                          "title":"core-version",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/easyant",
+                          "title":"easyant",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/findclasspath",
+                          "title":"findclasspath",
+                          "children": [
+                              {
+                                "id":"ref/anttasks/findclasspath/basic-configuration-strategy",
+                                "title":"basic-configuration-strategy",
+                                "children": [
+
+                                  ]
+                              },
+                              {
+                                "id":"ref/anttasks/findclasspath/environment-strategy",
+                                "title":"environment-strategy",
+                                "children": [
+
+                                  ]
+                              },
+                              {
+                                "id":"ref/anttasks/findclasspath/project-dependency-strategy",
+                                "title":"project-dependency-strategy",
+                                "children": [
+
+                                  ]
+                              }
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/Importtask",
+                          "title":"import",
+                          "children": [
+                              {
+                                "id":"ref/anttasks/plugintask",
+                                "title":"plugin task",
+                                "children": [
+
+                                  ]
+                              },
+                              {
+                                "id":"ref/anttasks/buildtypetask",
+                                "title":"buildtype task",
+                                "children": [
+
+                                  ]
+                              }
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/menugenerator",
+                          "title":"menugenerator",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/LoadModuletask",
+                          "title":"loadmodule",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/Parametertask",
+                          "title":"parameter",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/Pathtask",
+                          "title":"path",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/Property",
+                          "title":"property",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/registerartifact",
+                          "title":"registerartifact",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/SubModuletask",
+                          "title":"submodule",
+                          "children": [
+
+                            ]
+                        }
+                      ]
+                  },
+                  {
+                    "title":"Build Types",
+                    "importNode":"buildtypes",
+                    "importRoot":"ref/buildtypes"                  },
+                  {
+                    "title":"Plugins",
+                    "importNode":"plugins",
+                    "importRoot":"ref/plugins"                  },
+                  {
+                    "id":"ref/EasyAntconfigurationfile",
+                    "title":"EasyAnt configuration file",
+                    "children": [
+
+                      ]
+                  },
+                  {
+                    "id":"ref/ProjectIvyInstance",
+                    "title":"Project Ivy Instance",
+                    "children": [
+
+                      ]
+                  }
+                ]
+            },
+            {
+              "id":"changelog",
+              "title":"Changelog",
+              "children": [
+                  {
+                    "id":"changelog/0.7",
+                    "title":"0.7",
+                    "children": [
+
+                      ]
+                  }
+                ]
+            },
+            {
+              "id":"faq",
+              "title":"FAQ",
+              "children": [
+
+                ]
+            },
+            {
+              "id":"contact",
+              "title":"Contact",
+              "children": [
+
+                ]
+            }
+          ]
+      }
+    ]
+}

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>submodule task</h1>
+
+<h2>Description</h2>
+<p>
+This task is used to manage orchestration of submodules.
+</p>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr><th>Parameter name</th><th class="unsortable">Description</th><th>Mandatory</th></tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>buildpath</td>
+      <td>the buildpath to be used to find sub-projects.</td>
+      <td rowspan="2">one of these</td>
+    </tr>
+    <tr id="mandatory">
+      <td>buildpathRef</td>
+      <td>Buildpath to use, by reference</td>
+    </tr>
+    <tr>
+      <td>useBuildRepository</td>
+      <td>Specify if should use build repository or not (default value : false)</td>
+      <td> </td>
+    </tr>
+
+    <tr>
+      <td>overwrite</td>
+      <td>Specify if publication in build repository should overwrite existing artifacts (default value : true)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>target</td>
+      <td>The target to call on the different sub-builds. Set to "" to execute the default target</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>verbose</td>
+      <td>Enable/ disable verbose log messages showing when each sub-build path is entered/ exited (default value : false)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>failOnError</td>
+      <td>Sets whether to fail with a build exception on error, or go on (default value : true)</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h2>Example</h2>
+<code type="xml">
+ <ea:submodule target="package"/>
+</code></textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

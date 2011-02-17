@@ -1,0 +1,3151 @@
+Index: doc/toc.json
+===================================================================
+--- doc/toc.json	(revision 920176)
++++ doc/toc.json	(working copy)
+@@ -424,6 +424,13 @@
+                           "title":"info",
+                           "children": [
+                               {
++                                "id":"ivyfile/extends",
++                                "title":"extends",
++                                "children": [
++
++                                  ]
++                              },
++                              {
+                                 "id":"ivyfile/license",
+                                 "title":"license",
+                                 "children": [
+Index: doc/ivyfile/extends.html
+===================================================================
+--- doc/ivyfile/extends.html	(revision 0)
++++ doc/ivyfile/extends.html	(revision 0)
+@@ -0,0 +1,66 @@
++<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<html>
++<head>
++	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
++	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
++	<script type="text/javascript" src="../xooki/xooki.js"></script>
++</head>
++<body>
++	<textarea id="xooki-source">
++<b>Tag:</b> extends <b>Parent:</b> <a href="../ivyfile/info.html">info</a><br/>
++<br/>
++Identifies an optional parent descriptor for this module.  For complicated projects composed of many modules that have common configurations or dependencies, inheritance allows modules to share this information.  Which parts of the parent descriptor are inherited can be controlled with the <i>extendType</i> attribute.  Supported <i>extendType</i> values are:
++<table class="ivy-attributes">
++<thead>
++    <tr><th class="ivy-att">Value</th><th class="ivy-att-desc">Description</th></tr>
++</thead>
++<tbody>
++    <tr><td>info</td><td>Attributes of the <a href="../ivyfile/info.html">info</a> element are inherited from the parent.  When an attribute appears in both child and parent, the child value is used.</td></tr>
++    <tr><td>description</td><td>The content of the <a href="../ivyfile/description.html">info/description</a> element is inherited from the parent.</td></tr>
++    <tr><td>configurations</td><td><a href="../ivyfile/conf.html">Configurations</a> defined in the parent descriptor are added to any configurations defined in the child descriptor.</td></tr>
++    <tr><td>dependencies</td><td><a href="../ivyfile/dependency.html">Dependencies</a> defined in the parent descriptor are added to any dependencies defined in the child descriptor.</td></tr>
++    <tr><td>all</td><td>info, description, configurations, and dependencies from the parent descriptor are merged into the child descriptor.</td></tr>
++</tbody>
++</table>
++
++<h1>Attributes</h1>
++<table class="ivy-attributes">
++<thead>
++    <tr><th class="ivy-att">Attribute</th><th class="ivy-att-desc">Description</th><th class="ivy-att-req">Required</th></tr>
++</thead>
++<tbody>
++    <tr><td>organisation</td><td>the organisation of the parent module</td>
++        <td>Yes</td></tr>
++    <tr><td>module</td><td>the name of the parent module</td>
++        <td>Yes</td></tr>
++    <tr><td>revision</td><td>the revision of the parent module.  Can be fixed, a dynamic value, or range of revisions; see <a href="../ivyfile/dependency.html">dependency</a> for information on specifying revisions.</td>
++        <td>Yes</td></tr>
++    <tr><td>extendType</td><td>which part(s) of the parent descriptor are inherited.  Valid values are <i>info</i>, <i>description</i>,
++<i>configurations</i>, <i>dependencies</i>, and <i>all</i>.</td>
++        <td>No, default is <i>all</i></td></tr>
++    <tr><td>location</td><td><p>A local filesystem path that should be searched for the parent descriptor.  If the parent descriptor cannot be found at this location, it will be located using dependency resolvers like any normal dependency.</p><p>This attribute is intended for development use.  For example, child module descriptors appear in a source control directory with the parent module descriptor at a higher level.  <i>location</i> will then contain the relative path to the parent descriptor for use during development builds.</p></td>
++        <td>No, as long as the parent descriptor exists in an Ivy resolver</td></tr>
++</tbody>
++</table>
++</textarea>
++<script type="text/javascript">xooki.postProcess();</script>
++</body>
++</html>
+Index: doc/ivyfile/info.html
+===================================================================
+--- doc/ivyfile/info.html	(revision 920176)
++++ doc/ivyfile/info.html	(working copy)
+@@ -57,6 +57,8 @@
+     <tr><th class="ivy-chld">Element</th><th class="ivy-chld-desc">Description</th><th class="ivy-chld-card">Cardinality</th></tr>
+ </thead>
+ <tbody>
++    <tr><td><a href="../ivyfile/extends.html">extends</a></td><td>identifies a parent Ivy file from which this descriptor inherits content</td>
++        <td>0..n</td></tr>
+     <tr><td><a href="../ivyfile/license.html">license</a></td><td>contains information about the licenses of the described module</td>
+         <td>0..n</td></tr>
+     <tr><td><a href="../ivyfile/ivyauthor.html">ivyauthor</a></td><td>describes who has contributed to write the ivy file</td>
+Index: doc/use/deliver.html
+===================================================================
+--- doc/use/deliver.html	(revision 920176)
++++ doc/use/deliver.html	(working copy)
+@@ -99,6 +99,8 @@
+         <td>No. Defaults to default ivy value (as configured in configuration file)</td></tr>
+     <tr><td>replacedynamicrev</td><td>true to replace dynmic revisions by static ones in the delivered file, false to avoid this replacement <span class="since">(since 1.3)</span></td>
+         <td>No. Defaults to true</td></tr>
++    <tr><td>merge</td><td>if a descriptor <a href="../ivyfile/extends.html">extends</a> a parent, merge the inherited information directly into the delivered descriptor.  The <i>extends</i> element itself will be commented out in the delivered descriptor.</td>
++        <td>No. Defaults to false.</td></tr>
+ 	<tr><td>settingsRef</td><td>A reference to the ivy settings that must be used by this task <span class="since">(since 2.0)</span></td>
+ 		<td>No, 'ivy.instance' is taken by default.</td></tr>    
+ 	<tr><td>conf</td><td>comma-separated list of configurations to include in the delivered file. Accepts wildcards. <span class="since">(since 2.0)</span></td>
+Index: doc/use/publish.html
+===================================================================
+--- doc/use/publish.html	(revision 920176)
++++ doc/use/publish.html	(working copy)
+@@ -60,6 +60,8 @@
+         <td>No. Defaults to false</td></tr>
+     <tr><td>update</td><td>true to update ivy file metadata (revision, branch, publication date and status) before publishing, false otherwise. This is usually not necessary when using deliver before publish.</td>
+         <td>No. Defaults to false</td></tr>
++    <tr><td>merge</td><td>if this descriptor <a href="../ivyfile/extends.html">extends</a> a parent, merge the inherited information directly into this descriptor on publish.  The <i>extends</i> element itself will be commented out in the published descriptor.</td>
++        <td>No. Defaults to the value of <i>update</i>.</td></tr>
+     <tr><td>validate</td><td>true to force ivy files validation against ivy.xsd, false to force no validation</td>
+         <td>No. Defaults to default ivy value (as configured in [[settings settings file]])</td></tr>
+     <tr><td>replacedynamicrev</td><td>true to replace dynmic revisions by static ones in the delivered file, false to avoid this replacement <span class="since">since 1.3</span></td>
+Index: src/java/org/apache/ivy/ant/IvyDeliver.java
+===================================================================
+--- src/java/org/apache/ivy/ant/IvyDeliver.java	(revision 920176)
++++ src/java/org/apache/ivy/ant/IvyDeliver.java	(working copy)
+@@ -206,6 +206,8 @@
+     private String pubBranch;
+     
+     private boolean generateRevConstraint = true;
++    
++    private boolean merge;
+ 
+     public void setCache(File cache) {
+         cacheAttributeNotSupported();
+@@ -315,6 +317,14 @@
+         this.generateRevConstraint = generateRevConstraint;
+     }
+ 
++    public boolean isMerge() {
++        return merge;
++    }
++
++    public void setMerge(boolean merge) {
++        this.merge = merge;
++    }
++
+     public void doExecute() throws BuildException {
+         Ivy ivy = getIvyInstance();
+         IvySettings settings = ivy.getSettings();
+@@ -394,6 +404,7 @@
+                 drResolver, doValidate(settings), replacedynamicrev, splitConfs(conf))
+                 .setResolveId(resolveId)
+                 .setGenerateRevConstraint(generateRevConstraint)
++                .setMerge(merge)
+                 .setPubBranch(pubBranch);
+             if (mrid == null) {
+                 ivy.deliver(pubRevision, deliverpattern, options);
+Index: src/java/org/apache/ivy/ant/IvyPublish.java
+===================================================================
+--- src/java/org/apache/ivy/ant/IvyPublish.java	(revision 920176)
++++ src/java/org/apache/ivy/ant/IvyPublish.java	(working copy)
+@@ -72,6 +72,8 @@
+     private boolean overwrite = false;
+ 
+     private boolean update = false;
++    
++    private Boolean merge = null;
+ 
+     private boolean replacedynamicrev = true;
+ 
+@@ -208,6 +210,14 @@
+         this.replacedynamicrev = replacedynamicrev;
+     }
+ 
++    public Boolean getMerge() {
++        return merge;
++    }
++
++    public void setMerge(Boolean merge) {
++        this.merge = merge;
++    }
++
+     public void doExecute() throws BuildException {
+         Ivy ivy = getIvyInstance();
+         IvySettings settings = ivy.getSettings();
+@@ -291,6 +301,9 @@
+                 deliver.setStatus(getStatus());
+                 deliver.setValidate(doValidate(settings));
+                 deliver.setReplacedynamicrev(isReplacedynamicrev());
++                if (merge != null) {
++                    deliver.setMerge(merge.booleanValue());
++                }
+                 deliver.setConf(conf);
+ 
+                 deliver.execute();
+@@ -308,6 +321,7 @@
+                     .setValidate(doValidate(settings))
+                     .setOverwrite(overwrite)
+                     .setUpdate(update)
++                    .setMerge(merge)
+                     .setWarnOnMissing(warnonmissing)
+                     .setHaltOnMissing(haltonmissing)
+                     .setConfs(splitConfs(conf)));
+Index: src/java/org/apache/ivy/core/deliver/DeliverEngine.java
+===================================================================
+--- src/java/org/apache/ivy/core/deliver/DeliverEngine.java	(revision 920176)
++++ src/java/org/apache/ivy/core/deliver/DeliverEngine.java	(working copy)
+@@ -192,6 +192,8 @@
+                         .setBranch(options.getPubBranch())
+                         .setPubdate(options.getPubdate())
+                         .setGenerateRevConstraint(options.isGenerateRevConstraint())
++                        .setMerge(options.isMerge())
++                        .setMergedDescriptor(md)
+                         .setConfsToExclude((String[]) confsToRemove
+                             .toArray(new String[confsToRemove.size()])));
+         } catch (SAXException ex) {
+Index: src/java/org/apache/ivy/core/deliver/DeliverOptions.java
+===================================================================
+--- src/java/org/apache/ivy/core/deliver/DeliverOptions.java	(revision 920176)
++++ src/java/org/apache/ivy/core/deliver/DeliverOptions.java	(working copy)
+@@ -46,7 +46,9 @@
+      * applicable, false to never generate the revConstraint attribute.
+      */
+     private boolean generateRevConstraint = true;
+-
++    
++    /** true to merge parent descriptor elements into delivered child descriptor */
++    private boolean merge = false;
+ 
+     /**
+      * Returns an instance of DeliverOptions with options corresponding to default values taken from
+@@ -237,7 +239,15 @@
+         return this;
+     }
+ 
+-    
++    public boolean isMerge() {
++        return merge;
++    }
++
++    public DeliverOptions setMerge(boolean merge) {
++        this.merge = merge;
++        return this;
++    }
++
+     public String toString() {
+         return "status=" + status + " pubdate=" + pubdate + " validate=" + validate
+                 + " resolveDynamicRevisions=" + resolveDynamicRevisions
+Index: src/java/org/apache/ivy/core/module/descriptor/Configuration.java
+===================================================================
+--- src/java/org/apache/ivy/core/module/descriptor/Configuration.java	(revision 920176)
++++ src/java/org/apache/ivy/core/module/descriptor/Configuration.java	(working copy)
+@@ -21,14 +21,16 @@
+ import java.util.Arrays;
+ import java.util.Collection;
+ import java.util.LinkedHashSet;
++import java.util.Map;
+ import java.util.Set;
+ 
++import org.apache.ivy.core.module.id.ModuleRevisionId;
+ import org.apache.ivy.util.extendable.DefaultExtendableItem;
+ 
+ /**
+  * Represents a module configuration
+  */
+-public class Configuration extends DefaultExtendableItem {
++public class Configuration extends DefaultExtendableItem implements InheritableItem {
+     public static final class Visibility {
+         public static final Visibility PUBLIC = new Visibility("public");
+ 
+@@ -77,6 +79,8 @@
+     private boolean transitive = true;
+     
+     private String deprecated;
++    
++    private ModuleRevisionId sourceModule;
+ 
+     /**
+      * Creates a new configuration.
+@@ -86,6 +90,12 @@
+     public Configuration(String name) {
+         this(name, Visibility.PUBLIC, null, null, true, null);
+     }
++    
++    public Configuration(Configuration source, ModuleRevisionId sourceModule) {
++        this(source.getAttributes(), source.getQualifiedExtraAttributes(), source.getName(), 
++             source.getVisibility(), source.getDescription(), source.getExtends(),
++             source.isTransitive(), source.getDeprecated(), sourceModule);
++    }
+ 
+     /**
+      * Creates a new configuration.
+@@ -99,6 +109,14 @@
+      */
+     public Configuration(String name, Visibility visibility, String description, String[] ext, 
+             boolean transitive, String deprecated) {
++        this(null, null, name, visibility, description, ext, transitive, deprecated, null);
++    }
++    
++    private Configuration(Map attributes, Map extraAttributes, String name, Visibility visibility,
++                String description, String[] ext, boolean transitive, String deprecated, 
++                ModuleRevisionId sourceModule) {
++        super(attributes, extraAttributes);
++        
+         if (name == null) {
+             throw new NullPointerException("null configuration name not allowed");
+         }
+@@ -118,6 +136,7 @@
+         }
+         this.transitive = transitive;
+         this.deprecated = deprecated;
++        this.sourceModule = sourceModule;
+     }
+ 
+     /**
+@@ -162,6 +181,10 @@
+     public final boolean isTransitive() {
+         return transitive;
+     }
++    
++    public ModuleRevisionId getSourceModule() {
++        return sourceModule;
++    }
+ 
+     public String toString() {
+         return name;
+Index: src/java/org/apache/ivy/core/module/descriptor/DefaultDependencyDescriptor.java
+===================================================================
+--- src/java/org/apache/ivy/core/module/descriptor/DefaultDependencyDescriptor.java	(revision 920176)
++++ src/java/org/apache/ivy/core/module/descriptor/DefaultDependencyDescriptor.java	(working copy)
+@@ -88,7 +88,13 @@
+         DefaultDependencyDescriptor newdd = new DefaultDependencyDescriptor(
+             null, transformMrid, transformDynamicMrid, 
+             dd.isForce(), dd.isChanging(), dd.isTransitive());
++
+         newdd.parentId = transformParentId;
++        ModuleRevisionId sourceModule = dd.getSourceModule();
++        if (sourceModule != null) {
++            newdd.sourceModule = t.transform(sourceModule);
++        }
++
+         String[] moduleConfs = dd.getModuleConfigurations();
+         if (moduleConfs.length == 1 && "*".equals(moduleConfs[0])) {
+             if (dd instanceof DefaultDependencyDescriptor) {
+@@ -159,7 +165,9 @@
+     private final ModuleDescriptor md;
+ 
+     private DependencyDescriptor asSystem = this;
+-
++    
++    private ModuleRevisionId sourceModule;
++    
+     private DefaultDependencyDescriptor(DefaultDependencyDescriptor dd, ModuleRevisionId revision) {
+         Checks.checkNotNull(dd, "dd");
+         Checks.checkNotNull(revision, "revision");
+@@ -183,8 +191,9 @@
+         includeRules = dd.includeRules == null ? null : new LinkedHashMap(dd.includeRules); 
+         dependencyArtifacts = dd.dependencyArtifacts == null 
+                                 ? null : new LinkedHashMap(dd.dependencyArtifacts);
++        sourceModule = dd.sourceModule;
+     }
+-
++    
+     public DefaultDependencyDescriptor(
+             ModuleDescriptor md, ModuleRevisionId mrid, boolean force,
+             boolean changing, boolean transitive) {
+@@ -211,6 +220,7 @@
+         isForce = force;
+         isChanging = changing;
+         isTransitive = transitive;
++        sourceModule = md == null ? null : md.getModuleRevisionId();
+     }
+ 
+     public ModuleId getDependencyId() {
+@@ -698,6 +708,10 @@
+         return excludeRules;
+     }
+ 
++    public ModuleRevisionId getSourceModule() {
++        return sourceModule;
++    }
++    
+     public DependencyDescriptor clone(ModuleRevisionId revision) {
+         return new DefaultDependencyDescriptor(this, revision);
+     }
+Index: src/java/org/apache/ivy/core/module/descriptor/DefaultExtendsDescriptor.java
+===================================================================
+--- src/java/org/apache/ivy/core/module/descriptor/DefaultExtendsDescriptor.java	(revision 0)
++++ src/java/org/apache/ivy/core/module/descriptor/DefaultExtendsDescriptor.java	(revision 0)
+@@ -0,0 +1,62 @@
++package org.apache.ivy.core.module.descriptor;
++
++import org.apache.ivy.core.module.id.ModuleRevisionId;
++
++import java.util.ArrayList;
++import java.util.List;
++
++public class DefaultExtendsDescriptor implements ExtendsDescriptor {
++
++    private ModuleRevisionId parentRevisionId;
++    private ModuleRevisionId resolvedParentRevisionId;
++    private String location;
++    private List extendsTypes;
++
++    public DefaultExtendsDescriptor(ModuleRevisionId parentRevisionId,
++                                    ModuleRevisionId resolvedParentRevisionId,
++                                    String location, String[] types) {
++        this.parentRevisionId = parentRevisionId;
++        this.resolvedParentRevisionId = resolvedParentRevisionId;
++        this.location = location;
++        this.extendsTypes = new ArrayList(types.length);
++        for (int i = 0; i < types.length; ++i) {
++            extendsTypes.add(types[i]);
++        }
++    }
++
++    public ModuleRevisionId getParentRevisionId() {
++        return parentRevisionId;
++    }
++
++    public ModuleRevisionId getResolvedParentRevisionId() {
++        return resolvedParentRevisionId;
++    }
++
++    public String getLocation() {
++        return location;
++    }
++
++    public String[] getExtendsTypes() {
++        return (String[])extendsTypes.toArray(new String[extendsTypes.size()]);
++    }
++
++    public boolean isAllInherited() {
++        return extendsTypes.contains("all");
++    }
++
++    public boolean isInfoInherited() {
++        return isAllInherited() || extendsTypes.contains("info");
++    }
++
++    public boolean isDescriptionInherited() {
++        return isAllInherited() || extendsTypes.contains("description");
++    }
++
++    public boolean areConfigurationsInherited() {
++        return isAllInherited() || extendsTypes.contains("configurations");
++    }
++
++    public boolean areDependenciesInherited() {
++        return isAllInherited() || extendsTypes.contains("dependencies");
++    }
++}
+Index: src/java/org/apache/ivy/core/module/descriptor/DefaultModuleDescriptor.java
+===================================================================
+--- src/java/org/apache/ivy/core/module/descriptor/DefaultModuleDescriptor.java	(revision 920176)
++++ src/java/org/apache/ivy/core/module/descriptor/DefaultModuleDescriptor.java	(working copy)
+@@ -148,6 +148,15 @@
+         nmd.status = md.getStatus();
+         nmd.publicationDate = md.getPublicationDate();
+         nmd.resolvedPublicationDate = md.getResolvedPublicationDate();
++
++        ExtendsDescriptor[] ed = md.getInheritedDescriptors();
++        for (int i = 0; i < ed.length; ++i) {
++            ModuleRevisionId mrid = t.transform(ed[i].getParentRevisionId());
++            ModuleRevisionId resolvedMrid = t.transform(ed[i].getResolvedParentRevisionId());
++            nmd.inheritedDescriptors.add(new DefaultExtendsDescriptor(mrid, resolvedMrid,
++                    ed[i].getLocation(), ed[i].getExtendsTypes()));
++        }
++
+         DependencyDescriptor[] dd = md.getDependencies();
+         for (int i = 0; i < dd.length; i++) {
+             nmd.dependencies.add(NameSpaceHelper.toSystem(dd[i], ns));
+@@ -227,6 +236,8 @@
+     private List excludeRules = new ArrayList(); // List(ExcludeRule)
+ 
+     private Artifact metadataArtifact;
++
++    private List inheritedDescriptors = new ArrayList(); //List(ExtendsDescriptor)
+     
+     private Map/*<String,String>*/ extraAttributesNamespaces = new LinkedHashMap();
+ 
+@@ -322,6 +333,10 @@
+         this.status = status;
+     }
+ 
++    public void addInheritedDescriptor(ExtendsDescriptor descriptor) {
++        inheritedDescriptors.add(descriptor);
++    }
++
+     public void addDependency(DependencyDescriptor dependency) {
+         dependencies.add(dependency);
+     }
+@@ -373,6 +388,11 @@
+         return status;
+     }
+ 
++    public ExtendsDescriptor[] getInheritedDescriptors() {
++        return (ExtendsDescriptor[])inheritedDescriptors.toArray(
++                new ExtendsDescriptor[inheritedDescriptors.size()]);
++    }
++
+     public Configuration[] getConfigurations() {
+         return (Configuration[]) configurations.values().toArray(
+             new Configuration[configurations.size()]);
+Index: src/java/org/apache/ivy/core/module/descriptor/DependencyDescriptor.java
+===================================================================
+--- src/java/org/apache/ivy/core/module/descriptor/DependencyDescriptor.java	(revision 920176)
++++ src/java/org/apache/ivy/core/module/descriptor/DependencyDescriptor.java	(working copy)
+@@ -40,7 +40,7 @@
+  * be used instead of the default dependency constraint when performing dependency resolution.
+  * </p>
+  */
+-public interface DependencyDescriptor extends ExtendableItem {
++public interface DependencyDescriptor extends ExtendableItem, InheritableItem {
+     ModuleId getDependencyId();
+ 
+     /**
+Index: src/java/org/apache/ivy/core/module/descriptor/ExtendsDescriptor.java
+===================================================================
+--- src/java/org/apache/ivy/core/module/descriptor/ExtendsDescriptor.java	(revision 0)
++++ src/java/org/apache/ivy/core/module/descriptor/ExtendsDescriptor.java	(revision 0)
+@@ -0,0 +1,46 @@
++package org.apache.ivy.core.module.descriptor;
++
++import org.apache.ivy.core.module.id.ModuleRevisionId;
++
++/**
++ * Describes parent descriptor information for a module descriptor.
++ */
++public interface ExtendsDescriptor {
++
++    /** get the module revision id of the declared parent descriptor */
++    public ModuleRevisionId getParentRevisionId();
++    /**
++     * get the resolved revision id for {@link #getParentRevisionId}, see
++     * {@link org.apache.ivy.core.module.descriptor.ModuleDescriptor#getResolvedModuleRevisionId()} }
++     */
++    public ModuleRevisionId getResolvedParentRevisionId();
++
++    /**
++     * If there is an explicit path to check for the parent descriptor, return it.
++     * Otherwise returns null.
++     */
++    public String getLocation();
++
++    /**
++     * Get the parts of the parent descriptor that are inherited.  Default
++     * supported types are <code>info</code>, <code>description</code>,
++     * <code>configurations</code>, <code>dependencies</code>, and/or <code>all</code>.
++     * Ivy extensions may add support for additional extends types.
++     */
++    public String[] getExtendsTypes();
++
++    /** @return true if the <code>all</code> extend type is specified, implying all other types */
++    public boolean isAllInherited();
++
++    /** @return true if parent info attributes are inherited (organisation, branch, revision, etc)*/
++    public boolean isInfoInherited();
++
++    /** @return true if parent description is inherited */
++    public boolean isDescriptionInherited();
++
++    /** @return true if parent configurations are inherited */
++    public boolean areConfigurationsInherited();
++
++    /** @return true if parent dependencies are inherited */
++    public boolean areDependenciesInherited();
++}
+Index: src/java/org/apache/ivy/core/module/descriptor/InheritableItem.java
+===================================================================
+--- src/java/org/apache/ivy/core/module/descriptor/InheritableItem.java	(revision 0)
++++ src/java/org/apache/ivy/core/module/descriptor/InheritableItem.java	(revision 0)
+@@ -0,0 +1,34 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one or more
++ *  contributor license agreements.  See the NOTICE file distributed with
++ *  this work for additional information regarding copyright ownership.
++ *  The ASF licenses this file to You under the Apache License, Version 2.0
++ *  (the "License"); you may not use this file except in compliance with
++ *  the License.  You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing, software
++ *  distributed under the License is distributed on an "AS IS" BASIS,
++ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ *  See the License for the specific language governing permissions and
++ *  limitations under the License.
++ *
++ */
++package org.apache.ivy.core.module.descriptor;
++
++import org.apache.ivy.core.module.id.ModuleRevisionId;
++
++/**
++ * Interface for elements that can be inherited from a parent descriptor
++ * by a child descriptor.
++ * @see Configuration
++ * @see DependencyDescriptor
++ */
++public interface InheritableItem {
++    /**
++     * @return the module in which this item was actually defined, if different 
++     *   from the module in which the item appears.  May be null.
++     */
++    public ModuleRevisionId getSourceModule();
++}
+Index: src/java/org/apache/ivy/core/module/descriptor/ModuleDescriptor.java
+===================================================================
+--- src/java/org/apache/ivy/core/module/descriptor/ModuleDescriptor.java	(revision 920176)
++++ src/java/org/apache/ivy/core/module/descriptor/ModuleDescriptor.java	(working copy)
+@@ -72,6 +72,13 @@
+     void setResolvedModuleRevisionId(ModuleRevisionId revId);
+ 
+     /**
++     * Get the list of parent descriptors imported via an &lt;extends&gt; element.
++     * Only directly imported descriptors are included; the parent's parents are
++     * not included.
++     */
++    ExtendsDescriptor[] getInheritedDescriptors();
++
++    /**
+      * This method update the resolved publication date
+      * 
+      * @param publicationDate
+Index: src/java/org/apache/ivy/core/publish/PublishEngine.java
+===================================================================
+--- src/java/org/apache/ivy/core/publish/PublishEngine.java	(revision 920176)
++++ src/java/org/apache/ivy/core/publish/PublishEngine.java	(working copy)
+@@ -133,6 +133,8 @@
+                                 .setBranch(options.getPubBranch())
+                                 .setPubdate(options.getPubdate() == null ? new Date()
+                                     : options.getPubdate())
++                                .setMerge(options.isMerge())
++                                .setMergedDescriptor(md)
+                                 .setConfsToExclude((String[]) confsToRemove
+                                     .toArray(new String[confsToRemove.size()])));
+                         ivyFile = tmp;
+Index: src/java/org/apache/ivy/core/publish/PublishOptions.java
+===================================================================
+--- src/java/org/apache/ivy/core/publish/PublishOptions.java	(revision 920176)
++++ src/java/org/apache/ivy/core/publish/PublishOptions.java	(working copy)
+@@ -52,6 +52,8 @@
+     private boolean overwrite;
+ 
+     private boolean update;
++    
++    private Boolean merge;
+ 
+     private String[] confs;
+ 
+@@ -132,6 +134,15 @@
+         this.update = update;
+         return this;
+     }
++    
++    public boolean isMerge() {
++        return merge == null ? isUpdate() : merge.booleanValue();
++    }
++    
++    public PublishOptions setMerge(Boolean merge) {
++        this.merge = merge;
++        return this;
++    }
+ 
+     public boolean isValidate() {
+         return validate;
+Index: src/java/org/apache/ivy/plugins/parser/xml/UpdateOptions.java
+===================================================================
+--- src/java/org/apache/ivy/plugins/parser/xml/UpdateOptions.java	(revision 920176)
++++ src/java/org/apache/ivy/plugins/parser/xml/UpdateOptions.java	(working copy)
+@@ -21,6 +21,7 @@
+ import java.util.Date;
+ import java.util.Map;
+ 
++import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
+ import org.apache.ivy.plugins.namespace.Namespace;
+ import org.apache.ivy.plugins.parser.ParserSettings;
+ 
+@@ -54,6 +55,11 @@
+      */
+     private boolean replaceInclude = true;
+     /**
++     * Should parent descriptor be merged inline
++     */
++    private boolean merge = false;
++    private ModuleDescriptor mergedDescriptor = null;
++    /**
+      * Configurations to exclude during update, or <code>null</code> to keep all confs.
+      */
+     private String[] confsToExclude = null;
+@@ -118,6 +124,20 @@
+         this.replaceInclude = replaceInclude;
+         return this;
+     }
++    public boolean isMerge() {
++        return merge;
++    }
++    public UpdateOptions setMerge(boolean merge) {
++        this.merge = merge;
++        return this;
++    }
++    public ModuleDescriptor getMergedDescriptor() {
++        return mergedDescriptor;
++    }
++    public UpdateOptions setMergedDescriptor(ModuleDescriptor mergedDescriptor) {
++        this.mergedDescriptor = mergedDescriptor;
++        return this;
++    }
+     public String[] getConfsToExclude() {
+         return confsToExclude;
+     }
+Index: src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorParser.java
+===================================================================
+--- src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorParser.java	(revision 920176)
++++ src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorParser.java	(working copy)
+@@ -24,6 +24,7 @@
+ import java.net.URL;
+ import java.text.ParseException;
+ import java.util.Arrays;
++import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
+ 
+@@ -31,33 +32,26 @@
+ 
+ import org.apache.ivy.Ivy;
+ import org.apache.ivy.core.IvyContext;
+-import org.apache.ivy.core.module.descriptor.Configuration;
+-import org.apache.ivy.core.module.descriptor.ConfigurationAware;
+-import org.apache.ivy.core.module.descriptor.DefaultArtifact;
+-import org.apache.ivy.core.module.descriptor.DefaultDependencyArtifactDescriptor;
+-import org.apache.ivy.core.module.descriptor.DefaultDependencyDescriptor;
+-import org.apache.ivy.core.module.descriptor.DefaultExcludeRule;
+-import org.apache.ivy.core.module.descriptor.DefaultIncludeRule;
+-import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
+-import org.apache.ivy.core.module.descriptor.DependencyArtifactDescriptor;
+-import org.apache.ivy.core.module.descriptor.ExcludeRule;
+-import org.apache.ivy.core.module.descriptor.IncludeRule;
+-import org.apache.ivy.core.module.descriptor.License;
+-import org.apache.ivy.core.module.descriptor.MDArtifact;
+-import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
+-import org.apache.ivy.core.module.descriptor.OverrideDependencyDescriptorMediator;
++import org.apache.ivy.core.cache.ResolutionCacheManager;
++import org.apache.ivy.core.module.descriptor.*;
+ import org.apache.ivy.core.module.id.ArtifactId;
+ import org.apache.ivy.core.module.id.ModuleId;
+ import org.apache.ivy.core.module.id.ModuleRevisionId;
++import org.apache.ivy.core.resolve.ResolveData;
++import org.apache.ivy.core.resolve.ResolveEngine;
++import org.apache.ivy.core.resolve.ResolveOptions;
++import org.apache.ivy.core.resolve.ResolvedModuleRevision;
+ import org.apache.ivy.plugins.conflict.ConflictManager;
+ import org.apache.ivy.plugins.conflict.FixedConflictManager;
+ import org.apache.ivy.plugins.matcher.PatternMatcher;
+ import org.apache.ivy.plugins.namespace.Namespace;
+ import org.apache.ivy.plugins.parser.AbstractModuleDescriptorParser;
+ import org.apache.ivy.plugins.parser.ModuleDescriptorParser;
++import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
+ import org.apache.ivy.plugins.parser.ParserSettings;
+ import org.apache.ivy.plugins.repository.Resource;
+ import org.apache.ivy.plugins.repository.url.URLResource;
++import org.apache.ivy.plugins.resolver.DependencyResolver;
+ import org.apache.ivy.util.Message;
+ import org.apache.ivy.util.XMLHelper;
+ import org.apache.ivy.util.extendable.ExtendableItemHelper;
+@@ -269,13 +263,15 @@
+                 throws SAXException {
+             try {
+                 if (state == State.DESCRIPTION) {
+-                    //make sure we don't interpret any tag while in description tag 
++                    // make sure we don't interpret any tag while in description tag
+                     buffer.append("<" + qName + ">");
+                     return;
+                 } else if ("ivy-module".equals(qName)) {
+                     ivyModuleStarted(attributes);
+                 } else if ("info".equals(qName)) {
+                     infoStarted(attributes);
++                } else if (state == State.INFO && "extends".equals(qName)) {
++                    extendsStarted(attributes);
+                 } else if (state == State.INFO && "license".equals(qName)) {
+                     getMd().addLicense(new License(settings.substitute(attributes.getValue("name")),
+                                         settings.substitute(attributes.getValue("url"))));
+@@ -341,6 +337,250 @@
+             }
+         }
+ 
++        protected String getDefaultParentLocation() {
++            return "../ivy.xml";
++        }
++
++        protected void extendsStarted(Attributes attributes) throws ParseException {
++            String parentOrganisation = attributes.getValue("organisation");
++            String parentModule = attributes.getValue("module");
++            String parentRevision = attributes.getValue("revision");
++            String location = attributes.getValue("location") != null ? attributes
++                    .getValue("location") : getDefaultParentLocation();
++            ModuleDescriptor parent = null;
++
++            String extendType = attributes.getValue("extendType") != null ? attributes.getValue(
++                "extendType").toLowerCase() : "all";
++
++            List/* <String> */extendTypes = Arrays.asList(extendType.split(","));
++
++            try {
++                Message.debug("Trying to parse included ivy file :" + location);
++                parent = parseOtherIvyFileOnFileSystem(location);
++
++                //verify that the parsed descriptor is the correct parent module.
++                ModuleId expected = new ModuleId(parentOrganisation, parentModule);
++                ModuleId pid = parent.getModuleRevisionId().getModuleId();
++                if (!expected.equals(pid)) {
++                    Message.verbose("Ignoring parent Ivy file " + location + "; expected "
++                        + expected + " but found " + pid);
++                    parent = null;
++                }
++                
++            } catch (ParseException e) {
++                Message.warn("Unable to parse included ivy file " + location + ": " 
++                    + e.getMessage());
++            } catch (IOException e) {
++                Message.warn("Unable to parse included ivy file " + location + ": " 
++                    + e.getMessage());
++            }
++
++            // if the included ivy file is not found on file system, tries to resolve using
++            // repositories
++            if (parent == null) {
++                try {
++                    Message.debug(
++                        "Trying to parse included ivy file by asking repository for module :"
++                                    + parentOrganisation
++                                    + "#"
++                                    + parentModule
++                                    + ";"
++                                    + parentRevision);
++                    parent = parseOtherIvyFile(parentOrganisation, parentModule, parentRevision);
++                } catch (ParseException e) {
++                    Message.warn("Unable to parse included ivy file for " + parentOrganisation
++                            + "#" + parentModule + ";" + parentRevision);
++                }
++            }
++
++            if (parent == null) {
++                throw new ParseException("Unable to parse included ivy file for "
++                        + parentOrganisation + "#" + parentModule + ";" + parentRevision, 0);
++            }
++
++            ResolutionCacheManager cacheManager = settings.getResolutionCacheManager();
++
++            File ivyFileInCache = cacheManager.getResolvedIvyFileInCache(parent
++                    .getResolvedModuleRevisionId());
++            //Generate the parent cache file if necessary
++            if (parent.getResource() != null
++                    && !parent.getResource().getName().equals(ivyFileInCache.toURI().toString())) {
++                try {
++                    parent.toIvyFile(ivyFileInCache);
++                } catch (ParseException e) {
++                    throw new ParseException("Unable to create cache file for "
++                            + parentOrganisation + "#" + parentModule + ";" + parentRevision
++                            + " Reason:" + e.getLocalizedMessage(), 0);
++                } catch (IOException e) {
++                    throw new ParseException("Unable to create cache file for "
++                            + parentOrganisation + "#" + parentModule + ";" + parentRevision
++                            + " Reason :" + e.getLocalizedMessage(), 0);
++                }
++            }
++
++            DefaultExtendsDescriptor ed = new DefaultExtendsDescriptor(
++                    parent.getModuleRevisionId(),
++                    parent.getResolvedModuleRevisionId(),
++                    attributes.getValue("location"),
++                    (String[])extendTypes.toArray(new String[extendTypes.size()]));
++            getMd().addInheritedDescriptor(ed);
++
++            mergeWithOtherModuleDescriptor(extendTypes, parent);
++        }
++
++        protected void mergeWithOtherModuleDescriptor(List/* <String> */extendTypes,
++                ModuleDescriptor parent) {
++
++            if (extendTypes.contains("all")) {
++                mergeAll(parent);
++            } else {
++                if (extendTypes.contains("info")) {
++                    mergeInfo(parent);
++                }
++                
++                if (extendTypes.contains("configurations")) {
++                    mergeConfigurations(parent.getModuleRevisionId(), parent.getConfigurations());
++                }
++
++                if (extendTypes.contains("dependencies")) {
++                    mergeDependencies(parent.getDependencies());
++                }
++
++                if (extendTypes.contains("description")) {
++                    mergeDescription(parent.getDescription());
++                }
++            }
++
++        }
++
++        protected void mergeAll(ModuleDescriptor parent) {
++            ModuleRevisionId sourceMrid = parent.getModuleRevisionId();
++            mergeInfo(parent);
++            mergeConfigurations(sourceMrid, parent.getConfigurations());
++            mergeDependencies(parent.getDependencies());
++            mergeDescription(parent.getDescription());
++        }
++        
++        protected void mergeInfo(ModuleDescriptor parent) {
++            ModuleRevisionId parentMrid = parent.getModuleRevisionId();
++
++            DefaultModuleDescriptor descriptor = getMd();
++            ModuleRevisionId currentMrid = descriptor.getModuleRevisionId();
++
++            ModuleRevisionId mergedMrid = ModuleRevisionId.newInstance(
++                mergeValue(parentMrid.getOrganisation(), currentMrid.getOrganisation()),
++                currentMrid.getName(),
++                mergeValue(parentMrid.getBranch(), currentMrid.getBranch()),
++                mergeValue(parentMrid.getRevision(), currentMrid.getRevision()),
++                mergeValues(parentMrid.getQualifiedExtraAttributes(),
++                            currentMrid.getQualifiedExtraAttributes())
++            );
++
++            descriptor.setModuleRevisionId(mergedMrid);
++            descriptor.setResolvedModuleRevisionId(mergedMrid);
++
++            descriptor.setStatus(mergeValue(parent.getStatus(), descriptor.getStatus()));
++            if (descriptor.getNamespace() == null && parent instanceof DefaultModuleDescriptor) {
++                descriptor.setNamespace(((DefaultModuleDescriptor)parent).getNamespace());
++            }
++        }
++        
++        private static String mergeValue(String inherited, String override) {
++            return override == null ? inherited : override;
++        }
++        
++        private static Map mergeValues(Map inherited, Map overrides) {
++            LinkedHashMap dup = new LinkedHashMap(inherited.size() + overrides.size());
++            dup.putAll(inherited);
++            dup.putAll(overrides);
++            return dup;
++        }
++
++        protected void mergeConfigurations(ModuleRevisionId sourceMrid, Configuration[] configurations) {
++            DefaultModuleDescriptor md = getMd();
++            for (int i = 0; i < configurations.length; i++) {
++                Configuration configuration = configurations[i];
++                Message.debug("Merging configuration with: " + configuration.getName());
++                //copy configuration from parent descriptor
++                md.addConfiguration(new Configuration(configuration, sourceMrid));
++            }
++        }
++
++        protected void mergeDependencies(DependencyDescriptor[] dependencies) {
++            DefaultModuleDescriptor md = getMd();
++            for (int i = 0; i < dependencies.length; i++) {
++                DependencyDescriptor dependencyDescriptor = dependencies[i];
++                Message.debug("Merging dependency with: "
++                        + dependencyDescriptor.getDependencyRevisionId().toString());
++                md.addDependency(dependencyDescriptor);
++            }
++        }
++
++        protected void mergeDescription(String description) {
++            String current = getMd().getDescription();
++            if (current == null || current.trim().length() == 0) {
++                getMd().setDescription(description);
++            }
++        }
++
++        protected ModuleDescriptor parseOtherIvyFileOnFileSystem(String location)
++                throws ParseException, IOException {
++            URL url = null;
++            ModuleDescriptor parent = null;
++            url = getSettings().getRelativeUrlResolver().getURL(descriptorURL, location);
++            Message.debug("Trying to load included ivy file from " + url.toString());
++            URLResource res = new URLResource(url);
++            ModuleDescriptorParser parser = ModuleDescriptorParserRegistry.getInstance().getParser(
++                res);
++
++            parent = parser.parseDescriptor(getSettings(), url, isValidate());
++            return parent;
++        }
++
++        protected ModuleDescriptor parseOtherIvyFile(String parentOrganisation,
++                String parentModule, String parentRevision) throws ParseException {
++            ModuleId parentModuleId = new ModuleId(parentOrganisation, parentModule);
++            ModuleRevisionId parentMrid = new ModuleRevisionId(parentModuleId, parentRevision);
++
++            // try to load parent module in cache
++            File cacheFile = settings.getResolutionCacheManager().getResolvedIvyFileInCache(
++                ModuleRevisionId.newInstance(parentMrid, Ivy.getWorkingRevision()));
++            if (cacheFile.exists() && cacheFile.length() > 0) {
++                ModuleDescriptor md;
++                try {
++                    Message.debug("Trying to load included ivy file from cache");
++                    URL parentUrl = cacheFile.toURI().toURL();
++                    md = parseOtherIvyFileOnFileSystem(parentUrl.toString());
++                    return md;
++                } catch (IOException e) {
++                    // do nothing
++                    Message.error(e.getLocalizedMessage());
++                }
++            }
++
++            DependencyDescriptor dd = new DefaultDependencyDescriptor(parentMrid, true);
++            ResolveData data = IvyContext.getContext().getResolveData();
++            if (data == null) {
++                ResolveEngine engine = IvyContext.getContext().getIvy().getResolveEngine();
++                ResolveOptions options = new ResolveOptions();
++                options.setDownload(false);
++                data = new ResolveData(engine, options);
++            }
++
++            DependencyResolver resolver = getSettings().getResolver(parentMrid);
++            if (resolver == null) {
++                // TODO: Throw exception here?
++                return null;
++            } else {
++                ResolvedModuleRevision otherModule = resolver.getDependency(dd, data);
++                if (otherModule == null) {
++                    throw new ParseException("Unable to find " + parentMrid.toString(), 0);
++                }
++                return otherModule.getDescriptor();
++            }
++
++        }
++
+         protected void publicationsStarted(Attributes attributes) {
+             state = State.PUB;
+             artifactsDeclared = true;
+Index: src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorUpdater.java
+===================================================================
+--- src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorUpdater.java	(revision 920176)
++++ src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorUpdater.java	(working copy)
+@@ -27,21 +27,14 @@
+ import java.io.OutputStream;
+ import java.io.OutputStreamWriter;
+ import java.io.PrintWriter;
++import java.io.StringWriter;
+ import java.net.URL;
+-import java.util.ArrayList;
+-import java.util.Arrays;
+-import java.util.Collection;
+-import java.util.Collections;
+-import java.util.Date;
+-import java.util.Iterator;
+-import java.util.List;
+-import java.util.Map;
+-import java.util.Stack;
+-import java.util.StringTokenizer;
++import java.util.*;
+ 
+ import javax.xml.parsers.ParserConfigurationException;
+ 
+ import org.apache.ivy.Ivy;
++import org.apache.ivy.core.module.descriptor.*;
+ import org.apache.ivy.core.module.id.ModuleId;
+ import org.apache.ivy.core.module.id.ModuleRevisionId;
+ import org.apache.ivy.plugins.namespace.NameSpaceHelper;
+@@ -153,6 +146,23 @@
+ 
+     private static class UpdaterHandler extends DefaultHandler implements LexicalHandler {
+ 
++        /** standard attributes of ivy-module/info */
++        private static final Collection stdAtts = Arrays.asList(new String[] {"organisation", "module", "branch",
++                "revision", "status", "publication", "namespace"});
++
++        /** elements that may appear inside ivy-module, in expected order */
++        private static final List moduleElements = Arrays.asList(new String[] {
++                "info", "configurations", "publications", "dependencies", "conflicts"
++        });
++        /** element position of "configurations" inside "ivy-module" */
++        private static final int CONFIGURATIONS_POSITION = moduleElements.indexOf("configurations");
++        /** element position of "dependencies" inside "ivy-module" */
++        private static final int DEPENDENCIES_POSITION = moduleElements.indexOf("dependencies");
++
++        /** elements that may appear inside of ivy-module/info */
++        private static final Collection infoElements = Arrays.asList(new String[]{
++                "extends", "ivyauthor", "license", "repository", "description" });
++
+         private final ParserSettings settings;
+ 
+         private final PrintWriter out;
+@@ -213,6 +223,21 @@
+         // with /> instead of ></qName>
+         private String justOpen = null;
+         
++        //track the size of the left indent, so that inserted elements are formatted
++        //like nearby elements.
++
++        //true when we're reading indent whitespace
++        private boolean indenting;
++        private StringBuffer currentIndent = new StringBuffer();
++        private ArrayList indentLevels = new ArrayList(); // ArrayList<String>
++
++        //true if an ivy-module/info/description element has been found in the published descriptor
++        private boolean hasDescription = false;
++        //true if merged configurations have been written
++        private boolean mergedConfigurations = false;
++        //true if merged deps have been written
++        private boolean mergedDependencies = false;
++
+         // the new value of the defaultconf attribute on the publications tag
+         private String newDefaultConf = null;
+         
+@@ -225,10 +250,15 @@
+         public void startElement(String uri, String localName, String qName, Attributes attributes)
+                 throws SAXException {
+             inHeader = false;
++            endIndent();
+             if (justOpen != null) {
+                 write(">");
+             }
++
++            flushMergedElementsBefore(qName);
+             context.push(qName);
++
++            String path = getContext();
+             if ("info".equals(qName)) {
+                 infoStarted(attributes);
+             } else if (replaceInclude && "include".equals(qName)
+@@ -236,15 +266,17 @@
+                 //TODO, in the case of !replaceInclude, we should still replace the relative path
+                 //by an absolute path. 
+                 includeStarted(attributes);
+-            } else if ("ivy-module/dependencies/dependency".equals(getContext())) {
++            } else if ("ivy-module/info/extends".equals(path)) {
++                startExtends(attributes);
++            } else if ("ivy-module/dependencies/dependency".equals(path)) {
+                 startElementInDependency(attributes);
+             } else if ("dependencies".equals(qName)) {
+                 startDependencies(attributes);
+-            } else if ("ivy-module/configurations/conf".equals(getContext())) {
++            } else if ("ivy-module/configurations/conf".equals(path)) {
+                 startElementInConfigurationsConf(qName, attributes);
+-            } else if ("ivy-module/publications/artifact/conf".equals(getContext())
+-                    || "ivy-module/dependencies/dependency/conf".equals(getContext())
+-                    || "ivy-module/dependencies/dependency/artifact/conf".equals(getContext())) {
++            } else if ("ivy-module/publications/artifact/conf".equals(path)
++                    || "ivy-module/dependencies/dependency/conf".equals(path)
++                    || "ivy-module/dependencies/dependency/artifact/conf".equals(path)) {
+                 buffers.push(new ExtendedBuffer(getContext()));
+                 ((ExtendedBuffer) confAttributeBuffers.peek()).setDefaultPrint(false);
+                 String confName = substitute(settings, attributes.getValue("name"));
+@@ -257,7 +289,7 @@
+                                 + substitute(settings, attributes.getValue(i)) + "\"");
+                     }
+                 }
+-            } else if ("ivy-module/publications/artifact".equals(getContext())) {
++            } else if ("ivy-module/publications/artifact".equals(path)) {
+                 ExtendedBuffer buffer = new ExtendedBuffer(getContext());
+                 buffers.push(buffer);
+                 confAttributeBuffers.push(buffer);
+@@ -278,7 +310,7 @@
+                                 + substitute(settings, attributes.getValue(i)) + "\"");
+                     }
+                 }
+-            } else if ("ivy-module/dependencies/dependency/artifact".equals(getContext())) {
++            } else if ("ivy-module/dependencies/dependency/artifact".equals(path)) {
+                 ExtendedBuffer buffer = new ExtendedBuffer(getContext());
+                 buffers.push(buffer);
+                 confAttributeBuffers.push(buffer);
+@@ -298,9 +330,22 @@
+                                 + substitute(settings, attributes.getValue(i)) + "\"");
+                     }
+                 }
+-            } else if ("ivy-module/publications".equals(getContext())) {
++            } else if ("ivy-module/publications".equals(path)) {
+                 startPublications(attributes);
+             } else {
++                if (options.isMerge() && path.startsWith("ivy-module/info")) {
++                    ModuleDescriptor merged = options.getMergedDescriptor();
++                    if (path.equals("ivy-module/info/description")) {
++                        //if the descriptor already contains a description, don't bother printing
++                        //the merged version.
++                        hasDescription = true;
++                    } else if (!infoElements.contains(qName)) {
++                        //according to the XSD, we should write description after all of the other
++                        //standard <info> elements but before any extended elements.
++                        writeInheritedDescription(merged);
++                    }
++                }
++
+                 // copy
+                 write("<" + qName);
+                 for (int i = 0; i < attributes.getLength(); i++) {
+@@ -312,6 +357,47 @@
+             // indent.append("\t");
+         }
+ 
++        private void startExtends(Attributes attributes) {
++            // in merge mode, comment out extends element
++            if (options.isMerge()) {
++                write("<!-- ");
++            }
++            write("<extends");
++
++            String org = substitute(settings, attributes.getValue("organisation"));
++            String module = substitute(settings, attributes.getValue("module"));
++            ModuleId parentId = new ModuleId(org, module);
++
++            for (int i = 0; i < attributes.getLength(); i++) {
++                String name = attributes.getQName(i);
++                String value = null;
++
++                if ("revision".equals(name)) {
++                    //replace inline revision with resolved parent revision
++                    ModuleDescriptor merged = options.getMergedDescriptor();
++                    if (merged != null) {
++                        ExtendsDescriptor[] parents = merged.getInheritedDescriptors();
++                        for (int j = 0; value == null && j < parents.length; ++j) {
++                            ModuleRevisionId resolvedId = parents[j].getResolvedParentRevisionId();
++                            if (parentId.equals(resolvedId.getModuleId())) {
++                                value = resolvedId.getRevision();
++                            }
++                        }
++                    }
++                    if (value == null) {
++                        value = substitute(settings, attributes.getValue(i));
++                    }
++                } else if ("organisation".equals(name)) {
++                    value = org;
++                } else if ("module".equals(name)) {
++                    value = module;
++                } else {
++                    value = substitute(settings, attributes.getValue(i));
++                }
++                write(" " + name + "=\"" + value + "\"");
++            }
++        }
++
+         private void startElementInConfigurationsConf(String qName, Attributes attributes) {
+             buffers.push(new ExtendedBuffer(getContext()));
+             String confName = substitute(settings, attributes.getValue("name"));
+@@ -556,18 +642,66 @@
+                 throw new SAXException(e);
+             }
+         }
+-
++        
+         private void infoStarted(Attributes attributes) {
+-            organisation = substitute(settings, attributes.getValue("organisation"));
++
+             String module = substitute(settings, attributes.getValue("module"));
+-            String rev = revision;
+-            if (rev == null) {
++            String rev = null;
++            String branch = null;
++            String status = null;
++            String namespace = null;
++            Map/*<String,String>*/ extraAttributes = null;
++
++            if (options.isMerge()) {
++                //get attributes from merged descriptor, ignoring raw XML
++                ModuleDescriptor merged = options.getMergedDescriptor();
++                ModuleRevisionId mergedMrid = merged.getModuleRevisionId();
++                organisation = mergedMrid.getOrganisation();
++                branch = mergedMrid.getBranch();
++                rev = mergedMrid.getRevision();
++                status = merged.getStatus();
++
++                //TODO: should namespace be added to ModuleDescriptor interface, so we don't
++                // have to do this kind of check?
++                if (merged instanceof DefaultModuleDescriptor) {
++                    Namespace ns = ((DefaultModuleDescriptor)merged).getNamespace();
++                    if (ns != null) {
++                        namespace = ns.getName();
++                    }
++                }
++                if (namespace == null) {
++                    namespace = attributes.getValue("namespace");
++                }
++
++                extraAttributes = merged.getQualifiedExtraAttributes();
++            } else {
++                //get attributes from raw XML, performing property substitution
++                organisation = substitute(settings, attributes.getValue("organisation"));
+                 rev = substitute(settings, attributes.getValue("revision"));
+-            }
+-            String branch = options.getBranch();
+-            if (branch == null) {
+                 branch = substitute(settings, attributes.getValue("branch"));
++                status = substitute(settings, attributes.getValue("status"));
++                namespace = substitute(settings, attributes.getValue("namespace"));
++                extraAttributes = new LinkedHashMap(attributes.getLength());
++                for (int i = 0; i < attributes.getLength(); i++) {
++                    String qname = attributes.getQName(i);
++                    if (!stdAtts.contains(qname)) {
++                        extraAttributes.put(qname, substitute(settings, attributes.getValue(i)));
++                    }
++                }
++            }
++            
++            //apply override values provided in options
++            if (revision != null) {
++                rev = revision;
+             }
++            if (options.getBranch() != null) {
++                branch = options.getBranch();
++            }
++            if (this.status != null) {
++                status = this.status;
++            }
++            
++            //if necessary translate mrid using optional namespace argument
+             ModuleRevisionId localMid = ModuleRevisionId.newInstance(organisation, module, branch,
+                 rev, ExtendableItemHelper.getExtraAttributes(settings, attributes,
+                     new String[] {"organisation", "module", "revision", "status", "publication",
+@@ -575,46 +709,40 @@
+             ModuleRevisionId systemMid = ns == null ? localMid : ns.getToSystemTransformer()
+                     .transform(localMid);
+ 
+-            write("<info organisation=\"" + XMLHelper.escape(systemMid.getOrganisation()) 
+-                + "\" module=\"" + XMLHelper.escape(systemMid.getName()) + "\"");
++            write("<info");
++            if (organisation != null) {
++                write(" organisation=\"" + XMLHelper.escape(systemMid.getOrganisation()) + "\"");
++            }
++            write(" module=\"" + XMLHelper.escape(systemMid.getName()) + "\"");
+             if (branch != null) {
+                 write(" branch=\"" + XMLHelper.escape(systemMid.getBranch()) + "\"");
+             }
+             if (systemMid.getRevision() != null) {
+                 write(" revision=\"" + XMLHelper.escape(systemMid.getRevision()) + "\"");
+             }
+-            if (status != null) {
+-                write(" status=\"" + XMLHelper.escape(status) + "\"");
+-            } else {
+-                write(" status=\"" + substitute(settings, attributes.getValue("status")) + "\"");
+-            }
++            write(" status=\"" + XMLHelper.escape(status) + "\"");
+             if (pubdate != null) {
+                 write(" publication=\"" + Ivy.DATE_FORMAT.format(pubdate) + "\"");
+             } else if (attributes.getValue("publication") != null) {
+                 write(" publication=\""
+                         + substitute(settings, attributes.getValue("publication")) + "\"");
+             }
+-            Collection stdAtts = Arrays.asList(new String[] {"organisation", "module", "branch",
+-                    "revision", "status", "publication", "namespace"});
+-            if (attributes.getValue("namespace") != null) {
+-                write(" namespace=\"" + substitute(settings, attributes.getValue("namespace"))
+-                        + "\"");
++            if (namespace != null) {
++                write(" namespace=\"" + namespace + "\"");
+             }
+-            for (int i = 0; i < attributes.getLength(); i++) {
+-                if (!stdAtts.contains(attributes.getQName(i))) {
+-                    write(" " + attributes.getQName(i) + "=\""
+-                            + substitute(settings, attributes.getValue(i)) + "\"");
+-                }
++
++            for (Iterator extras = extraAttributes.entrySet().iterator(); extras.hasNext(); ) {
++                Map.Entry extra = (Map.Entry)extras.next();
++                write(" " + extra.getKey() + "=\"" + extra.getValue() +  "\"");
+             }
+         }
+ 
+         private void write(String content) {
+-            if (buffers.isEmpty()) {
+-                out.print(content);
+-            } else {
+-                ExtendedBuffer buffer = (ExtendedBuffer) buffers.peek();
+-                buffer.getBuffer().append(content);
+-            }
++            getWriter().print(content);
++        }
++        
++        private PrintWriter getWriter() {
++            return buffers.isEmpty() ? out : ((ExtendedBuffer) buffers.peek()).getWriter();
+         }
+ 
+         private String getContext() {
+@@ -684,15 +812,279 @@
+             return newList.toString();
+         }
+ 
++        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
++            characters(ch, start, length);
++        }
++
+         public void characters(char[] ch, int start, int length) throws SAXException {
+             if (justOpen != null) {
+                 write(">");
+                 justOpen = null;
+             }
+             write(String.valueOf(ch, start, length));
++            
++            //examine characters for current indent level, keeping in mind
++            //that our indent might be split across multiple calls to characters()
++            for (int i = start, end = start + length; i < end; ++i) {
++                char c = ch[i];
++                if (c == '\r' || c == '\n') {
++                    //newline resets the indent level
++                    currentIndent.setLength(0);
++                    indenting = true;
++                } else if (indenting) {
++                    //indent continues until first non-whitespace character
++                    if (Character.isWhitespace(c)) {
++                        currentIndent.append(c);
++                    } else {
++                        endIndent();
++                    }
++                }
++            }
++        }
++
++        /** record the current indent level for future elements that appear at the same depth */
++        private void endIndent() {
++            if (indenting) {
++                //record the indent at this level.  if we insert any elements at
++                //this level, we'll use the same indent.
++                setIndent(context.size() - 1, currentIndent.toString());
++                indenting = false;
++            }
++        }
++
++        /**
++         * Set the indent for the given depth.  Indents less than the provided depth
++         * will be calculated automatically, if they have not already been defined.
++         */
++        private void setIndent(int level, String indent) {
++            fillIndents(level);
++            indentLevels.set(level, indent);
++        }
++
++        /**
++         * Guarantee that indent levels have been calculated up to and including the
++         * given depth (starting at 0).
++         */
++        private void fillIndents(int level) {
++            if (indentLevels.isEmpty()) {
++                //add a default single-level indent until we see indents in the document
++                indentLevels.add("    "); 
++            }
++            String oneLevel = (String) indentLevels.get(0);
++            for (int fill = indentLevels.size(); fill <= level; ++fill) {
++                indentLevels.add(indentLevels.get(fill - 1) + oneLevel);
++            }
++        }
++
++        /** get the whitespace that should precede new elements at the current depth in the document */
++        private String getIndent() {
++            int level = context.size() - 1;
++            fillIndents(level);
++            return (String) indentLevels.get(level);
++        }
++
++        /**
++         * Write XML elements that do not appear in the source descriptor, but have been copied in
++         * from a parent module descriptor via &lt;extends&gt; declaration.
++         * @param merged child descriptor containing the merged data
++         * @param items the list of inherited items to print
++         * @param printer a printer that knows how to write the given type of item
++         * @param itemName the name of the container element, e.g. "configurations"
++         * @param includeContainer if true, include an enclosing element named
++         *   <code>itemName</code>. Otherwise just write the inherited items inline,
++         *   with a comment indicating where they came from.
++         */
++        private void writeInheritedItems(ModuleDescriptor merged, 
++                InheritableItem[] items, ItemPrinter printer, String itemName,
++                boolean includeContainer) {
++            //first categorize inherited items by their source module, so that 
++            //we can add some useful comments
++            PrintWriter out = getWriter();
++
++            Map inheritedItems = collateInheritedItems(merged, items);
++            boolean hasItems = !inheritedItems.isEmpty();
++
++            if (hasItems && includeContainer) {
++                if (currentIndent.length() == 0) {
++                    out.print(getIndent());
++                }
++                out.print("<" + itemName + ">");
++                context.push(itemName);
++                justOpen = null;
++            }
++
++            for (Iterator parents = inheritedItems.entrySet().iterator(); parents.hasNext();) {
++                Map.Entry entry = (Map.Entry) parents.next();
++                ModuleRevisionId parent = (ModuleRevisionId) entry.getKey();
++                List list = (List) entry.getValue();
++
++                if (justOpen != null) {
++                    out.println(">");
++                    justOpen = null; //helps endElement() decide how to write close tags
++                }
++                writeInheritanceComment(itemName, parent);
++                for (int c = 0; c < list.size(); ++c) {
++                    InheritableItem item = (InheritableItem) list.get(c);
++                    out.print(getIndent());
++                    printer.print(merged, item, out);
++                }
++            }
++
++            if (hasItems) {
++                if (includeContainer) {
++                    context.pop();
++                    out.println(getIndent() + "</" + itemName + ">");
++                    out.println();
++                }
++                //restore the prior indent
++                out.print(currentIndent);
++            }
++        }
++
++
++        private void writeInheritanceComment(String itemDescription, Object parentInfo) {
++            PrintWriter out = getWriter();
++            out.println();
++            out.println(getIndent() + "<!-- " + itemDescription + " inherited from "
++                + parentInfo + " -->");
++        }
++
++        /**
++         * Collect the given list of inherited descriptor items into lists keyed by parent Id.
++         * Thus all of the items inherited from parent A can be written together, then all of
++         * the items from parent B, and so on.
++         * @param merged the merged child descriptor
++         * @param items the inherited items to collate
++         * @return maps parent ModuleRevisionId to a List of InheritedItems imported from that parent
++         */
++        private Map/*<ModuleRevisionId,List>*/ collateInheritedItems(ModuleDescriptor merged, 
++                InheritableItem[] items) {
++            LinkedHashMap/*<ModuleRevisionId,List>*/ inheritedItems = new LinkedHashMap();
++            for (int i = 0; i < items.length; ++i) {
++                ModuleRevisionId source = items[i].getSourceModule();
++                //ignore items that are defined directly in the child descriptor
++                if (source != null 
++                    && !source.getModuleId().equals(merged.getModuleRevisionId().getModuleId())) {
++                    List accum = (List) inheritedItems.get(source);
++                    if (accum == null) {
++                        accum = new ArrayList();
++                        inheritedItems.put(source, accum);
++                    }
++                    accum.add(items[i]);
++                }
++            }
++            return inheritedItems;
++        }
++
++        /**
++         * If no info/description element has yet been written, write the description inherited from
++         * the parent descriptor, if any.  Calling this method more than once has no affect.
++         */
++        private void writeInheritedDescription(ModuleDescriptor merged) {
++            if (!hasDescription) {
++                hasDescription = true;
++                String description = merged.getDescription();
++                if (description != null) {
++                    PrintWriter writer = getWriter();
++                    if (justOpen != null) {
++                        writer.println(">");
++                    }
++                    writeInheritanceComment("description", "parent");
++                    writer.println(getIndent() + "<description>" + XMLHelper.escape(description) + "</description>");
++                    //restore the indent that existed before we wrote the extra elements
++                    writer.print(currentIndent);
++                    justOpen = null;
++                }
++            }
++        }
++
++        private void writeInheritedConfigurations(ModuleDescriptor merged) {
++            if (!mergedConfigurations) {
++                mergedConfigurations = true;
++                writeInheritedItems(merged, merged.getConfigurations(),
++                    ConfigurationPrinter.INSTANCE, "configurations", false);
++            }
++        }
++
++        private void writeInheritedDependencies(ModuleDescriptor merged) {
++            if (!mergedDependencies) {
++                mergedDependencies = true;
++                writeInheritedItems(merged, merged.getDependencies(),
++                    DependencyPrinter.INSTANCE, "dependencies", false);
++            }
+         }
+ 
++        /**
++         * <p>If publishing in merge mode, guarantee that any merged elements appearing
++         * before <code>moduleElement</code> have been written.  This method should
++         * be called <i>before</i> we write the start tag of <code>moduleElement</code>.
++         * This covers cases where merged elements like "configurations" and "dependencies" appear
++         * in the parent descriptor, but are completely missing in the child descriptor.</p>
++         *
++         * <p>For example, if "moduleElement" is "dependencies", guarantees that "configurations"
++         * has been written.  If <code>moduleElement</code> is <code>null</code>, then all
++         * missing merged elements will be flushed.</p>
++         *
++         * @param moduleElement a descriptor element name, for example "configurations" or "info"
++         */
++        private void flushMergedElementsBefore(String moduleElement) {
++            if (options.isMerge() && context.size() == 1 && "ivy-module".equals(context.peek())
++                && !(mergedConfigurations && mergedDependencies)) {
++
++                //calculate the position of the element in ivy-module
++                int position = moduleElement == null ? moduleElements.size()
++                        : moduleElements.indexOf(moduleElement);
++
++                ModuleDescriptor merged = options.getMergedDescriptor();
++                PrintWriter out = getWriter();
++
++                //see if we should write <configurations>
++                if (!mergedConfigurations && position > CONFIGURATIONS_POSITION
++                        && merged.getConfigurations().length > 0) {
++
++                    mergedConfigurations = true;
++                    writeInheritedItems(merged, merged.getConfigurations(),
++                            ConfigurationPrinter.INSTANCE, "configurations", true);
++
++                }
++                //see if we should write <dependencies>
++                if (!mergedDependencies && position > DEPENDENCIES_POSITION
++                    && merged.getDependencies().length > 0) {
++
++                    mergedDependencies = true;
++                    writeInheritedItems(merged, merged.getDependencies(),
++                            DependencyPrinter.INSTANCE, "dependencies", true);
++
++                }
++            }
++        }
++        private void flushAllMergedElements() {
++            flushMergedElementsBefore(null);
++        }
++
+         public void endElement(String uri, String localName, String qName) throws SAXException {
++            
++            String path = getContext();
++            if (options.isMerge()) {
++                ModuleDescriptor merged = options.getMergedDescriptor();
++
++                if ("ivy-module/info".equals(path)) {
++                    //guarantee that inherited description has been written before
++                    //info element closes.
++                    writeInheritedDescription(merged);
++                } else if ("ivy-module/configurations".equals(path)) {
++                    //write inherited configurations after all child configurations
++                    writeInheritedConfigurations(merged);
++                } else if ("ivy-module/dependencies".equals(path)) {
++                    //write inherited dependencies after all child dependencies
++                    writeInheritedDependencies(merged);
++                } else if ("ivy-module".equals(path)) {
++                    //write any remaining inherited data before we close the
++                    //descriptor.
++                    flushAllMergedElements();
++                }
++            }
++            
+             if (qName.equals(justOpen)) {
+                 write("/>");
+             } else {
+@@ -701,21 +1093,26 @@
+ 
+             if (!buffers.isEmpty()) {
+                 ExtendedBuffer buffer = (ExtendedBuffer) buffers.peek();
+-                if (buffer.getContext().equals(getContext())) {
++                if (buffer.getContext().equals(path)) {
+                     buffers.pop();
+                     if (buffer.isPrint()) {
+-                        write(buffer.getBuffer().toString());
++                        write(buffer.toString());
+                     }
+                 }
+             }
+ 
+             if (!confAttributeBuffers.isEmpty()) {
+                 ExtendedBuffer buffer = (ExtendedBuffer) confAttributeBuffers.peek();
+-                if (buffer.getContext().equals(getContext())) {
++                if (buffer.getContext().equals(path)) {
+                     confAttributeBuffers.pop();
+                 }
+             }
+ 
++            //<extends> element is commented out when in merge mode.
++            if (options.isMerge() && "ivy-module/info/extends".equals(path)) {
++                write(" -->");
++            }
++
+             justOpen = null;
+             context.pop();
+         }
+@@ -834,7 +1231,9 @@
+ 
+         private boolean defaultPrint = false;
+ 
+-        private StringBuffer buffer = new StringBuffer();
++        private StringWriter buffer = new StringWriter();
++        
++        private PrintWriter writer = new PrintWriter(buffer);
+ 
+         ExtendedBuffer(String context) {
+             this.context = context;
+@@ -855,12 +1254,48 @@
+             this.defaultPrint = print;
+         }
+ 
+-        StringBuffer getBuffer() {
+-            return buffer;
++        PrintWriter getWriter() {
++            return writer;
+         }
+ 
+         String getContext() {
+             return context;
+         }
++        
++        public String toString() {
++            writer.flush();
++            return buffer.toString();
++        }
++    }
++    
++    /**
++     * Prints a descriptor item's XML representation
++     */
++    protected static interface ItemPrinter {
++        /**
++         * Print an XML representation of <code>item</code> to <code>out</code>.
++         * @param parent the module descriptor containing <code>item</code>
++         * @param item subcomponent of the descriptor, for example a {@link DependencyDescriptor} 
++         *   or {@link Configuration}
++         */
++        public void print(ModuleDescriptor parent, Object item, PrintWriter out);
++    }
++    
++    protected static class DependencyPrinter implements ItemPrinter {
++        
++        public static final DependencyPrinter INSTANCE = new DependencyPrinter();
++        
++        public void print(ModuleDescriptor parent, Object item, PrintWriter out) {
++            XmlModuleDescriptorWriter.printDependency(parent, (DependencyDescriptor) item, out);
++        }
++    }
++    
++    protected static class ConfigurationPrinter implements ItemPrinter {
++        
++        public static final ConfigurationPrinter INSTANCE = new ConfigurationPrinter();
++        
++        public void print(ModuleDescriptor parent, Object item, PrintWriter out) {
++            XmlModuleDescriptorWriter.printConfiguration((Configuration) item, out);
++        }
+     }
+ }
+Index: src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorWriter.java
+===================================================================
+--- src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorWriter.java	(revision 920176)
++++ src/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorWriter.java	(working copy)
+@@ -29,19 +29,11 @@
+ 
+ import org.apache.ivy.Ivy;
+ import org.apache.ivy.core.IvyPatternHelper;
+-import org.apache.ivy.core.module.descriptor.Artifact;
+-import org.apache.ivy.core.module.descriptor.Configuration;
+-import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
+-import org.apache.ivy.core.module.descriptor.DependencyArtifactDescriptor;
+-import org.apache.ivy.core.module.descriptor.DependencyDescriptor;
+-import org.apache.ivy.core.module.descriptor.DependencyDescriptorMediator;
+-import org.apache.ivy.core.module.descriptor.ExcludeRule;
+-import org.apache.ivy.core.module.descriptor.IncludeRule;
+-import org.apache.ivy.core.module.descriptor.License;
+-import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
+-import org.apache.ivy.core.module.descriptor.OverrideDependencyDescriptorMediator;
++import org.apache.ivy.core.module.descriptor.*;
++import org.apache.ivy.core.module.id.ModuleRevisionId;
+ import org.apache.ivy.plugins.matcher.MapMatcher;
+ import org.apache.ivy.util.Message;
++import org.apache.ivy.util.StringUtils;
+ import org.apache.ivy.util.XMLHelper;
+ import org.apache.ivy.util.extendable.ExtendableItem;
+ 
+@@ -93,82 +85,89 @@
+         if (dds.length > 0) {
+             out.println("\t<dependencies>");
+             for (int i = 0; i < dds.length; i++) {
+-                out.print("\t\t<dependency");
+-                out.print(" org=\"" 
+-                    + XMLHelper.escape(dds[i].getDependencyRevisionId().getOrganisation()) + "\"");
+-                out.print(" name=\"" 
+-                    + XMLHelper.escape(dds[i].getDependencyRevisionId().getName()) + "\"");
+-                if (dds[i].getDependencyRevisionId().getBranch() != null) {
+-                    out.print(" branch=\"" 
+-                        + XMLHelper.escape(dds[i].getDependencyRevisionId().getBranch()) + "\"");
+-                }
+-                out.print(" rev=\"" 
+-                    + XMLHelper.escape(dds[i].getDependencyRevisionId().getRevision()) + "\"");
+-                if (!dds[i].getDynamicConstraintDependencyRevisionId()
+-                        .equals(dds[i].getDependencyRevisionId())) {
+-                    if (dds[i].getDynamicConstraintDependencyRevisionId().getBranch() != null) {
+-                        out.print(" branchConstraint=\"" + XMLHelper.escape(
+-                             dds[i].getDynamicConstraintDependencyRevisionId().getBranch()) + "\"");
+-                    }
+-                    out.print(" revConstraint=\"" + XMLHelper.escape(
+-                        dds[i].getDynamicConstraintDependencyRevisionId().getRevision()) + "\"");
+-                }
+-                if (dds[i].isForce()) {
+-                    out.print(" force=\"" + dds[i].isForce() + "\"");
+-                }
+-                if (dds[i].isChanging()) {
+-                    out.print(" changing=\"" + dds[i].isChanging() + "\"");
+-                }
+-                if (!dds[i].isTransitive()) {
+-                    out.print(" transitive=\"" + dds[i].isTransitive() + "\"");
+-                }
+-                out.print(" conf=\"");
+-                String[] modConfs = dds[i].getModuleConfigurations();
+-                for (int j = 0; j < modConfs.length; j++) {
+-                    String[] depConfs = dds[i].getDependencyConfigurations(modConfs[j]);
+-                    out.print(XMLHelper.escape(modConfs[j]) + "->");
+-                    for (int k = 0; k < depConfs.length; k++) {
+-                        out.print(XMLHelper.escape(depConfs[k]));
+-                        if (k + 1 < depConfs.length) {
+-                            out.print(",");
+-                        }
+-                    }
+-                    if (j + 1 < modConfs.length) {
+-                        out.print(";");
+-                    }
+-                }
+-                out.print("\"");
+-                
+-                printExtraAttributes(dds[i], out, " ");
+-                
+-                DependencyArtifactDescriptor[] depArtifacts = dds[i].getAllDependencyArtifacts();
+-                if (depArtifacts.length > 0) {
+-                    out.println(">");
+-                }
+-                printDependencyArtefacts(md, out, depArtifacts);
+-                
+-                IncludeRule[] includes = dds[i].getAllIncludeRules();
+-                if (includes.length > 0 && depArtifacts.length == 0) {
+-                        out.println(">");
+-                    }
+-                printDependencyIncludeRules(md, out, includes);
+-                
+-                ExcludeRule[] excludes = dds[i].getAllExcludeRules();
+-                if (excludes.length > 0 && includes.length == 0 && depArtifacts.length == 0) {
+-                     out.println(">");
+-                }
+-                printDependencyExcludeRules(md, out, excludes);
+-                if (includes.length + excludes.length + depArtifacts.length == 0) {
+-                    out.println("/>");
+-                } else {
+-                    out.println("\t\t</dependency>");
+-                }
++                DependencyDescriptor dep = dds[i];
++                out.print("\t\t");
++                printDependency(md, dep, out);
+             }
+             printAllExcludes(md, out);
+             printAllMediators(md, out);
+             out.println("\t</dependencies>");
+         }
+     }
++    
++    protected static void printDependency(ModuleDescriptor md, DependencyDescriptor dep, 
++            PrintWriter out) {
++        out.print("<dependency");
++        out.print(" org=\"" 
++            + XMLHelper.escape(dep.getDependencyRevisionId().getOrganisation()) + "\"");
++        out.print(" name=\"" 
++            + XMLHelper.escape(dep.getDependencyRevisionId().getName()) + "\"");
++        if (dep.getDependencyRevisionId().getBranch() != null) {
++            out.print(" branch=\"" 
++                + XMLHelper.escape(dep.getDependencyRevisionId().getBranch()) + "\"");
++        }
++        out.print(" rev=\"" 
++            + XMLHelper.escape(dep.getDependencyRevisionId().getRevision()) + "\"");
++        if (!dep.getDynamicConstraintDependencyRevisionId()
++                .equals(dep.getDependencyRevisionId())) {
++            if (dep.getDynamicConstraintDependencyRevisionId().getBranch() != null) {
++                out.print(" branchConstraint=\"" + XMLHelper.escape(
++                     dep.getDynamicConstraintDependencyRevisionId().getBranch()) + "\"");
++            }
++            out.print(" revConstraint=\"" + XMLHelper.escape(
++                dep.getDynamicConstraintDependencyRevisionId().getRevision()) + "\"");
++        }
++        if (dep.isForce()) {
++            out.print(" force=\"" + dep.isForce() + "\"");
++        }
++        if (dep.isChanging()) {
++            out.print(" changing=\"" + dep.isChanging() + "\"");
++        }
++        if (!dep.isTransitive()) {
++            out.print(" transitive=\"" + dep.isTransitive() + "\"");
++        }
++        out.print(" conf=\"");
++        String[] modConfs = dep.getModuleConfigurations();
++        for (int j = 0; j < modConfs.length; j++) {
++            String[] depConfs = dep.getDependencyConfigurations(modConfs[j]);
++            out.print(XMLHelper.escape(modConfs[j]) + "->");
++            for (int k = 0; k < depConfs.length; k++) {
++                out.print(XMLHelper.escape(depConfs[k]));
++                if (k + 1 < depConfs.length) {
++                    out.print(",");
++                }
++            }
++            if (j + 1 < modConfs.length) {
++                out.print(";");
++            }
++        }
++        out.print("\"");
++        
++        printExtraAttributes(dep, out, " ");
++        
++        DependencyArtifactDescriptor[] depArtifacts = dep.getAllDependencyArtifacts();
++        if (depArtifacts.length > 0) {
++            out.println(">");
++        }
++        printDependencyArtefacts(md, out, depArtifacts);
++        
++        IncludeRule[] includes = dep.getAllIncludeRules();
++        if (includes.length > 0 && depArtifacts.length == 0) {
++                out.println(">");
++            }
++        printDependencyIncludeRules(md, out, includes);
++        
++        ExcludeRule[] excludes = dep.getAllExcludeRules();
++        if (excludes.length > 0 && includes.length == 0 && depArtifacts.length == 0) {
++             out.println(">");
++        }
++        printDependencyExcludeRules(md, out, excludes);
++        if (includes.length + excludes.length + depArtifacts.length == 0) {
++            out.println("/>");
++        } else {
++            out.println("\t\t</dependency>");
++        }
++    }
+ 
+     private static void printAllMediators(ModuleDescriptor md, PrintWriter out) {
+         Map/*<MapMatcher, DependencyDescriptorMediator>*/ mediators 
+@@ -381,34 +380,40 @@
+         if (confs.length > 0) {
+             out.println("\t<configurations>");
+             for (int i = 0; i < confs.length; i++) {
+-                out.print("\t\t<conf");
+-                out.print(" name=\"" + XMLHelper.escape(confs[i].getName()) + "\"");
+-                out.print(" visibility=\"" 
+-                    + XMLHelper.escape(confs[i].getVisibility().toString()) + "\"");
+-                if (confs[i].getDescription() != null) {
+-                    out.print(" description=\"" 
+-                        + XMLHelper.escape(confs[i].getDescription()) + "\"");
+-                }
+-                String[] exts = confs[i].getExtends();
+-                if (exts.length > 0) {
+-                    out.print(" extends=\"");
+-                    for (int j = 0; j < exts.length; j++) {
+-                        out.print(XMLHelper.escape(exts[j]));
+-                        if (j + 1 < exts.length) {
+-                            out.print(",");
+-                        }
+-                    }
+-                    out.print("\"");
+-                }
+-                if (confs[i].getDeprecated() != null) {
+-                    out.print(" deprecated=\"" + XMLHelper.escape(confs[i].getDeprecated()) + "\"");
+-                }
+-                printExtraAttributes(confs[i], out, " ");
+-                out.println("/>");
++                Configuration conf = confs[i];
++                out.print("\t\t");
++                printConfiguration(conf, out);
+             }
+             out.println("\t</configurations>");
+         }
+     }
++    
++    protected static void printConfiguration(Configuration conf, PrintWriter out) {
++        out.print("<conf");
++        out.print(" name=\"" + XMLHelper.escape(conf.getName()) + "\"");
++        out.print(" visibility=\"" 
++            + XMLHelper.escape(conf.getVisibility().toString()) + "\"");
++        if (conf.getDescription() != null) {
++            out.print(" description=\"" 
++                + XMLHelper.escape(conf.getDescription()) + "\"");
++        }
++        String[] exts = conf.getExtends();
++        if (exts.length > 0) {
++            out.print(" extends=\"");
++            for (int j = 0; j < exts.length; j++) {
++                out.print(XMLHelper.escape(exts[j]));
++                if (j + 1 < exts.length) {
++                    out.print(",");
++                }
++            }
++            out.print("\"");
++        }
++        if (conf.getDeprecated() != null) {
++            out.print(" deprecated=\"" + XMLHelper.escape(conf.getDeprecated()) + "\"");
++        }
++        printExtraAttributes(conf, out, " ");
++        out.println("/>");
++    }
+ 
+     private static void printInfoTag(ModuleDescriptor md, PrintWriter out) {
+         out.println("\t<info organisation=\"" 
+@@ -442,6 +447,21 @@
+         }
+         if (requireInnerInfoElement(md)) {
+             out.println("\t>");
++            ExtendsDescriptor[] parents = md.getInheritedDescriptors();
++            for (int i = 0; i < parents.length; i++) {
++                ExtendsDescriptor parent = parents[i];
++                ModuleRevisionId mrid = parent.getParentRevisionId();
++                out.print("\t\t<extends organisation=\"" + XMLHelper.escape(mrid.getOrganisation()) + "\""
++                        + " module=\"" + XMLHelper.escape(mrid.getName()) + "\""
++                        + " revision=\"" + XMLHelper.escape(mrid.getRevision()) + "\"");
++
++                String location = parent.getLocation();
++                if (location != null) {
++                    out.print(" location=\"" + XMLHelper.escape(location) + "\"");
++                }
++                out.print(" extendTypes=\"" + StringUtils.join(parent.getExtendsTypes(), ",") + "\"");
++                out.println("/>");
++            }
+             License[] licenses = md.getLicenses();
+             for (int i = 0; i < licenses.length; i++) {
+                 License license = licenses[i];
+@@ -492,7 +512,8 @@
+         return md.getExtraInfo().size() > 0 
+                 || md.getHomePage() != null 
+                 || (md.getDescription() != null && md.getDescription().trim().length() > 0) 
+-                || md.getLicenses().length > 0;
++                || md.getLicenses().length > 0
++                || md.getInheritedDescriptors().length > 0;
+     }
+ 
+     private static String getConfs(ModuleDescriptor md, Artifact artifact) {
+Index: src/java/org/apache/ivy/plugins/parser/xml/ivy.xsd
+===================================================================
+--- src/java/org/apache/ivy/plugins/parser/xml/ivy.xsd	(revision 920176)
++++ src/java/org/apache/ivy/plugins/parser/xml/ivy.xsd	(working copy)
+@@ -60,6 +60,15 @@
+   		    <xs:element name="info">
+             	<xs:complexType>
+ 			        <xs:sequence>
++			      		<xs:element name="extends" minOccurs="0" maxOccurs="unbounded">
++			      		<xs:complexType>
++			      			<xs:attribute name="organisation" type="xs:string" use="required"/>
++			      			<xs:attribute name="module" type="xs:string" use="required"/>
++			      			<xs:attribute name="revision" type="xs:string" use="required"/>
++			      			<xs:attribute name="location" type="xs:string" />
++			      			<xs:attribute name="extendType" type="xs:string" />
++			              	</xs:complexType>
++			      		</xs:element>
+ 			      		<xs:element name="license" minOccurs="0" maxOccurs="unbounded">
+ 			            	<xs:complexType>
+ 					            <xs:attribute name="name" type="xs:string" use="required"/>
+@@ -91,7 +100,7 @@
+ 			      		</xs:element>
+ 			      		<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+ 			        </xs:sequence>
+-		            <xs:attribute name="organisation" type="xs:string" use="required"/>
++		            <xs:attribute name="organisation" type="xs:string"/>
+ 		            <xs:attribute name="module" type="xs:string" use="required"/>
+ 		            <xs:attribute name="branch" type="xs:string"/>
+ 		            <xs:attribute name="revision" type="xs:string"/>
+Index: test/java/org/apache/ivy/ant/IvyDeliverTest.java
+===================================================================
+--- test/java/org/apache/ivy/ant/IvyDeliverTest.java	(revision 920176)
++++ test/java/org/apache/ivy/ant/IvyDeliverTest.java	(working copy)
+@@ -20,6 +20,9 @@
+ import java.io.BufferedReader;
+ import java.io.File;
+ import java.io.FileReader;
++import java.io.IOException;
++import java.io.InputStreamReader;
++import java.text.ParseException;
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+@@ -87,6 +90,61 @@
+         del.execute();
+     }
+ 
++    public void testMergeParent() throws IOException, ParseException {
++        //publish the parent descriptor first, so that it can be found while
++        //we are reading the child descriptor.
++        project.setProperty("ivy.dep.file", "test/java/org/apache/ivy/ant/ivy-multiconf.xml");
++        IvyResolve res = new IvyResolve();
++        res.setProject(project);
++        res.execute();
++
++        IvyPublish pubParent = new IvyPublish();
++        pubParent.setProject(project);
++        pubParent.setResolver("1");
++        pubParent.setPubrevision("1.0");
++        File art = new File("build/test/deliver/resolve-simple-1.0.jar");
++        FileUtil.copy(new File("test/repositories/1/org1/mod1.1/jars/mod1.1-1.0.jar"), art, null);
++        pubParent.execute();
++        
++        //resolve and deliver the child descriptor
++        project.setProperty("ivy.dep.file", "test/java/org/apache/ivy/ant/ivy-extends-multiconf.xml");
++        res = new IvyResolve();
++        res.setProject(project);
++        res.execute();
++        
++        deliver.setMerge(true);
++        deliver.setPubrevision("1.2");
++        deliver.setDeliverpattern("build/test/deliver/merge/ivy-[revision].xml");
++        deliver.execute();
++
++        // should have delivered the file to the specified destination
++        File delivered = new File("build/test/deliver/merge/ivy-1.2.xml");
++        assertTrue(delivered.exists());
++
++        // do a text compare, since we want to test comments as well as structure.
++        // we could do a better job of this with xmlunit
++
++        int lineNo = 1;
++
++        BufferedReader merged = new BufferedReader(new FileReader(delivered));
++        BufferedReader expected = new BufferedReader(new InputStreamReader(getClass()
++            .getResourceAsStream("ivy-extends-merged.xml")));
++        for (String mergeLine = merged.readLine(),
++                    expectedLine = expected.readLine(); 
++             mergeLine != null && expectedLine != null; 
++             mergeLine = merged.readLine(),
++             expectedLine = expected.readLine()) {
++
++            mergeLine = mergeLine.trim();
++            expectedLine = expectedLine.trim();
++
++            if (!mergeLine.startsWith("<info"))
++                assertEquals("published descriptor matches at line[" + lineNo + "]", expectedLine.trim(), mergeLine.trim());
++
++            ++lineNo;
++        }
++    }
++    
+     public void testSimple() throws Exception {
+         project.setProperty("ivy.dep.file", "test/java/org/apache/ivy/ant/ivy-latest.xml");
+         IvyResolve res = new IvyResolve();
+Index: test/java/org/apache/ivy/ant/IvyPublishTest.java
+===================================================================
+--- test/java/org/apache/ivy/ant/IvyPublishTest.java	(revision 920176)
++++ test/java/org/apache/ivy/ant/IvyPublishTest.java	(working copy)
+@@ -20,7 +20,9 @@
+ import java.io.BufferedReader;
+ import java.io.File;
+ import java.io.FileReader;
++import java.io.IOException;
+ import java.io.InputStreamReader;
++import java.text.ParseException;
+ 
+ import junit.framework.TestCase;
+ 
+@@ -85,6 +87,124 @@
+         del.execute();
+     }
+ 
++    public void testMergeParent() throws IOException, ParseException {
++        //publish the parent descriptor first, so that it can be found while
++        //we are reading the child descriptor.
++        project.setProperty("ivy.dep.file", "test/java/org/apache/ivy/ant/ivy-multiconf.xml");
++        IvyResolve res = new IvyResolve();
++        res.setProject(project);
++        res.execute();
++
++        IvyPublish pubParent = new IvyPublish();
++        pubParent.setProject(project);
++        pubParent.setResolver("1");
++        pubParent.setPubrevision("1.0");
++        File art = new File("build/test/publish/resolve-simple-1.0.jar");
++        FileUtil.copy(new File("test/repositories/1/org1/mod1.1/jars/mod1.1-1.0.jar"), art, null);
++        pubParent.execute();
++        
++        //update=true implies merge=true
++        project.setProperty("ivy.dep.file", "test/java/org/apache/ivy/ant/ivy-extends-multiconf.xml");
++        publish.setResolver("1");
++        publish.setUpdate(true);
++        publish.setOrganisation("apache");
++        publish.setModule("resolve-extends");
++        publish.setRevision("1.0");
++        publish.setPubrevision("1.2");
++        publish.setStatus("release");
++        publish.addArtifactspattern("test/java/org/apache/ivy/ant/ivy-extends-multiconf.xml");
++        publish.execute();
++
++        // should have published the files with "1" resolver
++        File published = new File("test/repositories/1/apache/resolve-extends/ivys/ivy-1.2.xml");
++        assertTrue(published.exists());
++
++        // do a text compare, since we want to test comments as well as structure.
++        // we could do a better job of this with xmlunit
++
++        int lineNo = 1;
++
++        BufferedReader merged = new BufferedReader(new FileReader(published));
++        BufferedReader expected = new BufferedReader(new InputStreamReader(getClass()
++            .getResourceAsStream("ivy-extends-merged.xml")));
++        for (String mergeLine = merged.readLine(),
++                    expectedLine = expected.readLine(); 
++            mergeLine != null && expectedLine != null; 
++            mergeLine = merged.readLine(),
++            expectedLine = expected.readLine()) {
++
++            //strip timestamps for the comparison
++            if (mergeLine.indexOf("<info") >= 0) {
++                mergeLine = mergeLine.replaceFirst("\\s?publication=\"\\d+\"", "");
++            }
++            //discard whitespace-only lines
++            if (!(mergeLine.trim().equals("") && expectedLine.trim().equals(""))) {
++                assertEquals("published descriptor matches at line[" + lineNo + "]", expectedLine, mergeLine);
++            }
++
++            ++lineNo;
++        }
++    }
++    
++    public void testMinimalMerge() throws IOException, ParseException {
++        //publish the parent descriptor first, so that it can be found while
++        //we are reading the child descriptor.
++        project.setProperty("ivy.dep.file", "test/java/org/apache/ivy/ant/ivy-multiconf.xml");
++        IvyResolve res = new IvyResolve();
++        res.setProject(project);
++        res.execute();
++
++        IvyPublish pubParent = new IvyPublish();
++        pubParent.setProject(project);
++        pubParent.setResolver("1");
++        pubParent.setPubrevision("1.0");
++        File art = new File("build/test/publish/resolve-simple-1.0.jar");
++        FileUtil.copy(new File("test/repositories/1/org1/mod1.1/jars/mod1.1-1.0.jar"), art, null);
++        pubParent.execute();
++
++        //update=true implies merge=true
++        project.setProperty("ivy.dep.file", "test/java/org/apache/ivy/ant/ivy-extends-minimal.xml");
++        publish.setResolver("1");
++        publish.setUpdate(true);
++        publish.setOrganisation("apache");
++        publish.setModule("resolve-extends");
++        publish.setRevision("1.0");
++        publish.setPubrevision("1.2");
++        publish.setStatus("release");
++        publish.addArtifactspattern("test/java/org/apache/ivy/ant/ivy-extends-minimal.xml");
++        publish.execute();
++
++        // should have published the files with "1" resolver
++        File published = new File("test/repositories/1/apache/resolve-minimal/ivys/ivy-1.2.xml");
++        assertTrue(published.exists());
++
++        // do a text compare, since we want to test comments as well as structure.
++        // we could do a better job of this with xmlunit
++
++        int lineNo = 1;
++
++        BufferedReader merged = new BufferedReader(new FileReader(published));
++        BufferedReader expected = new BufferedReader(new InputStreamReader(getClass()
++            .getResourceAsStream("ivy-extends-minimal-merged.xml")));
++        for (String mergeLine = merged.readLine(),
++                    expectedLine = expected.readLine();
++            mergeLine != null && expectedLine != null;
++            mergeLine = merged.readLine(),
++            expectedLine = expected.readLine()) {
++
++            //strip timestamps for the comparison
++            if (mergeLine.indexOf("<info") >= 0) {
++                mergeLine = mergeLine.replaceFirst("\\s?publication=\"\\d+\"", "");
++            }
++            //discard whitespace-only lines
++            if (!(mergeLine.trim().equals("") && expectedLine.trim().equals(""))) {
++                assertEquals("published descriptor matches at line[" + lineNo + "]", expectedLine, mergeLine);
++            }
++
++            ++lineNo;
++        }
++    }
++
+     public void testSimple() throws Exception {
+         project.setProperty("ivy.dep.file", "test/java/org/apache/ivy/ant/ivy-multiconf.xml");
+         IvyResolve res = new IvyResolve();
+Index: test/java/org/apache/ivy/ant/ivy-extends-merged.xml
+===================================================================
+--- test/java/org/apache/ivy/ant/ivy-extends-merged.xml	(revision 0)
++++ test/java/org/apache/ivy/ant/ivy-extends-merged.xml	(revision 0)
+@@ -0,0 +1,51 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="2.0"> 
++
++	<info organisation="apache" module="resolve-extends" revision="1.2" status="release">
++		<!-- <extends organisation="apache" module="resolve-simple" revision="1.0" location="./ivy-multiconf.xml"/> -->
++        
++		<!-- description inherited from parent -->
++		<description>Demonstrates configuration-specific dependencies</description>
++	</info>
++
++	<configurations>
++		<!-- conf not in parent -->
++		<conf name="extra"/>
++		<!-- overrides conf in parent -->
++		<conf name="default" extends="compile" description="overrides the conf definition in parent descriptor"/>
++
++		<!-- configurations inherited from apache#resolve-simple;1.0 -->
++		<conf name="compile" visibility="public"/>
++	</configurations>
++
++	<publications/>
++  
++	<dependencies>
++		<!-- not in parent -->
++		<dependency org="org2" name="mod2.1" rev="0.3" conf="default"/>
++		<!-- overrides parent -->
++		<dependency org="org1" name="mod1.1" rev="1.1" conf="default,compile->default" transitive="false"/>
++
++		<!-- dependencies inherited from apache#resolve-simple;1.0 -->
++		<dependency org="org1" name="mod1.2" rev="2.0" conf="default->default"/>
++		<dependency org="org1" name="mod1.1" rev="2.0" transitive="false" conf="compile->default"/>
++	</dependencies>
++
++</ivy-module>
+\ No newline at end of file
+Index: test/java/org/apache/ivy/ant/ivy-extends-minimal-merged.xml
+===================================================================
+--- test/java/org/apache/ivy/ant/ivy-extends-minimal-merged.xml	(revision 0)
++++ test/java/org/apache/ivy/ant/ivy-extends-minimal-merged.xml	(revision 0)
+@@ -0,0 +1,42 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="2.0"> 
++
++	<info organisation="apache" module="resolve-minimal" revision="1.2" status="release">
++		<!-- <extends organisation="apache" module="resolve-simple" revision="1.0" location="./ivy-multiconf.xml"/> -->
++        
++		<!-- description inherited from parent -->
++		<description>Demonstrates configuration-specific dependencies</description>
++	</info>
++
++	<configurations>
++		<!-- configurations inherited from apache#resolve-simple;1.0 -->
++		<conf name="default" visibility="public"/>
++		<conf name="compile" visibility="public"/>
++	</configurations>
++
++	<publications/>
++  
++	<dependencies>
++		<!-- dependencies inherited from apache#resolve-simple;1.0 -->
++		<dependency org="org1" name="mod1.2" rev="2.0" conf="default->default"/>
++		<dependency org="org1" name="mod1.1" rev="2.0" transitive="false" conf="compile->default"/>
++	</dependencies>
++
++</ivy-module>
+\ No newline at end of file
+Index: test/java/org/apache/ivy/ant/ivy-extends-minimal.xml
+===================================================================
+--- test/java/org/apache/ivy/ant/ivy-extends-minimal.xml	(revision 0)
++++ test/java/org/apache/ivy/ant/ivy-extends-minimal.xml	(revision 0)
+@@ -0,0 +1,27 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="2.0"> 
++
++	<info module="resolve-minimal">
++		<extends organisation="apache" module="resolve-simple" revision="latest.integration" location="./ivy-multiconf.xml"/>
++	</info>
++
++	<publications/>
++
++</ivy-module>
+\ No newline at end of file
+Index: test/java/org/apache/ivy/ant/ivy-extends-multiconf.xml
+===================================================================
+--- test/java/org/apache/ivy/ant/ivy-extends-multiconf.xml	(revision 0)
++++ test/java/org/apache/ivy/ant/ivy-extends-multiconf.xml	(revision 0)
+@@ -0,0 +1,41 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="2.0"> 
++
++	<info module="resolve-extends">
++		<extends organisation="apache" module="resolve-simple" revision="latest.integration" location="./ivy-multiconf.xml"/>
++	</info>
++
++	<configurations>
++		<!-- conf not in parent -->
++		<conf name="extra" />
++		<!-- overrides conf in parent -->
++		<conf name="default" extends="compile" description="overrides the conf definition in parent descriptor"/>
++	</configurations>
++
++	<publications/>
++
++	<dependencies>
++		<!-- not in parent -->
++		<dependency org="org2" name="mod2.1" rev="0.3" conf="default" />
++		<!-- overrides parent -->
++		<dependency org="org1" name="mod1.1" rev="1.1" conf="default,compile->default" transitive="false" />
++	</dependencies>
++
++</ivy-module>
+\ No newline at end of file
+Index: test/java/org/apache/ivy/ant/ivy-multiconf.xml
+===================================================================
+--- test/java/org/apache/ivy/ant/ivy-multiconf.xml	(revision 920176)
++++ test/java/org/apache/ivy/ant/ivy-multiconf.xml	(working copy)
+@@ -21,7 +21,9 @@
+ 	       module="resolve-simple"
+ 	       revision="1.0"
+ 	       status="release"
+-	/>
++	>
++        <description>Demonstrates configuration-specific dependencies</description>
++    </info>
+ 	<configurations>
+ 		<conf name="default" />
+ 		<conf name="compile" />
+Index: test/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorParserTest.java
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorParserTest.java	(revision 920176)
++++ test/java/org/apache/ivy/plugins/parser/xml/XmlModuleDescriptorParserTest.java	(working copy)
+@@ -31,7 +31,6 @@
+ import org.apache.ivy.core.module.descriptor.Configuration;
+ import org.apache.ivy.core.module.descriptor.DefaultDependencyDescriptor;
+ import org.apache.ivy.core.module.descriptor.DependencyDescriptor;
+-import org.apache.ivy.core.module.descriptor.DependencyDescriptorMediator;
+ import org.apache.ivy.core.module.descriptor.ExcludeRule;
+ import org.apache.ivy.core.module.descriptor.License;
+ import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
+@@ -46,6 +45,8 @@
+ import org.apache.ivy.plugins.matcher.GlobPatternMatcher;
+ import org.apache.ivy.plugins.matcher.PatternMatcher;
+ import org.apache.ivy.plugins.parser.AbstractModuleDescriptorParserTester;
++import org.apache.ivy.plugins.resolver.FileSystemResolver;
++import org.apache.ivy.util.FileUtil;
+ import org.apache.ivy.util.XMLHelper;
+ 
+ public class XmlModuleDescriptorParserTest extends AbstractModuleDescriptorParserTester {
+@@ -55,6 +56,8 @@
+         super.setUp();
+         
+         this.settings = new IvySettings();
++        //prevent test from polluting local cache
++        settings.setDefaultCache(new File("build/cache"));
+     }
+ 
+     public void testSimple() throws Exception {
+@@ -78,7 +81,7 @@
+         assertNotNull(md.getDependencies());
+         assertEquals(0, md.getDependencies().length);
+     }
+-
++    
+     public void testNamespaces() throws Exception {
+         ModuleDescriptor md = XmlModuleDescriptorParser.getInstance().parseDescriptor(settings,
+             getClass().getResource("test-namespaces.xml"), true);
+@@ -1018,4 +1021,333 @@
+             // expected
+         }
+     }
++    
++    public void testExtendsAll() throws Exception {
++        //default extends type is 'all' when no extendsType attribute is specified.
++        ModuleDescriptor md = XmlModuleDescriptorParser.getInstance().parseDescriptor(settings,
++            getClass().getResource("test-extends-all.xml"), true);
++        assertNotNull(md);
++        
++        assertEquals("myorg", md.getModuleRevisionId().getOrganisation());
++        assertEquals("mymodule", md.getModuleRevisionId().getName());
++        assertEquals(Ivy.getWorkingRevision(), md.getModuleRevisionId().getRevision());
++        assertEquals("integration", md.getStatus());
++
++        //verify that the parent description was merged.
++        assertEquals("Parent module description.", md.getDescription());
++        
++        //verify that the parent and child configurations were merged together.
++        final Configuration[] expectedConfs = { new Configuration("default"), 
++                new Configuration("conf1"), new Configuration("conf2") };
++        assertNotNull(md.getConfigurations());
++        assertEquals(Arrays.asList(expectedConfs), Arrays
++                .asList(md.getConfigurations()));
++
++        //verify parent and child dependencies were merged together.
++        DependencyDescriptor[] deps = md.getDependencies();
++        assertNotNull(deps);
++        assertEquals(2, deps.length);
++
++        assertEquals(Arrays.asList(new String[]{ "default" }), 
++            Arrays.asList(deps[0].getModuleConfigurations()));
++        ModuleRevisionId dep = deps[0].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule1", dep.getModuleId().getName());
++        assertEquals("1.0", dep.getRevision());
++
++        assertEquals(Arrays.asList(new String[]{ "conf1", "conf2" }), 
++            Arrays.asList(deps[1].getModuleConfigurations()));
++        dep = deps[1].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule2", dep.getModuleId().getName());
++        assertEquals("2.0", dep.getRevision());
++        
++        //verify only child publications are present
++        Artifact[] artifacts = md.getAllArtifacts();
++        assertNotNull(artifacts);
++        assertEquals(1, artifacts.length);
++        assertEquals("mymodule", artifacts[0].getName());
++        assertEquals("jar", artifacts[0].getType());
++    }
++    
++    public void testExtendsDependencies() throws Exception {
++        //descriptor specifies that only parent dependencies should be included
++        ModuleDescriptor md = XmlModuleDescriptorParser.getInstance().parseDescriptor(settings,
++            getClass().getResource("test-extends-dependencies.xml"), true);
++        assertNotNull(md);
++        
++        assertEquals("myorg", md.getModuleRevisionId().getOrganisation());
++        assertEquals("mymodule", md.getModuleRevisionId().getName());
++        assertEquals(Ivy.getWorkingRevision(), md.getModuleRevisionId().getRevision());
++        assertEquals("integration", md.getStatus());
++
++        //verify that the parent description was ignored.
++        assertEquals("", md.getDescription());
++        
++        //verify that the parent configurations were ignored.
++        final Configuration[] expectedConfs = { new Configuration("default") };
++        assertNotNull(md.getConfigurations());
++        assertEquals(Arrays.asList(expectedConfs), Arrays
++                .asList(md.getConfigurations()));
++
++        //verify parent dependencies were merged.
++        DependencyDescriptor[] deps = md.getDependencies();
++        assertNotNull(deps);
++        assertEquals(2, deps.length);
++
++        assertEquals(Arrays.asList(new String[]{ "default" }), 
++            Arrays.asList(deps[0].getModuleConfigurations()));
++        ModuleRevisionId dep = deps[0].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule1", dep.getModuleId().getName());
++        assertEquals("1.0", dep.getRevision());
++        
++        assertEquals(Arrays.asList(new String[]{ "default" }), 
++            Arrays.asList(deps[1].getModuleConfigurations()));
++        dep = deps[1].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule2", dep.getModuleId().getName());
++        assertEquals("2.0", dep.getRevision());
++        
++        //verify only child publications are present
++        Artifact[] artifacts = md.getAllArtifacts();
++        assertNotNull(artifacts);
++        assertEquals(1, artifacts.length);
++        assertEquals("mymodule", artifacts[0].getName());
++        assertEquals("jar", artifacts[0].getType());
++    }
++    
++    public void testExtendsConfigurations() throws Exception {
++        //descriptor specifies that only parent configurations should be included
++        ModuleDescriptor md = XmlModuleDescriptorParser.getInstance().parseDescriptor(settings,
++            getClass().getResource("test-extends-configurations.xml"), true);
++        assertNotNull(md);
++        
++        assertEquals("myorg", md.getModuleRevisionId().getOrganisation());
++        assertEquals("mymodule", md.getModuleRevisionId().getName());
++        assertEquals(Ivy.getWorkingRevision(), md.getModuleRevisionId().getRevision());
++        assertEquals("integration", md.getStatus());
++
++        //verify that the parent description was ignored.
++        assertEquals("", md.getDescription());
++        
++        //verify that the parent and child configurations were merged together.
++        final Configuration[] expectedConfs = { new Configuration("default"), 
++                new Configuration("conf1"), new Configuration("conf2") };
++        assertNotNull(md.getConfigurations());
++        assertEquals(Arrays.asList(expectedConfs), Arrays
++                .asList(md.getConfigurations()));
++
++        //verify parent dependencies were ignored.
++        DependencyDescriptor[] deps = md.getDependencies();
++        assertNotNull(deps);
++        assertEquals(1, deps.length);
++
++        assertEquals(Arrays.asList(new String[]{ "conf1", "conf2" }), 
++            Arrays.asList(deps[0].getModuleConfigurations()));
++        ModuleRevisionId dep = deps[0].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule2", dep.getModuleId().getName());
++        assertEquals("2.0", dep.getRevision());
++        
++        //verify only child publications are present
++        Artifact[] artifacts = md.getAllArtifacts();
++        assertNotNull(artifacts);
++        assertEquals(1, artifacts.length);
++        assertEquals("mymodule", artifacts[0].getName());
++        assertEquals("jar", artifacts[0].getType());
++    }
++    
++    public void testExtendsDescription() throws Exception {
++        //descriptor specifies that only parent description should be included
++        ModuleDescriptor md = XmlModuleDescriptorParser.getInstance().parseDescriptor(settings,
++            getClass().getResource("test-extends-description.xml"), true);
++        assertNotNull(md);
++        
++        assertEquals("myorg", md.getModuleRevisionId().getOrganisation());
++        assertEquals("mymodule", md.getModuleRevisionId().getName());
++        assertEquals(Ivy.getWorkingRevision(), md.getModuleRevisionId().getRevision());
++        assertEquals("integration", md.getStatus());
++
++        //verify that the parent description was merged.
++        assertEquals("Parent module description.", md.getDescription());
++        
++        //verify that the parent configurations were ignored.
++        final Configuration[] expectedConfs = { new Configuration("default") };
++        assertNotNull(md.getConfigurations());
++        assertEquals(Arrays.asList(expectedConfs), Arrays
++                .asList(md.getConfigurations()));
++
++        //verify parent dependencies were ignored.
++        DependencyDescriptor[] deps = md.getDependencies();
++        assertNotNull(deps);
++        assertEquals(1, deps.length);
++
++        assertEquals(Arrays.asList(new String[]{ "default" }), 
++            Arrays.asList(deps[0].getModuleConfigurations()));
++        ModuleRevisionId dep = deps[0].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule2", dep.getModuleId().getName());
++        assertEquals("2.0", dep.getRevision());
++        
++        //verify only child publications are present
++        Artifact[] artifacts = md.getAllArtifacts();
++        assertNotNull(artifacts);
++        assertEquals(1, artifacts.length);
++        assertEquals("mymodule", artifacts[0].getName());
++        assertEquals("jar", artifacts[0].getType());
++    }
++
++    public void testExtendsDescriptionWithOverride() throws Exception {
++        //descriptor specifies that only parent description should be included
++        ModuleDescriptor md = XmlModuleDescriptorParser.getInstance().parseDescriptor(settings,
++            getClass().getResource("test-extends-description-override.xml"), true);
++        assertNotNull(md);
++        
++        assertEquals("myorg", md.getModuleRevisionId().getOrganisation());
++        assertEquals("mymodule", md.getModuleRevisionId().getName());
++        assertEquals(Ivy.getWorkingRevision(), md.getModuleRevisionId().getRevision());
++        assertEquals("integration", md.getStatus());
++
++        //child description should always be preferred, even if extendType="description"
++        assertEquals("Child description overrides parent.", md.getDescription());
++        
++        //verify that the parent configurations were ignored.
++        final Configuration[] expectedConfs = { new Configuration("default") };
++        assertNotNull(md.getConfigurations());
++        assertEquals(Arrays.asList(expectedConfs), Arrays
++                .asList(md.getConfigurations()));
++
++        //verify parent dependencies were ignored.
++        DependencyDescriptor[] deps = md.getDependencies();
++        assertNotNull(deps);
++        assertEquals(1, deps.length);
++
++        assertEquals(Arrays.asList(new String[]{ "default" }), 
++            Arrays.asList(deps[0].getModuleConfigurations()));
++        ModuleRevisionId dep = deps[0].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule2", dep.getModuleId().getName());
++        assertEquals("2.0", dep.getRevision());
++        
++        //verify only child publications are present
++        Artifact[] artifacts = md.getAllArtifacts();
++        assertNotNull(artifacts);
++        assertEquals(1, artifacts.length);
++        assertEquals("mymodule", artifacts[0].getName());
++        assertEquals("jar", artifacts[0].getType());
++    }
++    
++    public void testExtendsMixed() throws Exception {
++        //descriptor specifies that parent configurations and dependencies should be included
++        ModuleDescriptor md = XmlModuleDescriptorParser.getInstance().parseDescriptor(settings,
++            getClass().getResource("test-extends-mixed.xml"), true);
++        assertNotNull(md);
++        
++        assertEquals("myorg", md.getModuleRevisionId().getOrganisation());
++        assertEquals("mymodule", md.getModuleRevisionId().getName());
++        assertEquals(Ivy.getWorkingRevision(), md.getModuleRevisionId().getRevision());
++        assertEquals("integration", md.getStatus());
++
++        //verify that the parent description was ignored.
++        assertEquals("", md.getDescription());
++        
++        //verify that the parent and child configurations were merged together.
++        final Configuration[] expectedConfs = { new Configuration("default"), 
++                new Configuration("conf1"), new Configuration("conf2") };
++        assertNotNull(md.getConfigurations());
++        assertEquals(Arrays.asList(expectedConfs), Arrays
++                .asList(md.getConfigurations()));
++
++        //verify parent and child dependencies were merged together.
++        DependencyDescriptor[] deps = md.getDependencies();
++        assertNotNull(deps);
++        assertEquals(2, deps.length);
++
++        assertEquals(Arrays.asList(new String[]{ "default" }), 
++            Arrays.asList(deps[0].getModuleConfigurations()));
++        ModuleRevisionId dep = deps[0].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule1", dep.getModuleId().getName());
++        assertEquals("1.0", dep.getRevision());
++
++        assertEquals(Arrays.asList(new String[]{ "conf1", "conf2" }), 
++            Arrays.asList(deps[1].getModuleConfigurations()));
++        dep = deps[1].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule2", dep.getModuleId().getName());
++        assertEquals("2.0", dep.getRevision());
++        
++        //verify only child publications are present
++        Artifact[] artifacts = md.getAllArtifacts();
++        assertNotNull(artifacts);
++        assertEquals(1, artifacts.length);
++        assertEquals("mymodule", artifacts[0].getName());
++        assertEquals("jar", artifacts[0].getType());
++    }
++    
++    public void testExtendsCached() throws Exception {
++        //configure a resolver to serve the parent descriptor, so that parse succeeds.
++        File resolveRoot = new File("build/tmp/xmlModuleDescriptorTest");
++        assertTrue(resolveRoot.exists() || resolveRoot.mkdirs());
++        
++        FileUtil.copy(getClass().getResource("test-extends-parent.xml"), 
++            new File(resolveRoot, "myorg/myparent/ivy.xml"), null);
++        
++        FileSystemResolver resolver = new FileSystemResolver();
++        resolver.setSettings(settings);
++        resolver.setName("testExtendsCached");
++        resolver.addIvyPattern(resolveRoot.getAbsolutePath() 
++            + "/[organisation]/[module]/[artifact].[ext]");
++
++        settings.addResolver(resolver);
++        settings.setDefaultResolver("testExtendsCached");
++        
++        //descriptor extends a module without a location="..." attribute, so resolver lookup
++        //must be performed.
++        ModuleDescriptor md = XmlModuleDescriptorParser.getInstance().parseDescriptor(settings,
++            getClass().getResource("test-extends-cached.xml"), true);
++        assertNotNull(md);
++        
++        assertEquals("myorg", md.getModuleRevisionId().getOrganisation());
++        assertEquals("mymodule", md.getModuleRevisionId().getName());
++        assertEquals(Ivy.getWorkingRevision(), md.getModuleRevisionId().getRevision());
++        assertEquals("integration", md.getStatus());
++
++        //verify that the parent description was merged.
++        assertEquals("Parent module description.", md.getDescription());
++        
++        //verify that the parent and child configurations were merged together.
++        final Configuration[] expectedConfs = { new Configuration("default"), 
++                new Configuration("conf1"), new Configuration("conf2") };
++        assertNotNull(md.getConfigurations());
++        assertEquals(Arrays.asList(expectedConfs), Arrays
++                .asList(md.getConfigurations()));
++
++        //verify parent and child dependencies were merged together.
++        DependencyDescriptor[] deps = md.getDependencies();
++        assertNotNull(deps);
++        assertEquals(2, deps.length);
++
++        assertEquals(Arrays.asList(new String[]{ "default" }), 
++            Arrays.asList(deps[0].getModuleConfigurations()));
++        ModuleRevisionId dep = deps[0].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule1", dep.getModuleId().getName());
++        assertEquals("1.0", dep.getRevision());
++
++        assertEquals(Arrays.asList(new String[]{ "conf1", "conf2" }), 
++            Arrays.asList(deps[1].getModuleConfigurations()));
++        dep = deps[1].getDependencyRevisionId();
++        assertEquals("myorg", dep.getModuleId().getOrganisation());
++        assertEquals("mymodule2", dep.getModuleId().getName());
++        assertEquals("2.0", dep.getRevision());
++        
++        //verify only child publications are present
++        Artifact[] artifacts = md.getAllArtifacts();
++        assertNotNull(artifacts);
++        assertEquals(1, artifacts.length);
++        assertEquals("mymodule", artifacts[0].getName());
++        assertEquals("jar", artifacts[0].getType());
++    }
+ }
+Index: test/java/org/apache/ivy/plugins/parser/xml/test-extends-all.xml
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/test-extends-all.xml	(revision 0)
++++ test/java/org/apache/ivy/plugins/parser/xml/test-extends-all.xml	(revision 0)
+@@ -0,0 +1,32 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="1.0">
++	<info organisation="myorg"
++	       module="mymodule"
++	       status="integration"
++	       publication="20091206000000">
++	       <extends organisation="myorg" module="myparent" revision="latest.revision" location="test-extends-parent.xml"/>
++	</info>
++	<configurations>
++		<conf name="conf2" visibility="private"/>
++	</configurations>
++	<dependencies>
++		<dependency name="mymodule2" rev="2.0" conf="conf1,conf2"/>
++	</dependencies>
++</ivy-module>
+Index: test/java/org/apache/ivy/plugins/parser/xml/test-extends-cached.xml
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/test-extends-cached.xml	(revision 0)
++++ test/java/org/apache/ivy/plugins/parser/xml/test-extends-cached.xml	(revision 0)
+@@ -0,0 +1,32 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="1.0">
++	<info organisation="myorg"
++	       module="mymodule"
++	       status="integration"
++	       publication="20091206000000">
++	       <extends organisation="myorg" module="myparent" revision="latest.revision"/>
++	</info>
++	<configurations>
++		<conf name="conf2" visibility="private"/>
++	</configurations>
++	<dependencies>
++		<dependency name="mymodule2" rev="2.0" conf="conf1,conf2"/>
++	</dependencies>
++</ivy-module>
+Index: test/java/org/apache/ivy/plugins/parser/xml/test-extends-configurations.xml
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/test-extends-configurations.xml	(revision 0)
++++ test/java/org/apache/ivy/plugins/parser/xml/test-extends-configurations.xml	(revision 0)
+@@ -0,0 +1,33 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="1.0">
++	<info organisation="myorg"
++	       module="mymodule"
++	       status="integration"
++	       publication="20091206000000">
++	       <extends organisation="myorg" module="myparent" revision="latest.revision" 
++	       			location="test-extends-parent.xml" extendType="configurations"/>
++	</info>
++	<configurations>
++		<conf name="conf2" visibility="private"/>
++	</configurations>
++	<dependencies>
++		<dependency name="mymodule2" rev="2.0" conf="conf1,conf2"/>
++	</dependencies>
++</ivy-module>
+Index: test/java/org/apache/ivy/plugins/parser/xml/test-extends-dependencies.xml
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/test-extends-dependencies.xml	(revision 0)
++++ test/java/org/apache/ivy/plugins/parser/xml/test-extends-dependencies.xml	(revision 0)
+@@ -0,0 +1,30 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="1.0">
++	<info organisation="myorg"
++	       module="mymodule"
++	       status="integration"
++	       publication="20091206000000">
++	       <extends organisation="myorg" module="myparent" revision="latest.revision" 
++	       			location="test-extends-parent.xml" extendType="dependencies"/>
++	</info>
++	<dependencies>
++		<dependency name="mymodule2" rev="2.0" conf="default"/>
++	</dependencies>
++</ivy-module>
+Index: test/java/org/apache/ivy/plugins/parser/xml/test-extends-description-override.xml
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/test-extends-description-override.xml	(revision 0)
++++ test/java/org/apache/ivy/plugins/parser/xml/test-extends-description-override.xml	(revision 0)
+@@ -0,0 +1,31 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="1.0">
++	<info organisation="myorg"
++	       module="mymodule"
++	       status="integration"
++	       publication="20091206000000">
++	       <extends organisation="myorg" module="myparent" revision="latest.revision" 
++	       			location="test-extends-parent.xml" extendType="description"/>
++	       <description>Child description overrides parent.</description>
++	</info>
++	<dependencies>
++		<dependency name="mymodule2" rev="2.0" conf="default"/>
++	</dependencies>
++</ivy-module>
+Index: test/java/org/apache/ivy/plugins/parser/xml/test-extends-description.xml
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/test-extends-description.xml	(revision 0)
++++ test/java/org/apache/ivy/plugins/parser/xml/test-extends-description.xml	(revision 0)
+@@ -0,0 +1,30 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="1.0">
++	<info organisation="myorg"
++	       module="mymodule"
++	       status="integration"
++	       publication="20091206000000">
++	       <extends organisation="myorg" module="myparent" revision="latest.revision" 
++	       			location="test-extends-parent.xml" extendType="description"/>
++	</info>
++	<dependencies>
++		<dependency name="mymodule2" rev="2.0" conf="default"/>
++	</dependencies>
++</ivy-module>
+Index: test/java/org/apache/ivy/plugins/parser/xml/test-extends-mixed.xml
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/test-extends-mixed.xml	(revision 0)
++++ test/java/org/apache/ivy/plugins/parser/xml/test-extends-mixed.xml	(revision 0)
+@@ -0,0 +1,33 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="1.0">
++	<info organisation="myorg"
++	       module="mymodule"
++	       status="integration"
++	       publication="20091206000000">
++	       <extends organisation="myorg" module="myparent" revision="latest.revision" 
++	       			location="test-extends-parent.xml" extendType="configurations,dependencies"/>
++	</info>
++	<configurations>
++		<conf name="conf2" visibility="private"/>
++	</configurations>
++	<dependencies>
++		<dependency name="mymodule2" rev="2.0" conf="conf1,conf2"/>
++	</dependencies>
++</ivy-module>
+Index: test/java/org/apache/ivy/plugins/parser/xml/test-extends-parent.xml
+===================================================================
+--- test/java/org/apache/ivy/plugins/parser/xml/test-extends-parent.xml	(revision 0)
++++ test/java/org/apache/ivy/plugins/parser/xml/test-extends-parent.xml	(revision 0)
+@@ -0,0 +1,34 @@
++<!--
++   Licensed to the Apache Software Foundation (ASF) under one
++   or more contributor license agreements.  See the NOTICE file
++   distributed with this work for additional information
++   regarding copyright ownership.  The ASF licenses this file
++   to you under the Apache License, Version 2.0 (the
++   "License"); you may not use this file except in compliance
++   with the License.  You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++   Unless required by applicable law or agreed to in writing,
++   software distributed under the License is distributed on an
++   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++   KIND, either express or implied.  See the License for the
++   specific language governing permissions and limitations
++   under the License.    
++-->
++<ivy-module version="1.0">
++	<info organisation="myorg"
++	       module="myparent"
++	       revision="myrev"
++	       status="integration"
++	       publication="20091206000000">
++	       <description>Parent module description.  </description>
++	</info>
++	<configurations>
++		<conf name="default"/>
++		<conf name="conf1" visibility="public"/>
++	</configurations>
++	<dependencies>
++		<dependency name="mymodule1" rev="1.0" conf="default"/>
++	</dependencies>
++</ivy-module>

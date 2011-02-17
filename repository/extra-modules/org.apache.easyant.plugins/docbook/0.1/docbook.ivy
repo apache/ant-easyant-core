@@ -1,0 +1,44 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.  
+-->
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven"> 
+	<info organisation="org.apache.easyant.plugins"
+	       module="docbook"
+	       status="milestone"
+	       revision="0.1">
+	       <description>Generates project documentation as HTML or PDF using docbook-xsl.  
+	       See <a href="http://www.sagehill.net/docbookxsl">http://www.sagehill.net/docbookxsl</a>
+	       for instructions on writing DocBook documentation and configuring the DocBook generator.
+	       </description>
+	</info>
+	<configurations>
+		<conf name="default"/>
+		<conf name="docbook_dist"/>
+	</configurations>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+	<dependencies>
+		<dependency org="saxon" name="saxon" rev="6.5.3" conf="default"/>
+		<dependency org="xerces" name="xercesImpl" rev="2.9.1" conf="default"/>
+		<dependency org="net.sf.docbook" name="docbook-xsl-saxon" rev="1.0.0" conf="default"/>
+		<dependency org="net.sf.docbook" name="docbook-xsl" rev="1.75.1" conf="docbook_dist->default">
+			<artifact name="docbook-xsl" type="zip" m:classifier="resources" conf="docbook_dist"/>
+		</dependency>
+	</dependencies>
+</ivy-module>

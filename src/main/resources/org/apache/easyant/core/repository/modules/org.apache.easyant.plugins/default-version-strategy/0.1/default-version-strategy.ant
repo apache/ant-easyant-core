@@ -1,0 +1,100 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#default-version-strategy"
+	xmlns:ivy="antlib:org.apache.ivy.ant"
+	xmlns:ac="antlib:net.sf.antcontrib"
+	xmlns:ea="antlib:org.apache.easyant">
+	
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="generate-local-version"/>
+		<ea:parameter phase="generate-shared-version"/>
+		<ea:parameter phase="generate-release-version"/>
+
+		<ea:parameter property="release.resolver" default="shared" 
+				description="the name of the resolver use for release publication"/>
+		<ea:parameter property="shared.resolver" default="shared" 
+				description="the name of the share resolver"/>
+		<ea:parameter property="project.ivy.instance" default="project.ivy.instance" 
+				description="ivy instance name"/>
+		<ea:parameter property="project.ivy.file" required="true" 
+				description="ivy file (use to resolve dependencies for the project)"/>
+	
+		<ea:parameter property="default.build.number" default="1" 
+				description="default project version"/>
+		<ea:parameter property="revision.separator" default="-dev-build" 
+				description="separator for version"/>
+		
+		<!-- is project ivy settings configured ? -->
+		<ea:parameter property="project.ivy.settings.file" description="the ivysettings file used by your project" />
+		<ea:parameter property="project.ivy.settings.url" description="the ivysettings url used by your project" />
+		
+		<ea:parameter property="fail.publication.if.no.revision" default="true" description="fail build if current module has no revision in 'info' tag of the module.ivy"/>
+		<condition property="is.project.ivy.settings.configured">
+			<isreference refid="${project.ivy.instance}"/>
+		</condition>
+		<fail unless="is.project.ivy.settings.configured" message="project ivy instance is not configured, at least one of the following property must be set : project.ivy.settings.file, project.ivy.settings.url"/>
+
+	</target>
+	
+	<macrodef name="check-version-number">
+		<sequential>
+			<property name="pub.no.revision.message" value="It seems that you did not specify the revision number of your project, we strongly recommend you to set it through the 'info' tag in your module ivy before any publication"/>
+			<ac:if>
+				<contains string="${ivy.revision}" substring="working@"/>
+				<ac:then>
+					<ac:if>
+						<istrue value="${fail.publication.if.no.revision}"/>
+						<ac:then>
+							<fail message="${pub.no.revision.message}"/>
+						</ac:then>
+						<ac:else>
+							<echo message="Warning : ${pub.no.revision.message}" level="warning"/>
+						</ac:else>
+					</ac:if>
+				</ac:then>
+			</ac:if>
+		</sequential>
+	</macrodef>
+
+	<!-- version numbers -->
+	<target name="-local" phase="generate-local-version">
+		<check-version-number/>
+		<tstamp>
+			<format property="now" pattern="yyyyMMddHHmmss" />
+		</tstamp>
+		<property name="version" value="${ivy.revision}-local-${now}" />
+	</target>
+	
+	<target name="-shared" phase="generate-shared-version" depends="validate" unless="ivy.new.revision">
+		<ea:checkresolver resolver="shared.resolver" settingsRef="${project.ivy.instance}" description="name of the repository used to publish shared integration versions (snapshots)"/>
+		<check-version-number/>
+		<ivy:buildnumber organisation="${ivy.organisation}" module="${ivy.module}" revision="${ivy.revision}" defaultBuildNumber="${default.build.number}" revSep="${revision.separator}" settingsRef="${project.ivy.instance}" resolver="${shared.resolver}"/>
+		<property name="version" value="${ivy.new.revision}" />
+	</target>
+
+	<target name="-release" phase="generate-release-version" depends="validate" unless="ivy.new.revision">
+		<check-version-number/>
+		<property name="version" value="${ivy.revision}" />
+	</target>
+
+	<target name="doit" depends=":init" />
+</project>

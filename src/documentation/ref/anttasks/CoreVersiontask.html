@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>core-version task</h1>
+
+<h2>Description</h2>
+<p>
+The core-version task is used to define the compatibility between core and modules.
+
+This tasks support :
+<ul>
+<li>static version (Example : 0.5)</li>
+<li>dynamic version (Example : latest.revision) even if we do not recommand to use it</li>
+<li>listed version (Example : (0.1,0.3,0.5) )</li>
+<li>range version (Example : [0.5,0.8] means from 0.5 to 0.8. Example2 : [0.5,+] means all version superior to 0.5)</li>
+</ul>
+
+If the property skip.corerevision.checker is set to true, this check will be skipped. We strongly recommend you to keep this check enabled in production environnement.
+
+</p>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr>
+      <th>Parameter name</th>
+      <th class="unsortable">Description</th>
+      <th>Mandatory</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>requiredRevision</td>
+      <td>specify the required revision</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>message</td>
+      <td>the error message to display if the core revision check fails (note: the message could also be put as a nested text of this ant task)</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Nested Elements</h2>
+This task support nested text as error message.
+<code type="xml">
+  <ea:core-version requiredrevision="[0.7,+]">
+    This is my falling message.
+  </ea:core-version>
+</code>
+
+<h2>Example</h2>
+<code type="xml">
+  <ea:core-version requiredrevision="[0.7,+]" />
+</code>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Integration Tests" verbose="1" >
+  <test name="Integration Tests">
+    <classes>
+      <class name="org.apache.easyant.FailingIntegrationTest"/>
+    </classes>
+  </test>
+</suite>

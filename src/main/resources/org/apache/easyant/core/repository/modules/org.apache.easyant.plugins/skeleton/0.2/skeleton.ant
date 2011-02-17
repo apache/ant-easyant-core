@@ -1,0 +1,173 @@
+<!--
+    Copyright 2008-2010 the EasyAnt project
+   
+    See the NOTICE file distributed with this work for additional information
+    regarding copyright ownership.
+   
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+   
+    http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#skeleton"
+    xmlns:ac="antlib:net.sf.antcontrib"
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:ea="antlib:org.apache.easyant">
+
+    <ea:core-version requiredrevision="[0.8,+]" />
+   
+    <dirname file="${ant.file.org.apache.easyant.plugins#skeleton}" property="ant.dir.org.apache.easyant.plugins#skeleton" />
+   
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter property="skeleton.default.basedir" default="${basedir}" description="define the root path of your skeleton project" />
+        <ea:parameter property="skeleton.default.excludes.pattern" default="target/**" description="define the default excludes pattern used to package a project skeleton" />
+        <ea:parameter property="skeleton.default.includes.pattern" default="" description="define the default excludes pattern used to package a project skeleton" />
+        <ea:parameter property="skeleton.default.type" default="zip" description="define the default type of a skeleton (jar/zip...)" />
+        <ea:parameter property="skeleton.default.to.resolver" default="easyant-shared-modules" description="the repository name where the skeleton jar will be published" />
+        <ea:parameter property="skeleton.default.revision" default="0.1" description="The default revision if the skeleton that will be published"/>
+        <ea:parameter property="skeleton.default.organisation" default="org.apache.easyant.skeletons" description="The default organisation name of skeletons"/>
+    	<ea:parameter property="project.default.organisation" default="" description="The default organisation name of generated project"/>
+       
+        <ea:parameter property="skeleton.interactive.mode" default="true" description="specify if easyant should ask questions instead of using -Dproperties" />
+               
+        <condition property="skeleton.is.interactive">
+            <istrue value="${skeleton.interactive.mode}"/>
+        </condition>
+       
+    </target>
+   
+   
+    <!-- =================================
+                      target: generate             
+                     ================================= -->
+    <target name="-generate-usage">
+        <echo level="info">This target will now create a new project from a project skeleton.</echo>
+        <echo level="info">This target can be called with -Dparameters, refer to the skeleton plugin documentation to have more informations.</echo>
+    	<ac:if>
+    		<and>
+    			<isset property="skeleton.org"/>
+    			<isset property="skeleton.module"/>
+    			<isset property="skeleton.rev"/>
+    		</and>
+    		<ac:then>
+    			<echo level="info">    Example: easyant skeleton:create -Dskeleton.org=${skeleton.org} -Dskeleton.module=${skeleton.module} -Dskeleton.rev=${skeleton.rev} -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
+    		</ac:then>
+    		<ac:else>
+    			<echo level="info">    Example: easyant skeleton:create -Dskeleton.org=foo -Dskeleton.module=bar-skeleton -Dskeleton.rev=0.1 -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
+    		</ac:else>
+    	</ac:if>
+    </target>
+
+    <target name="-check-generate" if="skeleton.is.interactive">
+        <input message="Organisation name of the skeleton project" addproperty="skeleton.org" defaultvalue="${skeleton.default.organisation}"/>
+        <input message="Module name of the skeleton project" addproperty="skeleton.module"/>
+        <input message="Revision number of the skeleton project" addproperty="skeleton.rev"/>
+       
+        <input message="The path where the skeleton project will be unzipped" addproperty="skeleton.target.dir" defaultvalue="${skeleton.default.basedir}"/>
+       
+        <input message="Organisation name of YOUR project" addproperty="project.org" defaultvalue="${project.default.organisation}"/>
+        <input message="Module name of YOUR project" addproperty="project.module"/>
+        <input message="Revision number of YOUR project" addproperty="project.rev" defaultvalue="0.1"/>
+    </target>
+   
+    <target name="-select" depends="validate" if="skeleton.is.interactive">
+    	<echo>Choose a skeleton in the following list:</echo>
+        <ea:searchmodule organisation="org.apache.easyant.skeletons" module="*" revision="*" propertyprefix="skeleton" settingsRef="easyant.ivy.instance"/>
+    </target>
+   
+    <target name=":select" depends="-select,:generate" description="select and create a new project from a list of all available skeletons" if="skeleton.is.interactive"/>
+
+    <target name=":generate" depends="validate,-generate-usage, -check-generate" description="generate a new project from skeleton">
+        <ea:parameter property="skeleton.org" default="${skeleton.default.organisation}" description="Organisation name of the skeleton project" />
+        <ea:parameter property="skeleton.module" required="true" description="Module name of the skeleton project" />
+        <ea:parameter property="skeleton.rev" required="true" description="Revision number of the skeleton project" />
+        <ea:parameter property="skeleton.target.dir" default="${skeleton.default.basedir}" description="The path where the skeleton project will be unzipped"/>
+        <ea:parameter property="project.org" required="true" description="Organisation name of YOUR project" />
+        <ea:parameter property="project.module" required="true" description="Module name of YOUR project" />
+        <ea:parameter property="project.rev" default="0.1" description="Revision number of YOUR project" />
+        <ea:parameter property="skeleton.postinstall.script" default="${skeleton.target.dir}/skeleton.postinstall.ant" description="An optional postinstall script"/>
+
+        <echo>Retrieving project skeleton : ${skeleton.org}#${skeleton.module};${skeleton.rev}</echo>
+        <ivy:retrieve organisation="${skeleton.org}" module="${skeleton.module}" revision="${skeleton.rev}" inline="true" pattern="${skeleton.target.dir}/[artifact].[ext]" log="quiet" settingsRef="easyant.ivy.instance"/>
+        <ivy:artifactproperty organisation="${skeleton.org}" module="${skeleton.module}" revision="${skeleton.rev}" inline="true" name="skeleton.artifact.name" value="[artifact].[ext]" settingsRef="easyant.ivy.instance"/>
+
+        <!--
+            In the case where artifacts exist but does not match with skeleton.type, ivy does throw an error.
+            So we should check it manually
+        -->
+        <property name="skeleton.download.artifact" value="${skeleton.target.dir}/${skeleton.artifact.name}"/>
+        <available file="${skeleton.download.artifact}" property="skeleton.download.artifact.exist"/>
+        <fail unless="skeleton.download.artifact.exist" message="Impossible to find the downloaded artifact!"/>
+       
+        <!-- Unzip the project skeleton -->
+        <echo>Unzipping project skeleton to ${skeleton.target.dir}</echo>
+        <unjar dest="${skeleton.target.dir}" src="${skeleton.download.artifact}">
+        	<patternset>
+        		<exclude name="META-INF/**"/>
+        	</patternset>
+    	</unjar>
+       
+        <filterset id="skeleton.create.replace.filter">
+            <filter token="project.module" value="${project.module}" />
+            <filter token="project.organisation" value="${project.org}" />
+            <filter token="project.revision" value="${project.rev}" />
+        </filterset>
+       
+        <!-- Replacing filter pattern -->
+        <echo level="info">Trying to replace property related to YOUR project in .tpl files</echo>
+        <move todir="${skeleton.target.dir}">
+            <fileset dir="${skeleton.target.dir}" includes="**/*.tpl" />
+            <filterset refid="skeleton.create.replace.filter"/>
+            <mapper type="glob" from="*.tpl" to="*" />
+        </move>
+           
+        <condition property="skeleton.postinstall.script.exists">
+            <available file="${skeleton.postinstall.script}"/>
+        </condition>
+        <ac:if>
+            <isset property="skeleton.postinstall.script.exists"/>
+            <ac:then>
+                <!-- compute absolute path for script -->
+                <property name="postinstall.script.path" location="${skeleton.postinstall.script}"/>
+
+                <!-- Run post install script (Optionnal) -->
+                <ant antfile="${postinstall.script.path}" inheritall="true" inheritrefs="true" dir="${skeleton.target.dir}"/>
+               
+                <!-- Delete skeleton post install script -->
+                <delete file="${skeleton.postinstall.script}"/>
+            </ac:then>
+        </ac:if>
+       
+        <!-- Delete the skeleton archive -->
+        <echo>Cleaning your ${skeleton.download.artifact} directory</echo>
+        <delete file="${skeleton.download.artifact}"/>
+    </target>
+	
+	<target name="-newplugin">
+		<property name="skeleton.org" value="org.apache.easyant.skeletons"/>
+		<property name="skeleton.module" value="std-ant-plugin"/>
+		<property name="skeleton.rev" value="latest.integration"/>
+		<property name="project.default.organisation" value="org.apache.easyant.plugins"/>
+	</target>
+	
+	<target name=":newplugin" depends="-newplugin,:generate" description="create a new easyant plugin"/>
+
+	<target name="-newskeleton">
+		<property name="skeleton.org" value="org.apache.easyant.skeletons"/>
+		<property name="skeleton.module" value="std-skeleton"/>
+		<property name="skeleton.rev" value="latest.integration"/>
+		<property name="project.default.organisation" value="org.apache.easyant.skeletons"/>
+	</target>
+	
+	<target name=":newskeleton" depends="-newskeleton,:generate" description="create a new skeleton"/>
+	
+    <target name="doit" depends="validate" />
+</project>

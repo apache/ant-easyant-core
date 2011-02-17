@@ -1,0 +1,45 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.buildtypes#build-std-skeleton"
+	xmlns:ivy="antlib:org.apache.ivy.ant"
+	xmlns:ea="antlib:org.apache.easyant">
+	
+	<ea:core-version requiredrevision="[0.8,+]" />
+	<echo message="Building ${ivy.organisation} ${ivy.module} with org.apache.easyant.buildtypes#build-std-skeleton..."/>
+	
+	<ea:import mrid="org.apache.easyant.plugins#phases-std;0.2" />
+
+	<property file="${org.apache.easyant.buildtypes#build-std-skeleton.properties.file}" />
+	
+	<ea:parameter property="version.strategy.plugin.org" description="Organisation name of the version strategy plugin" default="org.apache.easyant.plugins"/>
+	<ea:parameter property="version.strategy.plugin.module" description="Module name of the version strategy plugin" default="default-version-strategy"/>
+	<ea:parameter property="version.strategy.plugin.rev" description="Revision number of the version strategy plugin" default="0.1"/>
+	<ea:parameter property="version.strategy.plugin.mrid" description="Full mrid of the version strategy plugin" default="${version.strategy.plugin.org}#${version.strategy.plugin.module};${version.strategy.plugin.rev}"/>
+	
+	<ea:include mrid="org.apache.easyant.plugins#clean-std;0.1" as="clean" />
+	<ea:include mrid="org.apache.easyant.plugins#resources-std;0.1" as="resources" />
+	<ea:include mrid="${version.strategy.plugin.mrid}" as="version" />
+	<ea:include mrid="org.apache.easyant.plugins#ivy-provisioning;0.1" as="lib" />
+	<ea:include mrid="org.apache.easyant.plugins#easyant-plugin-publication;0.1" as="publish" />
+	<ea:include mrid="org.apache.easyant.plugins#manifest;0.1" as="manifest" />		
+	<ea:include mrid="org.apache.easyant.plugins#antunit;0.1" as="test" />
+	<ea:include mrid="org.apache.easyant.plugins#package-jar;0.1" as="jar" />
+
+	<target name="doit" depends="verify" />
+</project>

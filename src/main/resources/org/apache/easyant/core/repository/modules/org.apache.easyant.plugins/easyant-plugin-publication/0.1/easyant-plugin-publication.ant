@@ -1,0 +1,44 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#easyant-plugin-publication"
+	xmlns:ivy="antlib:org.apache.ivy.ant"
+	xmlns:ac="antlib:net.sf.antcontrib"
+	xmlns:ea="antlib:org.apache.easyant">
+	
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<ea:import mrid="org.apache.easyant.plugins#ivy-publication;0.1"/>
+	
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="test" />
+		<ea:parameter property="publish.plugin.before.test"
+				description="defines if easyant should publish the plugin before running test"/>
+	</target>
+		
+	<!--
+		publish in build scoped repository before test 
+	-->
+	<target name="-before-test" depends="validate" phase="test" if="publish.plugin.before.test">
+		<ea:configure-build-scoped-repository buildScopedRepositoryName="build" settingsRef="easyant.ivy.instance"/>
+		<ivy:publish artifactspattern="${target.artifacts}/[artifact](-[classifier]).[ext]" resolver="build"  forcedeliver="true" overwrite="true" settingsRef="easyant.ivy.instance" />
+	</target>
+
+	<target name="doit" depends=":init" />
+</project>

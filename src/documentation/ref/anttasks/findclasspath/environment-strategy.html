@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 3};</script>	
+	<script type="text/javascript" src="../../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>environment-strategy</h1>
+
+<h2>Description</h2>
+<p>This strategy contains the logic to fill a classpath by checking an Environment variable (example: GROOVY_HOME)</p>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr>
+      <th>Parameter name</th>
+      <th class="unsortable">Description</th>
+      <th>Mandatory</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>env</td>
+      <td>environment variable to check</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>layout</td>
+      <td>layout directory used to locate elements added on the classpath<br/><i>Default: /lib</i></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>filter</td>
+      <td>a filter used to select only a few elements (can be a ant regexp like **/*.jar)</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Example</h2>
+<code type="xml">
+<ea:environment-strategy env="GROOVY_HOME" />
+</code>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

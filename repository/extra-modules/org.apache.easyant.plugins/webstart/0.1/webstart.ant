@@ -1,0 +1,109 @@
+<project name="org.apache.easyant.plugins;webstart" 
+		xmlns:ivy="antlib:org.apache.ivy.ant" 
+     	xmlns:ea="antlib:org.apache.easyant">
+     	
+	<!-- Force compliance with easyant-core to 0.7 or higher -->
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<macrodef name="signJars">
+	   <attribute name="alias"   description="the alias signer" />
+		<attribute name="storepass"  description="the keystore password"/>
+		<attribute name="keypass"  default="@{storepass}" description="the key password"/>
+		<attribute name="keystore"  description="the path to the keystore"/>
+		<attribute name="lazy"  default="false" description="tell if the already signed jars have to be signed a second time"/>
+	   <element name="signFolder" optional="yes"/>
+	   <sequential>
+	   	<echo>Sign...</echo>
+	   	
+	   	<if>
+	   		
+	   		<isset property="@{keystore}"/>
+	   		
+	   		<then>
+	   		
+	   			<signjar alias="@{alias}" keypass="@{keypass}" keystore="@{keystore}" storepass="@{storepass}" lazy="@{replaceSign}">
+					<signFolder/>
+	   			</signjar>
+	   		
+	   		
+	   		</then>
+	   		<else>
+	   			<signjar alias="@{alias}" keypass="@{keypass}" storepass="@{storepass}" lazy="@{replaceSign}">
+	   				<signFolder/>
+	   			</signjar>
+	   		</else>
+		</if>
+		
+	   	<echo>Sign done !</echo>	
+	   </sequential>
+	</macrodef>
+	
+	<target name=":init">
+		<ea:parameter property="jnlp.file" required="true" description="the jnlp to modify" />
+		<ea:parameter property="signJar" required="false" default="false" description="tell if the jars has to be signed" />		
+		<ea:parameter property="flat.path" required="false" description="tell if the path resources have to be declared in relative or absolute" />
+						
+		
+		<ea:parameter property="alias" required="false" description="the alias signer" />
+		<ea:parameter property="storepass" required="false" description="the keystore password" />
+		<ea:parameter property="keypass" required="false" default="${storepass}" description="the key password" />
+		<ea:parameter property="keystore" required="false" default=" " description="the path to the keystore" />
+		<ea:parameter property="lazy" required="false" default="false" description="tell if the already signed jars have to be signed a second time" />
+		<taskdef name="partial-jnlp" classname="org.apache.easyant.tasks.JNLPTask" 
+			classpathref="org.apache.easyant.plugins#webstart.classpath" />
+																	
+				
+	</target>
+
+	
+
+	<target name=":editJnlp" depends=":init, package" description="edit an existing jnlp file">
+		<echo message="[Library directory]: ${lib.main}" />
+		<echo message="[libArtifact]: ${target.artifacts}/${target.artifacts.main.jar.name}" />
+		<if>
+			<equals arg1="${flat.path}" arg2="$${flat.path}" />
+				<then>
+					<partial-jnlp mainJar="${target.artifacts}/${target.artifacts.main.jar.name}" jnlpFile="${jnlp.file}">
+					<fileset dir="${lib.main}">
+						<include name="*.jar" />
+					</fileset>
+					</partial-jnlp>
+				</then>
+				<else>
+					<partial-jnlp mainJar="${target.artifacts}/${target.artifacts.main.jar.name}" jnlpFile="${jnlp.file}" flatPathResources="${flat.path}">
+					<fileset dir="${lib.main}">
+						<include name="*.jar" />
+					</fileset>
+					</partial-jnlp>
+				</else>
+		</if>	
+
+	</target>
+	<target name=":sign" depends="package">
+		<if>
+			<equals arg1="${signJar}" arg2="true" />
+				<then>
+					<signJars alias="${alias}" storepass="${storepass}" keypass="${keypass}" keystore="${keystore}" lazy="${lazy}" >
+						<signfolder>
+							<fileset dir="${lib.main}" includes="*.jar"/>
+							<fileset dir="${target.artifacts}" includes="*.jar"/>
+						</signfolder>
+					</signJars>
+				</then>
+		</if>		
+	</target>
+	
+	<target name=":prepare" depends=":editJnlp,:sign" description="edit the jnlp file and sign as necessary"/>
+	
+		
+	
+	<target name=":run" depends=":prepare" description="run the application in java webstart">
+		<exec executable="javaws">
+			<arg value="${jnlp.file}" />
+		</exec>
+	</target>
+
+	
+	
+	<target name="doit" depends=":run" />
+</project>

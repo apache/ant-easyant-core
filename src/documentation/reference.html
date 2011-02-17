@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 0};</script>	
+	<script type="text/javascript" src="xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Reference</h1>
+
+If you don't know EasyAnt at all, give a glance at its <a href="ref/features.html">features</a>, the <a href="faq.html">FAQ</a> and the <a href="tutorials.html">tutorials</a> before digging into this reference documentation.
+
+<h2>How does it work?</h2>
+Since 0.6, easyant-core.jar is in charge of :
+<ul>
+  <li>Loading  the ivy instance used by easyant internal (used to retrieve buildtypes / plugins)</li>
+  <li>Loading all the system plugins.
+</ul>
+This can be configured in a <a href="ref/EasyAntconfigurationfile.html">configuration file</a>.
+
+Then it uses the <a href="ref/anttasks/LoadModuletask.html">loadmodule task</a> provided by easyant, which basically parses an Ivy file (module.ivy) and looks for instructions in the Ivy file for easyant (similar to the pom concept actually).
+
+Finally easyant tries to import an optional file called module.ant in the user directory (the module to build). In the examples, there is no such file, but this would let the user customize the build with an Ant script if necessary.
+
+<h2>EasyAnt instructions in module.ivy</h2>
+A module.ivy looks like this
+<code type="xml">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
+        <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
+        <ea:property name="target.artifacts" value="dist"/>
+        <ea:plugin module="emma" revision="0.1"/>
+</ea:build>
+</code>
+
+The idea is to have a very limited options of customizing the build in the Ivy file: settings properties, and telling which main build module should be imported. If you need more, you can use a module.ant file.
+
+Let's try to understand how to use it.
+'ea:build' tag is the main instruction. Type argument in easyant tag references a build type, which tells which build module should be imported (considered as an <a href="ref/anttasks/Importtask.html">import</a>), see below.
+Example:
+<code type="xml">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
+</code>
+You can also have property definition, as you would have in an Ant script
+Example:
+<code type="xml">
+<ea:property name="target.artifacts" value="dist"/>
+</code>
+Usually build-type does the basic stuff. But sometimes we need something more (Source code management feature / code coverage etc...).
+You can load several plugins using the plugin tag.
+Example:
+<code type="xml">
+<ea:plugin module="emma" revision="0.1"/>
+</code>
+
+In this example emma module is loaded as a plugin(considered as an <a href="ref/anttasks/Importtask.html">include</a>). 
+As easyant proceeds with execution, all targets are imported in current project prefixed by the project name.
+This means all targets included in emma module will be prefixed by org.apache.easyant.plugins#emma.
+Example :
+<code type="xml">
+org.apache.easyant.plugins#emma:emma generate emma covera report
+</code>
+
+As the name is not really "user-friendly" you can use an alias for the prefix using "as" attribute.
+Example:
+<code type="xml">
+<ea:plugin module="emma" revision="0.1" as="emma"/>
+</code>
+Doing this, all targets included in emma module will be prefixed by "emma"
+Example :
+<code type="xml">
+emma:emma generate emma coverage report
+</code>
+
+<h2>build plugins:</h2>
+There is three types of build modules:
+<ul>
+<li>build types</li>
+<li>phase description</li>
+<li>plugins</li>
+</ul>
+
+<h3>build types:</h3>
+The main build script are build type (build-std-java in my previous example).
+
+Build types are intended to provide a full build for a particular type of project (simple java, war, ear, ...). EasyAnt comes with a set of build types modules, but users could extend/replace these types as they want. Then in most cases they could simply define which build type to import for each module (either standard or custom), and that's pretty much all. Hence you usually import only one build type module at a time.
+<table>
+  <thead>
+    <tr>
+      <td>Module name</td>
+      <td>Description</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>build-std-java</td>
+      <td>a standard build for simple java modules, relying on standard phases, and providing compilation, execution and unit tests</td>
+    </tr>
+    <tr>
+      <td>build-webapp-java</td>
+      <td>a standard build for webapp java modules, relying on standard phases, and providing compilation, execution and unit tests</td>
+    </tr>
+    <tr>
+      <td>build-std-scala</td>
+      <td>a standard build for simple scala modules, relying on standard phases, and providing compilation, execution and unit tests</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>phases description:</h3>
+Phases define an ordered set of build phases. Build phases are responsible for the build choreography at macro level. They are inspired by the same concept in Maven. In practice they are very similar to Ant targets, except that their dependencies can be defined by the dependency target using a syntax like this:
+
+<code type="xml">
+<target name="xxx" phase="yyy" />
+</code>
+This basically adds the target "xxx" to the list of dependencies of the phase "yyy".
+Usually you use only one phases definition build module.
+<table>
+  <thead>
+    <tr>
+      <td>Module name</td>
+      <td>Description</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>phases-std</td>
+      <td>describes the standard phases of a build. These phase are directly inspired by maven 2 standard phases.</td>
+    </tr>
+  </tbody>
+</table>
+
+See <a href="ref/phases.html">Understanding phases</a> to have more informations on phases.
+
+<h3>Plugins</h3>
+Build plugins are there to actually define each block of the build system. They interact with each other by relying on the file system and properties (for instance run-java expect java classes to be in directory pointed by ${target.main.classes}). For the whole build choreography they rely on phases. Each build plugin define the expected "parameters" (i.e. the expected properties, paths and phases) by using a parameter task like this:
+
+<code type="xml">
+<ea:parameter property="src.main.java" required="true" description="directory where sources to be compiled are" />
+</code>
+
+This is intended to be used both for validation and documentation, ATM only basic validation is performed.
+<ul>
+  <li>Java plugins
+    <ul>
+      <li>Java compilation</li>
+      <li>Javadoc generation</li>
+      <li>Run java application</li>
+    </ul>
+  </li>
+  <li>Scala plugins
+    <ul>
+      <li>Scala compilation</li>
+      <li>Scaladoc</li>
+    </ul>
+  </li>
+  <li>Packaging plugins
+    <ul>
+      <li>Manifest plugins</li>
+      <li>Packaging jar application</li>
+      <li>Packaging war application</li>
+      <li>Source packaging</li>
+    </ul>
+  </li>
+  <li>Test plugins
+    <ul>
+      <li>abstract tests (used by all *tests plugins)</li>
+      <li>Junit tests</li>
+      <li>TestNG tests</li>
+    </ul>
+  </li>
+  <li>Dependency / Publication
+    <ul>
+      <li>Common ivy tasks (Reports, clean-cache, etc...)</li>
+      <li>Dependency management (using Apache Ivy)</li>
+      <li>Publication (using Apache Ivy)</li>
+    </ul>
+  </li>
+  <li>Source Code Management Plugins
+    <ul>
+      <li>SVN</li>
+    </ul>
+  </li>
+  <li>Documentation Plugins
+    <ul>
+      <li>Documentation generation</li>
+      <li>Xooki</li>
+    </ul>
+  </li>
+  <li>Others Plugins
+    <ul>
+      <li>Clean</li>
+      <li>Resource standard</li>
+      <li>Emma coverage</li>
+      <li>Checkstyle</li>
+      <li>Jetty deployment</li>
+      <li>Skeleton plugins (manages skeleton of projects)</li>
+     </ul>
+  </li>
+</ul>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

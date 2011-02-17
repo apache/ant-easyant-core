@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>findclasspath task</h1>
+
+<h2>Description</h2>
+<p>The <findclasspath> task is designed to locate the right version of a SDK (for groovy / scala, but maybe for others SDK like android etc...).
+Implementation is based on the pattern chain of responsability.
+</p>
+
+Really basic sample :
+<code type="xml">
+<ea:findclasspath org="org.codehaus.groovy" module="groovy-all" revision="1.0"/>
+</code>
+
+By default if you do not specify anything inside the findclasspath task, easyant will use the default strategies :
+<ul>
+  <li>ProjectDependencyStrategy : will check if the specified dependency is contained as a project dependencies. If there is no exact match it will give a try based on organisation name. If found easyant will use the specified version in the project dependencies.</li>
+  <li>BasicConfiguration : will use the specified dependency (declared in <b>findclasspath</b>)</li>
+</ul>
+
+<h3>Using additional strategy</h3>
+
+You can define (or override) the default behavior and plug your own strategy.
+By default, EasyAnt came with an additional strategy : environment strategy.
+
+This strategy can be referenced as a nested element of <findclasspath>.
+If you choose to use additionnal strategy you need to define the whole chain (ordered). This allow you to interfer with the two default strategies
+
+Say for example you want to :
+<ul>
+    <li>check project dependencies</li>
+    <li>if not found check environment variables</li>
+    <li>if not found use the specified version in findclasspath argument</li>
+</ul>
+The task will looks like this :
+<code type="xml">
+<ea:findclasspath org="org.codehaus.groovy" module="groovy-all" revision="1.0">
+     <project-dependency-strategy/>
+     <environment-strategy env="GROOVY_HOME"/>
+     <basic-configuration-strategy/>
+</ea:findclasspath>   
+</code>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr>
+      <th>Parameter name</th>
+      <th class="unsortable">Description</th>
+      <th>Mandatory</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>pathid</td>
+      <td>name of the path id to fill</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>organisation</td>
+      <td>organisation name to search (used by nested strategies extending BasicConfigurationStrategy)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>module</td>
+      <td>module name to search (used by nested strategies extending BasicConfigurationStrategy)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>revision</td>
+      <td>revision number to search (used by nested strategies extending BasicConfigurationStrategy)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>conf</td>
+      <td>configuration name (used by nested strategies extending BasicConfigurationStrategy) <br/><i>Default: default</i></td>
+      <td> </td>
+    </tr>
+
+  </tbody>
+</table>
+
+<h2>Nested Elements</h2>
+This task can have nested elements extending <i>org.apache.easyant.tasks.findclasspathAbstractFindClassPathStrategy</i>.
+By default it comes with three implementation :
+<ul>
+  <li><a href="findclasspath/basic-configuration-strategy.html">basic-configuration-strategy</a></li>
+  <li><a href="findclasspath/environment-strategy.html">environment-strategy</a></li>
+  <li><a href="findclasspath/project-dependency-strategy.html">project-dependency-strategy</a></li>
+</ul>
+
+
+<h2>Example</h2>
+Really basic sample :
+<code type="xml">
+<ea:findclasspath org="org.codehaus.groovy" module="groovy-all" revision="1.0"/>
+</code>
+Using nested strategies :
+<code type="xml">
+<ea:findclasspath org="org.codehaus.groovy" module="groovy-all" revision="1.0">
+     <project-dependency-strategy/>
+     <environment-strategy env="GROOVY_HOME"/>
+     <basic-configuration-strategy/>
+</ea:findclasspath>   
+</code>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

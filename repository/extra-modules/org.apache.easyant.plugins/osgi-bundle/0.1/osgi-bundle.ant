@@ -1,0 +1,131 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#osgi-bundle" xmlns:ea="antlib:org.apache.easyant">
+	
+	<ea:core-version requiredrevision="[0.8,+]" />
+
+	<target name=":init" phase="validate">
+		<ea:parameter phase="validate" />
+		<ea:parameter property="target.artifacts" required="true" description="destination directory for target artifacts"/>
+		<ea:parameter property="target.artifacts.main.bundle.name" required="true"
+				    description="main artifact file name" />
+		<ea:parameter property="target.main.artifact" required="false" description="the location of the main artifact" 
+					default="${target.artifacts}/${target.artifacts.main.bundle.name}.jar"/>
+		<taskdef name="bundle" 
+		    classname="net.luminis.build.plugin.bnd.BuildTask"
+		    classpathref="org.apache.easyant.plugins#osgi-bundle.classpath" />
+	</target>
+
+	<target name=":bundle" depends="validate, compile,prepare-package" phase="package">
+		<dirname file="${target.artifacts.main.bundle.name}" property="target.artifacts.main.bundle.dir" />
+		<mkdir dir="${target.artifacts.main.bundle.dir}"/>
+
+		<condition property="is.osgi.bundle.empty">
+			<or>
+				<isset property="osgi.export.package"/>
+				<isset property="osgi.private.package"/>
+				<isset property="osgi.include.resource"/>
+			</or>
+		</condition>
+		
+		<fail unless="is.osgi.bundle.empty">
+Missing property			
+*******************************************************************************			
+At least one of the following property must be set :
+  - osgi.export.package : The packages that will be exported by the bundle.
+  - osgi.private.package : The private packages of the generated bundle (i.e. packages that are not exported).
+  - osgi.include.resource : Resource to include in the generated bundle.
+*******************************************************************************			
+		</fail>
+	
+		<!-- Should we provide a way to fill the following properties in interractive mode? -->
+		<ea:parameter property="osgi.bundle.classpath" default="" description="The (internal) bundle classpath (corresponds to OSGi manifest header 'Bundle-Classpath')."/>
+		<ea:parameter property="osgi.bundle.copyright" default="" description="Copyright header (corresponds to OSGi manifest header 'Bundle-Copyright')."/>
+		<ea:parameter property="osgi.bundle.description" default="" description="Bundle description text (corresponds to OSGi manifest header 'Bundle-Description')."/>
+		<ea:parameter property="osgi.bundle.name" default="" description="Name of the bundle (corresponds to OSGi manifest header 'Bundle-Name')."/>
+		<ea:parameter property="osgi.bundle.native.code" default="" description="Native code specification (corresponds to OSGi manifest header 'Bundle-NativeCode'). "/>
+		<ea:parameter property="osgi.export.package" default="" description="The packages that will be exported by the bundle."/>
+		<ea:parameter property="osgi.export.service" default="" description="The OSGi R3 'Export-Service' header, deprecated for R4 "/>
+		<ea:parameter property="osgi.import.package" default="" description="The packages that will be imported by the bundle."/>
+		<ea:parameter property="osgi.dynamic.import.package" default="" description="The packages that should be dynamically import when needed."/>
+		<ea:parameter property="osgi.import.service" default="" description="The OSGi R3 'Import-Service' header, deprecated for R4."/>
+		<ea:parameter property="osgi.bundle.vendor" default="" description="Vendor name (corresponds to OSGi manifest header 'Bundle-Vendor')."/>
+		<ea:parameter property="osgi.bundle.version" default="${version}" description="Bundle version (corresponds to OSGi manifest header 'Bundle-Version')."/>
+		<ea:parameter property="osgi.bundle.doc.url" default="" description="URL pointing to documentation about the created bundle (corresponds to OSGi manifest header 'Bundle-DocURL')."/>
+		<ea:parameter property="osgi.bundle.contact.address" default="" description="Vendor's contact address (corresponds to OSGi manifest header 'Bundle-ContactAddress')."/>
+		<ea:parameter property="osgi.bundle.activator" default="" description="The bundle activator class (corresponds to OSGi manifest header 'Bundle-Activator')."/>
+		<ea:parameter property="osgi.bundle.required.execution.env" default="" description="List of execution environments (corresponds to OSGi manifest header 'Bundle-RequiredExecutionEnvironment')."/>
+		<ea:parameter property="osgi.bundle.symbolic.name" default="" description="The (unique, non-localizable) symbolic name of the bundle, based on reverse domain name convention (corresponds to OSGi manifest header 'Bundle-SymbolicName')."/>
+		<ea:parameter property="osgi.bundle.localization" default="" description="Location in the bundle where localization files can be found (corresponds to OSGi manifest header 'Bundle-Localization')."/>
+		<ea:parameter property="osgi.bundle.require.bundle" default="" description="Required exports from another bundle (corresponds to OSGi manifest header 'Require-Bundle')."/>
+		<ea:parameter property="osgi.bundle.fragment.host" default="" description="Host bundle (for fragment bundles only, corresponds to OSGi manifest header 'Fragment-Host')."/>
+		<!--
+		<ea:parameter property="osgi.bundle.manifest.version" default="" description="deprecated and ignored Bundle-ManifestVersion is always '2' (R4 bundle) "/>
+		<ea:parameter property="osgi.service.component" default="" description="??? Undocumented"/>
+		-->
+		<ea:parameter property="osgi.bundle.license" default="" description="Manifest header for bundle license."/>
+		<ea:parameter property="osgi.private.package" default="" description="The private packages of the generated bundle (i.e. packages that are not exported)."/>
+		<!--
+		<ea:parameter property="osgi.ignore.package" default="" description="??? Undocumented"/>
+		-->
+		<ea:parameter property="osgi.include.resource" default="" description="Resource to include in the generated bundle."/>
+		<ea:parameter property="osgi.include.resource.header" default="" description="Whether to include the include-resource header in the manifest."/>
+		<ea:parameter property="osgi.additional.manifest" default="${manifest.file}" description="Specify an additional manifest file"/>
+		
+		<!-- Override this path if you need to customize what will be included in the osgi-bundle
+			<bundle> ant task allow you to make bundle from another JAR, or a list of DIRECTORY.
+			This is quite strange but you can't use <fileset>.
+			If you need to make a bundle of classes you should set here a directory with <filelist>   
+		-->
+		<path id="osgi.classpath">
+			<filelist><file name="${target.main.classes}"/></filelist>
+		</path>
+		
+		<bundle outputDir="${target.artifacts}"
+			bundleClassPath="${osgi.bundle.classpath}"
+			bundleCopyright="${osgi.bundle.copyright}"
+			bundleDescription="${osgi.bundle.description}"
+			bundleName="${osgi.bundle.name}"
+			bundleNativeCode="${osgi.bundle.native.code}"
+			exportpackage="${osgi.export.package}"
+			exportService="${osgi.export.service}"
+			importPackage="${osgi.import.package}"
+			dynamicImportPackage="${osgi.dynamic.import.package}"
+			importService="${osgi.import.service}"
+			bundleVendor="${osgi.bundle.vendor}"
+			bundleVersion="${osgi.bundle.version}"
+			bundleDocUrl="${osgi.bundle.doc.url}"
+			bundleContactAddress="${osgi.bundle.contact.address}"
+			bundleActivator="${osgi.bundle.activator}"
+			bundleRequiredExecutionEnvironment="${osgi.bundle.required.execution.env}"
+			bundleSymbolicName="${osgi.bundle.symbolic.name}"
+			bundleLocalization="${osgi.bundle.localization}"
+			requireBundle="${osgi.bundle.require.bundle}"
+			fragmentHost="${osgi.bundle.fragment.host}"
+			bundleLicense="${osgi.bundle.license}"
+			privatePackage="${osgi.private.package}"
+			includeResource="${osgi.include.resource}"
+			includeIncludeResourceHeader="${osgi.include.resource.header}"
+			additionalManifest="${osgi.additional.manifest}"
+			filename="${target.artifacts.main.bundle.name}"
+			classpathRefId="osgi.classpath"/>
+	</target>
+	
+	<target name="doit" depends=":bundle" />
+</project>

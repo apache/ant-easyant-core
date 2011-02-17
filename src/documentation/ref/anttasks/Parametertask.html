@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>parameter task</h1>
+
+<h2>Description</h2>
+<p>
+parameter tasks is used to :
+<ul>
+<li>document properties / paths / phases</li>
+<li>check if properties /paths / phases are required</li>
+<li>set default values if properties are not set</li>
+</ul>
+This could be useful in precondition of each modules, to check if property/phase/path are set. And much more useful to document our modules.
+</p>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr><th>Parameter name</th><th class="unsortable">Description</th><th>Mandatory</th></tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>path</td>
+      <td>specify the path id to check</td>
+      <td rowspan="3">One of these</td>
+    </tr>
+    <tr id="mandatory">
+      <td>phase</td>
+      <td>specify the phase id to check</td>
+    </tr>
+    <tr id="mandatory">
+      <td>property</td>
+      <td>give a description to the property / path / phase</td>
+    </tr>
+    <tr id="mandatory">
+      <td>description</td>
+      <td>specify the path id to check</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>required</td>
+      <td>specify if the property / path is mandatory</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>defaultValue</td>
+      <td>specify a default value (only available for property)</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h2>Examples</h2>
+<h3>Mandatory property</h3>
+<code type="xml">
+<ea:parameter property="src.main.java" required="true" description="directory where sources to be compiled are" />
+</code>
+Here the src.main.java property is mandatory and will make a build failed if this property is not set displaying the following error message :
+<code type="xml">
+BUILD FAILED
+expected property 'src.main.java': directory where sources to be compiled are
+</code>
+<h3>Non mandatory property</h3>
+<code type="xml">
+<ea:parameter property="src.main.java" description="directory where sources to be compiled are" />
+</code>
+Here the src.main.java property is not mandatory and no check will be done on it. 
+Even if no check is done, this could be usefull to document your build-script (ie. give a description to your properties)
+<h3>Non mandatory property with default value</h3>
+<code type="xml">
+<ea:parameter property="src.main.java" default="src/main/java" description="directory where sources to be compiled are" />
+</code>
+Here the src.main.java property is not mandatory.
+If the property is not set easyant will initialise this property with a default value. 
+
+<h3>Mandatory path</h3>
+<code type="xml">
+<ea:parameter path="mypath" required="true" description="my path is used to ..." />
+</code>
+Here mypath is mandatory and will make a build failed if this path is not set displaying the following error message :
+<code type="xml">
+BUILD FAILED
+expected path 'mypath': my path is used to ...
+</code>
+
+<h3>Phase</h3>
+<code type="xml">
+<ea:parameter phase="myphase" description="my phase is used to ..." />
+</code>
+Here we say that our build script should know the phase named "myphase" if not it will make a build failed with the following message :
+<code type="xml">
+BUILD FAILED
+expected phase 'myphase': my phase is used to ...
+</code>
+
+
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

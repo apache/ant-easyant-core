@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Module files</h1>
+A project using EasyAnt <b>MUST</b> contain a file named module.ivy and an optional file named module.ant.
+
+<h2>The module.ivy file</h2>
+<p />
+This file is the module descriptor of your project. 
+It contains several informations like your company name, the module name, dependencies, and Easyant build information.
+
+<h3>A short example</h3>
+<code type="xml">
+<ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
+  <info organisation="org.mycompany" module="myJavaApp" status="integration" >
+    <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+  </info>
+  <configurations>
+    <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+    <conf name="test" visibility="private" description="this scope indicates
+ that the dependency is not required for normal use of the application, and is 
+only available for the test compilation and execution phases."/>
+  </configurations>
+</ivy-module>
+</code>
+In this module descriptor, we have an application named myJavaApp created by org.mycompany.
+To use easyant you must declare the easyant namespace 
+<code type="xml">
+xmlns:ea="http://www.easyant.org"
+</code>
+Pay attention to the <b>ea:build</b> tag.
+This tags define which build-type is used for your project. In this example we use <b>build-std-java</b> which provides all the targets necessary to compile / package a standard java application.
+<div id="note">Note: The organisation argument in <b>ea:build</b> tag is optionnal. If not specified easyant will use the default one (org.apache.easyant.buildtypes).</div>
+
+Running easyant with this example will run the default target (package).
+A few seconds later, you will have the generated jar in your_project/target/artifacts/myJavaApp.jar.
+
+<h3>Changing build-system properties</h3>
+So now we want to change several things on this build system.
+For example, we want to have the generated jar in "dist" directory instead of "targets/artifacts".
+We will add additional informations inside <easyant> tag.
+<code type="xml">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+ <ea:property name="target.artifacts" value="dist"/>
+</ea:build>
+</code>
+Running "easyant" will generate the output jar in "dist" directory.
+
+<h3>Adding dependencies</h3>
+Dependencies are defined in the module.ivy files.
+There is a section dedicated to <b>dependencies</b>
+Let's consider that our project needs an artifact named foo provided by acme in revision 2.0
+The dependencies section will look like this :
+<code type="xml">
+<dependencies>
+<dependency org="acme" name="foo" rev="2.0" conf="default"/>
+</dependencies>
+</code>
+If you want to have more informations on dependencies please refer to the <a href="http://ant.apache.org/ivy/history/latest-milestone/ivyfile/dependency.html">official ivy documentation</a>
+
+<h3>Using additional plugins</h3>
+In some cases, we want to use several features that are not included in the default build-type provided by easyant.
+If your project needs to use a specific plugin, you can use the <b>ea:plugin</b> tag inside <b>ea:build</b> tag.
+Example: 
+Suppose we want to use code coverage feature.
+<code type="xml">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+ <ea:property name="target.artifacts" value="dist"/>
+ <ea:plugin org="org.apache.easyant.plugins" module="emma" revision="0.1"/>
+</ea:build>
+</code>
+Calling to "easyant -p" we should see the emma public target :
+<code type="xml">
+org.apache.easyant.plugins#emma.:emma     generate emma covera report
+</code>
+As you can see the target is prefixed by the project name.
+Most of the time the project name is quite long so easyant allows you to define an alias for the project names. This alias can be used in place of the complete project name. You can define an alias for a plugin using <b>as</b> argument as below.
+<code type="xml">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+ <ea:property name="target.artifacts" value="dist"/>
+ <ea:plugin org="org.apache.easyant.plugins" module="emma" revision="0.1" as="emma"/>
+</ea:build>
+</code>
+Calling to "easyant -p" we should see the emma public target :
+<code type="xml">
+emma.:emma generate emma covera report
+</code>
+<div id="note">Note: The organisation argument in <b>ea:plugin</b> tag is optionnal. If not specified easyant will use the default one (org.apache.easyant.plugins).</div>
+
+<h2>The Optional module.ant file</h2>
+<p />
+Easyant also provides you a hook for injecting custom build logic into your build process. This could include any kind of custom manipulation for using easyant locally.
+<p />
+The module.ant file is a conventional ant script. You can retain any convenient build logic from your legacy scripts in module.ant. All targets defined in this file are available for invocation using easyant through command terminal.
+<p />
+<u>Example:</u>
+Consider the following module.ivy file:
+<p />
+<code type="xml">
+<ivy-module version="2.0"> 
+	<info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
+                <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
+                        <ea:plugin organisation="org.apache.easyant.plugins" module="checkstyle" revision="0.1"/>
+                </ea:build>	
+        </info>
+	<configurations>
+		<conf name="default" visibility="public" description="runtime dependencies and master artifact"/>
+		<conf name="test" visibility="private" description="this scope indicates this is only available for the test compilation and execution phases."/>
+	</configurations>
+	<dependencies>
+		<dependency org="hsqldb" name="hsqldb" rev="1.8.0.7" conf="default->default"/>
+		<dependency org="junit" name="junit" rev="4.4" conf="test->default" />
+	</dependencies>
+</ivy-module>
+
+</code>
+The above code snippet is a declaration of a easyant project that uses the standard-java-app build type. The same functionality can be achieved by the following module.ant file in your project root directory:
+
+<code type="xml">
+<project name="org.apache.easyant.buildtypes#standard-java-app"
+	xmlns:ea="antlib:org.apache.easyant">
+	<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+        <ea:plugin organisation="org.apache.easyant.plugins" module="checkstyle" revision="0.1"/>
+</project>				
+</code>
+<div id="note">Note: organisation are optionnal in <b>ea:build</b> / <b>ea:plugin</b>. If no organisation is set easyant will use the default one.
+<ul>
+  <li><i>org.apache.easyant.buildtypes</i> for buildtypes</li>
+  <li><i>org.apache.easyant.plugins</i> for plugins</li>
+</ul>
+</div>
+
+Similarly, you can provide additional functionalities using the module.ant incase, you dont find smaller things missing in your build types or plugins. For larger customizations, you may consider writing new plugins.
+
+<h2>Mixing module.ivy and module.ant</h2>
+EasyAnt offer the possibility to mix both files.
+This make sense if we need to use buildtypes/plugins and additional targets specific to your project.
+
+Let's try to add a target name hello world in the project.
+The module ivy looks like this : 
+<code type="xml">
+<ivy-module version="2.0"> 
+	<info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
+                <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+        </info>
+	<configurations>
+		<conf name="default" visibility="public" description="runtime dependencies and master artifact"/>
+		<conf name="test" visibility="private" description="this scope indicates this is only available for the test compilation and execution phases."/>
+	</configurations>
+	<dependencies/>
+</ivy-module>
+</code>
+
+Here we're able to run any phase/target provided by the <b>build-std-java</b> build type.
+
+Now we will add our helloWorld target in module.ant
+<code type="xml">
+<project name="org.apache.easyant.buildtypes#standard-java-app"
+	xmlns:ea="antlib:org.apache.easyant">
+	<target name="helloWorld" description="display a helloWorld message">
+		<echo message="Hello World!"/>
+	</target>
+</project>
+</code>
+
+Running a easyant -p should display our new target helloWorld. This target should be available if we launch easyant helloWorld.
+
+Considering that all the phases provided <b>build-std-java</b> are loaded before the module.ant, you can attach your custom target to any phase.
+This complete the basic needs.
+
+<h2>Going further : overriding target / phases</h2>
+Let's consider the use case were you want to adapt a specific target or phase to your need.
+We need to keep in mind that ant-based system works with a useFirst mechanism.
+Which means :
+<ul>
+  <li>properties are set only first time we use it</li>
+  <li>target / phase are set first time we use it</li>
+</ul>
+
+But the choregraphy is to load :
+  * the module.ivy
+  * the module.ant
+
+This means that you're not able to override target/phases in the module.ant.
+Fortunately EasyAnt provides a way to do it.
+The real choregraphy is to load :
+  * the override.module.ant
+  * the module.ivy
+  * the module.ant
+
+The <b>override.module.ant</b> is a true ant script loaded before the module.ivy. It's the right place if you want to override target/phases provided by things defined later in module.ivy.
+
+For example suppose we want to introduce a new phase named my-phase run before the default package phase. 
+<code type="xml">
+<project name="org.apache.easyant.buildtypes#standard-java-app"
+	xmlns:ea="antlib:org.apache.easyant">
+        <!-- Define a new phase -->
+        <phase name="my-phase" description="foobar"/>
+        <!-- Override the package phase that depends on my-phase and the default package phase -->
+        <phase name="package" depends="my-phase, org.apache.easyant.plugins#phases-std.package" description="package the application"/>
+</project>
+</code>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

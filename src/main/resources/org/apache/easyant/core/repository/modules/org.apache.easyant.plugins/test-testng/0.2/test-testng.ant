@@ -1,0 +1,124 @@
+<!--
+	Copyright 2008-2010 the EasyAnt project
+	
+	See the NOTICE file distributed with this work for additional information 
+	regarding copyright ownership.
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#test-testng"
+	xmlns:ea="antlib:org.apache.easyant">
+
+	<ea:core-version requiredrevision="[0.8,+]" />
+	
+	<ea:include mrid="org.apache.easyant.plugins#abstract-test;0.1" as=":abstract-testng-test"/>
+
+	<target name="/skip" description="skip tests">
+		<property name="skip.test" value="true" />
+		<property name="skip.test.integration" value="true" />
+	</target>
+	
+	<target name=":init" phase="validate" depends=":abstract-testng-test:init">
+		<ea:parameter phase="validate" />
+		<ea:parameter phase="test" />
+		<ea:parameter phase="integration-test" />
+				
+		<ea:parameter property="testng.filename" description="testng configuration filename" default="testng.xml"/>
+
+        <ea:path pathid="run.test.classpath" overwrite="append-if-not-exist">
+            <pathelement location="${target.test.classes}" />
+            <path refid="compile.test.classpath" />
+        </ea:path>
+
+        <ea:path pathid="run.test.integration.classpath" overwrite="append-if-not-exist">
+            <pathelement location="${target.test.integration.classes}" />
+            <path refid="compile.test.classpath" />
+        </ea:path>
+		
+		<condition property="skip.test">
+			<not><isset property="has.src.test.java"/></not>
+		</condition>
+
+		<condition property="skip.test.integration">
+			<not><isset property="has.src.test.integration.java"/></not>
+		</condition>
+
+	</target>
+	
+	<target name="-load" depends="provision">
+		<available property="testng.available" classname="org.testng.TestNGAntTask">
+				<classpath refid="run.test.classpath" />
+			</available>
+
+			<fail unless="testng.available" message="Testng is unavailable, perhaps you forget to add testng in you project dependencies."/>
+			<taskdef name="testng" classname="com.beust.testng.TestNGAntTask">
+						<classpath refid="run.test.classpath" />
+			</taskdef>
+	</target>
+	
+	<macrodef name="testng-test">
+		<attribute name="prefix"/>
+		<sequential>
+			<mkdir dir="${target.test.xml}" />
+			<!-- Xml and HTML file will be generated in target.test.xml -->
+			<testng outputDir="${target.test.xml}"
+				   haltonfailure="off"
+		           failureproperty="@{prefix}.failed">
+				<classpath refid="run.@{prefix}.classpath" />
+				<xmlfileset dir="${target.@{prefix}.classes}" includes="${testng.filename}" />
+				<!-- Alternative way to launch testng, maybe this could be an alternative target? -->
+				<!--
+							<classfileset dir="${build.test.dir}" includes="**/*.class" />
+				-->
+			</testng>
+		</sequential>
+	</macrodef>
+	
+	<target name="-test" depends="test-compile,-load" unless="skip.test">
+		<testng-test prefix="test"/>
+        
+	</target>	
+
+	<target name="-integration-test" depends="test-compile,-load" unless="skip.test.integration">
+		<testng-test prefix="test.integration"/>
+	</target>	
+
+	
+	<target name=":run" if="test.mode.run" unless="skip.test" depends="-test"
+			 phase="test" description="run testng tests">
+		<check-test-result propertytocheck="test.failed"
+              message="At least one test has failed. See logs in ${target.test.xml} for details or use the report target to run the test with a report" />
+	</target>	
+
+	<target name=":run-integration" if="test.mode.run" unless="skip.test.integration" depends="-integration-test"
+				 phase="integration-test" description="run testng integration tests">
+		<check-test-result propertytocheck="test.integration.failed"
+              message="At least one integration test has failed. See logs in ${target.test.xml} for details or use the report target to run the test with a report" />
+	</target>	
+	
+    <target name=":report" if="test.mode.report" unless="skip.test" depends="-test,-integration-test"
+    	 phase="report" description="generate testng reports">
+        <junitreport todir="${target.test.xml}">
+            <fileset dir="${target.test.xml}">
+            	<include name="TEST-*.xml" />
+            </fileset>
+            <report format="frames" todir="${target.test.html}" />
+        </junitreport>
+        <fail if="test.failed"
+              message="At least one test has failed. See logs in ${target.test.xml} or report in ${target.test.html}" />
+        <fail if="test.integration.failed"
+              message="At least one integration test has failed. See logs in ${target.test.xml} or report in ${target.test.html}" />
+    </target>
+	
+    <target name=":doit" depends=":run, :run-integration, :report" />
+</project>
