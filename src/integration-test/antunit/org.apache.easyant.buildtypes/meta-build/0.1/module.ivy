@@ -15,18 +15,18 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="meta-build-test" status="integration" >
-		<description>Tests the features of a meta-build type project.</description>
-		<ea:build mrid="org.apache.easyant.buildtypes#meta-build;0.1">
-			<ea:property name="project.ivy.settings.file" value="${basedir}/ivysettings.xml"/>
-		</ea:build>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-	</configurations>
-	<dependencies>
-		<dependency org="junit" name="junit" rev="4.4" conf="test->default" />
-	</dependencies>
+    <info organisation="org.apache.easyant" module="meta-build-test" status="integration" >
+        <description>Tests the features of a meta-build type project.</description>
+        <ea:build mrid="org.apache.easyant.buildtypes#meta-build;0.1">
+            <ea:property name="project.ivy.settings.file" value="${basedir}/ivysettings.xml"/>
+        </ea:build>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+    </configurations>
+    <dependencies>
+        <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
+    </dependencies>
 
 </ivy-module>

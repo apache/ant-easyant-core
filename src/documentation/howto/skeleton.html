@@ -17,12 +17,12 @@
 -->
 <html>
 <head>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
-	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
-	<script type="text/javascript" src="../xooki/xooki.js"></script>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <script type="text/javascript">var xookiConfig = {level: 1};</script>   
+    <script type="text/javascript" src="../xooki/xooki.js"></script>
 </head>
 <body>
-	<textarea id="xooki-source">
+    <textarea id="xooki-source">
 <h1>Working with skeletons of project</h1>
 <p>EasyAnt comes with a module named skeleton that allows you to create or install project skeletons. This could be pretty useful to quickstart a project.</p>
 <p>By default, this module works in interactive mode, which means that easyant will ask you questions for every required property. But you can still give parameters on the command line using -Dproperty.
@@ -61,19 +61,19 @@ Example if your skeleton module is imported as "skeleton", you should use :</p>
 <code type="screen">> easyant skeleton:create</code>
 <code type="screen">
 [input] Organisation name of the skeleton project
-	org.apache.easyant.skeletons
+    org.apache.easyant.skeletons
 [input] Module name of the skeleton project
-	std-java-skeleton
+    std-java-skeleton
 [input] Revision number of the skeleton project
-	0.1
+    0.1
 [input] The path where the skeleton project will be unzipped [.]
-	.
+    .
 [input] Organization name of YOUR project
 org.mycompany
 [input] Module name of YOUR project
 myProject
 [input] Revision number of YOUR project [0.1]
-	0.1
+    0.1
 </code>
 After a few seconds you get your future project ready.
 
@@ -115,17 +115,17 @@ Supposing we want to create a project called "std-java-skeleton".
     This file will look like this
 <code type="xml">
 <ivy-module version="2.0"> 
-	<info organisation="@project.organization.name@" module="@project.module.name@" revision="@project.revision.number@" status="integration" >
-		<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope
+    <info organisation="@project.organization.name@" module="@project.module.name@" revision="@project.revision.number@" status="integration" >
+        <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope
                   indicates that the dependency is not required for normal use of 
                   the application, and is only available for the test compilation 
                   and execution phases."/>
-	</configurations>
-	<dependencies/>
+    </configurations>
+    <dependencies/>
 </ivy-module>
 </code>
 </li>

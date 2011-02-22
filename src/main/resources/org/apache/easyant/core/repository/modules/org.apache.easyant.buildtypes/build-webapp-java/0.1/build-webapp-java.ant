@@ -15,38 +15,38 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.buildtypes#build-webapp-java"
-	xmlns:ea="antlib:org.apache.easyant">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-	<echo message="Building ${ivy.organisation} ${ivy.module} with org.apache.easyant.buildtypes#build-webapp-java..."/>
-	
-	<ea:import mrid="org.apache.easyant.plugins#phases-std;0.2" />
+    xmlns:ea="antlib:org.apache.easyant">
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+    <echo message="Building ${ivy.organisation} ${ivy.module} with org.apache.easyant.buildtypes#build-webapp-java..."/>
+    
+    <ea:import mrid="org.apache.easyant.plugins#phases-std;0.2" />
 
-	<property file="${org.apache.easyant.buildtypes#build-webapp-java.properties.file}" />
-	
-	<ea:parameter property="version.strategy.plugin.org" description="Organisation name of the version strategy plugin" default="org.apache.easyant.plugins"/>
-	<ea:parameter property="version.strategy.plugin.module" description="Module name of the version strategy plugin" default="default-version-strategy"/>
-	<ea:parameter property="version.strategy.plugin.rev" description="Revision number of the version strategy plugin" default="0.1"/>
-	<ea:parameter property="version.strategy.plugin.mrid" description="Full mrid of the version strategy plugin" default="${version.strategy.plugin.org}#${version.strategy.plugin.module};${version.strategy.plugin.rev}"/>
+    <property file="${org.apache.easyant.buildtypes#build-webapp-java.properties.file}" />
+    
+    <ea:parameter property="version.strategy.plugin.org" description="Organisation name of the version strategy plugin" default="org.apache.easyant.plugins"/>
+    <ea:parameter property="version.strategy.plugin.module" description="Module name of the version strategy plugin" default="default-version-strategy"/>
+    <ea:parameter property="version.strategy.plugin.rev" description="Revision number of the version strategy plugin" default="0.1"/>
+    <ea:parameter property="version.strategy.plugin.mrid" description="Full mrid of the version strategy plugin" default="${version.strategy.plugin.org}#${version.strategy.plugin.module};${version.strategy.plugin.rev}"/>
 
-	<ea:parameter property="test.plugin.org" description="Organisation name of the test plugin" default="org.apache.easyant.plugins"/>
-	<ea:parameter property="test.plugin.module" description="Module name of the test plugin" default="test-${test.framework}"/>
-	<ea:parameter property="test.plugin.rev" description="Revision number of the test plugin" default="0.2"/>
-	<ea:parameter property="test.plugin.mrid" description="Full mrid of the test plugin" default="${test.plugin.org}#${test.plugin.module};${test.plugin.rev}"/>
+    <ea:parameter property="test.plugin.org" description="Organisation name of the test plugin" default="org.apache.easyant.plugins"/>
+    <ea:parameter property="test.plugin.module" description="Module name of the test plugin" default="test-${test.framework}"/>
+    <ea:parameter property="test.plugin.rev" description="Revision number of the test plugin" default="0.2"/>
+    <ea:parameter property="test.plugin.mrid" description="Full mrid of the test plugin" default="${test.plugin.org}#${test.plugin.module};${test.plugin.rev}"/>
 
-	
-	<ea:include mrid="org.apache.easyant.plugins#clean-std;0.1" as="clean" />
-	
-	<ea:include mrid="org.apache.easyant.plugins#ivy-provisioning;0.1" as="lib" />
-	<ea:include mrid="${version.strategy.plugin.mrid}" as="version" />
-	<ea:include mrid="org.apache.easyant.plugins#ivy-publication;0.1" as="publish" />
-	<ea:include mrid="org.apache.easyant.plugins#ivy-utils;0.1" as="ivy" />
-	<ea:include mrid="org.apache.easyant.plugins#resources-std;0.1" as="resources" />
-	<ea:include mrid="org.apache.easyant.plugins#compile-java;0.1" as="compile" />
-	<ea:include mrid="org.apache.easyant.plugins#compile-test-java;0.1" as="compile-test" />
-	<ea:include mrid="${test.plugin.mrid}" as="test" />
-	<ea:include mrid="org.apache.easyant.plugins#manifest;0.1" as="manifest" />
-	<ea:include mrid="org.apache.easyant.plugins#package-war;0.1" as="war" />
-	
-	<target name="doit" depends="verify" />
+    
+    <ea:include mrid="org.apache.easyant.plugins#clean-std;0.1" as="clean" />
+    
+    <ea:include mrid="org.apache.easyant.plugins#ivy-provisioning;0.1" as="lib" />
+    <ea:include mrid="${version.strategy.plugin.mrid}" as="version" />
+    <ea:include mrid="org.apache.easyant.plugins#ivy-publication;0.1" as="publish" />
+    <ea:include mrid="org.apache.easyant.plugins#ivy-utils;0.1" as="ivy" />
+    <ea:include mrid="org.apache.easyant.plugins#resources-std;0.1" as="resources" />
+    <ea:include mrid="org.apache.easyant.plugins#compile-java;0.1" as="compile" />
+    <ea:include mrid="org.apache.easyant.plugins#compile-test-java;0.1" as="compile-test" />
+    <ea:include mrid="${test.plugin.mrid}" as="test" />
+    <ea:include mrid="org.apache.easyant.plugins#manifest;0.1" as="manifest" />
+    <ea:include mrid="org.apache.easyant.plugins#package-war;0.1" as="war" />
+    
+    <target name="doit" depends="verify" />
 </project>

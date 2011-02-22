@@ -15,10 +15,10 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="meta-build-2-test" status="integration" revision="0.2">
-		<description>Tests the features of a meta-build v2 type project.</description>
-		<ea:build mrid="org.apache.easyant.buildtypes#meta-build;0.2">
-			<ea:property name="project.ivy.settings.file" value="${basedir}/ivysettings.xml"/>
-		</ea:build>
-	</info>
+    <info organisation="org.apache.easyant" module="meta-build-2-test" status="integration" revision="0.2">
+        <description>Tests the features of a meta-build v2 type project.</description>
+        <ea:build mrid="org.apache.easyant.buildtypes#meta-build;0.2">
+            <ea:property name="project.ivy.settings.file" value="${basedir}/ivysettings.xml"/>
+        </ea:build>
+    </info>
 </ivy-module>

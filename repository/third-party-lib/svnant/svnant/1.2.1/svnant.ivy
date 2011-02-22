@@ -15,17 +15,17 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="svnant"
-	       module="svnant"
-	       status="milestone"
-	       revision="1.2.1">
-	       <description>This module provides svnant feature.</description>
-	</info>
-	<publications>
+    <info organisation="svnant"
+           module="svnant"
+           status="milestone"
+           revision="1.2.1">
+           <description>This module provides svnant feature.</description>
+    </info>
+    <publications>
                 <artifact type="jar" ext="jar"/>
-	</publications>
-	<dependencies>
-		<dependency org="svnjavahl" name="svnjavahl" rev="1.0" force="true" />
-		<dependency org="svnClientAdapter" name="svnClientAdapter" rev="0.9.100" force="true" />
-	</dependencies>
+    </publications>
+    <dependencies>
+        <dependency org="svnjavahl" name="svnjavahl" rev="1.0" force="true" />
+        <dependency org="svnClientAdapter" name="svnClientAdapter" rev="0.9.100" force="true" />
+    </dependencies>
 </ivy-module>

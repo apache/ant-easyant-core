@@ -15,18 +15,18 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" > 
-	<info organisation="org.apache.easyant.plugins"
-	       module="antcontrib-activator"
-	       status="milestone"
-	       revision="0.1">
-		<description>
-			This module is in charge to load antcontrib taksdefs.
-		</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
-	<dependencies>
-		<dependency org="ant-contrib" name="ant-contrib" rev="1.0b2"/>
-	</dependencies>
+    <info organisation="org.apache.easyant.plugins"
+           module="antcontrib-activator"
+           status="milestone"
+           revision="0.1">
+        <description>
+            This module is in charge to load antcontrib taksdefs.
+        </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+    <dependencies>
+        <dependency org="ant-contrib" name="ant-contrib" rev="1.0b2"/>
+    </dependencies>
 </ivy-module>

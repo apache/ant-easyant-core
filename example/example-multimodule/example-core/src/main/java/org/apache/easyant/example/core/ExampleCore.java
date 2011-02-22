@@ -18,5 +18,5 @@
 package org.apache.easyant.example.core;
 
 public interface ExampleCore {
-	String getMessage();
+    String getMessage();
 }

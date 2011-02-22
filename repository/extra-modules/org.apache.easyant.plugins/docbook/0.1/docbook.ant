@@ -15,77 +15,77 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#docbook" 
-	xmlns:ivy="antlib:org.apache.ivy.ant"
-	xmlns:m="http://ant.apache.org/ivy/maven"
-	xmlns:ea="antlib:org.apache.easyant">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-	<dirname file="${ant.file.org.apache.easyant.plugins#docbook}" property="docbook.module.dir" />
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:m="http://ant.apache.org/ivy/maven"
+    xmlns:ea="antlib:org.apache.easyant">
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+    <dirname file="${ant.file.org.apache.easyant.plugins#docbook}" property="docbook.module.dir" />
 
-	<target name=":init" phase="validate">
+    <target name=":init" phase="validate">
 
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="documentation" />
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="documentation" />
 
-		<ea:parameter property="target.documentation.dir" description="directory where the documentation will be generated to" 
-			default="target/documentation"/>
-		<ea:parameter property="src.documentation.dir" description="directory where documentation sources reside" 
-			default="src/documentation"/>
-		
-		<ea:parameter property="docbook.documentation.dir" description="directory where the documentation is stored in the project" 
-			default="${src.documentation.dir}/docbook"/>
-			
-		<ea:parameter property="docbook.index.file" description="the main docbook source file" 
-			default="${docbook.documentation.dir}/index.xml"/>
-		<ea:parameter property="docbook.output.file" description="path of the HTML index file for generated documentation"
-			default="${target.documentation.dir}/index.html"/>
-			
-		<ea:parameter property="docbook.parameters" 
-			description="whitespace-separated list of parameter values to pass to the DocBook XSL, for example 'param1=value1 param2=value2'"
-			default=""/>
-		
-	</target>
+        <ea:parameter property="target.documentation.dir" description="directory where the documentation will be generated to" 
+            default="target/documentation"/>
+        <ea:parameter property="src.documentation.dir" description="directory where documentation sources reside" 
+            default="src/documentation"/>
+        
+        <ea:parameter property="docbook.documentation.dir" description="directory where the documentation is stored in the project" 
+            default="${src.documentation.dir}/docbook"/>
+            
+        <ea:parameter property="docbook.index.file" description="the main docbook source file" 
+            default="${docbook.documentation.dir}/index.xml"/>
+        <ea:parameter property="docbook.output.file" description="path of the HTML index file for generated documentation"
+            default="${target.documentation.dir}/index.html"/>
+            
+        <ea:parameter property="docbook.parameters" 
+            description="whitespace-separated list of parameter values to pass to the DocBook XSL, for example 'param1=value1 param2=value2'"
+            default=""/>
+        
+    </target>
 
-	<target name=":generate" phase="documentation" depends=":init" unless="skip.documentation" description="generate documentation">
+    <target name=":generate" phase="documentation" depends=":init" unless="skip.documentation" description="generate documentation">
 
-		<!-- unpack docbook xsl resources into the local module directory -->
-		<mkdir dir="${docbook.module.dir}/docbook-xsl"/>
+        <!-- unpack docbook xsl resources into the local module directory -->
+        <mkdir dir="${docbook.module.dir}/docbook-xsl"/>
 
-		<ivy:retrieve inline="true" 
-				organisation="org.apache.easyant.plugins" 
-				module="docbook" 
-				revision="0.1" 
-				conf="docbook_dist" 
-				pattern="${docbook.module.dir}/docbook-xsl/[artifact](-[classifier]).[ext]" 
-				settingsRef="easyant.ivy.instance"/>
-		
-		<echo>Unpacking docbook XSL distribution...</echo>
-		<unzip src="${docbook.module.dir}/docbook-xsl/docbook-xsl-resources.zip" 
-			   dest="${docbook.module.dir}" overwrite="false"/>
-		
-		<mkdir dir="${target.documentation.dir}/html" />
-		<copy todir="${target.documentation.dir}/html">
-			<fileset dir="${src.documentation.dir}/html" includes="**/*" erroronmissingdir="false"/>
-		</copy>
+        <ivy:retrieve inline="true" 
+                organisation="org.apache.easyant.plugins" 
+                module="docbook" 
+                revision="0.1" 
+                conf="docbook_dist" 
+                pattern="${docbook.module.dir}/docbook-xsl/[artifact](-[classifier]).[ext]" 
+                settingsRef="easyant.ivy.instance"/>
+        
+        <echo>Unpacking docbook XSL distribution...</echo>
+        <unzip src="${docbook.module.dir}/docbook-xsl/docbook-xsl-resources.zip" 
+               dest="${docbook.module.dir}" overwrite="false"/>
+        
+        <mkdir dir="${target.documentation.dir}/html" />
+        <copy todir="${target.documentation.dir}/html">
+            <fileset dir="${src.documentation.dir}/html" includes="**/*" erroronmissingdir="false"/>
+        </copy>
 
-		<!-- convert to absolute path -->		
-		<property name="docbook.index.path" location="${docbook.index.file}"/>
+        <!-- convert to absolute path -->       
+        <property name="docbook.index.path" location="${docbook.index.file}"/>
 
-		<!-- TODO: support other transforms:  PDF, html-single, manpage, slides -->
-		<java classname="com.icl.saxon.StyleSheet" fork="true"
-			  failonerror="true" dir="${target.documentation.dir}/html"
-			  classpathref="org.apache.easyant.plugins#docbook.classpath">
-			<sysproperty key="javax.xml.parsers.DocumentBuilderFactory" value="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"/>
-			<sysproperty key="javax.xml.parsers.SAXParserFactory" value="org.apache.xerces.jaxp.SAXParserFactoryImpl"/>
-			<sysproperty key="org.apache.xerces.xni.parser.XMLParserConfiguration" value="org.apache.xerces.parsers.XIncludeParserConfiguration"/>
-			<jvmarg value="-Xmx256M"/>
-			<arg value="${docbook.index.path}"/>
-			<arg value="${docbook.module.dir}/docbook/html/chunk.xsl"/>
-			<arg line="${docbook.parameters}"/>
-		</java>
-		 
-	</target>
+        <!-- TODO: support other transforms:  PDF, html-single, manpage, slides -->
+        <java classname="com.icl.saxon.StyleSheet" fork="true"
+              failonerror="true" dir="${target.documentation.dir}/html"
+              classpathref="org.apache.easyant.plugins#docbook.classpath">
+            <sysproperty key="javax.xml.parsers.DocumentBuilderFactory" value="org.apache.xerces.jaxp.DocumentBuilderFactoryImpl"/>
+            <sysproperty key="javax.xml.parsers.SAXParserFactory" value="org.apache.xerces.jaxp.SAXParserFactoryImpl"/>
+            <sysproperty key="org.apache.xerces.xni.parser.XMLParserConfiguration" value="org.apache.xerces.parsers.XIncludeParserConfiguration"/>
+            <jvmarg value="-Xmx256M"/>
+            <arg value="${docbook.index.path}"/>
+            <arg value="${docbook.module.dir}/docbook/html/chunk.xsl"/>
+            <arg line="${docbook.parameters}"/>
+        </java>
+         
+    </target>
 
-	<target name="doit" depends=":generate" />
-	
+    <target name="doit" depends=":generate" />
+    
 </project>

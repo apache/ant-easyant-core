@@ -14,103 +14,103 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<project name="org.apache.easyant.plugins#phases-std" xmlns:ea="antlib:org.apache.easyant">	
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<phase name="clean"
-			description="delete any artifacts from previous builds"/>
-	
-	<phase name="validate" 
-			description="validate the project is correct and all necessary information is available" />
-	
-	<phase name="provision" depends="validate"
-			description="supply provision required by this project" />
-	
-	<phase name="generate-sources" depends="validate"
-			description="generate any source code for inclusion in compilation" />
-	
-	<phase name="process-sources" depends="generate-sources"
-			description="process the source code, for example to filter any values" />
-	
-	<phase name="generate-resources" depends="validate"
-			description="generate resources for inclusion in the package" />
-	
-	<phase name="process-resources" depends="generate-resources"
-			description="copy and process the resources into the destination directory, ready for packaging" />
-	
-	<phase name="compile" depends="provision, process-sources"
-			description="compile the source code of the project" />
-	
-	<phase name="process-classes" depends="compile"
-			description="post-process the generated files from compilation, for example to do bytecode enhancement on Java classes" />
-	
-	<phase name="test-provision" depends="validate"
-			description="supply provision required to test this project" />
-	
-	<phase name="test-generate-sources" depends="validate"
-			description="generate any test source code for inclusion in compilation" />
-	
-	<phase name="test-process-sources" depends="test-generate-sources"
-			description="process the test source code, for example to filter any values" />
-	
-	<phase name="test-generate-resources" depends="validate"
-			description="create resources for testing" />
-	
-	<phase name="test-process-resources" depends="test-generate-resources"
-			description="copy and process the resources into the test destination directory" />
-	
-	<phase name="test-compile" depends="process-classes, test-provision, test-process-sources"
-			description="compile the test source code into the test destination directory" />
-	
-	<phase name="test" depends="test-compile, process-resources, test-process-resources" 
-			description="run tests using a suitable unit testing framework. These tests should not require the code be packaged or deployed" />
-	
-	<phase name="prepare-package" depends="process-classes, process-resources" 
-			description="perform any operations necessary to prepare a package before the actual packaging. This often results in an unpacked, processed version of the package" />
-	
-	<phase name="package" depends="prepare-package" 
-			description="take the compiled code and package it in its distributable format, such as a JAR." />
-	
-	<phase name="pre-integration-test" depends="package" 
-			description="perform actions required before integration tests are executed. This may involve things such as setting up the required environment" />
-	
-	<phase name="integration-test" depends="pre-integration-test" 
-			description="process and deploy the package if necessary into an environment where integration tests can be run" />
+<project name="org.apache.easyant.plugins#phases-std" xmlns:ea="antlib:org.apache.easyant"> 
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <phase name="clean"
+            description="delete any artifacts from previous builds"/>
+    
+    <phase name="validate" 
+            description="validate the project is correct and all necessary information is available" />
+    
+    <phase name="provision" depends="validate"
+            description="supply provision required by this project" />
+    
+    <phase name="generate-sources" depends="validate"
+            description="generate any source code for inclusion in compilation" />
+    
+    <phase name="process-sources" depends="generate-sources"
+            description="process the source code, for example to filter any values" />
+    
+    <phase name="generate-resources" depends="validate"
+            description="generate resources for inclusion in the package" />
+    
+    <phase name="process-resources" depends="generate-resources"
+            description="copy and process the resources into the destination directory, ready for packaging" />
+    
+    <phase name="compile" depends="provision, process-sources"
+            description="compile the source code of the project" />
+    
+    <phase name="process-classes" depends="compile"
+            description="post-process the generated files from compilation, for example to do bytecode enhancement on Java classes" />
+    
+    <phase name="test-provision" depends="validate"
+            description="supply provision required to test this project" />
+    
+    <phase name="test-generate-sources" depends="validate"
+            description="generate any test source code for inclusion in compilation" />
+    
+    <phase name="test-process-sources" depends="test-generate-sources"
+            description="process the test source code, for example to filter any values" />
+    
+    <phase name="test-generate-resources" depends="validate"
+            description="create resources for testing" />
+    
+    <phase name="test-process-resources" depends="test-generate-resources"
+            description="copy and process the resources into the test destination directory" />
+    
+    <phase name="test-compile" depends="process-classes, test-provision, test-process-sources"
+            description="compile the test source code into the test destination directory" />
+    
+    <phase name="test" depends="test-compile, process-resources, test-process-resources" 
+            description="run tests using a suitable unit testing framework. These tests should not require the code be packaged or deployed" />
+    
+    <phase name="prepare-package" depends="process-classes, process-resources" 
+            description="perform any operations necessary to prepare a package before the actual packaging. This often results in an unpacked, processed version of the package" />
+    
+    <phase name="package" depends="prepare-package" 
+            description="take the compiled code and package it in its distributable format, such as a JAR." />
+    
+    <phase name="pre-integration-test" depends="package" 
+            description="perform actions required before integration tests are executed. This may involve things such as setting up the required environment" />
+    
+    <phase name="integration-test" depends="pre-integration-test" 
+            description="process and deploy the package if necessary into an environment where integration tests can be run" />
 
-	<phase name="post-integration-test" depends="integration-test" 
-			description="perform actions required after integration tests have been executed. This may including cleaning up the environment" />
-	
-	<phase name="verify" depends="test, post-integration-test" 
-			description="run any checks to verify the package is valid and meets quality criteria" />
-	
-	<phase name="generate-local-version" depends="validate"
-			description="generate a local version number"/>
-	
-	<phase name="generate-shared-version" depends="validate"
-			description="generate a version number for shared publication"/>
-	
-	<phase name="generate-release-version" depends="validate"
-			description="generate a version number for a release"/>
-	
-	<phase name="prepare-publication" depends="provision"
-			description="prepare publication"/>
-	
-	<phase name="publish-local" depends="generate-local-version, prepare-publication, package" 
-			description="publish the package into the local repository, for use as a dependency in other projects locally" />
+    <phase name="post-integration-test" depends="integration-test" 
+            description="perform actions required after integration tests have been executed. This may including cleaning up the environment" />
+    
+    <phase name="verify" depends="test, post-integration-test" 
+            description="run any checks to verify the package is valid and meets quality criteria" />
+    
+    <phase name="generate-local-version" depends="validate"
+            description="generate a local version number"/>
+    
+    <phase name="generate-shared-version" depends="validate"
+            description="generate a version number for shared publication"/>
+    
+    <phase name="generate-release-version" depends="validate"
+            description="generate a version number for a release"/>
+    
+    <phase name="prepare-publication" depends="provision"
+            description="prepare publication"/>
+    
+    <phase name="publish-local" depends="generate-local-version, prepare-publication, package" 
+            description="publish the package into the local repository, for use as a dependency in other projects locally" />
 
-	<phase name="publish-shared" depends="generate-shared-version, prepare-publication, package" 
-				description="done in an integration environment, copies the final package to the remote repository for sharing with other developers and projects" />
-	
-	<phase name="release" depends="generate-release-version, prepare-publication, verify" 
-			description="done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects" />
+    <phase name="publish-shared" depends="generate-shared-version, prepare-publication, package" 
+                description="done in an integration environment, copies the final package to the remote repository for sharing with other developers and projects" />
+    
+    <phase name="release" depends="generate-release-version, prepare-publication, verify" 
+            description="done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects" />
 
-	<phase name="report" description="generate report" />
-	
-	<!-- Documentation related phases -->
-	<phase name="process-documentation-resources" 
-			description="copy and process the documentation resources into the destination directory"/>
-	
-	<phase name="documentation" depends="process-documentation-resources" 
-			description="generate documentation" />
+    <phase name="report" description="generate report" />
+    
+    <!-- Documentation related phases -->
+    <phase name="process-documentation-resources" 
+            description="copy and process the documentation resources into the destination directory"/>
+    
+    <phase name="documentation" depends="process-documentation-resources" 
+            description="generate documentation" />
 </project>

@@ -15,8 +15,8 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant.skeletons" module="std-java-webapplication" revision="0.1" status="release" publication="20100619132702">
-		<description>Skeleton for creating standard java web application</description>
-		<ea:build module="build-std-skeleton" revision="0.1"/>
-	</info>
+    <info organisation="org.apache.easyant.skeletons" module="std-java-webapplication" revision="0.1" status="release" publication="20100619132702">
+        <description>Skeleton for creating standard java web application</description>
+        <ea:build module="build-std-skeleton" revision="0.1"/>
+    </info>
 </ivy-module>

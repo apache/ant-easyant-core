@@ -22,67 +22,67 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Reference;
 
 public class BasicConfigurationStrategy extends AbstractFindClassPathStrategy{
-	private String organisation;
-	private String module;
-	private String revision;
-	private String conf = "default";
-	protected String settingsRef;
+    private String organisation;
+    private String module;
+    private String revision;
+    private String conf = "default";
+    protected String settingsRef;
 
-	protected boolean doCheck() {
-		log("Checking plugin configuration ...",Project.MSG_VERBOSE);
-		loadCachePath(getOrganisation(), getModule(), getRevision(), getConf(),
-				getSettingsReference());
-		return true;
-	}
+    protected boolean doCheck() {
+        log("Checking plugin configuration ...",Project.MSG_VERBOSE);
+        loadCachePath(getOrganisation(), getModule(), getRevision(), getConf(),
+                getSettingsReference());
+        return true;
+    }
 
-	public String getOrganisation() {
-		return organisation;
-	}
+    public String getOrganisation() {
+        return organisation;
+    }
 
-	public void setOrganisation(String organisation) {
-		this.organisation = organisation;
-	}
+    public void setOrganisation(String organisation) {
+        this.organisation = organisation;
+    }
 
-	public String getModule() {
-		return module;
-	}
+    public String getModule() {
+        return module;
+    }
 
-	public void setModule(String module) {
-		this.module = module;
-	}
+    public void setModule(String module) {
+        this.module = module;
+    }
 
-	public String getRevision() {
-		return revision;
-	}
+    public String getRevision() {
+        return revision;
+    }
 
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
 
-	public String getConf() {
-		return conf;
-	}
+    public String getConf() {
+        return conf;
+    }
 
-	public void setConf(String conf) {
-		this.conf = conf;
-	}
+    public void setConf(String conf) {
+        this.conf = conf;
+    }
 
-	public String getSettingsRef() {
-		if (settingsRef == null) {
-			settingsRef= EasyAntMagicNames.EASYANT_IVY_INSTANCE;
-		}
-		return settingsRef;
-	}
+    public String getSettingsRef() {
+        if (settingsRef == null) {
+            settingsRef= EasyAntMagicNames.EASYANT_IVY_INSTANCE;
+        }
+        return settingsRef;
+    }
 
-	public void setSettingsRef(String settingsRef) {
-		this.settingsRef = settingsRef;
-	}
-	
-	public Reference getSettingsReference() {
-		return new Reference(getProject(),getSettingsRef());
-	}
-	
-	
-	
+    public void setSettingsRef(String settingsRef) {
+        this.settingsRef = settingsRef;
+    }
+    
+    public Reference getSettingsReference() {
+        return new Reference(getProject(),getSettingsRef());
+    }
+    
+    
+    
 
 }

@@ -15,20 +15,20 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="build-configuration-test" status="integration" >
-		<description>Tests build configuration settings.</description>
-		<ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
-			<ea:property name="conf.setting" value="foo"/>
-			<ea:property name="conf.setting" value="bar" conf="alpha"/>
-		</ea:build>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="alpha" extends="default" visibility="public" ea:type="profile"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-	</configurations>
-	<dependencies>
-		<dependency org="hsqldb" name="hsqldb" rev="1.8.0.7" conf="default"/>
-		<dependency org="junit" name="junit" rev="4.4" conf="alpha->default" />
-	</dependencies>
+    <info organisation="org.apache.easyant" module="build-configuration-test" status="integration" >
+        <description>Tests build configuration settings.</description>
+        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
+            <ea:property name="conf.setting" value="foo"/>
+            <ea:property name="conf.setting" value="bar" conf="alpha"/>
+        </ea:build>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="alpha" extends="default" visibility="public" ea:type="profile"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+    </configurations>
+    <dependencies>
+        <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7" conf="default"/>
+        <dependency org="junit" name="junit" rev="4.4" conf="alpha->default" />
+    </dependencies>
 </ivy-module>

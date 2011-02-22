@@ -28,32 +28,32 @@ import org.apache.tools.ant.Task;
  * If you're planning to write your own MenuGeneratorTask we strongly recommend you to extend this task.
  */
 public abstract class AbstractMenuGeneratorTask extends Task{
-	
-	private String context="default";
+    
+    private String context="default";
 
-	/**
-	 * Get or create if necessary a MenuGeneratorRegistry for a given context;
-	 * @param context a string representing a given context
-	 * @return a MenuGeneratorRegistry
-	 */
-	public MenuGeneratorRegistry getMenuGeneratorForContext(String context) {
-		return MenuGeneratorUtils.getRegistryForContext(getProject(), context, true);
-	}
+    /**
+     * Get or create if necessary a MenuGeneratorRegistry for a given context;
+     * @param context a string representing a given context
+     * @return a MenuGeneratorRegistry
+     */
+    public MenuGeneratorRegistry getMenuGeneratorForContext(String context) {
+        return MenuGeneratorUtils.getRegistryForContext(getProject(), context, true);
+    }
 
-	/**
-	 * Get the context
-	 * @return a context
-	 */
-	public String getContext() {
-		return context;
-	}
+    /**
+     * Get the context
+     * @return a context
+     */
+    public String getContext() {
+        return context;
+    }
 
-	/**
-	 * Set the context
-	 * @param context a context
-	 */
-	public void setContext(String context) {
-		this.context = context;
-	}
+    /**
+     * Set the context
+     * @param context a context
+     */
+    public void setContext(String context) {
+        this.context = context;
+    }
 
 }

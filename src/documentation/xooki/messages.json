@@ -16,5 +16,6 @@
  *
  */
 {
-        	"Impossible to save changes to ${0}": "Impossible to save changes to ${0}.\n This could be because your browser doesn't support saving (instead, use FireFox if you can), or because the pathname to your Xooki file contains illegal characters"
+            "Impossible to save changes to ${0}": "Impossible to save changes to ${0}.
+ This could be because your browser doesn't support saving (instead, use FireFox if you can), or because the pathname to your Xooki file contains illegal characters"
 }

@@ -15,144 +15,144 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#xooki" 
-	xmlns:ac="antlib:net.sf.antcontrib"
-	xmlns:ea="antlib:org.apache.easyant" 
-	xmlns:ivy="antlib:org.apache.ivy.ant" 
-	xmlns:xooki="antlib:xooki">
+    xmlns:ac="antlib:net.sf.antcontrib"
+    xmlns:ea="antlib:org.apache.easyant" 
+    xmlns:ivy="antlib:org.apache.ivy.ant" 
+    xmlns:xooki="antlib:xooki">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
+    <ea:core-version requiredrevision="[0.8,+]" />
 
-	<target name=":init" phase="validate">
-		<ea:parameter property="xooki.checkUpToDate" required="false" 
-			default="true" description="Proxies for the checkUpToDate xooki:generate task. Defaults to true." />
-		<ea:parameter property="src.documentation.dir" required="false" 
-			default="${basedir}/src/documentation" description="Xooki source documentation." />
-		<ea:parameter property="documentation.css.dir" default="${src.documentation.dir}/style" 
-			description="path where the css are stored, used for nice looking HTML" />
-		<ea:parameter property="target.documentation.dir" default="${target}/documentation" 
-			description="directory where the documentation will be generated to" />
-		<ea:parameter property="xooki.temp.dir" required="false" default="${target}/temp-doc" 
-			description="Temporary directory for xooki use." />
-		<ea:parameter property="xooki.resources.include.pattern" default="style/**,images/**" 
-			description="Pattern describing files included in xooki documentation generation" />
-		<ea:parameter property="xooki.resources.exclude.pattern" default="" 
-			description="Pattern describing files excluded in xooki documentation generation" />
-		<ea:parameter property="xooki.history.dir" default="${src.documentation.dir}/history" 
-			description="directory where documentation history version are stored (used to update config.extra.js)"/>
+    <target name=":init" phase="validate">
+        <ea:parameter property="xooki.checkUpToDate" required="false" 
+            default="true" description="Proxies for the checkUpToDate xooki:generate task. Defaults to true." />
+        <ea:parameter property="src.documentation.dir" required="false" 
+            default="${basedir}/src/documentation" description="Xooki source documentation." />
+        <ea:parameter property="documentation.css.dir" default="${src.documentation.dir}/style" 
+            description="path where the css are stored, used for nice looking HTML" />
+        <ea:parameter property="target.documentation.dir" default="${target}/documentation" 
+            description="directory where the documentation will be generated to" />
+        <ea:parameter property="xooki.temp.dir" required="false" default="${target}/temp-doc" 
+            description="Temporary directory for xooki use." />
+        <ea:parameter property="xooki.resources.include.pattern" default="style/**,images/**" 
+            description="Pattern describing files included in xooki documentation generation" />
+        <ea:parameter property="xooki.resources.exclude.pattern" default="" 
+            description="Pattern describing files excluded in xooki documentation generation" />
+        <ea:parameter property="xooki.history.dir" default="${src.documentation.dir}/history" 
+            description="directory where documentation history version are stored (used to update config.extra.js)"/>
 
-		<!-- TODO: should menu context names be inherited from the environment somehow? -->
-		<ea:parameter property="xooki.menu.contexts" default="buildtypes,plugins"
-			description="list of documentation menus for which xooki will generate menus"/>
-		
-		<!-- Xooki tasks requires jdk16 -->
-		<condition property="org.apache.easyant.plugins#xooki.enabled">
-			<contains substring="1.6" string="${ant.java.version}" />
-		</condition>
-		
-		<ac:if>
-			<istrue value="${org.apache.easyant.plugins#xooki.enabled}"/>
-			<ac:then>
-				<echo level="verbose">Loading xooki antlib</echo>
-				<taskdef uri="antlib:xooki" file="${src.documentation.dir}/xooki/antlib.xml" />
-			</ac:then>
-			<ac:else>
-				<echo level="warning">Xooki modules requires JDK 1.6. Xooki module will be disabled.</echo>
-			</ac:else>
-		</ac:if>
-		
-		<condition property="contains.history.dir">
-			<available file="${xooki.history.dir}" type="dir"/>
-		</condition>
+        <!-- TODO: should menu context names be inherited from the environment somehow? -->
+        <ea:parameter property="xooki.menu.contexts" default="buildtypes,plugins"
+            description="list of documentation menus for which xooki will generate menus"/>
         
-		<ac:for list="${xooki.menu.contexts}" param="context.name">
-			<sequential>
-				<ea:registermenugenerator context="@{context.name}" type="xooki"
-					classpathref="org.apache.easyant.plugins#xooki.classpath"/>
-			</sequential>
-		</ac:for>
-	</target>
-	
-	<target name=":create-skeleton" depends="validate">
-		<mkdir dir="${xooki.temp.dir}" />
-		<mkdir dir="${documentation.css.dir}" />
-		<ivy:retrieve organisation="xooki" module="xooki" inline="true" pattern="${xooki.temp.dir}/[artifact].[ext]" settingsRef="easyant.ivy.instance"/>
-		<unzip src="${xooki.temp.dir}/xooki.jar" dest="${src.documentation.dir}" />
-		<delete dir="${xooki.temp.dir}" />
-	</target>
-	
-	<target name="-copy-resources" depends=":init" phase="process-documentation-resources">
+        <!-- Xooki tasks requires jdk16 -->
+        <condition property="org.apache.easyant.plugins#xooki.enabled">
+            <contains substring="1.6" string="${ant.java.version}" />
+        </condition>
+        
+        <ac:if>
+            <istrue value="${org.apache.easyant.plugins#xooki.enabled}"/>
+            <ac:then>
+                <echo level="verbose">Loading xooki antlib</echo>
+                <taskdef uri="antlib:xooki" file="${src.documentation.dir}/xooki/antlib.xml" />
+            </ac:then>
+            <ac:else>
+                <echo level="warning">Xooki modules requires JDK 1.6. Xooki module will be disabled.</echo>
+            </ac:else>
+        </ac:if>
+        
+        <condition property="contains.history.dir">
+            <available file="${xooki.history.dir}" type="dir"/>
+        </condition>
+        
+        <ac:for list="${xooki.menu.contexts}" param="context.name">
+            <sequential>
+                <ea:registermenugenerator context="@{context.name}" type="xooki"
+                    classpathref="org.apache.easyant.plugins#xooki.classpath"/>
+            </sequential>
+        </ac:for>
+    </target>
+    
+    <target name=":create-skeleton" depends="validate">
+        <mkdir dir="${xooki.temp.dir}" />
+        <mkdir dir="${documentation.css.dir}" />
+        <ivy:retrieve organisation="xooki" module="xooki" inline="true" pattern="${xooki.temp.dir}/[artifact].[ext]" settingsRef="easyant.ivy.instance"/>
+        <unzip src="${xooki.temp.dir}/xooki.jar" dest="${src.documentation.dir}" />
+        <delete dir="${xooki.temp.dir}" />
+    </target>
+    
+    <target name="-copy-resources" depends=":init" phase="process-documentation-resources">
 
-		<available file="${src.documentation.dir}/xooki/antlib.xml" property="xooki.skeleton.present" />
-		<fail unless="xooki.skeleton.present" 
-			message="Xooki skeleton has not been correctly setup. Run easyant org.apache.easyant.plugins#xooki:create-skeleton to generate a xooki skeleton." />
+        <available file="${src.documentation.dir}/xooki/antlib.xml" property="xooki.skeleton.present" />
+        <fail unless="xooki.skeleton.present" 
+            message="Xooki skeleton has not been correctly setup. Run easyant org.apache.easyant.plugins#xooki:create-skeleton to generate a xooki skeleton." />
 
-		<echo message="Generating xooki documentation." />
-		<mkdir dir="${target.documentation.dir}" />
-		
-		<echo level="verbose" message="copying documentation resources"/>
-		
-		<fileset id="xooki.resources.fileset" 
-			dir="${src.documentation.dir}" 
-			includes="${xooki.resources.include.pattern}" 
-			excludes="${xooki.resources.exclude.pattern}" />
+        <echo message="Generating xooki documentation." />
+        <mkdir dir="${target.documentation.dir}" />
+        
+        <echo level="verbose" message="copying documentation resources"/>
+        
+        <fileset id="xooki.resources.fileset" 
+            dir="${src.documentation.dir}" 
+            includes="${xooki.resources.include.pattern}" 
+            excludes="${xooki.resources.exclude.pattern}" />
 
-		<copy todir="${target.documentation.dir}">
-			<fileset refid="xooki.resources.fileset"/>
-		</copy>
-		
-		<!-- copy to a xooki temp dir this will allow users to generate xooki documentation -->
-		<copy todir="${xooki.temp.dir}">
-			<fileset dir="${src.documentation.dir}" id="src.documentation.fileset">
-				<include name="**/*" />
-				<exclude name="${xooki.resources.include.pattern}" />
-			</fileset>
-		</copy>
+        <copy todir="${target.documentation.dir}">
+            <fileset refid="xooki.resources.fileset"/>
+        </copy>
+        
+        <!-- copy to a xooki temp dir this will allow users to generate xooki documentation -->
+        <copy todir="${xooki.temp.dir}">
+            <fileset dir="${src.documentation.dir}" id="src.documentation.fileset">
+                <include name="**/*" />
+                <exclude name="${xooki.resources.include.pattern}" />
+            </fileset>
+        </copy>
 
-	</target>
-	
-	<target name="-configure-history" if="contains.history.dir" phase="process-documentation-resources">
-		<ac:for param="doc-version">
-			<path>
-				<dirset dir="${xooki.history.dir}" includes="*" />
-			</path>
-			<sequential>
-				<echo>Updating history for @{doc-version}</echo>
-				<echo file="@{doc-version}/config.extra.js"
-				        message="xooki.c.setImportLevel(2);" />
-			</sequential>
-		</ac:for>
-	</target>
-	
-	<target name=":generate" 
-		depends="-copy-resources, -configure-history, process-documentation-resources"
-		phase="documentation"
-		if="org.apache.easyant.plugins#xooki.enabled">
-		<echo level="verbose" message="generating target documentation"/>
-		
-		<dirname file="${target.documentation.dir}" property="full.target.documentation.dir" />
-		<basename file="${target.documentation.dir}" property="basename.target.documentation.dir" />
-		
-		<fileset dir="${xooki.temp.dir}" id="src.documentation.fileset">
-			<include name="**/*.html" />
-			<exclude name="template.html" />
-			<exclude name="*Template.html" />
-			<exclude name="xooki/**" />
-		</fileset>
+    </target>
+    
+    <target name="-configure-history" if="contains.history.dir" phase="process-documentation-resources">
+        <ac:for param="doc-version">
+            <path>
+                <dirset dir="${xooki.history.dir}" includes="*" />
+            </path>
+            <sequential>
+                <echo>Updating history for @{doc-version}</echo>
+                <echo file="@{doc-version}/config.extra.js"
+                        message="xooki.c.setImportLevel(2);" />
+            </sequential>
+        </ac:for>
+    </target>
+    
+    <target name=":generate" 
+        depends="-copy-resources, -configure-history, process-documentation-resources"
+        phase="documentation"
+        if="org.apache.easyant.plugins#xooki.enabled">
+        <echo level="verbose" message="generating target documentation"/>
+        
+        <dirname file="${target.documentation.dir}" property="full.target.documentation.dir" />
+        <basename file="${target.documentation.dir}" property="basename.target.documentation.dir" />
+        
+        <fileset dir="${xooki.temp.dir}" id="src.documentation.fileset">
+            <include name="**/*.html" />
+            <exclude name="template.html" />
+            <exclude name="*Template.html" />
+            <exclude name="xooki/**" />
+        </fileset>
 
-		<xooki:generate destDir="${full.target.documentation.dir}/${basename.target.documentation.dir}" checkUpToDate="${xooki.checkUpToDate}">
-			<fileset refid="src.documentation.fileset"/>
-		</xooki:generate>
-	</target>
+        <xooki:generate destDir="${full.target.documentation.dir}/${basename.target.documentation.dir}" checkUpToDate="${xooki.checkUpToDate}">
+            <fileset refid="src.documentation.fileset"/>
+        </xooki:generate>
+    </target>
 
-	<target name=":package" depends=":generate" description="package the xooki documentation" if="org.apache.easyant.plugins#xooki.enabled">
-		<ea:parameter property="target.artifacts" default="${target}/artifacts" 
-			description="destination directory for target artifacts"/>
+    <target name=":package" depends=":generate" description="package the xooki documentation" if="org.apache.easyant.plugins#xooki.enabled">
+        <ea:parameter property="target.artifacts" default="${target}/artifacts" 
+            description="destination directory for target artifacts"/>
 
-		<echo message="Packaging generated documentation." />
-		<mkdir dir="${target.artifacts}" />
-		<zip destfile="${target.artifacts}/${ivy.module}-docs.zip" basedir="${target.documentation.dir}" />
-		<ea:registerartifact type="doc" ext="zip" classifier="doc" settingsRef="${project.ivy.instance}"/>
-	</target>
+        <echo message="Packaging generated documentation." />
+        <mkdir dir="${target.artifacts}" />
+        <zip destfile="${target.artifacts}/${ivy.module}-docs.zip" basedir="${target.documentation.dir}" />
+        <ea:registerartifact type="doc" ext="zip" classifier="doc" settingsRef="${project.ivy.instance}"/>
+    </target>
 
-	<target name="doit" depends=":package" />
+    <target name="doit" depends=":package" />
 </project>

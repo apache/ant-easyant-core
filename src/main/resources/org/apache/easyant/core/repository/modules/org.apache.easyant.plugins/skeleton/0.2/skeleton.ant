@@ -32,7 +32,7 @@
         <ea:parameter property="skeleton.default.to.resolver" default="easyant-shared-modules" description="the repository name where the skeleton jar will be published" />
         <ea:parameter property="skeleton.default.revision" default="0.1" description="The default revision if the skeleton that will be published"/>
         <ea:parameter property="skeleton.default.organisation" default="org.apache.easyant.skeletons" description="The default organisation name of skeletons"/>
-    	<ea:parameter property="project.default.organisation" default="" description="The default organisation name of generated project"/>
+        <ea:parameter property="project.default.organisation" default="" description="The default organisation name of generated project"/>
        
         <ea:parameter property="skeleton.interactive.mode" default="true" description="specify if easyant should ask questions instead of using -Dproperties" />
                
@@ -49,19 +49,19 @@
     <target name="-generate-usage">
         <echo level="info">This target will now create a new project from a project skeleton.</echo>
         <echo level="info">This target can be called with -Dparameters, refer to the skeleton plugin documentation to have more informations.</echo>
-    	<ac:if>
-    		<and>
-    			<isset property="skeleton.org"/>
-    			<isset property="skeleton.module"/>
-    			<isset property="skeleton.rev"/>
-    		</and>
-    		<ac:then>
-    			<echo level="info">    Example: easyant skeleton:create -Dskeleton.org=${skeleton.org} -Dskeleton.module=${skeleton.module} -Dskeleton.rev=${skeleton.rev} -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
-    		</ac:then>
-    		<ac:else>
-    			<echo level="info">    Example: easyant skeleton:create -Dskeleton.org=foo -Dskeleton.module=bar-skeleton -Dskeleton.rev=0.1 -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
-    		</ac:else>
-    	</ac:if>
+        <ac:if>
+            <and>
+                <isset property="skeleton.org"/>
+                <isset property="skeleton.module"/>
+                <isset property="skeleton.rev"/>
+            </and>
+            <ac:then>
+                <echo level="info">    Example: easyant skeleton:create -Dskeleton.org=${skeleton.org} -Dskeleton.module=${skeleton.module} -Dskeleton.rev=${skeleton.rev} -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
+            </ac:then>
+            <ac:else>
+                <echo level="info">    Example: easyant skeleton:create -Dskeleton.org=foo -Dskeleton.module=bar-skeleton -Dskeleton.rev=0.1 -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
+            </ac:else>
+        </ac:if>
     </target>
 
     <target name="-check-generate" if="skeleton.is.interactive">
@@ -77,7 +77,7 @@
     </target>
    
     <target name="-select" depends="validate" if="skeleton.is.interactive">
-    	<echo>Choose a skeleton in the following list:</echo>
+        <echo>Choose a skeleton in the following list:</echo>
         <ea:searchmodule organisation="org.apache.easyant.skeletons" module="*" revision="*" propertyprefix="skeleton" settingsRef="easyant.ivy.instance"/>
     </target>
    
@@ -108,10 +108,10 @@
         <!-- Unzip the project skeleton -->
         <echo>Unzipping project skeleton to ${skeleton.target.dir}</echo>
         <unjar dest="${skeleton.target.dir}" src="${skeleton.download.artifact}">
-        	<patternset>
-        		<exclude name="META-INF/**"/>
-        	</patternset>
-    	</unjar>
+            <patternset>
+                <exclude name="META-INF/**"/>
+            </patternset>
+        </unjar>
        
         <filterset id="skeleton.create.replace.filter">
             <filter token="project.module" value="${project.module}" />
@@ -148,24 +148,24 @@
         <echo>Cleaning your ${skeleton.download.artifact} directory</echo>
         <delete file="${skeleton.download.artifact}"/>
     </target>
-	
-	<target name="-newplugin">
-		<property name="skeleton.org" value="org.apache.easyant.skeletons"/>
-		<property name="skeleton.module" value="std-ant-plugin"/>
-		<property name="skeleton.rev" value="latest.integration"/>
-		<property name="project.default.organisation" value="org.apache.easyant.plugins"/>
-	</target>
-	
-	<target name=":newplugin" depends="-newplugin,:generate" description="create a new easyant plugin"/>
+    
+    <target name="-newplugin">
+        <property name="skeleton.org" value="org.apache.easyant.skeletons"/>
+        <property name="skeleton.module" value="std-ant-plugin"/>
+        <property name="skeleton.rev" value="latest.integration"/>
+        <property name="project.default.organisation" value="org.apache.easyant.plugins"/>
+    </target>
+    
+    <target name=":newplugin" depends="-newplugin,:generate" description="create a new easyant plugin"/>
 
-	<target name="-newskeleton">
-		<property name="skeleton.org" value="org.apache.easyant.skeletons"/>
-		<property name="skeleton.module" value="std-skeleton"/>
-		<property name="skeleton.rev" value="latest.integration"/>
-		<property name="project.default.organisation" value="org.apache.easyant.skeletons"/>
-	</target>
-	
-	<target name=":newskeleton" depends="-newskeleton,:generate" description="create a new skeleton"/>
-	
+    <target name="-newskeleton">
+        <property name="skeleton.org" value="org.apache.easyant.skeletons"/>
+        <property name="skeleton.module" value="std-skeleton"/>
+        <property name="skeleton.rev" value="latest.integration"/>
+        <property name="project.default.organisation" value="org.apache.easyant.skeletons"/>
+    </target>
+    
+    <target name=":newskeleton" depends="-newskeleton,:generate" description="create a new skeleton"/>
+    
     <target name="doit" depends="validate" />
 </project>

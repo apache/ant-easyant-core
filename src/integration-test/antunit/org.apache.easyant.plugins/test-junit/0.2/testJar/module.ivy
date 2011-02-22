@@ -15,14 +15,14 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org">
-	<info organisation="org.apache.easyant" module="test-junit-jar-testJar" status="integration" revision="1.0">
-		<description>A multi-module project exercising the test-jar feature of the junit plugin.</description>
-		<ea:build mrid="org.apache.easyant.buildtypes#meta-build;0.2"/>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="test" visibility="public" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-	</configurations>
+    <info organisation="org.apache.easyant" module="test-junit-jar-testJar" status="integration" revision="1.0">
+        <description>A multi-module project exercising the test-jar feature of the junit plugin.</description>
+        <ea:build mrid="org.apache.easyant.buildtypes#meta-build;0.2"/>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="public" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+    </configurations>
     <dependencies>
         <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
     </dependencies>

@@ -15,13 +15,13 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="svnjavahl"
-	       module="svnjavahl"
-	       status="milestone"
-	       revision="1.0">
-	       <description>This module provides svnjavahl feature.</description>
-	</info>
-	<publications>
+    <info organisation="svnjavahl"
+           module="svnjavahl"
+           status="milestone"
+           revision="1.0">
+           <description>This module provides svnjavahl feature.</description>
+    </info>
+    <publications>
               <artifact type="jar" ext="jar"/>
-	</publications>
+    </publications>
 </ivy-module>

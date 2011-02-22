@@ -22,8 +22,8 @@ import org.junit.Test;
 
 public class FailingIntegrationTest {
 
-	@Test
-	public void testThatFails() {
-		assertEquals("dlrow", new HelloWorld().hello());
-	}
+    @Test
+    public void testThatFails() {
+        assertEquals("dlrow", new HelloWorld().hello());
+    }
 }

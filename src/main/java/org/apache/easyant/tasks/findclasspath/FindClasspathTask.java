@@ -28,105 +28,105 @@ import org.apache.tools.ant.BuildException;
  * rules.
  */
 public class FindClasspathTask extends AbstractEasyAntTask {
-	private String pathid;
-	private String organisation;
-	private String module;
-	private String revision;
-	private String conf = "default";
+    private String pathid;
+    private String organisation;
+    private String module;
+    private String revision;
+    private String conf = "default";
 
-	private AbstractFindClassPathStrategy currentStrategy;
-	private List<AbstractFindClassPathStrategy> strategies = new ArrayList<AbstractFindClassPathStrategy>();
+    private AbstractFindClassPathStrategy currentStrategy;
+    private List<AbstractFindClassPathStrategy> strategies = new ArrayList<AbstractFindClassPathStrategy>();
 
-	public void execute() throws BuildException {
-		//define the default strategy if there is no nested strategy
-		if (getStrategies().size() == 0) {
-			add(createStrategy(new ProjectDependencyStrategy()));
-			add(createStrategy(new BasicConfigurationStrategy()));
-		}
-		// Process the chain
-		getStrategies().get(0).check();
-	}
+    public void execute() throws BuildException {
+        //define the default strategy if there is no nested strategy
+        if (getStrategies().size() == 0) {
+            add(createStrategy(new ProjectDependencyStrategy()));
+            add(createStrategy(new BasicConfigurationStrategy()));
+        }
+        // Process the chain
+        getStrategies().get(0).check();
+    }
 
-	public String getPathid() {
-		return pathid;
-	}
+    public String getPathid() {
+        return pathid;
+    }
 
-	public void setPathid(String pathid) {
-		this.pathid = pathid;
-	}
+    public void setPathid(String pathid) {
+        this.pathid = pathid;
+    }
 
-	public String getOrganisation() {
-		return organisation;
-	}
+    public String getOrganisation() {
+        return organisation;
+    }
 
-	public void setOrganisation(String organisation) {
-		this.organisation = organisation;
-	}
+    public void setOrganisation(String organisation) {
+        this.organisation = organisation;
+    }
 
-	public String getModule() {
-		return module;
-	}
+    public String getModule() {
+        return module;
+    }
 
-	public void setModule(String module) {
-		this.module = module;
-	}
+    public void setModule(String module) {
+        this.module = module;
+    }
 
-	public String getRevision() {
-		return revision;
-	}
+    public String getRevision() {
+        return revision;
+    }
 
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
 
-	public String getConf() {
-		return conf;
-	}
+    public String getConf() {
+        return conf;
+    }
 
-	public void setConf(String conf) {
-		this.conf = conf;
-	}
+    public void setConf(String conf) {
+        this.conf = conf;
+    }
 
-	public List<AbstractFindClassPathStrategy> getStrategies() {
-		return strategies;
-	}
+    public List<AbstractFindClassPathStrategy> getStrategies() {
+        return strategies;
+    }
 
-	public void setStrategies(List<AbstractFindClassPathStrategy> strategies) {
-		this.strategies = strategies;
-	}
+    public void setStrategies(List<AbstractFindClassPathStrategy> strategies) {
+        this.strategies = strategies;
+    }
 
-	public void add(AbstractFindClassPathStrategy strategy) {
-		if (currentStrategy != null) {
-			currentStrategy.setNextStrategy(strategy);
-		}
-		currentStrategy = strategy;
-		preconfigureStrategy(strategy);
-		getStrategies().add(strategy);
-	}
+    public void add(AbstractFindClassPathStrategy strategy) {
+        if (currentStrategy != null) {
+            currentStrategy.setNextStrategy(strategy);
+        }
+        currentStrategy = strategy;
+        preconfigureStrategy(strategy);
+        getStrategies().add(strategy);
+    }
 
-	protected void preconfigureStrategy(AbstractFindClassPathStrategy strategy) {
-		strategy.setPathid(getPathid());
-		if (strategy instanceof BasicConfigurationStrategy) {
-			BasicConfigurationStrategy basicStrategy = (BasicConfigurationStrategy) strategy;
-			if (basicStrategy.getOrganisation() == null) {
-				basicStrategy.setOrganisation(getOrganisation());
-			}
-			if (basicStrategy.getModule() == null) {
-				basicStrategy.setModule(getModule());
+    protected void preconfigureStrategy(AbstractFindClassPathStrategy strategy) {
+        strategy.setPathid(getPathid());
+        if (strategy instanceof BasicConfigurationStrategy) {
+            BasicConfigurationStrategy basicStrategy = (BasicConfigurationStrategy) strategy;
+            if (basicStrategy.getOrganisation() == null) {
+                basicStrategy.setOrganisation(getOrganisation());
+            }
+            if (basicStrategy.getModule() == null) {
+                basicStrategy.setModule(getModule());
 
-			}
-			if (basicStrategy.getRevision() == null) {
-				basicStrategy.setRevision(getRevision());
-			}
-			if (basicStrategy.getConf() == null) {
-				basicStrategy.setConf(getConf());
-			}
-		}
-	}
-	
-	protected AbstractFindClassPathStrategy createStrategy(AbstractFindClassPathStrategy strategy) {
-		strategy.setProject(getProject());
-		return strategy;
-	}
+            }
+            if (basicStrategy.getRevision() == null) {
+                basicStrategy.setRevision(getRevision());
+            }
+            if (basicStrategy.getConf() == null) {
+                basicStrategy.setConf(getConf());
+            }
+        }
+    }
+    
+    protected AbstractFindClassPathStrategy createStrategy(AbstractFindClassPathStrategy strategy) {
+        strategy.setProject(getProject());
+        return strategy;
+    }
 
 }

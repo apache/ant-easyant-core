@@ -21,88 +21,88 @@ import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 
 public class PropertyDescriptor implements AdvancedInheritableItem {
-	private final String name;
-	private String description;
-	private String defaultValue;
-	private String value;
-	private boolean required;
-	private String buildConfigurations;
-	private final ModuleRevisionId sourceModule;
-	private InheritableScope inheritScope;
-	private boolean inheritable=true;
+    private final String name;
+    private String description;
+    private String defaultValue;
+    private String value;
+    private boolean required;
+    private String buildConfigurations;
+    private final ModuleRevisionId sourceModule;
+    private InheritableScope inheritScope;
+    private boolean inheritable=true;
 
-	public PropertyDescriptor(String propertyName) {
-		this.name = propertyName;
-		this.sourceModule = null;
-	}
-	
-	public PropertyDescriptor(String propertyName, ModuleRevisionId sourceModule) {
-		this.name = propertyName;
-		this.sourceModule = sourceModule;
-	}
+    public PropertyDescriptor(String propertyName) {
+        this.name = propertyName;
+        this.sourceModule = null;
+    }
+    
+    public PropertyDescriptor(String propertyName, ModuleRevisionId sourceModule) {
+        this.name = propertyName;
+        this.sourceModule = sourceModule;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getDefaultValue() {
-		return defaultValue;
-	}
+    public String getDefaultValue() {
+        return defaultValue;
+    }
 
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-	}
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public boolean isRequired() {
-		return required;
-	}
+    public boolean isRequired() {
+        return required;
+    }
 
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
 
-	public String getBuildConfigurations() {
-		return buildConfigurations;
-	}
+    public String getBuildConfigurations() {
+        return buildConfigurations;
+    }
 
-	public void setBuildConfigurations(String buildConfiguration) {
-		this.buildConfigurations = buildConfiguration;
-	}
+    public void setBuildConfigurations(String buildConfiguration) {
+        this.buildConfigurations = buildConfiguration;
+    }
 
-	public ModuleRevisionId getSourceModule() {
-		return sourceModule;
-	}
+    public ModuleRevisionId getSourceModule() {
+        return sourceModule;
+    }
 
-	public InheritableScope getInheritScope() {
-		return inheritScope;
-	}
+    public InheritableScope getInheritScope() {
+        return inheritScope;
+    }
 
-	public void setInheritScope(InheritableScope inheritScope) {
-		this.inheritScope = inheritScope;
-	}
+    public void setInheritScope(InheritableScope inheritScope) {
+        this.inheritScope = inheritScope;
+    }
 
-	public boolean isInheritable() {
-		return inheritable;
-	}
+    public boolean isInheritable() {
+        return inheritable;
+    }
 
-	public void setInheritable(boolean isIneritable) {
-		this.inheritable=isIneritable;
-		
-	}
+    public void setInheritable(boolean isIneritable) {
+        this.inheritable=isIneritable;
+        
+    }
 }

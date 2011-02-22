@@ -15,21 +15,21 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.buildtypes#meta-build"
-	xmlns:ea="antlib:org.apache.easyant"
-	xmlns:ivy="antlib:org.apache.ivy.ant">
-	
-	<ea:core-version requiredrevision="0.6">
+    xmlns:ea="antlib:org.apache.easyant"
+    xmlns:ivy="antlib:org.apache.ivy.ant">
+    
+    <ea:core-version requiredrevision="0.6">
 meta-build 0.1 has been deprecated.  Please upgrade your project to meta-build 0.2 or higher.
-	</ea:core-version>
-	
-	<ea:import mrid="org.apache.easyant.plugins#phases-std;0.2"/>
-	
-	<property file="${org.apache.easyant.buildtypes#meta-build.properties.file}" />
+    </ea:core-version>
+    
+    <ea:import mrid="org.apache.easyant.plugins#phases-std;0.2"/>
+    
+    <property file="${org.apache.easyant.buildtypes#meta-build.properties.file}" />
 
-	<ea:include mrid="org.apache.easyant.plugins#clean-std;0.1" as="clean"/>
-	<ea:include mrid="org.apache.easyant.plugins#ivy-publication;0.1" as="publish"/>
-	<ea:include mrid="org.apache.easyant.plugins#build-tools;0.1" as="meta"/>
+    <ea:include mrid="org.apache.easyant.plugins#clean-std;0.1" as="clean"/>
+    <ea:include mrid="org.apache.easyant.plugins#ivy-publication;0.1" as="publish"/>
+    <ea:include mrid="org.apache.easyant.plugins#build-tools;0.1" as="meta"/>
 
 
-	<target name="doit" depends="verify" />
+    <target name="doit" depends="verify" />
 </project>

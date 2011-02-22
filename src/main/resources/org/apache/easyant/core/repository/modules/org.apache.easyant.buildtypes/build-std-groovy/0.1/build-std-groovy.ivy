@@ -15,13 +15,13 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.buildtypes"
-	       module="build-std-groovy"
-	       status="milestone"
-	       revision="0.1"
-	/>
-	<publications>
-		<artifact type="ant" />
-		<artifact type="properties" />
-	</publications>
+    <info organisation="org.apache.easyant.buildtypes"
+           module="build-std-groovy"
+           status="milestone"
+           revision="0.1"
+    />
+    <publications>
+        <artifact type="ant" />
+        <artifact type="properties" />
+    </publications>
 </ivy-module>

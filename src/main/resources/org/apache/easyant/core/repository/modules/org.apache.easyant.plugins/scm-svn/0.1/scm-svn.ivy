@@ -15,12 +15,12 @@
    limitations under the License.
 -->
 <ivy-module version="2.0">
-	<info organisation="org.apache.easyant.plugins"
-	       module="scm-svn"
-	       status="milestone"
-	       revision="0.1">
-	       <description>This module provides svn feature.</description>
-	</info>
+    <info organisation="org.apache.easyant.plugins"
+           module="scm-svn"
+           status="milestone"
+           revision="0.1">
+           <description>This module provides svn feature.</description>
+    </info>
         <publications>
                 <artifact type="ant"/>
         </publications>

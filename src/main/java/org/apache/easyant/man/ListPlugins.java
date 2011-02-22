@@ -28,24 +28,23 @@ import org.apache.tools.ant.Project;
  * build module.
  */
 public class ListPlugins implements ManCommand {
-	private static String TAB = "\t";
 
-	public void addParam(String param) {
-		// DO NOTHING - NOT REQUIRED, SINCE THIS IS A 'LIST-ALL' COMMAND
-	}
+    public void addParam(String param) {
+        // DO NOTHING - NOT REQUIRED, SINCE THIS IS A 'LIST-ALL' COMMAND
+    }
 
-	public void execute(EasyAntReport earep, Project project) {
-		String lineSep = System.getProperty("line.separator");
-		project.log(lineSep + "--- Available Plugins for current project: " + project.getName() + " ---" + lineSep);
-		
-		List<ImportedModuleReport> moduleReps = earep.getImportedModuleReports();
-		for(int i = 0; i<moduleReps.size(); i++) {
-			project.log(TAB + moduleReps.get(i).getModuleMrid() + (moduleReps.get(i).getAs() == null ? 
-					"" : ": Known as " + moduleReps.get(i).getAs()));
-		}
-		
-		project.log(lineSep + lineSep + "For more information on a Plugin, run:" + lineSep + "\t easyant -describe <PLUGIN>");
-		project.log(lineSep + "--- End Of (Plugins Listing) ---");
-	}
+    public void execute(EasyAntReport earep, Project project) {
+        String lineSep = System.getProperty("line.separator");
+        project.log(lineSep + "--- Available Plugins for current project: " + project.getName() + " ---" + lineSep);
+        
+        List<ImportedModuleReport> moduleReps = earep.getImportedModuleReports();
+        for(int i = 0; i<moduleReps.size(); i++) {
+            project.log("\t" + moduleReps.get(i).getModuleMrid() + (moduleReps.get(i).getAs() == null ? 
+                    "" : ": Known as " + moduleReps.get(i).getAs()));
+        }
+        
+        project.log(lineSep + lineSep + "For more information on a Plugin, run:" + lineSep + "\t easyant -describe <PLUGIN>");
+        project.log(lineSep + "--- End Of (Plugins Listing) ---");
+    }
 
 }

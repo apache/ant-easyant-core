@@ -217,38 +217,38 @@ h6 {
 <xsl:template match="testsuites" mode="all.tests">
     <xsl:param name="type" select="'all'"/>
     <html>
-	<xsl:variable name="title">
-	    <xsl:choose>
-		<xsl:when test="$type = 'fails'">
-		    <xsl:text>All Failures</xsl:text>
-		</xsl:when>
-		<xsl:when test="$type = 'errors'">
-		    <xsl:text>All Errors</xsl:text>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:text>All Tests</xsl:text>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</xsl:variable>
-	<head>
-	    <title>AntUnit Test Results: <xsl:value-of select="$title"/></title>
-	    <xsl:call-template name="create.stylesheet.link">
+    <xsl:variable name="title">
+        <xsl:choose>
+        <xsl:when test="$type = 'fails'">
+            <xsl:text>All Failures</xsl:text>
+        </xsl:when>
+        <xsl:when test="$type = 'errors'">
+            <xsl:text>All Errors</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:text>All Tests</xsl:text>
+        </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
+    <head>
+        <title>AntUnit Test Results: <xsl:value-of select="$title"/></title>
+        <xsl:call-template name="create.stylesheet.link">
                 <xsl:with-param name="directory.name"/>
             </xsl:call-template>
-	</head>
-	<body>
-	    <xsl:attribute name="onload">open('allprojects-frame.html','projectListFrame')</xsl:attribute>
+    </head>
+    <body>
+        <xsl:attribute name="onload">open('allprojects-frame.html','projectListFrame')</xsl:attribute>
             <xsl:call-template name="pageHeader"/>
             <h2><xsl:value-of select="$title"/></h2>
 
             <table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
-		<xsl:call-template name="testcase.test.header">
-		    <xsl:with-param name="show.project" select="'yes'"/>
-		</xsl:call-template>
-		<!--
+        <xsl:call-template name="testcase.test.header">
+            <xsl:with-param name="show.project" select="'yes'"/>
+        </xsl:call-template>
+        <!--
                 test can even not be started at all (failure to load the project)
-		so report the error directly
-		-->
+        so report the error directly
+        -->
               <xsl:if test="./error">
                 <tr class="Error">
                   <td colspan="4">
@@ -339,39 +339,39 @@ h6 {
                 <xsl:apply-templates select="." mode="print.test"/>
             </table>
 
-	    <xsl:choose>
-		<xsl:when test="$type = 'fails'">
-		    <h2>Failures</h2>
-		</xsl:when>
-		<xsl:when test="$type = 'errors'">
-		    <h2>Errors</h2>
-		</xsl:when>
-		<xsl:otherwise>
-		    <h2>Tests</h2>
-		</xsl:otherwise>
-	    </xsl:choose>
+        <xsl:choose>
+        <xsl:when test="$type = 'fails'">
+            <h2>Failures</h2>
+        </xsl:when>
+        <xsl:when test="$type = 'errors'">
+            <h2>Errors</h2>
+        </xsl:when>
+        <xsl:otherwise>
+            <h2>Tests</h2>
+        </xsl:otherwise>
+        </xsl:choose>
             <table class="details" border="0" cellpadding="5" cellspacing="2" width="95%">
-		<xsl:call-template name="testcase.test.header"/>
-		<!--
+        <xsl:call-template name="testcase.test.header"/>
+        <!--
                 test can even not be started at all (failure to load the project)
-		so report the error directly
-		-->
+        so report the error directly
+        -->
                 <xsl:if test="./error">
                     <tr class="Error">
                         <td colspan="4"><xsl:apply-templates select="./error"/></td>
                     </tr>
                 </xsl:if>
-		<xsl:choose>
-		    <xsl:when test="$type = 'fails'">
-			<xsl:apply-templates select="./testcase[failure]" mode="print.test"/>
-		    </xsl:when>
-		    <xsl:when test="$type = 'errors'">
-			<xsl:apply-templates select="./testcase[error]" mode="print.test"/>
-		    </xsl:when>
-		    <xsl:otherwise>
-			<xsl:apply-templates select="./testcase" mode="print.test"/>
-		    </xsl:otherwise>
-		</xsl:choose>
+        <xsl:choose>
+            <xsl:when test="$type = 'fails'">
+            <xsl:apply-templates select="./testcase[failure]" mode="print.test"/>
+            </xsl:when>
+            <xsl:when test="$type = 'errors'">
+            <xsl:apply-templates select="./testcase[error]" mode="print.test"/>
+            </xsl:when>
+            <xsl:otherwise>
+            <xsl:apply-templates select="./testcase" mode="print.test"/>
+            </xsl:otherwise>
+        </xsl:choose>
             </table>
             <!--div class="Properties">
                 <a>
@@ -715,9 +715,9 @@ h6 {
 <xsl:template name="testcase.test.header">
     <xsl:param name="show.project" select="''"/>
     <tr valign="top">
-	<xsl:if test="boolean($show.project)">
-	    <th>Project</th>
-	</xsl:if>
+    <xsl:if test="boolean($show.project)">
+        <th>Project</th>
+    </xsl:if>
         <th>Name</th>
         <th>Status</th>
         <th width="80%">Type</th>
@@ -739,25 +739,25 @@ h6 {
         <td><a title="Display all tests" href="{@id}_{@name}.html"><xsl:value-of select="@name"/></a></td>
         <td><a title="Display all tests" href="{@id}_{@name}.html"><xsl:apply-templates select="tests/text()"/></a></td>
         <td>
-	    <xsl:choose>
-		<xsl:when test="errors/text() != 0">
-		    <a title="Display only errors" href="{@id}_{@name}-errors.html"><xsl:apply-templates select="errors/text()"/></a>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:apply-templates select="errors/text()"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</td>
+        <xsl:choose>
+        <xsl:when test="errors/text() != 0">
+            <a title="Display only errors" href="{@id}_{@name}-errors.html"><xsl:apply-templates select="errors/text()"/></a>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:apply-templates select="errors/text()"/>
+        </xsl:otherwise>
+        </xsl:choose>
+    </td>
         <td>
-	    <xsl:choose>
-		<xsl:when test="failures/text() != 0">
-		    <a title="Display only failures" href="{@id}_{@name}-fails.html"><xsl:apply-templates select="failures/text()"/></a>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:apply-templates select="failures/text()"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</td>
+        <xsl:choose>
+        <xsl:when test="failures/text() != 0">
+            <a title="Display only failures" href="{@id}_{@name}-fails.html"><xsl:apply-templates select="failures/text()"/></a>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:apply-templates select="failures/text()"/>
+        </xsl:otherwise>
+        </xsl:choose>
+    </td>
         <td><xsl:call-template name="display-time">
                 <xsl:with-param name="value" select="time/text()"/>
             </xsl:call-template>
@@ -777,23 +777,23 @@ h6 {
                 <xsl:otherwise>TableRowColor</xsl:otherwise>
             </xsl:choose>
         </xsl:attribute>
-	<xsl:variable name="project.href">
-	    <xsl:value-of select="concat(translate(../@package,'.','/'), '/', ../@id, '_', ../@name, '.html')"/>
-	</xsl:variable>
-	<xsl:if test="boolean($show.project)">
-	    <td><a href="{$project.href}"><xsl:value-of select="../@name"/></a></td>
-	</xsl:if>
+    <xsl:variable name="project.href">
+        <xsl:value-of select="concat(translate(../@package,'.','/'), '/', ../@id, '_', ../@name, '.html')"/>
+    </xsl:variable>
+    <xsl:if test="boolean($show.project)">
+        <td><a href="{$project.href}"><xsl:value-of select="../@name"/></a></td>
+    </xsl:if>
         <td>
-	    <a name="{@name}"/>
-	    <xsl:choose>
-		<xsl:when test="boolean($show.project)">
-		    <a href="{concat($project.href, '#', @name)}"><xsl:value-of select="@name"/></a>
-		</xsl:when>
-		<xsl:otherwise>
-		    <xsl:value-of select="@name"/>
-		</xsl:otherwise>
-	    </xsl:choose>
-	</td>
+        <a name="{@name}"/>
+        <xsl:choose>
+        <xsl:when test="boolean($show.project)">
+            <a href="{concat($project.href, '#', @name)}"><xsl:value-of select="@name"/></a>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:value-of select="@name"/>
+        </xsl:otherwise>
+        </xsl:choose>
+    </td>
         <xsl:choose>
             <xsl:when test="failure">
                 <td>Failure</td>
@@ -859,7 +859,7 @@ h6 {
 
 <xsl:template name="JS-escape">
     <xsl:param name="string"/>
-    <xsl:param name="tmp1" select="stringutils:replace(string($string),'\','\\')"/>
+    <xsl:param name="tmp1" select="stringutils:replace(string($string),'\','\')"/>
     <xsl:param name="tmp2" select="stringutils:replace(string($tmp1),&quot;'&quot;,&quot;\&apos;&quot;)"/>
     <xsl:value-of select="$tmp2"/>
 </xsl:template>

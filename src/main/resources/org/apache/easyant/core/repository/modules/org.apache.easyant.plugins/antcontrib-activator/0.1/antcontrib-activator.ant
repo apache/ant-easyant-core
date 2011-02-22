@@ -15,18 +15,18 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#antcontrib-activator" 
-	xmlns:ea="antlib:org.apache.easyant">
+    xmlns:ea="antlib:org.apache.easyant">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
+    <ea:core-version requiredrevision="[0.8,+]" />
 
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate"/>
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate"/>
 
-		<echo level="verbose" message="loading antcontrib"/>
-		
-		<taskdef resource="net/sf/antcontrib/antlib.xml" 
-			classpathref="org.apache.easyant.plugins#antcontrib-activator.classpath"/>
-	</target>
-	
-	<target name="doit" depends=":init" />
+        <echo level="verbose" message="loading antcontrib"/>
+        
+        <taskdef resource="net/sf/antcontrib/antlib.xml" 
+            classpathref="org.apache.easyant.plugins#antcontrib-activator.classpath"/>
+    </target>
+    
+    <target name="doit" depends=":init" />
 </project>

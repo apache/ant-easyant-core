@@ -15,19 +15,19 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" > 
-	<info organisation="org.apache.easyant.plugins"
-	       module="coverage-cobertura"
-	       status="milestone"
-	       revision="0.1">
-		<description>
+    <info organisation="org.apache.easyant.plugins"
+           module="coverage-cobertura"
+           status="milestone"
+           revision="0.1">
+        <description>
 Provides test code coverage report using cobertura framework.
-		</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
-	<dependencies>
-		<dependency org="net.sourceforge.cobertura" name="cobertura" rev="1.9.2" conf="default"/>
-		<exclude org="org.apache.ant" module="*"/>
-	</dependencies>
+        </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+    <dependencies>
+        <dependency org="net.sourceforge.cobertura" name="cobertura" rev="1.9.2" conf="default"/>
+        <exclude org="org.apache.ant" module="*"/>
+    </dependencies>
 </ivy-module>

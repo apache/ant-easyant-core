@@ -18,59 +18,59 @@
 package org.apache.easyant.core.report;
 
 public class TargetReport {
-	private String name = null;
-	private String depends = null;
-	private String ifCase = null;
-	private String unlessCase = null;
-	private String description = null;
-	private String phase = null;
+    private String name = null;
+    private String depends = null;
+    private String ifCase = null;
+    private String unlessCase = null;
+    private String description = null;
+    private String phase = null;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getDepends() {
-		return depends;
-	}
+    public String getDepends() {
+        return depends;
+    }
 
-	public void setDepends(String depends) {
-		this.depends = depends;
-	}
+    public void setDepends(String depends) {
+        this.depends = depends;
+    }
 
-	public String getIfCase() {
-		return ifCase;
-	}
+    public String getIfCase() {
+        return ifCase;
+    }
 
-	public void setIfCase(String ifCase) {
-		this.ifCase = ifCase;
-	}
+    public void setIfCase(String ifCase) {
+        this.ifCase = ifCase;
+    }
 
-	public String getUnlessCase() {
-		return unlessCase;
-	}
+    public String getUnlessCase() {
+        return unlessCase;
+    }
 
-	public void setUnlessCase(String unlessCase) {
-		this.unlessCase = unlessCase;
-	}
+    public void setUnlessCase(String unlessCase) {
+        this.unlessCase = unlessCase;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getPhase() {
-		return phase;
-	}
+    public String getPhase() {
+        return phase;
+    }
 
-	public void setPhase(String phase) {
-		this.phase = phase;
-	}
+    public void setPhase(String phase) {
+        this.phase = phase;
+    }
 
 }

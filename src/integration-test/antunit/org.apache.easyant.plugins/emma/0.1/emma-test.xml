@@ -15,35 +15,35 @@
    limitations under the License.
 -->
 <project name="emma-test" xmlns:au="antlib:org.apache.ant.antunit">
-	
-	<dirname file="${ant.file.emma-test}" property="test.dir"/>
-	<import file="${test.dir}/../../../common/test-utils.ant"/>
+    
+    <dirname file="${ant.file.emma-test}" property="test.dir"/>
+    <import file="${test.dir}/../../../common/test-utils.ant"/>
 
-	<target name="clean" description="remove stale build artifacts before / after each test">
-		<delete dir="${basedir}" includeemptydirs="true">
-			<include name="**/target/**"/>
-			<include name="**/lib/**"/>
-		</delete>
-	</target>
-	
-	<target name="setUp" depends="clean"/>
-	<target name="tearDown" depends="clean"/>
+    <target name="clean" description="remove stale build artifacts before / after each test">
+        <delete dir="${basedir}" includeemptydirs="true">
+            <include name="**/target/**"/>
+            <include name="**/lib/**"/>
+        </delete>
+    </target>
+    
+    <target name="setUp" depends="clean"/>
+    <target name="tearDown" depends="clean"/>
 
-	<target name="testCoverage" description="test generation of coverage reports using emma">
-		
-		<!-- verify test preconditions -->
-		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/target"/>
+    <target name="testCoverage" description="test generation of coverage reports using emma">
+        
+        <!-- verify test preconditions -->
+        <au:assertFileDoesntExist message="test environment is clean" file="${basedir}/target"/>
 
-		<!-- execute run tests and generate reports -->	
-		<easyant target="test report"/>
+        <!-- execute run tests and generate reports --> 
+        <easyant target="test report"/>
 
-		<!-- verify coverage artifacts created -->
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/coverage.html"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/coverage.txt"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/coverage.xml"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/_files/0.html"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/_files/1.html"/>
+        <!-- verify coverage artifacts created -->
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/coverage.html"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/coverage.txt"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/coverage.xml"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/_files/0.html"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/_files/1.html"/>
 
-	</target>
-	
+    </target>
+    
 </project>

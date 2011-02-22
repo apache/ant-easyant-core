@@ -15,40 +15,40 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="std-scala-app" revision="0.1"  status="integration" >
-		<description>
-			this project is a sample of a scala standard application
-		</description>
-		<!--
-			This easyant section is equivalent to having a module.ant like this:
-			
-			<project name="org.apache.easyant#std-scala-app"
-				xmlns:ea="antlib:org.apache.easyant">
-			
-				<property name="scala.home" value="path to scala home dir"/>	
-				<property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-			
-				<ea:import organisation="org.apache.easyant.buildtypes" module="build-std-scala" revision="0.1"/>
-				<ea:include organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
-			</project>				
-		  -->
-		<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-scala" revision="0.1">
-			<!--			
-			Scala environnement could be set by using scala.home property like that :
-			<property name="scala.home" value="path to scala home dir"/>
-			or using SCALA_HOME system environnement variable
-			-->
-			<ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-			<ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
-		</ea:build>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-	</configurations>
-	<dependencies>
-		<dependency org="junit" name="junit" rev="4.4" conf="default->default" />
-	</dependencies >
+    <info organisation="org.apache.easyant" module="std-scala-app" revision="0.1"  status="integration" >
+        <description>
+            this project is a sample of a scala standard application
+        </description>
+        <!--
+            This easyant section is equivalent to having a module.ant like this:
+            
+            <project name="org.apache.easyant#std-scala-app"
+                xmlns:ea="antlib:org.apache.easyant">
+            
+                <property name="scala.home" value="path to scala home dir"/>    
+                <property name="run.main.classname" value="org.apache.easyant.example.Example"/>
+            
+                <ea:import organisation="org.apache.easyant.buildtypes" module="build-std-scala" revision="0.1"/>
+                <ea:include organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
+            </project>              
+          -->
+        <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-scala" revision="0.1">
+            <!--            
+            Scala environnement could be set by using scala.home property like that :
+            <property name="scala.home" value="path to scala home dir"/>
+            or using SCALA_HOME system environnement variable
+            -->
+            <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
+            <ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
+        </ea:build>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+    </configurations>
+    <dependencies>
+        <dependency org="junit" name="junit" rev="4.4" conf="default->default" />
+    </dependencies >
 
 
 </ivy-module>

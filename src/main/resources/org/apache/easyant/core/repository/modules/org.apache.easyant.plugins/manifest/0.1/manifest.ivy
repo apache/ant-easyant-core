@@ -15,15 +15,15 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="manifest"
-	       status="milestone"
-	       revision="0.1">
-	       <description>This module provides manifest generation feature.<br/>
+    <info organisation="org.apache.easyant.plugins"
+           module="manifest"
+           status="milestone"
+           revision="0.1">
+           <description>This module provides manifest generation feature.<br/>
 This module also provide a target to make an executable jar. This features requires to have dependencies in your project directory. This can be done by setting the retrieve.dependencies to true.
 </description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
 </ivy-module>

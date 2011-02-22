@@ -15,26 +15,26 @@
    limitations under the License.
 -->
 <ivysettings>
-	<settings defaultResolver="main"/>
-	<!-- 
-		specify a custom cache to isolate the tests from the user environment,
-		and so that we can test build-scoped caching behavior
-	-->
-	<caches useOrigin="false" defaultCacheDir="${ivy.settings.dir}/test-cache" 
-			artifactPattern="[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
-	<resolvers>
-		<!-- use non-default local resolver so that we can eventually test publish-all-local target -->
-		<filesystem name="local">
-			<ivy pattern="${ivy.settings.dir}/repository/modules/[organisation]/[module]/[revision]/[module].ivy"/>
-			<artifact pattern="${ivy.settings.dir}/repository/modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
-		</filesystem>
-		<ibiblio name="maven" m2compatible="true"/>
-		<chain name="main" returnFirst="true">
-			<resolver ref="local" />
-			<resolver ref="maven" />
-		</chain>
-	</resolvers>
-	<modules>
+    <settings defaultResolver="main"/>
+    <!-- 
+        specify a custom cache to isolate the tests from the user environment,
+        and so that we can test build-scoped caching behavior
+    -->
+    <caches useOrigin="false" defaultCacheDir="${ivy.settings.dir}/test-cache" 
+            artifactPattern="[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
+    <resolvers>
+        <!-- use non-default local resolver so that we can eventually test publish-all-local target -->
+        <filesystem name="local">
+            <ivy pattern="${ivy.settings.dir}/repository/modules/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="${ivy.settings.dir}/repository/modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+        </filesystem>
+        <ibiblio name="maven" m2compatible="true"/>
+        <chain name="main" returnFirst="true">
+            <resolver ref="local" />
+            <resolver ref="maven" />
+        </chain>
+    </resolvers>
+    <modules>
         <module organisation="*" name="*" resolver="main" />
      </modules>
 </ivysettings>

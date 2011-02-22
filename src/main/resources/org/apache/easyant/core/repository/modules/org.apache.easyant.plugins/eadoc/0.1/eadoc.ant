@@ -16,40 +16,40 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#eadoc"
-	xmlns:ea="antlib:org.apache.easyant"
-	xmlns:ivy="antlib:org.apache.ivy.ant"
-	xmlns:ac="antlib:net.sf.antcontrib">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<target name=":init" description="Read and verify property configuration, load required task libraries" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="documentation" />
+    xmlns:ea="antlib:org.apache.easyant"
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:ac="antlib:net.sf.antcontrib">
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <target name=":init" description="Read and verify property configuration, load required task libraries" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="documentation" />
 
-		<ea:parameter property="eadoc.repository.name"
-			description="name of the repository to document" default="local"/>
-		<ea:parameter property="target.documentation.dir" default="${target}/documentation" 
-			description="directory where the documentation will be generated to" />
-		<ea:parameter property="eadoc.documentation.dir"
-			description="target directory for generated documentation" default="${target.documentation.dir}"/>
-		
-		<ea:parameter property="eadoc.module.org" 
-			description="org name for easyant modules" default="*" />
-		<ea:parameter property="eadoc.module.includes"
-			description="name pattern of modules to document" default="*"/>
-	
-		<ea:parameter property="eadoc.module.types"
-			description="List of module types to be documented" default="plugin,buildtype"/>
-		
-	</target>
+        <ea:parameter property="eadoc.repository.name"
+            description="name of the repository to document" default="local"/>
+        <ea:parameter property="target.documentation.dir" default="${target}/documentation" 
+            description="directory where the documentation will be generated to" />
+        <ea:parameter property="eadoc.documentation.dir"
+            description="target directory for generated documentation" default="${target.documentation.dir}"/>
+        
+        <ea:parameter property="eadoc.module.org" 
+            description="org name for easyant modules" default="*" />
+        <ea:parameter property="eadoc.module.includes"
+            description="name pattern of modules to document" default="*"/>
+    
+        <ea:parameter property="eadoc.module.types"
+            description="List of module types to be documented" default="plugin,buildtype"/>
+        
+    </target>
 
-	<target name=":generate"
-			description="generate documentation for all EasyAnt plugins in the target repository" 
-			depends="validate" phase="process-documentation-resources">
-	
-		<!-- generate xooki TOC for each module type -->
-		<ac:for list="${eadoc.module.types}" param="current.type">
-			<sequential>
+    <target name=":generate"
+            description="generate documentation for all EasyAnt plugins in the target repository" 
+            depends="validate" phase="process-documentation-resources">
+    
+        <!-- generate xooki TOC for each module type -->
+        <ac:for list="${eadoc.module.types}" param="current.type">
+            <sequential>
                 <echo>Generating @{current.type} docs</echo>
 
                 <ac:var name="current.menu" value="@{current.type}s"/>
@@ -68,11 +68,11 @@
 
                 <ea:endmenu context="${current.menu}"/>
 
-			</sequential>
-		</ac:for>
-		
-	</target>
-	
-	<target name="doit" depends=":generate" />
-	
+            </sequential>
+        </ac:for>
+        
+    </target>
+    
+    <target name="doit" depends=":generate" />
+    
 </project>

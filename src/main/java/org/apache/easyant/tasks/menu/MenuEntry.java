@@ -23,35 +23,35 @@ import org.apache.tools.ant.types.DataType;
  * This {@link DataType} is a representation of an entry in a menu
  */
 public class MenuEntry extends DataType {
-	private String title;
-	private String targetLink;
-	/**
-	 * Get the title
-	 * @return a title
-	 */
-	public String getTitle() {
-		return title;
-	}
-	/**
-	 * Set the title
-	 * @param title a title
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	/**
-	 * Get the target link
-	 * @return a target url
-	 */
-	public String getTargetLink() {
-		return targetLink;
-	}
-	/**
-	 * Set the target link
-	 * @param targetLink a target link
-	 */
-	public void setTargetLink(String targetLink) {
-		this.targetLink = targetLink;
-	}
-	
+    private String title;
+    private String targetLink;
+    /**
+     * Get the title
+     * @return a title
+     */
+    public String getTitle() {
+        return title;
+    }
+    /**
+     * Set the title
+     * @param title a title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    /**
+     * Get the target link
+     * @return a target url
+     */
+    public String getTargetLink() {
+        return targetLink;
+    }
+    /**
+     * Set the target link
+     * @param targetLink a target link
+     */
+    public void setTargetLink(String targetLink) {
+        this.targetLink = targetLink;
+    }
+    
 }

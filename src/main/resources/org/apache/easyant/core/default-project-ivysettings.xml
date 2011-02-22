@@ -15,9 +15,9 @@
    limitations under the License.
 -->
 <ivysettings>
-	<property name="ivy.shared.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact](-[classifier]).[ext]" />
-	<property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact](-[classifier]).[ext]"/>
-	<caches useOrigin="true" defaultCacheDir="${user.home}/.easyant/project-cache" />
-	<include url="${ivy.default.settings.dir}/ivysettings.xml"/>
-	
+    <property name="ivy.shared.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact](-[classifier]).[ext]" />
+    <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact](-[classifier]).[ext]"/>
+    <caches useOrigin="true" defaultCacheDir="${user.home}/.easyant/project-cache" />
+    <include url="${ivy.default.settings.dir}/ivysettings.xml"/>
+    
 </ivysettings>

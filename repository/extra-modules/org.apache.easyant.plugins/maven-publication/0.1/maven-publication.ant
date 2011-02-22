@@ -16,65 +16,65 @@
 -->
 <project name="org.apache.easyant.plugins;maven-publication" xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:mvn="antlib:org.apache.maven.artifact.ant" xmlns:mavenivy="antlib:org.apache.easyant.tasks.adapters" xmlns:ea="antlib:org.apache.easyant">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
+    <ea:core-version requiredrevision="[0.8,+]" />
 
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="provision" />
-		<ea:parameter phase="prepare-publication" />
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="provision" />
+        <ea:parameter phase="prepare-publication" />
 
-		<ea:parameter property="target.artifacts" default="${basedir}/target/artifacts" description="destination directory for target artifacts" />
+        <ea:parameter property="target.artifacts" default="${basedir}/target/artifacts" description="destination directory for target artifacts" />
 
 
-		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" loaderref="maven-publication.loader" classpathref="org.apache.easyant.plugins#maven-publication.classpath" />
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant" loaderref="maven-publication.loader" classpathref="org.apache.easyant.plugins#maven-publication.classpath" />
 
-		<taskdef resource="org/apache/easyant/tasks/adapters/antlib.xml" uri="antlib:org.apache.easyant.tasks.adapters" loaderref="maven-publication.loader" classpathref="org.apache.easyant.plugins#maven-publication.classpath" />
-		<!--Create a POM in memory referenced by "maven.instance" id -->
-		<mvn:pom id="maven.instance" />
+        <taskdef resource="org/apache/easyant/tasks/adapters/antlib.xml" uri="antlib:org.apache.easyant.tasks.adapters" loaderref="maven-publication.loader" classpathref="org.apache.easyant.plugins#maven-publication.classpath" />
+        <!--Create a POM in memory referenced by "maven.instance" id -->
+        <mvn:pom id="maven.instance" />
 
-		<ea:parameter property="maven.remote.repo.url" default="" description="maven url where artifact will be published, if no one is specified the same url as ivy-publication will be used" />
-		<mvn:remoteRepository id="maven.remote.repository" url="${maven.remote.repo.url}" />
-		
-		<mavenivy:typeMappings id="maven.type.mappings.ref" useDefault="true"/>
-		<mavenivy:scopeMappings id="maven.scope.mappings.ref" useDefault="true"/>
-		
-	</target>
+        <ea:parameter property="maven.remote.repo.url" default="" description="maven url where artifact will be published, if no one is specified the same url as ivy-publication will be used" />
+        <mvn:remoteRepository id="maven.remote.repository" url="${maven.remote.repo.url}" />
+        
+        <mavenivy:typeMappings id="maven.type.mappings.ref" useDefault="true"/>
+        <mavenivy:scopeMappings id="maven.scope.mappings.ref" useDefault="true"/>
+        
+    </target>
 
-	<target name=":make-pom" depends="provision" phase="prepare-publication">
-		<!--ask  MavenIvy Adapters to convert global information (groupId,artifactId,version, packaging) and to inject them in the POM instance referenced by "maven.instance" id -->
-		<mavenivy:infoAdapter pomRefId="maven.instance" settingsRef="${project.ivy.instance}">
-			<scopeMappings refid="maven.scope.mappings.ref"/>
-		</mavenivy:infoAdapter>
+    <target name=":make-pom" depends="provision" phase="prepare-publication">
+        <!--ask  MavenIvy Adapters to convert global information (groupId,artifactId,version, packaging) and to inject them in the POM instance referenced by "maven.instance" id -->
+        <mavenivy:infoAdapter pomRefId="maven.instance" settingsRef="${project.ivy.instance}">
+            <scopeMappings refid="maven.scope.mappings.ref"/>
+        </mavenivy:infoAdapter>
 
-		<!--ask  MavenIvy Adapters to convert dependencies and to inject them in the POM instance referenced by "maven.instance" id -->
-		<mavenivy:dependencyAdapter pomRefId="maven.instance" settingsRef="${project.ivy.instance}">
-			<typeMappings refid="maven.type.mappings.ref"/>
-		</mavenivy:dependencyAdapter>
+        <!--ask  MavenIvy Adapters to convert dependencies and to inject them in the POM instance referenced by "maven.instance" id -->
+        <mavenivy:dependencyAdapter pomRefId="maven.instance" settingsRef="${project.ivy.instance}">
+            <typeMappings refid="maven.type.mappings.ref"/>
+        </mavenivy:dependencyAdapter>
 
-		<mkdir dir="${target.artifacts}" />
-		<!-- write the pom on the filesystem -->
-		<mvn:writepom pomRefId="maven.instance" file="${target.artifacts}/pom.xml" />
+        <mkdir dir="${target.artifacts}" />
+        <!-- write the pom on the filesystem -->
+        <mvn:writepom pomRefId="maven.instance" file="${target.artifacts}/pom.xml" />
 
-		<mvn:pom id="maven.instance" file="${target.artifacts}/pom.xml" />
-		<mavenivy:registertrigger classname="org.apache.easyant.ivy.MavenPublishTrigger" event="post-publish-artifact" classpathref="org.apache.easyant.plugins#maven-publication.classpath" settingsRef="${project.ivy.instance}" />
+        <mvn:pom id="maven.instance" file="${target.artifacts}/pom.xml" />
+        <mavenivy:registertrigger classname="org.apache.easyant.ivy.MavenPublishTrigger" event="post-publish-artifact" classpathref="org.apache.easyant.plugins#maven-publication.classpath" settingsRef="${project.ivy.instance}" />
 
-	</target>
+    </target>
 
-	<target name="-trigger-publish-shared" phase="generate-shared-version">
-		<augment id="maven.instance" version="${version}" />
-	</target>
+    <target name="-trigger-publish-shared" phase="generate-shared-version">
+        <augment id="maven.instance" version="${version}" />
+    </target>
 
-	<target name="-trigger-release" phase="generate-release-version">
-		<augment id="maven.instance" version="${version}" />
-	</target>
+    <target name="-trigger-release" phase="generate-release-version">
+        <augment id="maven.instance" version="${version}" />
+    </target>
 
-	<target name=":publish-shared" phase="publish-shared">
-		<mavenivy:deploy pomRefId="maven.instance">
-			<remoteRepository refid="maven.remote.repository" />
-			<typeMappings refid="maven.type.mappings.ref"/>
-		</mavenivy:deploy>
-	</target>
+    <target name=":publish-shared" phase="publish-shared">
+        <mavenivy:deploy pomRefId="maven.instance">
+            <remoteRepository refid="maven.remote.repository" />
+            <typeMappings refid="maven.type.mappings.ref"/>
+        </mavenivy:deploy>
+    </target>
 
-	<!-- define a generic default target for this plugin -->
-	<target name="doit" depends="validate" />
+    <!-- define a generic default target for this plugin -->
+    <target name="doit" depends="validate" />
 </project>

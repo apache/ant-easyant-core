@@ -16,48 +16,48 @@
    limitations under the License.
 -->
 <antlib xmlns:current="ant:current">
-	<taskdef name="path" classname="org.apache.easyant.tasks.PathTask"/>
-	<taskdef name="parameter" classname="org.apache.easyant.tasks.ParameterTask"/>
-	
-	<taskdef name="import" classname="org.apache.easyant.tasks.Import"/>
-	<taskdef name="loadmodule" classname="org.apache.easyant.tasks.LoadModule"/>
-	<taskdef name="submodule" classname="org.apache.easyant.tasks.SubModule"/>
-	<taskdef name="repreport" classname="org.apache.easyant.tasks.RepositoryReport"/>
-	<taskdef name="core-version" classname="org.apache.easyant.tasks.CoreRevisionCheckerTask"/>
-	<taskdef name="property" classname="org.apache.easyant.tasks.PropertyTask"/>
-	
-	<taskdef name="searchmodule" classname="org.apache.easyant.tasks.SearchModule"/>
-	
-	<taskdef name="configure-build-scoped-repository" classname="org.apache.easyant.tasks.ConfigureBuildScopedRepository"/> 
-	
-	<taskdef name="findclasspath" classname="org.apache.easyant.tasks.findclasspath.FindClasspathTask"/>
-	<typedef name="environment-strategy" classname="org.apache.easyant.tasks.findclasspath.EnvironmentStrategy"/>
-	<typedef name="project-dependency-strategy" classname="org.apache.easyant.tasks.findclasspath.ProjectDependencyStrategy"/>
-	<typedef name="basic-configuration-strategy" classname="org.apache.easyant.tasks.findclasspath.BasicConfigurationStrategy"/>
-	
-	
-	<taskdef name="registerartifact" classname="org.apache.easyant.tasks.RegisterArtifact"/>
-	<taskdef name="bindtarget" classname="org.apache.easyant.tasks.BindTarget"/>
-	
+    <taskdef name="path" classname="org.apache.easyant.tasks.PathTask"/>
+    <taskdef name="parameter" classname="org.apache.easyant.tasks.ParameterTask"/>
+    
+    <taskdef name="import" classname="org.apache.easyant.tasks.Import"/>
+    <taskdef name="loadmodule" classname="org.apache.easyant.tasks.LoadModule"/>
+    <taskdef name="submodule" classname="org.apache.easyant.tasks.SubModule"/>
+    <taskdef name="repreport" classname="org.apache.easyant.tasks.RepositoryReport"/>
+    <taskdef name="core-version" classname="org.apache.easyant.tasks.CoreRevisionCheckerTask"/>
+    <taskdef name="property" classname="org.apache.easyant.tasks.PropertyTask"/>
+    
+    <taskdef name="searchmodule" classname="org.apache.easyant.tasks.SearchModule"/>
+    
+    <taskdef name="configure-build-scoped-repository" classname="org.apache.easyant.tasks.ConfigureBuildScopedRepository"/> 
+    
+    <taskdef name="findclasspath" classname="org.apache.easyant.tasks.findclasspath.FindClasspathTask"/>
+    <typedef name="environment-strategy" classname="org.apache.easyant.tasks.findclasspath.EnvironmentStrategy"/>
+    <typedef name="project-dependency-strategy" classname="org.apache.easyant.tasks.findclasspath.ProjectDependencyStrategy"/>
+    <typedef name="basic-configuration-strategy" classname="org.apache.easyant.tasks.findclasspath.BasicConfigurationStrategy"/>
+    
+    
+    <taskdef name="registerartifact" classname="org.apache.easyant.tasks.RegisterArtifact"/>
+    <taskdef name="bindtarget" classname="org.apache.easyant.tasks.BindTarget"/>
+    
 
-	<taskdef name="checkresolver" classname="org.apache.easyant.tasks.CheckResolver"/>
-	<taskdef name="easyant" classname="org.apache.easyant.tasks.EasyAntRunner"/>
-	
+    <taskdef name="checkresolver" classname="org.apache.easyant.tasks.CheckResolver"/>
+    <taskdef name="easyant" classname="org.apache.easyant.tasks.EasyAntRunner"/>
+    
     <taskdef name="startmenu" classname="org.apache.easyant.tasks.menu.StartMenuTask"/>
-	<taskdef name="addmenuentry" classname="org.apache.easyant.tasks.menu.AddMenuEntryTask"/>
-	<taskdef name="registermenugenerator" classname="org.apache.easyant.tasks.menu.RegisterMenuGeneratorTask"/>
-	<typedef name="menuentry" classname="org.apache.easyant.tasks.menu.MenuEntry"/>
+    <taskdef name="addmenuentry" classname="org.apache.easyant.tasks.menu.AddMenuEntryTask"/>
+    <taskdef name="registermenugenerator" classname="org.apache.easyant.tasks.menu.RegisterMenuGeneratorTask"/>
+    <typedef name="menuentry" classname="org.apache.easyant.tasks.menu.MenuEntry"/>
     <taskdef name="endmenu" classname="org.apache.easyant.tasks.menu.EndMenuTask"/>
 
-	<presetdef name="include">
-		<current:import mode="include" />
-	</presetdef>
-	
-	<presetdef name="build">
-		<current:import organisation="org.apache.easyant.buildtypes"/>
-	</presetdef>
-	
-	<presetdef name="plugin">
-		<current:import mode="include" organisation="org.apache.easyant.plugins"/>
-	</presetdef>
+    <presetdef name="include">
+        <current:import mode="include" />
+    </presetdef>
+    
+    <presetdef name="build">
+        <current:import organisation="org.apache.easyant.buildtypes"/>
+    </presetdef>
+    
+    <presetdef name="plugin">
+        <current:import mode="include" organisation="org.apache.easyant.plugins"/>
+    </presetdef>
 </antlib>

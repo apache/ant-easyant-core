@@ -15,37 +15,37 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="jetty-deploy"
-	       status="milestone"
-	       revision="0.1">
-	       <description>
-	       	A developer-convenience module for quick war-build-and-deploy with jetty (v 6.1.4). This module will 
-	       	build a webapplication (following same requirements as build-webapp-java module), launch 
-	       	jetty and deploy the built application. <br />
-	       	The user can pass the following additional parameters for configuring the jetty run:
-	       	<ol>
-	       		<li>jetty.temp.dir: Jetty temp working directory. Defaults to: target/jetty-temp.</li>
-	       		<li>jetty.xml: Jetty Configuration XML. If unspecified, defaults to standard jetty XML 
-	       			shipped with jetty 6.1.4.</li>
-	       		<li>jetty.context: Context the webapplication should be deployed in. If unspecified,
-	       			defaults to Root (/) context.</li>
-	       	</ol><br />
-	       	Each of these can be selectively overriden by the user. To override, in your module.ivy, include 
-	       	a property file in the module ivy description.
-	       </description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
-	<dependencies>
-	        <dependency org="org.mortbay.jetty" name="jetty" rev="6.1.4"/>
-	        <dependency org="org.mortbay.jetty" name="jetty-util" rev="6.1.4"/>
-	        <dependency org="org.mortbay.jetty" name="jetty-plus" rev="6.1.4"/>
-	        <dependency org="org.mortbay.jetty" name="jetty-naming" rev="6.1.4"/>
-	        <dependency org="org.mortbay.jetty" name="jetty-ant" rev="6.1.4"/>
-	        <dependency org="org.mortbay.jetty" name="jsp-api-2.1" rev="6.1.4"/>
-	        <dependency org="org.mortbay.jetty" name="jsp-2.1" rev="6.1.4"/>
-	        <dependency org="org.mortbay.jetty" name="servlet-api-2.5" rev="6.1.4"/>
-	</dependencies>
+    <info organisation="org.apache.easyant.plugins"
+           module="jetty-deploy"
+           status="milestone"
+           revision="0.1">
+           <description>
+            A developer-convenience module for quick war-build-and-deploy with jetty (v 6.1.4). This module will 
+            build a webapplication (following same requirements as build-webapp-java module), launch 
+            jetty and deploy the built application. <br />
+            The user can pass the following additional parameters for configuring the jetty run:
+            <ol>
+                <li>jetty.temp.dir: Jetty temp working directory. Defaults to: target/jetty-temp.</li>
+                <li>jetty.xml: Jetty Configuration XML. If unspecified, defaults to standard jetty XML 
+                    shipped with jetty 6.1.4.</li>
+                <li>jetty.context: Context the webapplication should be deployed in. If unspecified,
+                    defaults to Root (/) context.</li>
+            </ol><br />
+            Each of these can be selectively overriden by the user. To override, in your module.ivy, include 
+            a property file in the module ivy description.
+           </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+    <dependencies>
+            <dependency org="org.mortbay.jetty" name="jetty" rev="6.1.4"/>
+            <dependency org="org.mortbay.jetty" name="jetty-util" rev="6.1.4"/>
+            <dependency org="org.mortbay.jetty" name="jetty-plus" rev="6.1.4"/>
+            <dependency org="org.mortbay.jetty" name="jetty-naming" rev="6.1.4"/>
+            <dependency org="org.mortbay.jetty" name="jetty-ant" rev="6.1.4"/>
+            <dependency org="org.mortbay.jetty" name="jsp-api-2.1" rev="6.1.4"/>
+            <dependency org="org.mortbay.jetty" name="jsp-2.1" rev="6.1.4"/>
+            <dependency org="org.mortbay.jetty" name="servlet-api-2.5" rev="6.1.4"/>
+    </dependencies>
 </ivy-module>

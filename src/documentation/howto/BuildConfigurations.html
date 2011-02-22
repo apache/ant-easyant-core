@@ -17,12 +17,12 @@
 -->
 <html>
 <head>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
-	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
-	<script type="text/javascript" src="../xooki/xooki.js"></script>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <script type="text/javascript">var xookiConfig = {level: 1};</script>   
+    <script type="text/javascript" src="../xooki/xooki.js"></script>
 </head>
 <body>
-	<textarea id="xooki-source">
+    <textarea id="xooki-source">
 <h1>Build Configurations</h1>
 
 <h2>Concept</h2>
@@ -78,10 +78,10 @@ Here is how you may attach properties to particular configurations:
 For example if you specify a property like :
 <code type="xml">
 <ea:build organisation="org.apache.easyant.buildtypes" module"build-std-java" revision="0.2">
-	<ea:property name="foo" value="bar" conf="windows"/>
-	<ea:property name="foo" value="foobar" conf="linux"/>
-	<ea:property name="goo" value="bar" conf="windows, linux"/>
-	<ea:plugin module="myplugin" revision="0.1" conf="windows"/>
+    <ea:property name="foo" value="bar" conf="windows"/>
+    <ea:property name="foo" value="foobar" conf="linux"/>
+    <ea:property name="goo" value="bar" conf="windows, linux"/>
+    <ea:plugin module="myplugin" revision="0.1" conf="windows"/>
 </ea:build>
 </code>
 As is self-evident, the property foo will assume different values for 'windows' and 'linux' configurations. On the otherhand, declaration of 'goo' attaches itself to both windows and linux profiles with the same value. Similarly, the plugin myplugin gets attached to the 'windows' configuration only but, is not available in the linux configuration.
@@ -110,12 +110,12 @@ Let us try to set up a simply EasyAnt build with the above intention in mind.
 Example:
 <code type="xml">
 <configurations>
-	<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-	<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal 
-		use of the application, and is only available for the test compilation and execution phases."/>
-	<conf name="release" visibility="public" ea:type="profile" description="Declares a build configuration for release builds"/>
-	<conf name="testing" visibility="public" ea:type="profile" description="Declares a build configuration for testing builds"/>
-	<conf name="dev" visibility="public" ea:type="profile" description="Declares a build configuration for dev builds"/>
+    <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+    <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal 
+        use of the application, and is only available for the test compilation and execution phases."/>
+    <conf name="release" visibility="public" ea:type="profile" description="Declares a build configuration for release builds"/>
+    <conf name="testing" visibility="public" ea:type="profile" description="Declares a build configuration for testing builds"/>
+    <conf name="dev" visibility="public" ea:type="profile" description="Declares a build configuration for dev builds"/>
 </configurations>
 </code>
 The above module.ivy snippet declares the three build configurations, viz. 'release', 'testing' and 'dev'. Now, we need to attach our requirement dependencies to each of these configurations.
@@ -123,11 +123,11 @@ The above module.ivy snippet declares the three build configurations, viz. 'rele
 So, we modify our <ea:build> tag as:
 <code type="xml">
 <ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
-	<ea:property name="test.framework" value="testng"/>
-	<ea:property name="run.main.classname" value="org.apache.easyant.example.Example" conf="dev"/>
-	<ea:plugin module="jetty-deploy" revision="0.1" as="jetty" conf="dev"/>
-	<ea:plugin module="run-java revision="0.1" as="run-java" conf="dev"/>
-	<ea:plugin module="emma" revision="0.1" as="emma" conf="release,testing"/>
+    <ea:property name="test.framework" value="testng"/>
+    <ea:property name="run.main.classname" value="org.apache.easyant.example.Example" conf="dev"/>
+    <ea:plugin module="jetty-deploy" revision="0.1" as="jetty" conf="dev"/>
+    <ea:plugin module="run-java revision="0.1" as="run-java" conf="dev"/>
+    <ea:plugin module="emma" revision="0.1" as="emma" conf="release,testing"/>
 </ea:build>
 </code>
 In the above snippet, jetty-deploy, run-java and emma plugins have been declared and attached to different build configurations. 
@@ -139,48 +139,48 @@ On the other hand, for our release builds, generation of coverage reports is a p
 So, this is how our final module.ivy looks:
 <code type="xml">
 <ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra"
-	xmlns:ea="http://www.easyant.org">
-	<info organisation="org.apache.easyant" module="webapp-java"
-		status="integration">
-		<description>
-			This project is a sample of a java webapplication making
-			use of build configurations
-		</description>
-		<ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
-			<ea:property name="test.framework" value="testng" />
-			<ea:property name="run.main.classname" value="org.apache.easyant.example.Example"
-				conf="dev" />
-			<ea:plugin module="jetty-deploy" revision="0.1"
-				as="jetty" conf="dev" />
-			<ea:plugin module="run-java" revision="0.1"
-				as="run-java" conf="dev" />
-			<ea:plugin module="emma" revision="0.1" as="emma"
-				conf="release,testing" />
-		</ea:build>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public"
-			description="runtime dependencies and master artifact can be used with this conf" />
-		<conf name="test" visibility="private"
-			description="this scope indicates that the dependency is not required for normal 
-			use of the application, and is only available for the test compilation and execution phases." />
-		<conf name="release" visibility="public" ea:type="profile"
-			description="Declares a build configuration for official builds" />
-		<conf name="testing" visibility="public" ea:type="profile"
-			description="Declares a build configuration for testing builds" />
-		<conf name="dev" visibility="public" ea:type="profile"
-			description="Declares a build configuration for dev builds" />
-	</configurations>
-	<publications>
-		<artifact type="war" />
-		<artifact e:classifier="source" />
-	</publications>
-	<dependencies>
-		<dependency org="org.testng" name="testng" rev="5.7"
-			conf="test->master">
-			<artifact name="testng" type="jar" e:classifier="jdk15" />
-		</dependency>
-	</dependencies>
+    xmlns:ea="http://www.easyant.org">
+    <info organisation="org.apache.easyant" module="webapp-java"
+        status="integration">
+        <description>
+            This project is a sample of a java webapplication making
+            use of build configurations
+        </description>
+        <ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
+            <ea:property name="test.framework" value="testng" />
+            <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"
+                conf="dev" />
+            <ea:plugin module="jetty-deploy" revision="0.1"
+                as="jetty" conf="dev" />
+            <ea:plugin module="run-java" revision="0.1"
+                as="run-java" conf="dev" />
+            <ea:plugin module="emma" revision="0.1" as="emma"
+                conf="release,testing" />
+        </ea:build>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public"
+            description="runtime dependencies and master artifact can be used with this conf" />
+        <conf name="test" visibility="private"
+            description="this scope indicates that the dependency is not required for normal 
+            use of the application, and is only available for the test compilation and execution phases." />
+        <conf name="release" visibility="public" ea:type="profile"
+            description="Declares a build configuration for official builds" />
+        <conf name="testing" visibility="public" ea:type="profile"
+            description="Declares a build configuration for testing builds" />
+        <conf name="dev" visibility="public" ea:type="profile"
+            description="Declares a build configuration for dev builds" />
+    </configurations>
+    <publications>
+        <artifact type="war" />
+        <artifact e:classifier="source" />
+    </publications>
+    <dependencies>
+        <dependency org="org.testng" name="testng" rev="5.7"
+            conf="test->master">
+            <artifact name="testng" type="jar" e:classifier="jdk15" />
+        </dependency>
+    </dependencies>
 </ivy-module>
 </code>
 

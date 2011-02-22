@@ -15,11 +15,11 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="documentation"
-	       status="milestone"
-	       revision="0.1">
-	       <description><p>This module is used to generate documentation (out of XDOC files).<br/>
+    <info organisation="org.apache.easyant.plugins"
+           module="documentation"
+           status="milestone"
+           revision="0.1">
+           <description><p>This module is used to generate documentation (out of XDOC files).<br/>
             Your project must have the following structure:<br/>
                 src--<br/>
                     |documentation ($src.documentation.dir)<br/>
@@ -28,11 +28,11 @@
                 You can provide a CSS-Stylesheet for the format of the page ($documentation.css.dir), furthermore, you can provide your <br/>
                 own XSL-Stylesheet for the conversion of the XDOC-Documents to HTML.</p>
             </description>
-	</info>
+    </info>
     <publications>
         <artifact type="ant" />
         <artifact type="xsl" name="site"/>
         <artifact type="css" name="style"/>
     </publications>
-	<dependencies/>
+    <dependencies/>
 </ivy-module>

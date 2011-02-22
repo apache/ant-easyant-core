@@ -51,33 +51,33 @@ public class RegisterMenuGeneratorTask extends AbstractMenuGeneratorTask {
 
     private String className;
     private BuiltinType type;
-	private Path classpath;
+    private Path classpath;
 
-	@Override
-	public void execute() throws BuildException {
-		if (getClassName() == null) {
-			throw new BuildException("either className or type argument is required !");
-		}
+    @Override
+    public void execute() throws BuildException {
+        if (getClassName() == null) {
+            throw new BuildException("either className or type argument is required !");
+        }
 
-		MenuGenerator menuGenerator = (MenuGenerator) ClasspathUtils.newInstance(getClassName(), getClassLoader(), MenuGenerator.class);
-		getMenuGeneratorForContext(getContext()).addMenuGenerator(menuGenerator);
-	}
+        MenuGenerator menuGenerator = (MenuGenerator) ClasspathUtils.newInstance(getClassName(), getClassLoader(), MenuGenerator.class);
+        getMenuGeneratorForContext(getContext()).addMenuGenerator(menuGenerator);
+    }
 
-	/**
-	 * Get the classname to register
-	 * @return a classname
-	 */
-	public String getClassName() {
-		return className;
-	}
+    /**
+     * Get the classname to register
+     * @return a classname
+     */
+    public String getClassName() {
+        return className;
+    }
 
-	/**
-	 * Set the classname to register
-	 * @param className a classname
-	 */
-	public void setClassName(String className) {
-		this.className = className;
-	}
+    /**
+     * Set the classname to register
+     * @param className a classname
+     */
+    public void setClassName(String className) {
+        this.className = className;
+    }
 
     public BuiltinType getType() {
         return type;
@@ -94,57 +94,57 @@ public class RegisterMenuGeneratorTask extends AbstractMenuGeneratorTask {
     }
 
     protected AntClassLoader getClassLoader() {
-		// defining a new specialized classloader and setting it as the thread
-		// context classloader
-		AntClassLoader loader = null;
-		if (classpath != null) {
-			loader = new AntClassLoader(this.getClass().getClassLoader(),
-					getProject(), classpath, false);
-		} else {
-			loader = new AntClassLoader(this.getClass().getClassLoader(),
-					false);
-		}
-		loader.setThreadContextLoader();
-		return loader;
-	}
-	
-	/**
-	 * Get the classpath used to locate the specified classname
-	 * @return a classpath
-	 */
-	public Path getClasspath() {
-		return classpath;
-	}
-	
-	
-		/**
-		 * The the classpath used to locate the specified classname
-		 * 
-		 * @param classpath
-		 */
-		public void setClasspath(Path classpath) {
-			createClasspath().append(classpath);
-		}
+        // defining a new specialized classloader and setting it as the thread
+        // context classloader
+        AntClassLoader loader = null;
+        if (classpath != null) {
+            loader = new AntClassLoader(this.getClass().getClassLoader(),
+                    getProject(), classpath, false);
+        } else {
+            loader = new AntClassLoader(this.getClass().getClassLoader(),
+                    false);
+        }
+        loader.setThreadContextLoader();
+        return loader;
+    }
+    
+    /**
+     * Get the classpath used to locate the specified classname
+     * @return a classpath
+     */
+    public Path getClasspath() {
+        return classpath;
+    }
+    
+    
+        /**
+         * The the classpath used to locate the specified classname
+         * 
+         * @param classpath
+         */
+        public void setClasspath(Path classpath) {
+            createClasspath().append(classpath);
+        }
 
-		/**
-		 * Classpath to use, by reference, when compiling the rulebase
-		 * 
-		 * @param a reference to an existing classpath
-		 */
-		public void setClasspathref(Reference r) {
-			createClasspath().setRefid(r);
-		}
+        /**
+         * Classpath to use, by reference, when compiling the rulebase
+         * 
+         * @param a reference to an existing classpath
+         */
+        public void setClasspathref(Reference r) {
+            createClasspath().setRefid(r);
+        }
 
-		/**
-		 * Adds a path to the classpath.
-		 * 
-		 * @return created classpath
-		 */
-		public Path createClasspath() {
-			if (this.classpath == null) {
-				this.classpath = new Path(getProject());
-			}
-			return this.classpath.createPath();
-		}
+        /**
+         * Adds a path to the classpath.
+         * 
+         * @return created classpath
+         */
+        public Path createClasspath() {
+            if (this.classpath == null) {
+                this.classpath = new Path(getProject());
+            }
+            return this.classpath.createPath();
+        }
 
 }

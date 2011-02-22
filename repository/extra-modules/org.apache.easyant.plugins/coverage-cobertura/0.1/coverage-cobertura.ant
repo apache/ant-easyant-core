@@ -15,80 +15,80 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#coverage-cobertura" 
-	xmlns:ac="antlib:net.sf.antcontrib"
-	xmlns:ea="antlib:org.apache.easyant">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-		
-	<ea:include mrid="org.apache.easyant.plugins#abstract-coverage;0.1" as=":abstract-coverage"/>
+    xmlns:ac="antlib:net.sf.antcontrib"
+    xmlns:ea="antlib:org.apache.easyant">
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+        
+    <ea:include mrid="org.apache.easyant.plugins#abstract-coverage;0.1" as=":abstract-coverage"/>
 
-	<target name=":init" phase="validate" depends=":abstract-coverage:init">
-		
-		<ea:parameter phase="verify"/>
+    <target name=":init" phase="validate" depends=":abstract-coverage:init">
+        
+        <ea:parameter phase="verify"/>
 
-		<ea:parameter property="coverage.report.format" description="report output format; text/html/xml" default="html"/>
-		<ea:parameter property="cobertura.datafile.path" description="serialized object file where cobertura tracks coverage statistics" 
-			default="${target.coverage.report}/cobertura.ser"/>
+        <ea:parameter property="coverage.report.format" description="report output format; text/html/xml" default="html"/>
+        <ea:parameter property="cobertura.datafile.path" description="serialized object file where cobertura tracks coverage statistics" 
+            default="${target.coverage.report}/cobertura.ser"/>
 
-		<ea:parameter property="coverage.required.linerate" description="the required minimum line coverage for each class, as a percentage" default="0"/>
-		<ea:parameter property="coverage.required.branchrate" description="the required minimum branch coverage for each class, as a percentage" default="0"/>
-		<ea:parameter property="coverage.required.packagelinerate" description="the required minimum line coverage for each package, as a percentage" default="0"/>
-		<ea:parameter property="coverage.required.packagebranchrate" description="the required minimum branch coverage for each package, as a percentage" default="0"/>
-		<ea:parameter property="coverage.required.totallinerate" description="the required minimum line coverage for the entire module, as a percentage" default="0"/>
-		<ea:parameter property="coverage.required.totalbranchrate" description="the required minimum branch coverage for the entire module, as a percentage" default="0"/>
-		
-		<available property="cobertura.available" classname="net.sourceforge.cobertura.ant.CheckTask" classpathref="org.apache.easyant.plugins#coverage-cobertura.classpath"/>
-		<fail unless="cobertura.available" message="Cobertura not found on project classpath!" />
+        <ea:parameter property="coverage.required.linerate" description="the required minimum line coverage for each class, as a percentage" default="0"/>
+        <ea:parameter property="coverage.required.branchrate" description="the required minimum branch coverage for each class, as a percentage" default="0"/>
+        <ea:parameter property="coverage.required.packagelinerate" description="the required minimum line coverage for each package, as a percentage" default="0"/>
+        <ea:parameter property="coverage.required.packagebranchrate" description="the required minimum branch coverage for each package, as a percentage" default="0"/>
+        <ea:parameter property="coverage.required.totallinerate" description="the required minimum line coverage for the entire module, as a percentage" default="0"/>
+        <ea:parameter property="coverage.required.totalbranchrate" description="the required minimum branch coverage for the entire module, as a percentage" default="0"/>
+        
+        <available property="cobertura.available" classname="net.sourceforge.cobertura.ant.CheckTask" classpathref="org.apache.easyant.plugins#coverage-cobertura.classpath"/>
+        <fail unless="cobertura.available" message="Cobertura not found on project classpath!" />
 
-		<mkdir dir="${target.coverage.report}" />
-		<property name="net.sourceforge.cobertura.datafile" location="${cobertura.datafile.path}"/>
-		<taskdef resource="tasks.properties" classpathref="org.apache.easyant.plugins#coverage-cobertura.classpath" />
-	
-		<!-- add datafile to system properties during test run, if it isn't explicitly set elsewhere -->
-		<ac:if>
-			<not><contains string="${test.run.jvmargs}" substring="net.sourceforge.cobertura.datafile"/></not>
-			<ac:then>
-				<ac:var name="test.run.jvmargs" value="-Dnet.sourceforge.cobertura.datafile='${cobertura.datafile.path}' ${test.run.jvmargs}"/>
-			</ac:then>
-		</ac:if>
+        <mkdir dir="${target.coverage.report}" />
+        <property name="net.sourceforge.cobertura.datafile" location="${cobertura.datafile.path}"/>
+        <taskdef resource="tasks.properties" classpathref="org.apache.easyant.plugins#coverage-cobertura.classpath" />
+    
+        <!-- add datafile to system properties during test run, if it isn't explicitly set elsewhere -->
+        <ac:if>
+            <not><contains string="${test.run.jvmargs}" substring="net.sourceforge.cobertura.datafile"/></not>
+            <ac:then>
+                <ac:var name="test.run.jvmargs" value="-Dnet.sourceforge.cobertura.datafile='${cobertura.datafile.path}' ${test.run.jvmargs}"/>
+            </ac:then>
+        </ac:if>
 
-	</target>
+    </target>
 
- 	<target name=":instrument" depends=":init" phase="process-classes" if="has.src.test.java">
-		<ea:path overwrite="prepend" pathid="run.test.classpath">
-			<pathelement path="${target.coverage.classes}" />
-			<path refid="org.apache.easyant.plugins#coverage-cobertura.classpath"/>
-		</ea:path>	
-				
- 		<!-- Apply instrumentation to app classes -->
- 		<cobertura-instrument todir="${target.coverage.classes}"
- 				datafile="${net.sourceforge.cobertura.datafile}">
- 		    <fileset dir="${target.main.classes}">
- 		        <include name="**/*.class" />
- 		        <exclude name="${coverage.exclude.filter}" />
- 		    </fileset>
- 		</cobertura-instrument>
-	</target>
+    <target name=":instrument" depends=":init" phase="process-classes" if="has.src.test.java">
+        <ea:path overwrite="prepend" pathid="run.test.classpath">
+            <pathelement path="${target.coverage.classes}" />
+            <path refid="org.apache.easyant.plugins#coverage-cobertura.classpath"/>
+        </ea:path>  
+                
+        <!-- Apply instrumentation to app classes -->
+        <cobertura-instrument todir="${target.coverage.classes}"
+                datafile="${net.sourceforge.cobertura.datafile}">
+            <fileset dir="${target.main.classes}">
+                <include name="**/*.class" />
+                <exclude name="${coverage.exclude.filter}" />
+            </fileset>
+        </cobertura-instrument>
+    </target>
 
-	<target name=":report" depends=":init" phase="report" if="has.src.test.java">
+    <target name=":report" depends=":init" phase="report" if="has.src.test.java">
 
-		<cobertura-report format="${coverage.report.format}" destdir="${target.coverage.report}" srcdir="${src.main.java}" 
-			datafile="${net.sourceforge.cobertura.datafile}"/>
-		
-	</target>
-	
-	<target name=":check" depends=":init" phase="verify" if="has.src.test.java"
-			description="fail the build if code coverage targets are not satisfied">
-		<cobertura-check branchrate="${coverage.required.branchrate}" 
-						 linerate="${coverage.required.linerate}" 
-						 packagebranchrate="${coverage.required.packagebranchrate}" 
-						 packagelinerate="${coverage.required.packagelinerate}"
-						 totalbranchrate="${coverage.required.totalbranchrate}" 
-						 totallinerate="${coverage.required.totallinerate}"
-						 datafile="${net.sourceforge.cobertura.datafile}"/>
-	</target>
+        <cobertura-report format="${coverage.report.format}" destdir="${target.coverage.report}" srcdir="${src.main.java}" 
+            datafile="${net.sourceforge.cobertura.datafile}"/>
+        
+    </target>
+    
+    <target name=":check" depends=":init" phase="verify" if="has.src.test.java"
+            description="fail the build if code coverage targets are not satisfied">
+        <cobertura-check branchrate="${coverage.required.branchrate}" 
+                         linerate="${coverage.required.linerate}" 
+                         packagebranchrate="${coverage.required.packagebranchrate}" 
+                         packagelinerate="${coverage.required.packagelinerate}"
+                         totalbranchrate="${coverage.required.totalbranchrate}" 
+                         totallinerate="${coverage.required.totallinerate}"
+                         datafile="${net.sourceforge.cobertura.datafile}"/>
+    </target>
 
-	<target name=":cobertura" depends="validate,test,report" description="generate cobertura covera report" />
-	<target name="doit" depends=":cobertura" />
-	
+    <target name=":cobertura" depends="validate,test,report" description="generate cobertura covera report" />
+    <target name="doit" depends=":cobertura" />
+    
 </project>

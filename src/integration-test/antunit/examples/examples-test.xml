@@ -15,9 +15,9 @@
    limitations under the License.
 -->
 <project name="examples-test"
-		 xmlns:au="antlib:org.apache.ant.antunit">
+         xmlns:au="antlib:org.apache.ant.antunit">
 
-	<dirname file="${ant.file.examples-test}" property="test.dir"/>
+    <dirname file="${ant.file.examples-test}" property="test.dir"/>
     <import file="${test.dir}/../common/test-utils.ant"/>
 
     <path id="examples.dirs">
@@ -38,19 +38,19 @@
         </sequential>
     </macrodef>
 
-	<target name="clean" depends="ac:init" description="remove stale build artifacts before / after each test">
+    <target name="clean" depends="ac:init" description="remove stale build artifacts before / after each test">
         <for param="example">
             <path refid="examples.dirs"/>
             <sequential>
                 <clean-example dir="@{example}"/>
             </sequential>
         </for>
-	</target>
+    </target>
 
     <target name="setUp" depends="clean"/>
     <target name="tearDown" depends="clean"/>
 
-	<target name="testExamples" description="verifies that default target works for each example">
+    <target name="testExamples" description="verifies that default target works for each example">
 
         <for param="example">
             <path refid="examples.dirs"/>
@@ -60,6 +60,6 @@
             </sequential>
         </for>
 
-	</target>
+    </target>
 
 </project>

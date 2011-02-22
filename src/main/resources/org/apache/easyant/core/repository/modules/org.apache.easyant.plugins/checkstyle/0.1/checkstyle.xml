@@ -47,7 +47,7 @@
 -->
 
 <module name="Checker">
-	<property name="severity" value="warning"/>
+    <property name="severity" value="warning"/>
 
     <!-- Checks that a package.html file exists for each package.     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html#PackageHtml -->

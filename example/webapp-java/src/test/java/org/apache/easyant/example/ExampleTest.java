@@ -23,16 +23,16 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ExampleTest {
-	
-	@Test
-	public void testExample() throws Exception {
-		Assert.assertEquals("Hello EasyAnt!", new Example().sayHello("EasyAnt"));
-	}
+    
+    @Test
+    public void testExample() throws Exception {
+        Assert.assertEquals("Hello EasyAnt!", new Example().sayHello("EasyAnt"));
+    }
 
-	@Test
-	public void testTestResources() throws Exception {
-		Properties props = new Properties();
-		props.load(Example.class.getResourceAsStream("/test.properties"));
-		Assert.assertEquals("Hello Test", props.getProperty("test.example"));
-	}
+    @Test
+    public void testTestResources() throws Exception {
+        Properties props = new Properties();
+        props.load(Example.class.getResourceAsStream("/test.properties"));
+        Assert.assertEquals("Hello Test", props.getProperty("test.example"));
+    }
 }

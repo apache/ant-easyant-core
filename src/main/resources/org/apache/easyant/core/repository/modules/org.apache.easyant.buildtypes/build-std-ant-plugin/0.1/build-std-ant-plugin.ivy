@@ -15,14 +15,14 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.buildtypes"
-	       module="build-std-ant-plugin"
-	       status="milestone"
-	       revision="0.1">
-	       <description>A standard build for true ant plugins, relying on standard phases, and providing compilation, execution and unit tests</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-		<artifact type="properties" />
-	</publications>
+    <info organisation="org.apache.easyant.buildtypes"
+           module="build-std-ant-plugin"
+           status="milestone"
+           revision="0.1">
+           <description>A standard build for true ant plugins, relying on standard phases, and providing compilation, execution and unit tests</description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+        <artifact type="properties" />
+    </publications>
 </ivy-module>

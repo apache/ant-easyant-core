@@ -25,163 +25,163 @@ import org.apache.ivy.core.module.id.ModuleRevisionId;
 
 public interface PluginService {
 
-	/**
-	 * Generate an easyantReport for a given moduleRevisionID
-	 * 
-	 * @param moduleRevisionId
-	 *            a given moduleRevisionID
-	 * @return an easyantReport an easyantReport
-	 * @throws Exception
-	 */
-	EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId)
-			throws Exception;
+    /**
+     * Generate an easyantReport for a given moduleRevisionID
+     * 
+     * @param moduleRevisionId
+     *            a given moduleRevisionID
+     * @return an easyantReport an easyantReport
+     * @throws Exception
+     */
+    EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId)
+            throws Exception;
 
-	/**
-	 * Generate an easyantReport for a given string representing a plugin
-	 * moduleRevisionID mrid should be with the following format :
-	 * organisation#moduleName;revision If no organisation is specified, this
-	 * method will use the default one, then you could use the shorter form like
-	 * myPlugin;0.1
-	 * 
-	 * @param moduleRevisionId
-	 *            a given moduleRevisionID
-	 * @return an easyantReport an easyantReport
-	 * @throws Exception
-	 */
-	EasyAntReport getPluginInfo(String moduleRevisionId) throws Exception;
+    /**
+     * Generate an easyantReport for a given string representing a plugin
+     * moduleRevisionID mrid should be with the following format :
+     * organisation#moduleName;revision If no organisation is specified, this
+     * method will use the default one, then you could use the shorter form like
+     * myPlugin;0.1
+     * 
+     * @param moduleRevisionId
+     *            a given moduleRevisionID
+     * @return an easyantReport an easyantReport
+     * @throws Exception
+     */
+    EasyAntReport getPluginInfo(String moduleRevisionId) throws Exception;
 
-	/**
-	 * Generate an easyantReport for a given string representing a buildtype
-	 * moduleRevisionID mrid should be with the following format :
-	 * organisation#moduleName;revision If no organisation is specified, this
-	 * method will use the default one, then you could use the shorter form like
-	 * myPlugin;0.1
-	 * 
-	 * @param moduleRevisionId
-	 *            a given moduleRevisionID
-	 * @return an easyantReport an easyantReport
-	 * @throws Exception
-	 */
-	EasyAntReport getBuildTypeInfo(String moduleRevisionId) throws Exception;
+    /**
+     * Generate an easyantReport for a given string representing a buildtype
+     * moduleRevisionID mrid should be with the following format :
+     * organisation#moduleName;revision If no organisation is specified, this
+     * method will use the default one, then you could use the shorter form like
+     * myPlugin;0.1
+     * 
+     * @param moduleRevisionId
+     *            a given moduleRevisionID
+     * @return an easyantReport an easyantReport
+     * @throws Exception
+     */
+    EasyAntReport getBuildTypeInfo(String moduleRevisionId) throws Exception;
 
-	/**
-	 * Generate an easyantReport for a given moduleRevisionID
-	 * 
-	 * @param moduleRevisionId
-	 *            a given moduleRevisionID
-	 * @param conf
-	 *            a configuration name
-	 * @return an easyantReport an easyantReport
-	 * @throws Exception
-	 */
-	EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId, String conf)
-			throws Exception;
+    /**
+     * Generate an easyantReport for a given moduleRevisionID
+     * 
+     * @param moduleRevisionId
+     *            a given moduleRevisionID
+     * @param conf
+     *            a configuration name
+     * @return an easyantReport an easyantReport
+     * @throws Exception
+     */
+    EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId, String conf)
+            throws Exception;
 
-	/**
-	 * Return an array of moduleRevisionId that match with given criteria.
-	 * Equivalent to {@link #search(String, String, String, String, String, String)
-	 *   search(organisation, moduleName, null, null, PatternMatcher.EXACT_OR_REGEXP, null)}
-	 * 
-	 * @param organisation
-	 *            the organisation name
-	 * @param moduleName
-	 *            the module name
-	 * @return an array of moduleRevisionId
-	 * @throws Exception
-	 * @see org.apache.ivy.plugins.matcher.PatternMatcher
-	 */
-	ModuleRevisionId[] search(String organisation, String moduleName)
-			throws Exception;
+    /**
+     * Return an array of moduleRevisionId that match with given criteria.
+     * Equivalent to {@link #search(String, String, String, String, String, String)
+     *   search(organisation, moduleName, null, null, PatternMatcher.EXACT_OR_REGEXP, null)}
+     * 
+     * @param organisation
+     *            the organisation name
+     * @param moduleName
+     *            the module name
+     * @return an array of moduleRevisionId
+     * @throws Exception
+     * @see org.apache.ivy.plugins.matcher.PatternMatcher
+     */
+    ModuleRevisionId[] search(String organisation, String moduleName)
+            throws Exception;
 
-	/**
-	 * Return an array of moduleRevisionId that match with given criteria.  Null values are unconstrained
-	 * (any value is matched).
-	 * 
-	 * @param organisation
-	 *            the organisation name as it appears in the module descriptor
-	 * @param moduleName
-	 *            the module name as it appears in the module descriptor
-	 * @param revision
-	 *            the revision as it appears in the module descriptor
-	 * @param branch
-	 *            the branch as it appears in the module descriptor
-	 * @param matcher
-	 *            an Ivy pattern matcher types, see {@link org.apache.ivy.plugins.matcher.PatternMatcher}
+    /**
+     * Return an array of moduleRevisionId that match with given criteria.  Null values are unconstrained
+     * (any value is matched).
+     * 
+     * @param organisation
+     *            the organisation name as it appears in the module descriptor
+     * @param moduleName
+     *            the module name as it appears in the module descriptor
+     * @param revision
+     *            the revision as it appears in the module descriptor
+     * @param branch
+     *            the branch as it appears in the module descriptor
+     * @param matcher
+     *            an Ivy pattern matcher types, see {@link org.apache.ivy.plugins.matcher.PatternMatcher}
      * @param resolver
-	 *            the name of the Ivy resolver.  null matches the default resolver; "*" searches all resolvers.
-	 * @return an array of matching moduleRevisionId
-	 * @throws Exception
-	 */
-	ModuleRevisionId[] search(String organisation, String moduleName,
-			String revision, String branch, String matcher, String resolver) throws Exception;
+     *            the name of the Ivy resolver.  null matches the default resolver; "*" searches all resolvers.
+     * @return an array of matching moduleRevisionId
+     * @throws Exception
+     */
+    ModuleRevisionId[] search(String organisation, String moduleName,
+            String revision, String branch, String matcher, String resolver) throws Exception;
 
-	/**
-	 * Generate an easyantReport for a given moduleDescriptor. Using this report
-	 * you should have all properties / plugins / targets loaded in your module
-	 * descriptor
-	 * 
-	 * @param moduleDescriptor
-	 *            a file that represent the module descriptor
-	 * @return an easyantReport for a given moduleDescriptor
-	 * @throws Exception
-	 */
-	EasyAntReport generateEasyAntReport(File moduleDescriptor) throws Exception;
+    /**
+     * Generate an easyantReport for a given moduleDescriptor. Using this report
+     * you should have all properties / plugins / targets loaded in your module
+     * descriptor
+     * 
+     * @param moduleDescriptor
+     *            a file that represent the module descriptor
+     * @return an easyantReport for a given moduleDescriptor
+     * @throws Exception
+     */
+    EasyAntReport generateEasyAntReport(File moduleDescriptor) throws Exception;
 
-	/**
-	 * Return the EasyAnt model containing all data of the module described in
-	 * given file.
-	 * 
-	 * @param moduleDescriptor
-	 *            a file that represent the module descriptor
-	 * @return an EasyAnt module descriptor
-	 * @throws Exception
-	 */
-	EasyAntModuleDescriptor getEasyAntModuleDescriptor(File moduleDescriptor)
-			throws Exception;
+    /**
+     * Return the EasyAnt model containing all data of the module described in
+     * given file.
+     * 
+     * @param moduleDescriptor
+     *            a file that represent the module descriptor
+     * @return an EasyAnt module descriptor
+     * @throws Exception
+     */
+    EasyAntModuleDescriptor getEasyAntModuleDescriptor(File moduleDescriptor)
+            throws Exception;
 
-	/**
-	 * Return an array of string representing the fully qualified named matching
-	 * with given criterias
-	 * 
-	 * @param organisation
-	 *            the organisation name
-	 * @param moduleName
-	 *            the module name
-	 * @return an array of moduleRevisionId
-	 * @throws Exception
-	 */
-	String[] searchModule(String organisation, String moduleName)
-			throws Exception;
-	
-	/**
-	 * Return the description of a module descriptor 
-	 * Useful for IDE's integration
-	 * @param mrid the module revision id to check
-	 * @return a string representing the description of the module descriptor
-	 */
-	String getDescription(ModuleRevisionId mrid);
-	
-	/**
-	 * Return the description of a module descriptor 
-	 * Useful for IDE's integration
-	 * The module revision id parameter should be with the following format 
-	 * organisation#moduleName;revision 
-	 * If no organisation is specified, this method will use the default one, 
-	 * then you could use the shorter form like myPlugin;0.1
-	 * @param moduleRevisionId a string representing a buildtype
-	 * @return a string representing the description of the module descriptor
-	 */
-	String getPluginDescription(String moduleRevisionId);
-	
-	/**
-	 * Return the description of a module descriptor 
-	 * Useful for IDE's integration
-	 * The module revision id parameter should be with the following format 
-	 * organisation#moduleName;revision 
-	 * If no organisation is specified, this method will use the default one, 
-	 * then you could use the shorter form like myBuildType;0.1
-	 * @param moduleRevisionId a string representing a buildtype 
-	 * @return a string representing the description of the module descriptor
-	 */
-	public String getBuildTypeDescription(String moduleRevisionId);
+    /**
+     * Return an array of string representing the fully qualified named matching
+     * with given criterias
+     * 
+     * @param organisation
+     *            the organisation name
+     * @param moduleName
+     *            the module name
+     * @return an array of moduleRevisionId
+     * @throws Exception
+     */
+    String[] searchModule(String organisation, String moduleName)
+            throws Exception;
+    
+    /**
+     * Return the description of a module descriptor 
+     * Useful for IDE's integration
+     * @param mrid the module revision id to check
+     * @return a string representing the description of the module descriptor
+     */
+    String getDescription(ModuleRevisionId mrid);
+    
+    /**
+     * Return the description of a module descriptor 
+     * Useful for IDE's integration
+     * The module revision id parameter should be with the following format 
+     * organisation#moduleName;revision 
+     * If no organisation is specified, this method will use the default one, 
+     * then you could use the shorter form like myPlugin;0.1
+     * @param moduleRevisionId a string representing a buildtype
+     * @return a string representing the description of the module descriptor
+     */
+    String getPluginDescription(String moduleRevisionId);
+    
+    /**
+     * Return the description of a module descriptor 
+     * Useful for IDE's integration
+     * The module revision id parameter should be with the following format 
+     * organisation#moduleName;revision 
+     * If no organisation is specified, this method will use the default one, 
+     * then you could use the shorter form like myBuildType;0.1
+     * @param moduleRevisionId a string representing a buildtype 
+     * @return a string representing the description of the module descriptor
+     */
+    public String getBuildTypeDescription(String moduleRevisionId);
 }

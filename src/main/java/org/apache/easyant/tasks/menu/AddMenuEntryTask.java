@@ -32,17 +32,17 @@ import org.apache.tools.ant.BuildException;
  */
 public class AddMenuEntryTask extends AbstractMenuGeneratorTask {
 
-	private String title;
-	private String targetLink;
+    private String title;
+    private String targetLink;
 
-	private List<MenuEntry> menuEntries = new ArrayList<MenuEntry>();
+    private List<MenuEntry> menuEntries = new ArrayList<MenuEntry>();
 
-	@Override
-	public void execute() throws BuildException {
-		if (getTitle() == null && getTargetLink() == null && menuEntries.size() == 0) {
-			throw new BuildException("You must specfify a title and a target link as argument or as a nested element using a menuentry datatype !");
-		}
-		
+    @Override
+    public void execute() throws BuildException {
+        if (getTitle() == null && getTargetLink() == null && menuEntries.size() == 0) {
+            throw new BuildException("You must specfify a title and a target link as argument or as a nested element using a menuentry datatype !");
+        }
+        
         try {
             //handle argument
             if (getTitle() != null && getTargetLink() != null) {
@@ -57,62 +57,62 @@ public class AddMenuEntryTask extends AbstractMenuGeneratorTask {
         } catch (IOException ioe) {
             throw new BuildException("Error writing menu entry: " + ioe.getMessage(), ioe);
         }
-	}
+    }
 
-	/**
-	 * Get the title of the {@link MenuEntry}
-	 * @return a title
-	 */
-	public String getTitle() {
-		return title;
-	}
+    /**
+     * Get the title of the {@link MenuEntry}
+     * @return a title
+     */
+    public String getTitle() {
+        return title;
+    }
 
-	/**
-	 * Set the title of the {@link MenuEntry}
-	 * @param title a title
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    /**
+     * Set the title of the {@link MenuEntry}
+     * @param title a title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	/**
-	 * Get the target link of the {@link MenuEntry}
-	 * @return the target url
-	 */
-	public String getTargetLink() {
-		return targetLink;
-	}
+    /**
+     * Get the target link of the {@link MenuEntry}
+     * @return the target url
+     */
+    public String getTargetLink() {
+        return targetLink;
+    }
 
-	/**
-	 * Set the target link of the {@link MenuEntry}
-	 * @param targetLink the target url
-	 */
-	public void setTargetLink(String targetLink) {
-		this.targetLink = targetLink;
-	}
+    /**
+     * Set the target link of the {@link MenuEntry}
+     * @param targetLink the target url
+     */
+    public void setTargetLink(String targetLink) {
+        this.targetLink = targetLink;
+    }
 
-	/**
-	 * Get a list of nested {@link MenuEntry}
-	 * @return a list of {@link MenuEntry}
-	 */
-	public List<MenuEntry> getMenuEntries() {
-		return menuEntries;
-	}
+    /**
+     * Get a list of nested {@link MenuEntry}
+     * @return a list of {@link MenuEntry}
+     */
+    public List<MenuEntry> getMenuEntries() {
+        return menuEntries;
+    }
 
-	/**
-	 * Set a list of nested {@link MenuEntry}
-	 * @param menuEntries a list of {@link MenuEntry}
-	 */
-	public void setMenuEntries(List<MenuEntry> menuEntries) {
-		this.menuEntries = menuEntries;
-	}
+    /**
+     * Set a list of nested {@link MenuEntry}
+     * @param menuEntries a list of {@link MenuEntry}
+     */
+    public void setMenuEntries(List<MenuEntry> menuEntries) {
+        this.menuEntries = menuEntries;
+    }
 
-	/**
-	 * Add a given {@link MenuEntry} 
-	 * @param menuEntry a given {@link MenuEntry}
-	 */
-	public void add(MenuEntry menuEntry) {
-		getMenuEntries().add(menuEntry);
-	}
+    /**
+     * Add a given {@link MenuEntry} 
+     * @param menuEntry a given {@link MenuEntry}
+     */
+    public void add(MenuEntry menuEntry) {
+        getMenuEntries().add(menuEntry);
+    }
 
 }

@@ -18,6 +18,6 @@
     <info organisation="@skeleton.organisation@" module="@skeleton.module@" revision="@skeleton.revision@"/>
     
     <publications>
-    	<artifact type="@skeleton.type@"/>
+        <artifact type="@skeleton.type@"/>
     </publications>
 </ivy-module>

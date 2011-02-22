@@ -15,15 +15,15 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="test-junit"
-	       status="milestone"
-	       revision="0.2">
-	       <description>This module provides junit tests compilation and execution feature.<br/>
+    <info organisation="org.apache.easyant.plugins"
+           module="test-junit"
+           status="milestone"
+           revision="0.2">
+           <description>This module provides junit tests compilation and execution feature.<br/>
 This module extends abstract-test module.</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
-	
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+    
 </ivy-module>

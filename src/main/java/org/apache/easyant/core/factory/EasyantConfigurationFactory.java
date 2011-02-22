@@ -24,36 +24,36 @@ import org.apache.easyant.core.parser.EasyAntConfigParser;
 
 public class EasyantConfigurationFactory {
 
-	private static EasyantConfigurationFactory instance;
-	private EasyAntConfigParser parser;
+    private static EasyantConfigurationFactory instance;
+    private EasyAntConfigParser parser;
 
-	protected EasyantConfigurationFactory() {
-		parser = new EasyAntConfigParser();
-	}
+    protected EasyantConfigurationFactory() {
+        parser = new EasyAntConfigParser();
+    }
 
-	public static EasyantConfigurationFactory getInstance() {
-		if (instance == null) {
-			instance = new EasyantConfigurationFactory();
-		}
-		return instance;
-	}
+    public static EasyantConfigurationFactory getInstance() {
+        if (instance == null) {
+            instance = new EasyantConfigurationFactory();
+        }
+        return instance;
+    }
 
-	public EasyAntConfiguration createDefaultConfiguration() {
-		return new EasyAntConfiguration();
-	}
+    public EasyAntConfiguration createDefaultConfiguration() {
+        return new EasyAntConfiguration();
+    }
 
-	public EasyAntConfiguration createConfigurationFromFile(
-			final EasyAntConfiguration easyAntConfiguration,
-			URL configUrl) throws Exception {
-		
-		return parser.parseAndMerge(configUrl,easyAntConfiguration);
-	}
-	
-	public EasyAntConfiguration createConfigurationFromFile(
-			URL configurationFile) throws Exception {
-		EasyAntConfiguration easyAntConfiguration = createDefaultConfiguration();
-		return createConfigurationFromFile(easyAntConfiguration,
-				configurationFile);
-	}
+    public EasyAntConfiguration createConfigurationFromFile(
+            final EasyAntConfiguration easyAntConfiguration,
+            URL configUrl) throws Exception {
+        
+        return parser.parseAndMerge(configUrl,easyAntConfiguration);
+    }
+    
+    public EasyAntConfiguration createConfigurationFromFile(
+            URL configurationFile) throws Exception {
+        EasyAntConfiguration easyAntConfiguration = createDefaultConfiguration();
+        return createConfigurationFromFile(easyAntConfiguration,
+                configurationFile);
+    }
 
 }

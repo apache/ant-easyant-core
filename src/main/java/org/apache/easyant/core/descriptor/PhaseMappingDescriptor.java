@@ -18,42 +18,42 @@
 package org.apache.easyant.core.descriptor;
 
 public class PhaseMappingDescriptor {
-	
-	private String target;
-	private String toPhase;
-	private String buildConfigurations;
-	public String getTarget() {
-		return target;
-	}
-	public void setTarget(String target) {
-		this.target = target;
-	}
-	
-	public String getToPhase() {
-		return toPhase;
-	}
-	
-	public void setToPhase(String toPhase) {
-		this.toPhase = toPhase;
-	}
-	
-	/**
-	 * Return a build configuration name bound to this plugin
-	 * @return a build configuration name
-	 */
-	public String getBuildConfigurations() {
-		return buildConfigurations;
-	}
-	
-	/**
-	 * set a build configuration name bound to this plugin
-	 * @param buildConfigurationName a build configuration name
-	 */
-	public void setBuildConfigurations(String buildConfigurations) {
-		this.buildConfigurations = buildConfigurations;
-	}
-	
-	
-	
+    
+    private String target;
+    private String toPhase;
+    private String buildConfigurations;
+    public String getTarget() {
+        return target;
+    }
+    public void setTarget(String target) {
+        this.target = target;
+    }
+    
+    public String getToPhase() {
+        return toPhase;
+    }
+    
+    public void setToPhase(String toPhase) {
+        this.toPhase = toPhase;
+    }
+    
+    /**
+     * Return a build configuration name bound to this plugin
+     * @return a build configuration name
+     */
+    public String getBuildConfigurations() {
+        return buildConfigurations;
+    }
+    
+    /**
+     * set a build configuration name bound to this plugin
+     * @param buildConfigurationName a build configuration name
+     */
+    public void setBuildConfigurations(String buildConfigurations) {
+        this.buildConfigurations = buildConfigurations;
+    }
+    
+    
+    
 
 }

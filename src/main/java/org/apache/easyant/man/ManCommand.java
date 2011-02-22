@@ -27,7 +27,7 @@ import org.apache.tools.ant.Project;
  * 
  * For example,
  * <br>
- * 		easyant -listTargets
+ *      easyant -listTargets
  * 
  * <p />
  * The -listTargets and similar switches (like -describe etc.) are
@@ -41,23 +41,23 @@ import org.apache.tools.ant.Project;
  * to be modified to add the new switch for the new manual functionality.
  */
 public interface ManCommand {
-	/**
-	 * Add a parameter to the ManCommand instance. The implementing
-	 * class may choose to process or ignore the parameter as need
-	 * may be.
-	 * @param param
-	 */
-	public void addParam(String param);
-	
-	/**
-	 * Provides the ManCommand instance with a context to execute the
-	 * command in.
-	 * 
-	 * The command is provided with an instance of generated EasyAntReport
-	 * with which relevant manual information may be retrieved for implementing
-	 * the switch functionality.
-	 * @param earep
-	 * @param project
-	 */
-	public void execute(EasyAntReport earep, Project project);
+    /**
+     * Add a parameter to the ManCommand instance. The implementing
+     * class may choose to process or ignore the parameter as need
+     * may be.
+     * @param param
+     */
+    public void addParam(String param);
+    
+    /**
+     * Provides the ManCommand instance with a context to execute the
+     * command in.
+     * 
+     * The command is provided with an instance of generated EasyAntReport
+     * with which relevant manual information may be retrieved for implementing
+     * the switch functionality.
+     * @param earep
+     * @param project
+     */
+    public void execute(EasyAntReport earep, Project project);
 }

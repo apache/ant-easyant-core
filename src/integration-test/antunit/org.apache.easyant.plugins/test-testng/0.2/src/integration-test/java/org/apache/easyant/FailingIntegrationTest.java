@@ -22,8 +22,8 @@ import org.testng.annotations.Test;
 
 public class FailingIntegrationTest {
 
-	@Test
-	public void testThatFails() {
-		assertEquals(new HelloWorld().hello(), "dlrow");
-	}
+    @Test
+    public void testThatFails() {
+        assertEquals(new HelloWorld().hello(), "dlrow");
+    }
 }

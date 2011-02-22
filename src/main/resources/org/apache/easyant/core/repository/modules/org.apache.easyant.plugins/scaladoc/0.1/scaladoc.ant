@@ -15,47 +15,47 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#scaladoc"
-	xmlns:ea="antlib:org.apache.easyant">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="report" />
-		
-		<ea:parameter property="src.main.scala" required="true"
-			description="directory where sources to be compiled are" />
-		<ea:parameter property="src.test.scala" required="true"
-			description="directory where test sources to be compiled are" />
-		<ea:parameter path="compile.main.classpath" required="true" 
-			description="path used to compile main sources" />
-		<ea:parameter path="compile.test.classpath" required="true" 
-			description="path used to compile test sources" />
-		
-		<ea:parameter property="target.report" default="${target}/report" 
-			description="base directory for reports"/>
-		<ea:parameter property="target.scaladoc" default="${target.report}/javadoc" 
-			description="base directory where scaladoc will be generated" />
-				
-		<ea:parameter property="target.scaladoc.main" default="${target.scaladoc}/main" 
-			description="directory where scaladoc will be generated" />
-		<ea:parameter property="target.scaladoc.test" default="${target.scaladoc}/test" 
-			description="directory where scaladoc for tests will be generated" />
-		
-		<available file="${src.main.scala}" property="has.src.main.scala" />
-		<available file="${src.test.scala}" property="has.src.test.scala" />
-	</target>	
+    xmlns:ea="antlib:org.apache.easyant">
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="report" />
+        
+        <ea:parameter property="src.main.scala" required="true"
+            description="directory where sources to be compiled are" />
+        <ea:parameter property="src.test.scala" required="true"
+            description="directory where test sources to be compiled are" />
+        <ea:parameter path="compile.main.classpath" required="true" 
+            description="path used to compile main sources" />
+        <ea:parameter path="compile.test.classpath" required="true" 
+            description="path used to compile test sources" />
+        
+        <ea:parameter property="target.report" default="${target}/report" 
+            description="base directory for reports"/>
+        <ea:parameter property="target.scaladoc" default="${target.report}/javadoc" 
+            description="base directory where scaladoc will be generated" />
+                
+        <ea:parameter property="target.scaladoc.main" default="${target.scaladoc}/main" 
+            description="directory where scaladoc will be generated" />
+        <ea:parameter property="target.scaladoc.test" default="${target.scaladoc}/test" 
+            description="directory where scaladoc for tests will be generated" />
+        
+        <available file="${src.main.scala}" property="has.src.main.scala" />
+        <available file="${src.test.scala}" property="has.src.test.scala" />
+    </target>   
 
-	<target name="-main" if="has.src.main.scala">
-		<mkdir dir="${target.scaladoc.main}"/>
-		<scaladoc destdir="${target.scaladoc.main}" srcdir="${src.main.scala}" classpathref="compile.main.classpath"/>
-	</target>
-	
-	<target name="-test" if="has.src.test.scala">
-		<mkdir name="${target.scaladoc.test}"/>
-		<scaladoc destdir="${target.scaladoc.test}" srcdir="${src.test.scala}" classpathref="compile.test.classpath"/>
-	</target>
-	
-	<target name=":scaladoc" depends="validate,-main,-test" phase="report" description="generate scaladoc report for main classes and test classes"/>
-	<target name="doit" depends=":scaladoc" />
+    <target name="-main" if="has.src.main.scala">
+        <mkdir dir="${target.scaladoc.main}"/>
+        <scaladoc destdir="${target.scaladoc.main}" srcdir="${src.main.scala}" classpathref="compile.main.classpath"/>
+    </target>
+    
+    <target name="-test" if="has.src.test.scala">
+        <mkdir name="${target.scaladoc.test}"/>
+        <scaladoc destdir="${target.scaladoc.test}" srcdir="${src.test.scala}" classpathref="compile.test.classpath"/>
+    </target>
+    
+    <target name=":scaladoc" depends="validate,-main,-test" phase="report" description="generate scaladoc report for main classes and test classes"/>
+    <target name="doit" depends=":scaladoc" />
 </project>

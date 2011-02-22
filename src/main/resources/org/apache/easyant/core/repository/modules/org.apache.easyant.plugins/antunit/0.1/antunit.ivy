@@ -15,19 +15,19 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="antunit"
-	       status="milestone"
-	       revision="0.1">
-	       <description>This module provides antunit test features.</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-		<artifact name="junit-frames" type="xsl" />
-		<artifact name="junit-noframes" type="xsl" />
-	</publications>
-	<dependencies>
-		<dependency org="org.apache.ant" name="ant-antunit" rev="1.2alpha"/>
-		<dependency org="org.apache.ant" name="ant-junit" rev="1.7.1"/>
-	</dependencies>
+    <info organisation="org.apache.easyant.plugins"
+           module="antunit"
+           status="milestone"
+           revision="0.1">
+           <description>This module provides antunit test features.</description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+        <artifact name="junit-frames" type="xsl" />
+        <artifact name="junit-noframes" type="xsl" />
+    </publications>
+    <dependencies>
+        <dependency org="org.apache.ant" name="ant-antunit" rev="1.2alpha"/>
+        <dependency org="org.apache.ant" name="ant-junit" rev="1.7.1"/>
+    </dependencies>
 </ivy-module>

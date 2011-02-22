@@ -21,16 +21,16 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Example {
-	public static void main(String[] args) throws IOException {
-		System.out.println(new Example().sayHello("EasyAnt"));
-	}
+    public static void main(String[] args) throws IOException {
+        System.out.println(new Example().sayHello("EasyAnt"));
+    }
 
-	/* 
-	 * @param who Who says hello
-	 */
-	public String sayHello(String who) throws IOException {
-		Properties props = new Properties();
-		props.load(Example.class.getResourceAsStream("/main.properties"));
-		return props.getProperty("example") + " " + who + "!";
-	}
+    /* 
+     * @param who Who says hello
+     */
+    public String sayHello(String who) throws IOException {
+        Properties props = new Properties();
+        props.load(Example.class.getResourceAsStream("/main.properties"));
+        return props.getProperty("example") + " " + who + "!";
+    }
 }

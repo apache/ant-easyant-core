@@ -53,17 +53,17 @@
     </target>
 
     <target name="dist" depends="compile">
-    	<property name="bootstrap.fork" value="false"/>
+        <property name="bootstrap.fork" value="false"/>
         <java classname="org.apache.easyant.core.EasyAntMain" failonerror="true" fork="${bootstrap.fork}">
             <classpath>
                 <path refid="default.classpath" />
                 <pathelement location="${basedir}/target/bootstrap/classes" />
-	<!--
+    <!--
            Ant will try to find the tools.jar using java.home System property, but sometimes
            this points to JDK, and sometimes to JRE.
            See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4200300
         -->
-		<path path="${java.class.path}"/>
+        <path path="${java.class.path}"/>
             </classpath>
             <sysproperty key="easyant.home" file="${basedir}" />
             <arg line="-config-file ${basedir}/easyant-conf.xml" />

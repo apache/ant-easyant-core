@@ -46,7 +46,7 @@ public interface MenuGenerator<M extends MenuGenerator<M>> {
      * @param targetLink the target for the menu entry, e.g. a URL or file path
      * @throws IOException if there are errors adding a new entry to the menu.
      */
-	public void addEntry(String title, String targetLink) throws IOException;
+    public void addEntry(String title, String targetLink) throws IOException;
 
     /**
      * Add a submenu entry to the menu.  It is <strong>not</strong> the responsibility

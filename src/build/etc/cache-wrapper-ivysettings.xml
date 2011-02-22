@@ -17,5 +17,5 @@
 <ivysettings>
     <!-- we inherit all settings from the target file, but change the default cache dir location. -->
     <include file="${wrapper.target.settings}"/>
-	<caches useOrigin="true" defaultCacheDir="${wrapper.cache.dir}"/>
+    <caches useOrigin="true" defaultCacheDir="${wrapper.cache.dir}"/>
 </ivysettings>

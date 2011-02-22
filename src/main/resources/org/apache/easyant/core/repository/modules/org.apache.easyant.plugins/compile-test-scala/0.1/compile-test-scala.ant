@@ -15,51 +15,51 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#compile-test-scala"
-	xmlns:ea="antlib:org.apache.easyant">
+    xmlns:ea="antlib:org.apache.easyant">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<ea:include mrid="org.apache.easyant.plugins#abstract-test;0.1" as=":abstract-test"/>
-	
-	<target name="-configure" phase="provision">
-		<ea:findclasspath pathid="resolved.scala.classpath" organisation="org.scala-lang" module="scala-compiler" revision="2.7.7">
-			<ea:project-dependency-strategy />
-			<ea:environment-strategy env="SCALA_HOME"/>
-			<ea:basic-configuration-strategy />
-		</ea:findclasspath>
-		<taskdef resource="scala/tools/ant/antlib.xml" classpathref="resolved.scala.classpath"/>
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <ea:include mrid="org.apache.easyant.plugins#abstract-test;0.1" as=":abstract-test"/>
+    
+    <target name="-configure" phase="provision">
+        <ea:findclasspath pathid="resolved.scala.classpath" organisation="org.scala-lang" module="scala-compiler" revision="2.7.7">
+            <ea:project-dependency-strategy />
+            <ea:environment-strategy env="SCALA_HOME"/>
+            <ea:basic-configuration-strategy />
+        </ea:findclasspath>
+        <taskdef resource="scala/tools/ant/antlib.xml" classpathref="resolved.scala.classpath"/>
         <!-- when you specify classpath parameter to <scalac /> task it overrides class path 
         defined inside <taskdef /> rather then adds to it. So just add scala jars to your own class path.
-        	source http://www.softwaresecretweapons.com/jspwiki/scalatoolsnscfatalerror-object-scala-not-found -->
+            source http://www.softwaresecretweapons.com/jspwiki/scalatoolsnscfatalerror-object-scala-not-found -->
         <ea:path pathid="compile.test.classpath" overwrite="prepend">
             <path refid="resolved.scala.classpath"/>
         </ea:path>
 
-	</target>
-	
-	<macrodef name="compile-scala-tests">
-		<attribute name="prefix"/>
-		<sequential>
-			<mkdir dir="${target.@{prefix}.classes}" />
-	        <scalac  srcdir="${src.@{prefix}.java}"
-	                destdir="${target.@{prefix}.classes}"
-	                classpathref="compile.test.classpath"
-	        		includes="${@{prefix}.compile.includes.pattern}"
-	        	    excludes="${@{prefix}.compile.excludes.pattern}"
-	        		scalacdebugging="${javac.debug.mode}">
-	        </scalac>
-		</sequential>
-	</macrodef>
-	
-	<target name=":compile" depends="validate, compile, test-process-resources" if="has.src.test.java"
-		phase="test-compile">
-			<compile-scala-tests prefix="test"/>
-	</target>
-	
-	<target name=":compile-integration" depends="validate, compile, test-process-resources" if="has.src.test.integration.java"
-		phase="test-compile">
-		<compile-scala-tests prefix="test.integration"/>
-	</target>
+    </target>
+    
+    <macrodef name="compile-scala-tests">
+        <attribute name="prefix"/>
+        <sequential>
+            <mkdir dir="${target.@{prefix}.classes}" />
+            <scalac  srcdir="${src.@{prefix}.java}"
+                    destdir="${target.@{prefix}.classes}"
+                    classpathref="compile.test.classpath"
+                    includes="${@{prefix}.compile.includes.pattern}"
+                    excludes="${@{prefix}.compile.excludes.pattern}"
+                    scalacdebugging="${javac.debug.mode}">
+            </scalac>
+        </sequential>
+    </macrodef>
+    
+    <target name=":compile" depends="validate, compile, test-process-resources" if="has.src.test.java"
+        phase="test-compile">
+            <compile-scala-tests prefix="test"/>
+    </target>
+    
+    <target name=":compile-integration" depends="validate, compile, test-process-resources" if="has.src.test.integration.java"
+        phase="test-compile">
+        <compile-scala-tests prefix="test.integration"/>
+    </target>
 
 
 </project>

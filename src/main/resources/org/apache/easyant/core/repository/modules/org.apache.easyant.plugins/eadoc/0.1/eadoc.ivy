@@ -15,21 +15,21 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="eadoc"
-	       status="milestone"
-	       revision="0.1">
-	       <description>
-	       EADoc generates <a href="http://xooki.sourceforge.net/">xooki</a> 
-	       documentation for EasyAnt modules (plugins and buildtypes).  
-	       The description for each module is culled from that module's Ivy descriptor.  
-	       Information about the module's phases and parameters is taken from the module's 
-	       Ant script.
-	       </description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-		<artifact name="eadoc-plugin" type="xsl" />
-		<artifact name="eadoc-buildtype" type="xsl" />
-	</publications>
+    <info organisation="org.apache.easyant.plugins"
+           module="eadoc"
+           status="milestone"
+           revision="0.1">
+           <description>
+           EADoc generates <a href="http://xooki.sourceforge.net/">xooki</a> 
+           documentation for EasyAnt modules (plugins and buildtypes).  
+           The description for each module is culled from that module's Ivy descriptor.  
+           Information about the module's phases and parameters is taken from the module's 
+           Ant script.
+           </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+        <artifact name="eadoc-plugin" type="xsl" />
+        <artifact name="eadoc-buildtype" type="xsl" />
+    </publications>
 </ivy-module>

@@ -15,14 +15,14 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="docbook-test" status="integration" >
-		<description>Tests the docbook plugin.</description>
-		<ea:plugin mrid="org.apache.easyant.plugins#phases-std;0.2"/>
-		<ea:plugin mrid="org.apache.easyant.plugins#docbook;0.1" as="docbook"/>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-	</configurations>
-	<dependencies/>
+    <info organisation="org.apache.easyant" module="docbook-test" status="integration" >
+        <description>Tests the docbook plugin.</description>
+        <ea:plugin mrid="org.apache.easyant.plugins#phases-std;0.2"/>
+        <ea:plugin mrid="org.apache.easyant.plugins#docbook;0.1" as="docbook"/>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+    </configurations>
+    <dependencies/>
 </ivy-module>

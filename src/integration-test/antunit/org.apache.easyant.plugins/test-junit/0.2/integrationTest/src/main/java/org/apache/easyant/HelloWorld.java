@@ -18,7 +18,7 @@
 package org.apache.easyant;
 
 public class HelloWorld {
-	public String hello() {
-		return "world";
-	}
+    public String hello() {
+        return "world";
+    }
 }

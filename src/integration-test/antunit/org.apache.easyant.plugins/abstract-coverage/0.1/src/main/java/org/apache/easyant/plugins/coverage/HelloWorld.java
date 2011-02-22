@@ -22,8 +22,8 @@ package org.apache.easyant.plugins.coverage;
  */
 public class HelloWorld {
 
-	public String hello() {
-		return "Bonjour, le monde.";
-	}
-	
+    public String hello() {
+        return "Bonjour, le monde.";
+    }
+    
 }

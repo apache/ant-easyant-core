@@ -15,97 +15,97 @@
    limitations under the License.
 -->
 <project name="meta-build-2-test" 
-		xmlns:au="antlib:org.apache.ant.antunit">
-	
-	<dirname file="${ant.file.meta-build-2-test}" property="test.dir"/>
-	<import file="${test.dir}/../../../common/test-utils.ant"/>
+        xmlns:au="antlib:org.apache.ant.antunit">
+    
+    <dirname file="${ant.file.meta-build-2-test}" property="test.dir"/>
+    <import file="${test.dir}/../../../common/test-utils.ant"/>
 
-	<target name="clean" description="remove stale build artifacts before / after each test">
-		<delete dir="${basedir}" includeemptydirs="true">
-			<include name="**/target/**"/>
-			<include name="**/lib/**"/>
-		</delete>
-		<delete dir="${test.dir}/test-cache"/>
-		<delete dir="${java.io.tmpdir}/meta-build-test"/>
-	</target>
-	
-	<target name="setUp" depends="clean"/>
-	<target name="tearDown" depends="clean"/>
+    <target name="clean" description="remove stale build artifacts before / after each test">
+        <delete dir="${basedir}" includeemptydirs="true">
+            <include name="**/target/**"/>
+            <include name="**/lib/**"/>
+        </delete>
+        <delete dir="${test.dir}/test-cache"/>
+        <delete dir="${java.io.tmpdir}/meta-build-test"/>
+    </target>
+    
+    <target name="setUp" depends="clean"/>
+    <target name="tearDown" depends="clean"/>
 
-	<target name="testPackageAll" description="test recursive package build">
-		
-		<!-- verify test preconditions -->
-		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/target"/>
-		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/meta-build-test-core/target"/>
-		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/meta-build-test-web/target"/>
+    <target name="testPackageAll" description="test recursive package build">
+        
+        <!-- verify test preconditions -->
+        <au:assertFileDoesntExist message="test environment is clean" file="${basedir}/target"/>
+        <au:assertFileDoesntExist message="test environment is clean" file="${basedir}/meta-build-test-core/target"/>
+        <au:assertFileDoesntExist message="test environment is clean" file="${basedir}/meta-build-test-web/target"/>
 
-		<!-- execute "easyant package" on the test project, which should verify all sub-modules -->	
-		<easyant target="package"/>
+        <!-- execute "easyant package" on the test project, which should verify all sub-modules --> 
+        <easyant target="package"/>
 
-		<!-- verify that both submodules were built -->
-		<au:assertFileExists message="toplevel war artifact deployed to build repository" 
-							 file="${basedir}/target/repository/org.apache.easyant/meta-build-test-web/1.0/meta-build-test-web.war"/>
-		<au:assertFileExists message="dependency deployed to build repository" 
-							 file="${basedir}/target/repository/org.apache.easyant/meta-build-test-core/1.0/meta-build-test-core.jar"/>
+        <!-- verify that both submodules were built -->
+        <au:assertFileExists message="toplevel war artifact deployed to build repository" 
+                             file="${basedir}/target/repository/org.apache.easyant/meta-build-test-web/1.0/meta-build-test-web.war"/>
+        <au:assertFileExists message="dependency deployed to build repository" 
+                             file="${basedir}/target/repository/org.apache.easyant/meta-build-test-core/1.0/meta-build-test-core.jar"/>
 
-		<!-- verify that the latest build of dependency jar was delivered into the WAR -->
-		<unjar src="${basedir}/target/repository/org.apache.easyant/meta-build-test-web/1.0/meta-build-test-web.war"
-			   dest="${java.io.tmpdir}/meta-build-test" overwrite="true">
-			<patternset includes="WEB-INF/lib/*.jar"/>
-		</unjar>
+        <!-- verify that the latest build of dependency jar was delivered into the WAR -->
+        <unjar src="${basedir}/target/repository/org.apache.easyant/meta-build-test-web/1.0/meta-build-test-web.war"
+               dest="${java.io.tmpdir}/meta-build-test" overwrite="true">
+            <patternset includes="WEB-INF/lib/*.jar"/>
+        </unjar>
 
-		<au:assertFileExists message="dependency jar built in module subdirectory" 
-							 file="${basedir}/meta-build-test-core/target/artifacts/meta-build-test-core.jar"/>
-		<au:assertFileExists message="dependency jar found in WAR" 
-							 file="${java.io.tmpdir}/meta-build-test/WEB-INF/lib/meta-build-test-core.jar"/>
+        <au:assertFileExists message="dependency jar built in module subdirectory" 
+                             file="${basedir}/meta-build-test-core/target/artifacts/meta-build-test-core.jar"/>
+        <au:assertFileExists message="dependency jar found in WAR" 
+                             file="${java.io.tmpdir}/meta-build-test/WEB-INF/lib/meta-build-test-core.jar"/>
 
-		<au:assertFilesMatch message="integration build of jar was delivered into WAR" 
-							 expected="${basedir}/meta-build-test-core/target/artifacts/meta-build-test-core.jar" 
-							 actual="${java.io.tmpdir}/meta-build-test/WEB-INF/lib/meta-build-test-core.jar"/>
-		
-		<au:assertFileDoesntExist message="temporary build artifacts are not delivered into user's cache" 
-								  file="${basedir}/test-cache/org.apache.easyant/meta-build-test-core"/>
+        <au:assertFilesMatch message="integration build of jar was delivered into WAR" 
+                             expected="${basedir}/meta-build-test-core/target/artifacts/meta-build-test-core.jar" 
+                             actual="${java.io.tmpdir}/meta-build-test/WEB-INF/lib/meta-build-test-core.jar"/>
+        
+        <au:assertFileDoesntExist message="temporary build artifacts are not delivered into user's cache" 
+                                  file="${basedir}/test-cache/org.apache.easyant/meta-build-test-core"/>
 
-	</target>
-	
-	<target name="testCleanAll" description="test recursive clean">
-		<!-- verify test preconditions -->
-		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/target"/>
-		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/meta-build-test-core/target"/>
-		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/meta-build-test-web/target"/>
-		
-		<!-- execute "easyant meta:verify-all" on the test project -->	
-		<easyant target="verify"/>
+    </target>
+    
+    <target name="testCleanAll" description="test recursive clean">
+        <!-- verify test preconditions -->
+        <au:assertFileDoesntExist message="test environment is clean" file="${basedir}/target"/>
+        <au:assertFileDoesntExist message="test environment is clean" file="${basedir}/meta-build-test-core/target"/>
+        <au:assertFileDoesntExist message="test environment is clean" file="${basedir}/meta-build-test-web/target"/>
+        
+        <!-- execute "easyant meta:verify-all" on the test project -->  
+        <easyant target="verify"/>
 
-		<!-- verify that both submodules were built -->
-		<au:assertFileExists message="build products generated" file="${basedir}/target"/>
-		<au:assertFileExists message="build products generated" file="${basedir}/meta-build-test-core/target"/>
-		<au:assertFileExists message="build products generated" file="${basedir}/meta-build-test-web/target"/>
-		
-		<easyant target="clean"/>
-		
-		<!-- verify test preconditions -->
-		<au:assertFileDoesntExist message="build repository is clean" file="${basedir}/target"/>
-		<au:assertFileDoesntExist message="java submodule is clean" file="${basedir}/meta-build-test-core/target"/>
-		<au:assertFileDoesntExist message="web submodule is clean" file="${basedir}/meta-build-test-web/target"/>
-		
-	</target>
+        <!-- verify that both submodules were built -->
+        <au:assertFileExists message="build products generated" file="${basedir}/target"/>
+        <au:assertFileExists message="build products generated" file="${basedir}/meta-build-test-core/target"/>
+        <au:assertFileExists message="build products generated" file="${basedir}/meta-build-test-web/target"/>
+        
+        <easyant target="clean"/>
+        
+        <!-- verify test preconditions -->
+        <au:assertFileDoesntExist message="build repository is clean" file="${basedir}/target"/>
+        <au:assertFileDoesntExist message="java submodule is clean" file="${basedir}/meta-build-test-core/target"/>
+        <au:assertFileDoesntExist message="web submodule is clean" file="${basedir}/meta-build-test-web/target"/>
+        
+    </target>
 
-	<target name="testStaleCache" description="verify that meta-build ignores old artifacts in the user's cache">
-		<!-- create a fake artifact in the user's cache, to make sure the build ignores it -->
-		<mkdir dir="${basedir}/test-cache/org.apache.easyant/meta-build-test-core/jars"/>
-		<touch file="${basedir}/test-cache/org.apache.easyant/meta-build-test-core/jars/meta-build-test-core-1.0.jar"/>
-		
-		<easyant target="verify"/>
-		
-		<unjar src="${basedir}/target/repository/org.apache.easyant/meta-build-test-web/1.0/meta-build-test-web.war"
-			   dest="${java.io.tmpdir}/meta-build-test" overwrite="true">
-			<patternset includes="WEB-INF/lib/*.jar"/>
-		</unjar>
-		
-		<au:assertFilesMatch message="integration build of jar, not cached jar, was delivered into WAR" 
-							 expected="${basedir}/meta-build-test-core/target/artifacts/meta-build-test-core.jar" 
-							 actual="${java.io.tmpdir}/meta-build-test/WEB-INF/lib/meta-build-test-core.jar"/>
-	</target>
-	
+    <target name="testStaleCache" description="verify that meta-build ignores old artifacts in the user's cache">
+        <!-- create a fake artifact in the user's cache, to make sure the build ignores it -->
+        <mkdir dir="${basedir}/test-cache/org.apache.easyant/meta-build-test-core/jars"/>
+        <touch file="${basedir}/test-cache/org.apache.easyant/meta-build-test-core/jars/meta-build-test-core-1.0.jar"/>
+        
+        <easyant target="verify"/>
+        
+        <unjar src="${basedir}/target/repository/org.apache.easyant/meta-build-test-web/1.0/meta-build-test-web.war"
+               dest="${java.io.tmpdir}/meta-build-test" overwrite="true">
+            <patternset includes="WEB-INF/lib/*.jar"/>
+        </unjar>
+        
+        <au:assertFilesMatch message="integration build of jar, not cached jar, was delivered into WAR" 
+                             expected="${basedir}/meta-build-test-core/target/artifacts/meta-build-test-core.jar" 
+                             actual="${java.io.tmpdir}/meta-build-test/WEB-INF/lib/meta-build-test-core.jar"/>
+    </target>
+    
 </project>

@@ -17,12 +17,12 @@
 -->
 <html>
 <head>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
-	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
-	<script type="text/javascript" src="../xooki/xooki.js"></script>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <script type="text/javascript">var xookiConfig = {level: 1};</script>   
+    <script type="text/javascript" src="../xooki/xooki.js"></script>
 </head>
 <body>
-	<textarea id="xooki-source">
+    <textarea id="xooki-source">
 <h1>How To write a plugin for easyant</h1>
 
 <p>A module in Easyant is a logical unit that provides additional pluggable functionality to your build set up. You may choose to use or ignore such a plugin when running the build. A module is composed, in the least, of a ant script associated with a ivy specs file.
@@ -63,20 +63,20 @@ We've a ready to use plugin structure.
 The skeleton has generated the plugin main script in src/main/resources/[MYPLUGIN].ant
 <code type="xml">
 <project name="org.mycompany;myplugin" 
-		xmlns:ivy="antlib:org.apache.ivy.ant" 
-     	xmlns:ea="antlib:org.apache.easyant">
-     	
-	<!-- Force compliance with easyant-core to 0.7 or higher -->
-	<!-- <ea:core-version requiredrevision="[0.7,+]" /> -->
+        xmlns:ivy="antlib:org.apache.ivy.ant" 
+        xmlns:ea="antlib:org.apache.easyant">
+        
+    <!-- Force compliance with easyant-core to 0.7 or higher -->
+    <!-- <ea:core-version requiredrevision="[0.7,+]" /> -->
 
-	<!-- Sample init target -->
-	<target name=":init" phase="validate">
-		<!-- you should remove this echo message -->
-		<echo level="debug">This is the init target of myplugin</echo>
-	</target>
-	
-	<!-- define a generic default target for this plugin -->
-	<target name="doit" depends="validate"/>
+    <!-- Sample init target -->
+    <target name=":init" phase="validate">
+        <!-- you should remove this echo message -->
+        <echo level="debug">This is the init target of myplugin</echo>
+    </target>
+    
+    <!-- define a generic default target for this plugin -->
+    <target name="doit" depends="validate"/>
 </project>
 </code>
 By convention, projectname of the plugin should be formed like 
@@ -101,8 +101,8 @@ Pre conditions can be performed by using <a href="../ref/anttasks/Parametertask.
 Example :
 <code type="xml">
 <target name=":init" phase="validate">
-	<!-- Our plugin need at least the existance of "validate" phase" -->
-	<ea:parameter phase="validate" />
+    <!-- Our plugin need at least the existance of "validate" phase" -->
+    <ea:parameter phase="validate" />
         <ea:parameter property="username" required="false" description="the username used to display en 'hello Username' by calling :hello target"/>
 </target>
 </code>
@@ -115,11 +115,11 @@ Conventionally, a public target should always have an associated 'description' a
 Example :
 <code type="xml">
 <target name=":helloworld" depends="validate" description="display an hello world">
-	<echo>hello world !</echo>
+    <echo>hello world !</echo>
 </target>
 
 <target name=":hello" depends="validate" depends="-check-username" description="display an hello to current user">
-	<echo mess="Hello ${username}"/>
+    <echo mess="Hello ${username}"/>
 </target>
 </code>
 
@@ -129,8 +129,8 @@ Example :
 <code type="xml">
 <!-- this target initialize username property if it's not already set -->
 <target name="-check-username" unless="username">
-	<echo>You can also add a "-Dusername=YOU" on the commandline to display a more personal hello message</echo>
-	<property name="username" value="${user.name}"/>
+    <echo>You can also add a "-Dusername=YOU" on the commandline to display a more personal hello message</echo>
+    <property name="username" value="${user.name}"/>
 </target>
 </code>
 
@@ -172,13 +172,13 @@ You can specify the repository name using one of the following property
 Considering that you published your plugin in a easyant repository, you could use it in your project.
 <code type="xml">
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.mycompany" module="myproject" 
-			status="integration" revision="0.1">
-		<ea:build module="build-std-java" revision="0.2">
-			<ea:plugin organisation="org.mycompany" module="myplugin" revision="0.1" as="myplugin"/>
-		</ea:build>	
-	</info>
-	<publications>
+    <info organisation="org.mycompany" module="myproject" 
+            status="integration" revision="0.1">
+        <ea:build module="build-std-java" revision="0.2">
+            <ea:plugin organisation="org.mycompany" module="myplugin" revision="0.1" as="myplugin"/>
+        </ea:build> 
+    </info>
+    <publications>
                 <artifact name="myplugin" type="ant"/>
         </publications>
 </ivy-module>
@@ -204,17 +204,17 @@ Before using it we must declare the new file in the plugin module descriptor.
 Open the module.ivy at the root level of plugin structure.
 <code type="xml">
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.mycompany" module="myplugin" 
-			status="integration" revision="0.1">
+    <info organisation="org.mycompany" module="myplugin" 
+            status="integration" revision="0.1">
                 <!-- here we use build-std-ant-plugin build type that provide everything we need for plugin development -->
-		<ea:build module="build-std-ant-plugin" revision="0.1"/>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-		<conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
-	</configurations>
-	<publications>
+        <ea:build module="build-std-ant-plugin" revision="0.1"/>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+        <conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
+    </configurations>
+    <publications>
                 <!--Defines the plugin main script -->
                 <artifact name="myplugin" type="ant"/>
                 <!--Defines a property file -->
@@ -267,24 +267,24 @@ Most of the time when we write plugins we want to use third party ant tasks.
 First we need to declare the dependency in the plugin module.ivy.
 <code type="xml">
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.mycompany" module="myplugin" 
-			status="integration" revision="0.1">
-		<ea:build module="build-std-ant-plugin" revision="0.1"/>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-		<conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
-	</configurations>
-	<publications>
+    <info organisation="org.mycompany" module="myplugin" 
+            status="integration" revision="0.1">
+        <ea:build module="build-std-ant-plugin" revision="0.1"/>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+        <conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
+    </configurations>
+    <publications>
                 <artifact name="myplugin" type="ant"/>
         </publications>
 
-	<dependencies>
-		<!-- your plugin dependencies goes here -->
-		<dependency org="foobar" name="amazingAntTask" rev="4.4" conf="default->default" />
-		<dependency org="foobar" name="myOtherAntTask" rev="4.4" conf="default->default" />
-	</dependencies>
+    <dependencies>
+        <!-- your plugin dependencies goes here -->
+        <dependency org="foobar" name="amazingAntTask" rev="4.4" conf="default->default" />
+        <dependency org="foobar" name="myOtherAntTask" rev="4.4" conf="default->default" />
+    </dependencies>
 </ivy-module>
 </code>
 Here we depend on amazingAntTask and myOtherAntTask provided by foobar organisation.
@@ -302,10 +302,10 @@ org.mycompany#myplugin.classpath
 Since this classpath is auto-created you can use it to reference your taskdef.
 <code type="xml">
 <target name=":init" phase="validate">
-	<ea:parameter phase="validate"/>
-	...
-	<taskdef resource="amazingAntTask.properties" classpathref="org.mycompany#myplugin.classpath" />
-	<taskdef resource="anotherAntTask.properties" classpathref="org.mycompany#myplugin.classpath" />
+    <ea:parameter phase="validate"/>
+    ...
+    <taskdef resource="amazingAntTask.properties" classpathref="org.mycompany#myplugin.classpath" />
+    <taskdef resource="anotherAntTask.properties" classpathref="org.mycompany#myplugin.classpath" />
 </target>
 </code>
 
@@ -322,22 +322,22 @@ A task may depend on:
 </ul>
 <code type="xml">
 <project name="org.mycompany;myplugin" 
-		xmlns:ivy="antlib:org.apache.ivy.ant" 
-     	xmlns:ea="antlib:org.apache.easyant">
-     	
-	<!-- Force compliance with easyant-core to 0.7 or higher -->
+        xmlns:ivy="antlib:org.apache.ivy.ant" 
+        xmlns:ea="antlib:org.apache.easyant">
+        
+    <!-- Force compliance with easyant-core to 0.7 or higher -->
         <ea:core-version requiredrevision="[0.7,+]" />
 
-	<!-- Sample init target -->
-	<target name=":init" phase="validate">
-		<!-- you should  remove this echo message -->
-		<echo level="debug">This is the init target of myplugin</echo>
-	</target>
+    <!-- Sample init target -->
+    <target name=":init" phase="validate">
+        <!-- you should  remove this echo message -->
+        <echo level="debug">This is the init target of myplugin</echo>
+    </target>
 
-	...
+    ...
 
-	<!-- define a generic default target for this plugin -->
-	<target name="doit" depends="validate"/>
+    <!-- define a generic default target for this plugin -->
+    <target name="doit" depends="validate"/>
 </project>
 </code>
 
@@ -347,30 +347,30 @@ By default the skeleton has generated a antunit test file in src/test/antunit/[m
 So in our case let's open "src/test/antunit/myplugin-test.xml"
 <code type="xml">
 <project name="org.mycompany;myplugin-test" xmlns:au="antlib:org.apache.ant.antunit">
-	
-	<!-- Mocking required phase --> 
-	<phase name="validate"/>
-		
-	<!-- Import your plugin -->	
-	<import file="../../main/resources/myplugin.ant"/>
-	
-	<!-- Defines a setUp / tearDown (before each test) that cleans the environment --> 
-	<target name="clean" description="remove stale build artifacts before / after each test">
-		<delete dir="${basedir}" includeemptydirs="true">
-			<include name="**/target/**"/>
-			<include name="**/lib/**"/>
-		</delete>
-	</target>
-	
-	<target name="setUp" depends="clean"/>
-	<target name="tearDown" depends="clean"/>
-	
-	<!-- init test case --> 		
-	<target name="testInit">
-		<antcall target=":init"/>
-		<au:assertLogContains level="debug" text="This is the init target of myplugin"/>
-	</target>
-	
+    
+    <!-- Mocking required phase --> 
+    <phase name="validate"/>
+        
+    <!-- Import your plugin --> 
+    <import file="../../main/resources/myplugin.ant"/>
+    
+    <!-- Defines a setUp / tearDown (before each test) that cleans the environment --> 
+    <target name="clean" description="remove stale build artifacts before / after each test">
+        <delete dir="${basedir}" includeemptydirs="true">
+            <include name="**/target/**"/>
+            <include name="**/lib/**"/>
+        </delete>
+    </target>
+    
+    <target name="setUp" depends="clean"/>
+    <target name="tearDown" depends="clean"/>
+    
+    <!-- init test case -->         
+    <target name="testInit">
+        <antcall target=":init"/>
+        <au:assertLogContains level="debug" text="This is the init target of myplugin"/>
+    </target>
+    
 </project>   
 </code>
 Considering that our plugin relies on an externally defined phase (validate in our example) we must mock it in our test.
@@ -386,8 +386,8 @@ All targets prefixed by "test" will be executed as a test case (similar to junit
 Now we will write a test case for our ":helloworld" target.
 <code type="xml">
 <target name="testHelloWorld">
-	<antcall target=":helloworld"/>
-	<au:assertLogContains text="hello world !"/>
+    <antcall target=":helloworld"/>
+    <au:assertLogContains text="hello world !"/>
 </target>
 </code>
 

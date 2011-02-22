@@ -15,23 +15,23 @@
    limitations under the License.
 -->
 <ivysettings>
-	<settings defaultResolver="easyant-default-chain"/>
-	<caches defaultCacheDir="${user.home}/.easyant/easyant-cache" useOrigin="true" />
-	<typedef name="jar" classname="org.apache.easyant.core.ivy.resolvers.JarResolver"/>
-	<resolvers>
-		<jar name="easyant-core-modules">
-			<ivy pattern="${easyant.core.repo.url}/[organisation]/[module]/[revision]/[module].ivy"/>
-			<artifact pattern="${easyant.core.repo.url}/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
-		</jar>
-		<filesystem name="easyant-shared-modules">
-			<ivy pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[module].ivy"/>
-			<artifact pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
-		</filesystem>
-		<ibiblio name="public-maven" m2compatible="true"/> 
-		<chain name="easyant-default-chain" returnFirst="true">
-			<resolver ref="easyant-core-modules" />
+    <settings defaultResolver="easyant-default-chain"/>
+    <caches defaultCacheDir="${user.home}/.easyant/easyant-cache" useOrigin="true" />
+    <typedef name="jar" classname="org.apache.easyant.core.ivy.resolvers.JarResolver"/>
+    <resolvers>
+        <jar name="easyant-core-modules">
+            <ivy pattern="${easyant.core.repo.url}/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="${easyant.core.repo.url}/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+        </jar>
+        <filesystem name="easyant-shared-modules">
+            <ivy pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+        </filesystem>
+        <ibiblio name="public-maven" m2compatible="true"/> 
+        <chain name="easyant-default-chain" returnFirst="true">
+            <resolver ref="easyant-core-modules" />
             <resolver ref="easyant-shared-modules"/>
-			<resolver ref="public-maven"/>
-		</chain>
-	</resolvers>
+            <resolver ref="public-maven"/>
+        </chain>
+    </resolvers>
 </ivysettings>

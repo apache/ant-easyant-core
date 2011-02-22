@@ -31,53 +31,48 @@ import org.apache.tools.ant.Project;
  * available in the specified build module.
  */
 public class ListProps implements ManCommand {
-	private String plugin = null;
-	
-	/*
-	 * defining some convenient string constants
-	 */
-	private static final String TAB = "\t";
+    private String plugin = null;
+    
+    public void addParam(String param) {
+        this.plugin = param;
+    }
 
-	public void addParam(String param) {
-		this.plugin = param;
-	}
+    public void execute(EasyAntReport earep, Project project) {
+        String lineSep = System.getProperty("line.separator");
 
-	public void execute(EasyAntReport earep, Project project) {
-		String lineSep = System.getProperty("line.separator");
+        /*
+         * the plugin specified to this class through the addParam method
+         * needs to be searched for all properties, and those
+         * properties will be displayed by this class.
+         */
+        
+        if(plugin == null || plugin.trim().length() == 0) {
+            throw new IllegalArgumentException("No plugin found to list properties for.");
+        }
 
-		/*
-		 * the plugin specified to this class through the addParam method
-		 * needs to be searched for all properties, and those
-		 * properties will be displayed by this class.
-		 */
-		
-		if(plugin == null || plugin.trim().length() == 0) {
-			throw new IllegalArgumentException("No plugin found to list properties for.");
-		}
+        project.log(lineSep + "--- Available Properties for current project: " + project.getName() + 
+                ":: Plugin: " + plugin + " ---" + lineSep);
 
-		project.log(lineSep + "--- Available Properties for current project: " + project.getName() + 
-				":: Plugin: " + plugin + " ---" + lineSep);
-
-		ImportedModuleReport moduleRep = earep.getImportedModuleReport(plugin);
-		if(moduleRep == null) {
-			project.log(TAB + "No Module / Plugin found by given name: " + plugin);
-		} else {
-			Map<String, PropertyDescriptor> allprops = moduleRep.getEasyantReport().getPropertyDescriptors();
-			
-			if(allprops.size() > 0) {
-				for(Iterator<Entry<String, PropertyDescriptor>> it = allprops.entrySet().iterator(); it.hasNext(); ) {
-					Entry<String, PropertyDescriptor> entry = it.next();
-					PropertyDescriptor prop = entry.getValue();
-					project.log(TAB + "Property: " + prop.getName());
-				}
-		
-				project.log(lineSep + lineSep + "For more information on a Property, run:" + lineSep 
-						+ "\t easyant -describe <PROPERTY>");
-			} else {
-				project.log(lineSep + "No property found in the plugin: " + plugin);
-			}
-		}
-		project.log(lineSep + "--- End Of (Properties Listing) ---");
-	}
+        ImportedModuleReport moduleRep = earep.getImportedModuleReport(plugin);
+        if(moduleRep == null) {
+            project.log("\tNo Module / Plugin found by given name: " + plugin);
+        } else {
+            Map<String, PropertyDescriptor> allprops = moduleRep.getEasyantReport().getPropertyDescriptors();
+            
+            if(allprops.size() > 0) {
+                for(Iterator<Entry<String, PropertyDescriptor>> it = allprops.entrySet().iterator(); it.hasNext(); ) {
+                    Entry<String, PropertyDescriptor> entry = it.next();
+                    PropertyDescriptor prop = entry.getValue();
+                    project.log("\tProperty: " + prop.getName());
+                }
+        
+                project.log(lineSep + lineSep + "For more information on a Property, run:" + lineSep 
+                        + "\t easyant -describe <PROPERTY>");
+            } else {
+                project.log(lineSep + "No property found in the plugin: " + plugin);
+            }
+        }
+        project.log(lineSep + "--- End Of (Properties Listing) ---");
+    }
 
 }

@@ -30,117 +30,117 @@ import org.apache.tools.ant.types.Path.PathElement;
  * This task defines or contributes to an existing path. 
  * This task is similar to path task provided by ant but add 
  * an override attribute with these values:
- * 		true: new definition will take precedence over preceding one if any 
- * 		false: new definition will be discarded if any definition already exists 
- * 		append: new definition will be added to the existing one if any 
- * 		prepend: new definition will be added at the beginning of the existing one if any
+ *      true: new definition will take precedence over preceding one if any 
+ *      false: new definition will be discarded if any definition already exists 
+ *      append: new definition will be added to the existing one if any 
+ *      prepend: new definition will be added at the beginning of the existing one if any
  */
 public class PathTask extends Task {
-	public static final String OVERWRITE_TRUE = "true";
-	public static final String OVERWRITE_FALSE = "false";
-	public static final String OVERWRITE_PREPEND = "prepend";
-	public static final String OVERWRITE_APPEND = "append";
+    public static final String OVERWRITE_TRUE = "true";
+    public static final String OVERWRITE_FALSE = "false";
+    public static final String OVERWRITE_PREPEND = "prepend";
+    public static final String OVERWRITE_APPEND = "append";
 
-	private String pathid;
+    private String pathid;
 
-	private String overwrite;
+    private String overwrite;
 
-	private Path path;
+    private Path path;
 
-	public void setProject(Project project) {
-		super.setProject(project);
-		path = new Path(project);
-	}
+    public void setProject(Project project) {
+        super.setProject(project);
+        path = new Path(project);
+    }
 
-	public void execute() throws BuildException {
-		if (pathid == null) {
-			throw new BuildException("pathid is mandatory");
-		}
-		Object element = getProject().getReference(pathid);
-		if (element == null) {
-			if (OVERWRITE_PREPEND.equals(overwrite)
-					|| OVERWRITE_APPEND.equals(overwrite)) {
-				throw new BuildException("destination path not found: "
-						+ pathid);
-			}
-			getProject().addReference(pathid, path);
-		} else {
-			if (OVERWRITE_FALSE.equals(overwrite)) {
-				return;
-			}
-			if (!(element instanceof Path)) {
-				throw new BuildException("destination path is not a path: "
-						+ element.getClass());
-			}
-			if (OVERWRITE_TRUE.equals(overwrite)) {
-				getProject().addReference(pathid, path);
-			} else {
-				Path dest = (Path) element;
-				if (OVERWRITE_PREPEND.equals(overwrite)) {
-					// no way to add path elements at te beginning of the
-					// existing path: we do the opposite
-					// and replace the reference
-					path.append(dest);
-					getProject().addReference(pathid, path);
-				} else { // OVERWRITE_APPEND
-					dest.append(path);
-				}
-			}
-		}
-	}
+    public void execute() throws BuildException {
+        if (pathid == null) {
+            throw new BuildException("pathid is mandatory");
+        }
+        Object element = getProject().getReference(pathid);
+        if (element == null) {
+            if (OVERWRITE_PREPEND.equals(overwrite)
+                    || OVERWRITE_APPEND.equals(overwrite)) {
+                throw new BuildException("destination path not found: "
+                        + pathid);
+            }
+            getProject().addReference(pathid, path);
+        } else {
+            if (OVERWRITE_FALSE.equals(overwrite)) {
+                return;
+            }
+            if (!(element instanceof Path)) {
+                throw new BuildException("destination path is not a path: "
+                        + element.getClass());
+            }
+            if (OVERWRITE_TRUE.equals(overwrite)) {
+                getProject().addReference(pathid, path);
+            } else {
+                Path dest = (Path) element;
+                if (OVERWRITE_PREPEND.equals(overwrite)) {
+                    // no way to add path elements at te beginning of the
+                    // existing path: we do the opposite
+                    // and replace the reference
+                    path.append(dest);
+                    getProject().addReference(pathid, path);
+                } else { // OVERWRITE_APPEND
+                    dest.append(path);
+                }
+            }
+        }
+    }
 
-	public void add(Path path) throws BuildException {
-		this.path.add(path);
-	}
+    public void add(Path path) throws BuildException {
+        this.path.add(path);
+    }
 
-	public void addDirset(DirSet dset) throws BuildException {
-		path.addDirset(dset);
-	}
+    public void addDirset(DirSet dset) throws BuildException {
+        path.addDirset(dset);
+    }
 
-	public void addFilelist(FileList fl) throws BuildException {
-		path.addFilelist(fl);
-	}
+    public void addFilelist(FileList fl) throws BuildException {
+        path.addFilelist(fl);
+    }
 
-	public void addFileset(FileSet fs) throws BuildException {
-		path.addFileset(fs);
-	}
+    public void addFileset(FileSet fs) throws BuildException {
+        path.addFileset(fs);
+    }
 
-	public Path createPath() throws BuildException {
-		return path.createPath();
-	}
+    public Path createPath() throws BuildException {
+        return path.createPath();
+    }
 
-	public PathElement createPathElement() throws BuildException {
-		return path.createPathElement();
-	}
+    public PathElement createPathElement() throws BuildException {
+        return path.createPathElement();
+    }
 
-	/**
-	 * Get a path id 
-	 * @return a pathId
-	 */
-	public String getPathid() {
-		return pathid;
-	}
+    /**
+     * Get a path id 
+     * @return a pathId
+     */
+    public String getPathid() {
+        return pathid;
+    }
 
-	/**
-	 * @param pathid a pathId 
-	 */
-	public void setPathid(String pathid) {
-		this.pathid = pathid;
-	}
+    /**
+     * @param pathid a pathId 
+     */
+    public void setPathid(String pathid) {
+        this.pathid = pathid;
+    }
 
-	/**
-	 * return a string which define if a path is overwritable (Possible values are true/false/append/prepend)
-	 * @return Possible values are true/false/append/prepend
-	 */
-	public String getOverwrite() {
-		return overwrite;
-	}
+    /**
+     * return a string which define if a path is overwritable (Possible values are true/false/append/prepend)
+     * @return Possible values are true/false/append/prepend
+     */
+    public String getOverwrite() {
+        return overwrite;
+    }
 
-	/**
-	 * specify if easyant should overwrite the path (Possible values are true/false/append/prepend)
-	 * @param overwrite Possible values are true/false/append/prepend
-	 */
-	public void setOverwrite(String overwrite) {
-		this.overwrite = overwrite;
-	}
+    /**
+     * specify if easyant should overwrite the path (Possible values are true/false/append/prepend)
+     * @param overwrite Possible values are true/false/append/prepend
+     */
+    public void setOverwrite(String overwrite) {
+        this.overwrite = overwrite;
+    }
 }

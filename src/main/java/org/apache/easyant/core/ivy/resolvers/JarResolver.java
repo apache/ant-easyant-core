@@ -25,11 +25,11 @@ import org.apache.ivy.plugins.resolver.URLResolver;
  * way to list files/directories inside a jar.
  */
 public class JarResolver extends URLResolver {
-	public JarResolver() {
-		setRepository(new JarRepository());
-	}
+    public JarResolver() {
+        setRepository(new JarRepository());
+    }
 
-	public String getTypeName() {
-		return "jar";
-	}
+    public String getTypeName() {
+        return "jar";
+    }
 }

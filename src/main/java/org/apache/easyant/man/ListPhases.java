@@ -30,24 +30,22 @@ import org.apache.tools.ant.Project;
  * Supports the -listPhases switch.
  */
 public class ListPhases implements ManCommand {
-	// convenient string constant for formatting
-	private static String TAB = "\t";
-	
-	public void addParam(String param) {
-		// this command does not make use of params
-	}
+    
+    public void addParam(String param) {
+        // this command does not make use of params
+    }
 
-	public void execute(EasyAntReport earep, Project project) {
-		String lineSep = System.getProperty("line.separator");
-		project.log(lineSep + "--- Available Phases for current project: " + project.getName() + " ---" + lineSep);
-		
-		List<PhaseReport> phases = earep.getAvailablePhases();
-		for(int i = 0; i<phases.size(); i++) {
-			project.log(TAB + phases.get(i).getName());
-		}
-		
-		project.log(lineSep + lineSep + "For more information on a Phase, run:" + lineSep + "\t easyant -describe <PHASE>");
-		project.log(lineSep + "--- End Of (Phases Listing) ---");
-	}
+    public void execute(EasyAntReport earep, Project project) {
+        String lineSep = System.getProperty("line.separator");
+        project.log(lineSep + "--- Available Phases for current project: " + project.getName() + " ---" + lineSep);
+        
+        List<PhaseReport> phases = earep.getAvailablePhases();
+        for(int i = 0; i<phases.size(); i++) {
+            project.log("\t" + phases.get(i).getName());
+        }
+        
+        project.log(lineSep + lineSep + "For more information on a Phase, run:" + lineSep + "\t easyant -describe <PHASE>");
+        project.log(lineSep + "--- End Of (Phases Listing) ---");
+    }
 
 }

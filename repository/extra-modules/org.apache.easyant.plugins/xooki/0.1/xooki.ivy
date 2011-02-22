@@ -15,19 +15,19 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" > 
-	<info organisation="org.apache.easyant.plugins"
-	       module="xooki"
-	       status="milestone"
-	       revision="0.1">
-		<description>
-			This module provides functionalities for setting up a xooki-based documentation structure in your project.
-		</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
-	<dependencies>
-		<dependency org="xooki" name="xooki" rev="0.1"/>
-		<dependency org="org.apache.easyant.tasks" name="xooki-menu-generator" rev="0.1" conf="default"/>
-	</dependencies>
+    <info organisation="org.apache.easyant.plugins"
+           module="xooki"
+           status="milestone"
+           revision="0.1">
+        <description>
+            This module provides functionalities for setting up a xooki-based documentation structure in your project.
+        </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+    <dependencies>
+        <dependency org="xooki" name="xooki" rev="0.1"/>
+        <dependency org="org.apache.easyant.tasks" name="xooki-menu-generator" rev="0.1" conf="default"/>
+    </dependencies>
 </ivy-module>

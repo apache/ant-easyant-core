@@ -16,27 +16,27 @@
 -->
 <ivysettings>
     <include file="${ivy.settings.dir}/repository/third-party-lib/third-party-ivysettings.xml"/>
-	<include url="${easyant.extra.ivysettings.url}"/>
-	<settings defaultResolver="main"/>
-	<resolvers>
-		<!--define your own easyant modules repository here 
-		<filesystem name="custom-easyant-modules">
-			<ivy pattern="${ivy.settings.dir}/repository/shared/[organisation]/[module]/[revision]/[module].ivy"/>
-			<artifact pattern="${ivy.settings.dir}/repository/shared/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
-		</filesystem>
-		-->
-		<chain name="main" returnFirst="true">
-		    <!-- core modules provided by easyant full distribution -->
-			<resolver ref="easyant-core-modules"/>
-			<resolver ref="easyant-shared-modules"/>
-			<!-- extra modules provided by easyant full distribution -->
-			<resolver ref="easyant-extra-modules" />
-			<resolver ref="third-party-lib" />
-			<resolver ref="public-maven" />
-		</chain>
-	</resolvers>
+    <include url="${easyant.extra.ivysettings.url}"/>
+    <settings defaultResolver="main"/>
+    <resolvers>
+        <!--define your own easyant modules repository here 
+        <filesystem name="custom-easyant-modules">
+            <ivy pattern="${ivy.settings.dir}/repository/shared/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="${ivy.settings.dir}/repository/shared/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+        </filesystem>
+        -->
+        <chain name="main" returnFirst="true">
+            <!-- core modules provided by easyant full distribution -->
+            <resolver ref="easyant-core-modules"/>
+            <resolver ref="easyant-shared-modules"/>
+            <!-- extra modules provided by easyant full distribution -->
+            <resolver ref="easyant-extra-modules" />
+            <resolver ref="third-party-lib" />
+            <resolver ref="public-maven" />
+        </chain>
+    </resolvers>
  
-	<modules>
+    <modules>
         <module organisation="*" name="*" resolver="main" />
      </modules>
 </ivysettings>

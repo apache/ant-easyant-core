@@ -22,8 +22,8 @@ import org.testng.annotations.Test;
 
 public class PassingIntegrationTest {
 
-	@Test
-	public void testThatPasses() {
-		assertEquals(new HelloWorld().hello(), "world");
-	}
+    @Test
+    public void testThatPasses() {
+        assertEquals(new HelloWorld().hello(), "world");
+    }
 }

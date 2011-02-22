@@ -15,86 +15,86 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#resources-std"
-	xmlns:ea="antlib:org.apache.easyant">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="process-resources" />
-		<ea:parameter phase="test-process-resources" />
-		
-		<ea:parameter property="src.main.resources" default="${basedir}/src/main/resources"
-				description="directory where main resources files are stored" />
+    xmlns:ea="antlib:org.apache.easyant">
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="process-resources" />
+        <ea:parameter phase="test-process-resources" />
+        
+        <ea:parameter property="src.main.resources" default="${basedir}/src/main/resources"
+                description="directory where main resources files are stored" />
         <ea:parameter property="src.test.resources" default="${basedir}/src/test/resources"
             description="directory with unit test resource files (configuration files, data files, etc)" />
         <ea:parameter property="src.test.integration.resources" default="${basedir}/src/integration-test/resources"
                 description="directory for integration test resources (configuration files, data files, etc)"/>
 
-		<ea:parameter property="target.main.classes" required="true" 
-				description="destination directory where main resources should be put" />
-		<ea:parameter property="target.test.classes" required="true" 
-				description="destination directory where test resources should be put" />
-	
-		<ea:parameter property="target.test.integration.classes" default="${basedir}/target/integration-test/classes"
-				description="destination directory where integration test resources should be put" />
-		
-		
-		<ea:parameter property="resources.std.includes.pattern" default="**/*" 
-				description="Pattern describing files included in compilation process" />
-		<ea:parameter property="resources.std.excludes.pattern" default="" 
-				description="Pattern describing files excluded in compilation process" />
-		<ea:parameter property="resources.std.include.emptydir" default="true"
-				description="Specify if empty directory should be copied as resources"/>
-		
-		<ea:parameter property="resources.std.test.includes.pattern" default="**/*" 
-				description="Pattern describing files included in test compilation process" />
-		<ea:parameter property="resources.std.test.excludes.pattern" default="" 
-				description="Pattern describing files excluded in test compilation process" />
-	
-		<ea:parameter property="resources.std.test.integration.includes.pattern" default="**/*" 
-				description="Pattern describing files included in integration test compilation process" />
-		<ea:parameter property="resources.std.test.integration.excludes.pattern" default="" 
-				description="Pattern describing files excluded in integration test compilation process" />
-		
-		<filterset id="src.main.resources.filter"/>
-		<filterset id="src.test.resources.filter"/>
-		<filterset id="src.test.integration.resources.filter"/>
-	</target>
+        <ea:parameter property="target.main.classes" required="true" 
+                description="destination directory where main resources should be put" />
+        <ea:parameter property="target.test.classes" required="true" 
+                description="destination directory where test resources should be put" />
+    
+        <ea:parameter property="target.test.integration.classes" default="${basedir}/target/integration-test/classes"
+                description="destination directory where integration test resources should be put" />
+        
+        
+        <ea:parameter property="resources.std.includes.pattern" default="**/*" 
+                description="Pattern describing files included in compilation process" />
+        <ea:parameter property="resources.std.excludes.pattern" default="" 
+                description="Pattern describing files excluded in compilation process" />
+        <ea:parameter property="resources.std.include.emptydir" default="true"
+                description="Specify if empty directory should be copied as resources"/>
+        
+        <ea:parameter property="resources.std.test.includes.pattern" default="**/*" 
+                description="Pattern describing files included in test compilation process" />
+        <ea:parameter property="resources.std.test.excludes.pattern" default="" 
+                description="Pattern describing files excluded in test compilation process" />
+    
+        <ea:parameter property="resources.std.test.integration.includes.pattern" default="**/*" 
+                description="Pattern describing files included in integration test compilation process" />
+        <ea:parameter property="resources.std.test.integration.excludes.pattern" default="" 
+                description="Pattern describing files excluded in integration test compilation process" />
+        
+        <filterset id="src.main.resources.filter"/>
+        <filterset id="src.test.resources.filter"/>
+        <filterset id="src.test.integration.resources.filter"/>
+    </target>
 
     <target name="-check-resources">
         <available file="${src.main.resources}" property="has.src.main.resources" />
         <available file="${src.test.resources}" property="has.src.test.resources" />
         <available file="${src.test.integration.resources}" property="has.src.test.integration.resources" />
     </target>
-	
-	<target name=":copy-resources" depends="validate,-check-resources" if="has.src.main.resources"
-		phase="process-resources">
-		<mkdir dir="${target.main.classes}" />
+    
+    <target name=":copy-resources" depends="validate,-check-resources" if="has.src.main.resources"
+        phase="process-resources">
+        <mkdir dir="${target.main.classes}" />
         <copy todir="${target.main.classes}" includeEmptyDirs="${resources.std.include.emptydir}">
             <fileset dir="${src.main.resources}" includes="${resources.std.includes.pattern}" excludes="${resources.std.excludes.pattern}"/>
-        	<filterset refid="src.main.resources.filter"/>
+            <filterset refid="src.main.resources.filter"/>
         </copy>
-	</target>	
-	
-	<target name=":copy-test-resources" depends="validate,-check-resources" if="has.src.test.resources"
-		phase="test-process-resources">
-		<mkdir dir="${target.test.classes}" />
+    </target>   
+    
+    <target name=":copy-test-resources" depends="validate,-check-resources" if="has.src.test.resources"
+        phase="test-process-resources">
+        <mkdir dir="${target.test.classes}" />
         <copy todir="${target.test.classes}" includeEmptyDirs="${resources.std.include.emptydir}">
             <fileset dir="${src.test.resources}" includes="${resources.std.test.includes.pattern}" excludes="${resources.std.test.excludes.pattern}"/>
-        	<filterset refid="src.test.resources.filter"/>
+            <filterset refid="src.test.resources.filter"/>
         </copy>
-	</target>
-	
-	<target name=":copy-test-integration-resources" depends="validate,-check-resources" if="has.src.test.integration.resources"
-		phase="test-process-resources">
-		<mkdir dir="${target.test.integration.classes}" />
+    </target>
+    
+    <target name=":copy-test-integration-resources" depends="validate,-check-resources" if="has.src.test.integration.resources"
+        phase="test-process-resources">
+        <mkdir dir="${target.test.integration.classes}" />
         <copy todir="${target.test.integration.classes}" includeEmptyDirs="${resources.std.include.emptydir}">
             <fileset dir="${src.test.integration.resources}" includes="${resources.std.test.integration.includes.pattern}" excludes="${resources.std.test.integration.excludes.pattern}"/>
-        	<filterset refid="src.test.integration.resources.filter"/>
+            <filterset refid="src.test.integration.resources.filter"/>
         </copy>
-	</target>	
+    </target>   
 
-	
-	<target name="doit" depends=":copy-resources, :copy-test-resources, :copy-test-integration-resources" />
+    
+    <target name="doit" depends=":copy-resources, :copy-test-resources, :copy-test-integration-resources" />
 </project>

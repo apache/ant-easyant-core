@@ -17,12 +17,12 @@
 -->
 <html>
 <head>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
-	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
-	<script type="text/javascript" src="../xooki/xooki.js"></script>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <script type="text/javascript">var xookiConfig = {level: 1};</script>   
+    <script type="text/javascript" src="../xooki/xooki.js"></script>
 </head>
 <body>
-	<textarea id="xooki-source">
+    <textarea id="xooki-source">
 <h1>ProjectMan commands</h1>
 EasyAnt 0.7 cames with a few new switches usable from the command line that allow you to obtain several informations on a given project.
 
@@ -45,18 +45,18 @@ Should print :
 --- Available Targets for current project: standard-java-app ---
 
 No Phase / Plugin specified. Listing all targets available in the project.
-	Target: doit		Phase: NONE
-		Description: NONE
-		Depends: verify
-		IF: NONE
-		UNLESS: NONE
+    Target: doit        Phase: NONE
+        Description: NONE
+        Depends: verify
+        IF: NONE
+        UNLESS: NONE
 ...
-	Target: run:doit
-		Phase: NONE
-		Description: NONE
-		Depends: :init, :run
-		IF: NONE
-		UNLESS: NONE
+    Target: run:doit
+        Phase: NONE
+        Description: NONE
+        Depends: :init, :run
+        IF: NONE
+        UNLESS: NONE
 
 --- End Of (Phases Listing) ---
 
@@ -74,36 +74,36 @@ Project Manual
 
 --- Available Targets for current project: standard-java-app ---
 Targets for Phase: package
-	Target: jar:jar
-		Phase: package
-		Description: NONE
-		Depends: validate, compile,prepare-package
-		IF: NONE
-		UNLESS: skip.jar.package
+    Target: jar:jar
+        Phase: package
+        Description: NONE
+        Depends: validate, compile,prepare-package
+        IF: NONE
+        UNLESS: skip.jar.package
 
 Targets for Module: package
-	Target: :init
-		Phase: validate
-		Description: NONE
-		Depends: NONE
-		IF: NONE
-		UNLESS: NONE
-	Target: :run
-		Phase: NONE
-		Description: run the application
-		Depends: validate, compile, process-resources
-		IF: NONE
-		UNLESS: NONE
-	Target: :doit
-		Phase: NONE
-		Description: NONE
-		Depends: :init, :run
-		IF: NONE
-		UNLESS: NONE
+    Target: :init
+        Phase: validate
+        Description: NONE
+        Depends: NONE
+        IF: NONE
+        UNLESS: NONE
+    Target: :run
+        Phase: NONE
+        Description: run the application
+        Depends: validate, compile, process-resources
+        IF: NONE
+        UNLESS: NONE
+    Target: :doit
+        Phase: NONE
+        Description: NONE
+        Depends: :init, :run
+        IF: NONE
+        UNLESS: NONE
 
 
 For more information on a Phase, run:
-	 easyant -describe <PHASE>
+     easyant -describe <PHASE>
 
 --- End Of (Phases Listing) ---
 </code>
@@ -120,41 +120,41 @@ Project Manual
 --------------
 
 --- Available Phases for current project: standard-java-app ---
-	clean
-	validate
-	provision
-	generate-sources
-	process-sources
-	generate-resources
-	process-resources
-	compile
-	process-classes
-	test-provision
-	test-generate-sources
-	test-process-sources
-	test-generate-resources
-	test-process-resources
-	test-compile
-	test
-	prepare-package
-	package
-	pre-integration-test
-	integration-test
-	post-integration-test
-	verify
-	generate-local-version
-	generate-shared-version
-	generate-release-version
-	publish-local
-	publish-shared
-	release
-	report
-	process-documentation-resources
-	documentation
+    clean
+    validate
+    provision
+    generate-sources
+    process-sources
+    generate-resources
+    process-resources
+    compile
+    process-classes
+    test-provision
+    test-generate-sources
+    test-process-sources
+    test-generate-resources
+    test-process-resources
+    test-compile
+    test
+    prepare-package
+    package
+    pre-integration-test
+    integration-test
+    post-integration-test
+    verify
+    generate-local-version
+    generate-shared-version
+    generate-release-version
+    publish-local
+    publish-shared
+    release
+    report
+    process-documentation-resources
+    documentation
 
 
 For more information on a Phase, run:
-	 easyant -describe <PHASE>
+     easyant -describe <PHASE>
 
 --- End Of (Phases Listing) ---
 </code>
@@ -171,12 +171,12 @@ Project Manual
 --------------
 
 --- Available Plugins for current project: standard-java-app ---
-	org.apache.easyant.buildtypes#build-std-java;0.2
-	org.apache.easyant.plugins#run-java;0.1: Known as run
+    org.apache.easyant.buildtypes#build-std-java;0.2
+    org.apache.easyant.plugins#run-java;0.1: Known as run
 
 
 For more information on a Plugin, run:
-	 easyant -describe <PLUGIN>
+     easyant -describe <PLUGIN>
 
 --- End Of (Plugins Listing) ---
 </code>
@@ -193,12 +193,12 @@ Project Manual
 --------------
 
 --- Available Properties for current project: standard-java-app:: Plugin: run ---
-	Property: run.main.classname
-	Property: target.main.classes
+    Property: run.main.classname
+    Property: target.main.classes
 
 
 For more information on a Property, run:
-	 easyant -describe <PROPERTY>
+     easyant -describe <PROPERTY>
 
 --- End Of (Properties Listing) ---
 </code>
@@ -218,12 +218,12 @@ Project Manual
 --------------
 
 --- Available references for: run.main.classname in current project: standard-java-app ---
-	No Phase found for name: run.main.classname
-	No Target found for name: run.main.classname
-	Property: run.main.classname
-		Description: name of the main class to run
-		Default: NONE
-		Required: true
+    No Phase found for name: run.main.classname
+    No Target found for name: run.main.classname
+    Property: run.main.classname
+        Description: name of the main class to run
+        Default: NONE
+        Required: true
 
 --- End Of (Describe) ---
 </code>
@@ -239,14 +239,14 @@ Project Manual
 --------------
 
 --- Available references for: package in current project: standard-java-app ---
-	Phase: package
-		Description: take the compiled code and package it in its distributable format, such as a JAR.
-		Depends: prepare-package
+    Phase: package
+        Description: take the compiled code and package it in its distributable format, such as a JAR.
+        Depends: prepare-package
 
-		For information on targets attached to this phase, run:
-		easyant -listTargets package
-	No Target found for name: package
-	No Property found for name: package
+        For information on targets attached to this phase, run:
+        easyant -listTargets package
+    No Target found for name: package
+    No Property found for name: package
 
 --- End Of (Describe) ---
 </code>
@@ -262,14 +262,14 @@ Project Manual
 --------------
 
 --- Available references for: run:run in current project: standard-java-app ---
-	No Phase found for name: run:run
-	Target: run:run
-		Phase: NONE
-		Description: NONE
-		Depends: validate, compile, process-resources
-		IF: NONE
-		UNLESS: NONE
-	No Property found for name: run:run
+    No Phase found for name: run:run
+    Target: run:run
+        Phase: NONE
+        Description: NONE
+        Depends: validate, compile, process-resources
+        IF: NONE
+        UNLESS: NONE
+    No Property found for name: run:run
 
 --- End Of (Describe) ---
 

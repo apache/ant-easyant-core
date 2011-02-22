@@ -22,8 +22,8 @@ import org.apache.ivy.plugins.parser.ModuleDescriptorParser;
 
 public interface EasyAntModuleDescriptorParser extends ModuleDescriptorParser {
 
-	void setActiveBuildConfigurations(String activeBuildConfigurations);
-	
-	EasyAntModuleDescriptor getEasyAntModuleDescriptor();
-	
+    void setActiveBuildConfigurations(String activeBuildConfigurations);
+    
+    EasyAntModuleDescriptor getEasyAntModuleDescriptor();
+    
 }

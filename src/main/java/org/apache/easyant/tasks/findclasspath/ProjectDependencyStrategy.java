@@ -31,136 +31,136 @@ import org.apache.tools.ant.Project;
 
 public class ProjectDependencyStrategy extends BasicConfigurationStrategy {
 
-	/**
-	 * check if project dependencies matches with expected module
-	 * 
-	 * @return return true if project dependencies matches with expected module
-	 */
-	@Override
-	protected boolean doCheck() {
-		log("Checking project dependencies ...", Project.MSG_VERBOSE);
-		CheckProjectDependencies checkProjectDependencies = new CheckProjectDependencies();
-		checkProjectDependencies.setSettingsRef(getSettingsReference());
-		checkProjectDependencies.setOrganisationToFind(getOrganisation());
-		checkProjectDependencies.setModuleToFind(getModule());
-		checkProjectDependencies.setRevisionToFind(getRevision());
-		checkProjectDependencies.setConfToFind(getConf());
-		initTask(checkProjectDependencies).execute();
-		return checkProjectDependencies.checkProjectDependencies();
-	}
+    /**
+     * check if project dependencies matches with expected module
+     * 
+     * @return return true if project dependencies matches with expected module
+     */
+    @Override
+    protected boolean doCheck() {
+        log("Checking project dependencies ...", Project.MSG_VERBOSE);
+        CheckProjectDependencies checkProjectDependencies = new CheckProjectDependencies();
+        checkProjectDependencies.setSettingsRef(getSettingsReference());
+        checkProjectDependencies.setOrganisationToFind(getOrganisation());
+        checkProjectDependencies.setModuleToFind(getModule());
+        checkProjectDependencies.setRevisionToFind(getRevision());
+        checkProjectDependencies.setConfToFind(getConf());
+        initTask(checkProjectDependencies).execute();
+        return checkProjectDependencies.checkProjectDependencies();
+    }
 
-	@Override
-	public String getSettingsRef() {
-		if (settingsRef == null) {
-			settingsRef = IvyInstanceHelper.getProjectIvyInstanceName(getProject());
-		}
-		return settingsRef;
-	}
+    @Override
+    public String getSettingsRef() {
+        if (settingsRef == null) {
+            settingsRef = IvyInstanceHelper.getProjectIvyInstanceName(getProject());
+        }
+        return settingsRef;
+    }
 
-	private class CheckProjectDependencies extends IvyPostResolveTask {
+    private class CheckProjectDependencies extends IvyPostResolveTask {
 
-		private String organisationToFind;
-		private String moduleToFind;
-		private String revisionToFind;
-		private String confToFind;
+        private String organisationToFind;
+        private String moduleToFind;
+        private String revisionToFind;
+        private String confToFind;
 
-		public String getOrganisationToFind() {
-			return organisationToFind;
-		}
+        public String getOrganisationToFind() {
+            return organisationToFind;
+        }
 
-		public void setOrganisationToFind(String organisationToFind) {
-			this.organisationToFind = organisationToFind;
-		}
+        public void setOrganisationToFind(String organisationToFind) {
+            this.organisationToFind = organisationToFind;
+        }
 
-		public String getModuleToFind() {
-			return moduleToFind;
-		}
+        public String getModuleToFind() {
+            return moduleToFind;
+        }
 
-		public void setModuleToFind(String moduleToFind) {
-			this.moduleToFind = moduleToFind;
-		}
+        public void setModuleToFind(String moduleToFind) {
+            this.moduleToFind = moduleToFind;
+        }
 
-		public String getRevisionToFind() {
-			return revisionToFind;
-		}
+        public String getRevisionToFind() {
+            return revisionToFind;
+        }
 
-		public void setRevisionToFind(String revisionToFind) {
-			this.revisionToFind = revisionToFind;
-		}
+        public void setRevisionToFind(String revisionToFind) {
+            this.revisionToFind = revisionToFind;
+        }
 
-		public String getConfToFind() {
-			return confToFind;
-		}
+        public String getConfToFind() {
+            return confToFind;
+        }
 
-		public void setConfToFind(String confToFind) {
-			this.confToFind = confToFind;
-		}
+        public void setConfToFind(String confToFind) {
+            this.confToFind = confToFind;
+        }
 
-		@Override
-		public void doExecute() throws BuildException {
-			prepareAndCheck();
-		}
+        @Override
+        public void doExecute() throws BuildException {
+            prepareAndCheck();
+        }
 
-		public boolean checkProjectDependencies() {
-			execute();
-			try {
-				ResolutionCacheManager cacheMgr = getIvyInstance()
-						.getResolutionCacheManager();
-				String[] confs = splitConfs(getConf());
-				String resolveId = getResolveId();
-				if (resolveId == null) {
-					resolveId = ResolveOptions
-							.getDefaultResolveId(getResolvedModuleId());
-				}
-				XmlReportParser parser = new XmlReportParser();
-				for (int i = 0; i < confs.length; i++) {
-					File report = cacheMgr
-							.getConfigurationResolveReportInCache(resolveId,
-									confs[i]);
-					parser.parse(report);
+        public boolean checkProjectDependencies() {
+            execute();
+            try {
+                ResolutionCacheManager cacheMgr = getIvyInstance()
+                        .getResolutionCacheManager();
+                String[] confs = splitConfs(getConf());
+                String resolveId = getResolveId();
+                if (resolveId == null) {
+                    resolveId = ResolveOptions
+                            .getDefaultResolveId(getResolvedModuleId());
+                }
+                XmlReportParser parser = new XmlReportParser();
+                for (int i = 0; i < confs.length; i++) {
+                    File report = cacheMgr
+                            .getConfigurationResolveReportInCache(resolveId,
+                                    confs[i]);
+                    parser.parse(report);
 
-					Artifact[] artifacts = parser.getArtifacts();
-					for (int j = 0; j < artifacts.length; j++) {
-						Artifact artifact = artifacts[j];
-						ModuleRevisionId mrid = artifact.getModuleRevisionId();
-						if (mrid.getOrganisation().equals(
-								getOrganisationToFind())) {
-							if (mrid.getName().equals(getModuleToFind())) {
-								log(mrid.getOrganisation() + "#"
-										+ mrid.getName()
-										+ " found in project dependencies !",
-										Project.MSG_DEBUG);
-								// use this version
-								loadCachePath(getOrganisationToFind(),
-										getModuleToFind(), mrid.getRevision(),
-										getConfToFind(), getSettingsReference());
-								return true;
-							} else {
-								// if only organization is found in project
-								// dependencies use the same version with the
-								// required module
-								log(
-										"Only organisation : "
-												+ mrid.getOrganisation()
-												+ " was found in project dependencies !",
-										Project.MSG_DEBUG);
-								loadCachePath(mrid.getOrganisation(),
-										getModuleToFind(), mrid.getRevision(),
-										getConfToFind(), getSettingsReference());
-								return true;
+                    Artifact[] artifacts = parser.getArtifacts();
+                    for (int j = 0; j < artifacts.length; j++) {
+                        Artifact artifact = artifacts[j];
+                        ModuleRevisionId mrid = artifact.getModuleRevisionId();
+                        if (mrid.getOrganisation().equals(
+                                getOrganisationToFind())) {
+                            if (mrid.getName().equals(getModuleToFind())) {
+                                log(mrid.getOrganisation() + "#"
+                                        + mrid.getName()
+                                        + " found in project dependencies !",
+                                        Project.MSG_DEBUG);
+                                // use this version
+                                loadCachePath(getOrganisationToFind(),
+                                        getModuleToFind(), mrid.getRevision(),
+                                        getConfToFind(), getSettingsReference());
+                                return true;
+                            } else {
+                                // if only organization is found in project
+                                // dependencies use the same version with the
+                                // required module
+                                log(
+                                        "Only organisation : "
+                                                + mrid.getOrganisation()
+                                                + " was found in project dependencies !",
+                                        Project.MSG_DEBUG);
+                                loadCachePath(mrid.getOrganisation(),
+                                        getModuleToFind(), mrid.getRevision(),
+                                        getConfToFind(), getSettingsReference());
+                                return true;
 
-							}
-						}
+                            }
+                        }
 
-					}
-				}
-			} catch (Exception ex) {
-				throw new BuildException(
-						"impossible to check project dependencies: " + ex, ex);
-			}
-			return false;
-		}
+                    }
+                }
+            } catch (Exception ex) {
+                throw new BuildException(
+                        "impossible to check project dependencies: " + ex, ex);
+            }
+            return false;
+        }
 
-	}
+    }
 
 }

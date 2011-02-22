@@ -28,35 +28,35 @@ import java.util.List;
  */
 public class StartMenuTask extends AbstractMenuGeneratorTask {
 
-	private String file;
+    private String file;
 
-	@Override
-	public void execute() throws BuildException {
-		if (getFile() == null) {
-			throw new BuildException("file argument is required !");
-		}
+    @Override
+    public void execute() throws BuildException {
+        if (getFile() == null) {
+            throw new BuildException("file argument is required !");
+        }
 
-		//TODO: this isn't quite right.  we shouldn't be passing the same file argument to every generator.
-		List<MenuGenerator> generators = getMenuGeneratorForContext(getContext()).getMenuGenerators();
-		for (MenuGenerator generator : generators) {
-			try {
-			    generator.startMenu(getContext(), getFile());
-			} catch (IOException ioe) {
-			    throw new BuildException("Error writing menu file " + getFile() + ": " + ioe.getMessage(), ioe);
-			}
-		}
-	}
+        //TODO: this isn't quite right.  we shouldn't be passing the same file argument to every generator.
+        List<MenuGenerator> generators = getMenuGeneratorForContext(getContext()).getMenuGenerators();
+        for (MenuGenerator generator : generators) {
+            try {
+                generator.startMenu(getContext(), getFile());
+            } catch (IOException ioe) {
+                throw new BuildException("Error writing menu file " + getFile() + ": " + ioe.getMessage(), ioe);
+            }
+        }
+    }
 
-	/**
-	 * Get the file associated to this generator
-	 * @return a file
-	 */
-	public String getFile() {
-		return file;
-	}
+    /**
+     * Get the file associated to this generator
+     * @return a file
+     */
+    public String getFile() {
+        return file;
+    }
 
-	public void setFile(String file) {
-		this.file = file;
-	}
+    public void setFile(String file) {
+        this.file = file;
+    }
 
 }

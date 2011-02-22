@@ -18,14 +18,14 @@
 package org.apache.easyant.test;
 
 public class Main {
-	
-	/**
-	 * Prints out the fully qualified name of jUnit's Assert utility classes.
-	 * This tests the presence of Assert on our classpath, which should be defined
-	 * in our manifest Class-Path attribute.
-	 */
-	public static void main(String[] argv) {
-		System.out.print("Successfully loaded: " + org.junit.Assert.class.getName());
-	}
-	
+    
+    /**
+     * Prints out the fully qualified name of jUnit's Assert utility classes.
+     * This tests the presence of Assert on our classpath, which should be defined
+     * in our manifest Class-Path attribute.
+     */
+    public static void main(String[] argv) {
+        System.out.print("Successfully loaded: " + org.junit.Assert.class.getName());
+    }
+    
 }

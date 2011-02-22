@@ -17,12 +17,12 @@
 -->
 <html>
 <head>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
-	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
-	<script type="text/javascript" src="../xooki/xooki.js"></script>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <script type="text/javascript">var xookiConfig = {level: 1};</script>   
+    <script type="text/javascript" src="../xooki/xooki.js"></script>
 </head>
 <body>
-	<textarea id="xooki-source">
+    <textarea id="xooki-source">
 <h1>Setting up a simple EasyAnt project</h1>
 <p />
 In the course of this write up, you will be taken through basics of EasyAnt and a simple-and-live example of setting up an EasyAnt web application project as an example only.
@@ -31,11 +31,11 @@ Prerequisite to your setting up an Easyant project means you have to have the Ea
 <p />
 You need to set up EASYANT_HOME property. Point it to your EasyAnt path. For Windows users, do:
 <code type="xml">
-> set EASYANT_HOME=path\to\easyant
+> set EASYANT_HOME=c:\path\to\easyant
 </code>
 For Unix,
 <code type="xml">
-> export EASYANT_HOME=path/to/easyant
+> export EASYANT_HOME=/path/to/easyant
 </code>
 <p />
 Then add %EASYANT_HOME%/bin to your PATH variable.
@@ -48,27 +48,27 @@ Your project is expected to have a module.ivy to define the build of your projec
 <p />
 <code type="xml">
 <ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra" xmlns:ea="http://www.easyant.org">
-	<info organisation="my.easyant.project" module="my-webapp" status="integration" >
-		<description>
-			This project is a sample of a java webapplication
-		</description>
-		<ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
-			<ea:property name="test.framework" value="testng"/>
-		</ea:build>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public"/>
-		<conf name="test" visibility="private"/>
-	</configurations>
-	<publications>
-		<artifact type="war"/>
-		<artifact e:classifier="source"/>
-	</publications>
-	<dependencies>
-		<dependency org="org.testng" name="testng" rev="5.7" conf="test->master">
-			<artifact name="testng" type="jar" e:classifier="jdk15"/>
-		</dependency>
-	</dependencies>
+    <info organisation="my.easyant.project" module="my-webapp" status="integration" >
+        <description>
+            This project is a sample of a java webapplication
+        </description>
+        <ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
+            <ea:property name="test.framework" value="testng"/>
+        </ea:build>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public"/>
+        <conf name="test" visibility="private"/>
+    </configurations>
+    <publications>
+        <artifact type="war"/>
+        <artifact e:classifier="source"/>
+    </publications>
+    <dependencies>
+        <dependency org="org.testng" name="testng" rev="5.7" conf="test->master">
+            <artifact name="testng" type="jar" e:classifier="jdk15"/>
+        </dependency>
+    </dependencies>
 </ivy-module>
 
 </code>
@@ -107,10 +107,10 @@ Let us first include a 'Hello World' index.htm inside the src/main/webapp direct
 <p />
 <code type="xml">
 <html>
-	<head></head>
-	<body>
-		<h3>Hello World !!</h3>
-	</body>
+    <head></head>
+    <body>
+        <h3>Hello World !!</h3>
+    </body>
 </html>
 </code>
 <p />
@@ -118,28 +118,28 @@ Our module.ivy is the repository of all plugins that our project uses. So, we go
 <p />
 <code type="xml">
 <ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra" xmlns:ea="http://www.easyant.org">
-	<info organisation="my.easyant.project" module="my-webapp" status="integration" >
-		<description>
-			This project is a sample of a java webapplication
-		</description>
-		<ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
-			<ea:property name="test.framework" value="testng"/>
-			<ea:plugin organisation="org.apache.easyant.plugins" module="jetty-deploy" revision="0.1" as="jetty"/>
-		</ea:build>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public"/>
-		<conf name="test" visibility="private"/>
-	</configurations>
-	<publications>
-		<artifact type="war"/>
-		<artifact e:classifier="source"/>
-	</publications>
-	<dependencies>
-		<dependency org="org.testng" name="testng" rev="5.7" conf="test->master">
-			<artifact name="testng" type="jar" e:classifier="jdk15"/>
-		</dependency>
-	</dependencies>
+    <info organisation="my.easyant.project" module="my-webapp" status="integration" >
+        <description>
+            This project is a sample of a java webapplication
+        </description>
+        <ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
+            <ea:property name="test.framework" value="testng"/>
+            <ea:plugin organisation="org.apache.easyant.plugins" module="jetty-deploy" revision="0.1" as="jetty"/>
+        </ea:build>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public"/>
+        <conf name="test" visibility="private"/>
+    </configurations>
+    <publications>
+        <artifact type="war"/>
+        <artifact e:classifier="source"/>
+    </publications>
+    <dependencies>
+        <dependency org="org.testng" name="testng" rev="5.7" conf="test->master">
+            <artifact name="testng" type="jar" e:classifier="jdk15"/>
+        </dependency>
+    </dependencies>
 </ivy-module>
 </code>
 <p />

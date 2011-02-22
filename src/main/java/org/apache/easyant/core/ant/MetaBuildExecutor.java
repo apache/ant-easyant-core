@@ -49,120 +49,120 @@ import org.apache.tools.ant.types.selectors.FilenameSelector;
  */
 public class MetaBuildExecutor extends DefaultExecutor {
 
-	@Override
-	public void executeTargets(Project project, String[] targets)
-			throws BuildException {
+    @Override
+    public void executeTargets(Project project, String[] targets)
+            throws BuildException {
 
-		// delegate to the ivy:buildlist task to compute an ordered list of
-		// submodules
-		FilenameSelector ivySelector = new FilenameSelector();
-		ivySelector.setProject(project);
-		ivySelector.setName("**/module.ivy");
+        // delegate to the ivy:buildlist task to compute an ordered list of
+        // submodules
+        FilenameSelector ivySelector = new FilenameSelector();
+        ivySelector.setProject(project);
+        ivySelector.setName("**/module.ivy");
 
-		FileSet ivyFiles = (FileSet) project.createDataType("fileset");
-		ivyFiles.setDir(project.getBaseDir());
-		ivyFiles.setExcludes("module.ivy"); // exclude the root module ivy.
-		ivyFiles.setIncludes(project.getProperty("submodule.dirs"));
-		ivyFiles.addFilename(ivySelector);
+        FileSet ivyFiles = (FileSet) project.createDataType("fileset");
+        ivyFiles.setDir(project.getBaseDir());
+        ivyFiles.setExcludes("module.ivy"); // exclude the root module ivy.
+        ivyFiles.setIncludes(project.getProperty("submodule.dirs"));
+        ivyFiles.addFilename(ivySelector);
 
-		IvyBuildList buildList = new IvyBuildList();
-		buildList.setTaskName("meta:buildlist");
-		buildList.setProject(project);
-		buildList.setReference("build-path");
-		buildList.setIvyfilepath("module.ivy");
-		buildList.setSettingsRef(IvyInstanceHelper
-				.buildProjectIvyReference(project));
-		buildList.addFileset(ivyFiles);
+        IvyBuildList buildList = new IvyBuildList();
+        buildList.setTaskName("meta:buildlist");
+        buildList.setProject(project);
+        buildList.setReference("build-path");
+        buildList.setIvyfilepath("module.ivy");
+        buildList.setSettingsRef(IvyInstanceHelper
+                .buildProjectIvyReference(project));
+        buildList.addFileset(ivyFiles);
 
-		buildList.execute();
+        buildList.execute();
 
-		// publish the parent module descriptor into the build-scoped
-		// repository, so that it can
-		// be used by submodules if needed
-		File moduleFile = new File(project.getBaseDir(), "module.ivy");
-		String buildRepo = project
-				.getProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY);
-		if (moduleFile.isFile() && buildRepo != null) {
+        // publish the parent module descriptor into the build-scoped
+        // repository, so that it can
+        // be used by submodules if needed
+        File moduleFile = new File(project.getBaseDir(), "module.ivy");
+        String buildRepo = project
+                .getProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY);
+        if (moduleFile.isFile() && buildRepo != null) {
 
-			project.log("Publishing module descriptor " + moduleFile.getPath()
-					+ " to build repository '" + buildRepo + "'");
+            project.log("Publishing module descriptor " + moduleFile.getPath()
+                    + " to build repository '" + buildRepo + "'");
 
-			IvyAntSettings projectSettings = IvyInstanceHelper
-					.getProjectIvyAntSettings(project);
-			IvySettings ivy = projectSettings.getConfiguredIvyInstance(
-					buildList).getSettings();
+            IvyAntSettings projectSettings = IvyInstanceHelper
+                    .getProjectIvyAntSettings(project);
+            IvySettings ivy = projectSettings.getConfiguredIvyInstance(
+                    buildList).getSettings();
 
-			try {
-				URL ivyUrl = moduleFile.toURL();
-				ModuleDescriptorParser mdp = ModuleDescriptorParserRegistry
-						.getInstance().getParser(
-								new URLResource(moduleFile.toURL()));
-				ModuleDescriptor descriptor = mdp.parseDescriptor(ivy, ivyUrl,
-						true);
-				Artifact artifact = MDArtifact.newIvyArtifact(descriptor);
-				ivy.getResolver(buildRepo).publish(artifact, moduleFile, true);
-			} catch (Exception ioe) {
-				throw new BuildException("Error publishing meta-module file "
-						+ moduleFile.getAbsolutePath() + " to " + buildRepo,
-						ioe);
-			}
+            try {
+                URL ivyUrl = moduleFile.toURL();
+                ModuleDescriptorParser mdp = ModuleDescriptorParserRegistry
+                        .getInstance().getParser(
+                                new URLResource(moduleFile.toURL()));
+                ModuleDescriptor descriptor = mdp.parseDescriptor(ivy, ivyUrl,
+                        true);
+                Artifact artifact = MDArtifact.newIvyArtifact(descriptor);
+                ivy.getResolver(buildRepo).publish(artifact, moduleFile, true);
+            } catch (Exception ioe) {
+                throw new BuildException("Error publishing meta-module file "
+                        + moduleFile.getAbsolutePath() + " to " + buildRepo,
+                        ioe);
+            }
 
-		}
+        }
 
-		// hook for pre-module-targets
-		String preModuleTargets = project
-				.getProperty(EasyAntMagicNames.PRE_MODULE_TARGETS);
-		if (preModuleTargets == null) {
-			preModuleTargets = EasyAntConstants.DEFAULT_PRE_MODULE_TARGETS;
-		}
+        // hook for pre-module-targets
+        String preModuleTargets = project
+                .getProperty(EasyAntMagicNames.PRE_MODULE_TARGETS);
+        if (preModuleTargets == null) {
+            preModuleTargets = EasyAntConstants.DEFAULT_PRE_MODULE_TARGETS;
+        }
 
-		List<String> postTargetsToRun = new ArrayList<String>();
-		List<String> preTargetsToRun = new ArrayList<String>();
-		List<String> preModuleTargetList = Arrays.asList(preModuleTargets
-				.split(","));
-		for (int i = 0; i < targets.length; i++) {
-			if (preModuleTargetList.contains(targets[i])) {
-				// fill a list of targets to run BEFORE subproject delegation
-				preTargetsToRun.add(targets[i]);
-			} else {
-				// fill a list of target to run AFTER subproject delagation
-				// make sure target exists
-				if (project.getTargets().get(targets[i]) != null) {
-					postTargetsToRun.add(targets[i]);
-				} else {
-					project.log("Skipping undefined target '" + targets[i] + "'",
-							Project.MSG_VERBOSE);
-				}
+        List<String> postTargetsToRun = new ArrayList<String>();
+        List<String> preTargetsToRun = new ArrayList<String>();
+        List<String> preModuleTargetList = Arrays.asList(preModuleTargets
+                .split(","));
+        for (int i = 0; i < targets.length; i++) {
+            if (preModuleTargetList.contains(targets[i])) {
+                // fill a list of targets to run BEFORE subproject delegation
+                preTargetsToRun.add(targets[i]);
+            } else {
+                // fill a list of target to run AFTER subproject delagation
+                // make sure target exists
+                if (project.getTargets().get(targets[i]) != null) {
+                    postTargetsToRun.add(targets[i]);
+                } else {
+                    project.log("Skipping undefined target '" + targets[i] + "'",
+                            Project.MSG_VERBOSE);
+                }
 
-			}
-		}
+            }
+        }
 
-		// now call the default executor to include any extra
-		// targets defined in the root module.ant
-		super.executeTargets(project, preTargetsToRun.toArray(new String[] {}));
+        // now call the default executor to include any extra
+        // targets defined in the root module.ant
+        super.executeTargets(project, preTargetsToRun.toArray(new String[] {}));
 
-		// delegate to the ea:submodule task to execute the list of targets on
-		// all modules in the build list
-		SubModule subModule = new SubModule();
-		subModule.setTaskName("meta:submodule");
-		subModule.setProject(project);
+        // delegate to the ea:submodule task to execute the list of targets on
+        // all modules in the build list
+        SubModule subModule = new SubModule();
+        subModule.setTaskName("meta:submodule");
+        subModule.setProject(project);
 
-		Boolean useBuildRepository = project
-				.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY) != null ? Boolean
-				.parseBoolean(project
-						.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY))
-				: true;
-		subModule.setUseBuildRepository(useBuildRepository);
+        Boolean useBuildRepository = project
+                .getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY) != null ? Boolean
+                .parseBoolean(project
+                        .getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY))
+                : true;
+        subModule.setUseBuildRepository(useBuildRepository);
 
-		subModule.setBuildpathRef(new Reference(project, "build-path"));
-		subModule.setTargets(new TargetList(targets));
-		subModule.execute();
+        subModule.setBuildpathRef(new Reference(project, "build-path"));
+        subModule.setTargets(new TargetList(targets));
+        subModule.execute();
 
-		// now call the default executor to include any extra targets defined in
-		// the root module.ant
-		super
-				.executeTargets(project, postTargetsToRun
-						.toArray(new String[] {}));
-	}
+        // now call the default executor to include any extra targets defined in
+        // the root module.ant
+        super
+                .executeTargets(project, postTargetsToRun
+                        .toArray(new String[] {}));
+    }
 
 }

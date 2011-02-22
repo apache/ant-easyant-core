@@ -56,17 +56,17 @@ else
 
   #load system easyant configuration
   if [ -z "$EASYANT_HOME" -o "$EASYANT_HOME" = "/usr/share/easyant" ]; then
-	 if [ -f "/etc/easyant.conf" ] ; then
-	      . /etc/easyant.conf
-	 fi
+     if [ -f "/etc/easyant.conf" ] ; then
+          . /etc/easyant.conf
+     fi
   fi
-	
+    
   # load user easyant configuration
   if [ -f "$HOME/.easyant/easyant.conf" ] ; then
-	 . $HOME/.easyant/easyant.conf
+     . $HOME/.easyant/easyant.conf
   fi
   if [ -f "$HOME/.easyantrc" ] ; then
-	 . "$HOME/.easyantrc"
+     . "$HOME/.easyantrc"
   fi
   # load system-wide ant configuration (ONLY if ANT_HOME has NOT been set)
   if [ -z "$ANT_HOME" -o "$ANT_HOME" = "/usr/share/ant" ]; then
@@ -77,13 +77,13 @@ else
   
   #Ignore the ant configuration if we use a custom ant (ie. not the one shipped with easyant) 
   if $use_custom_ant ; then
-	  # load user ant configuration
-	  if [ -f "$HOME/.ant/ant.conf" ] ; then
-	    . $HOME/.ant/ant.conf
-	  fi
-	  if [ -f "$HOME/.antrc" ] ; then
-	    . "$HOME/.antrc"
-	  fi
+      # load user ant configuration
+      if [ -f "$HOME/.ant/ant.conf" ] ; then
+        . $HOME/.ant/ant.conf
+      fi
+      if [ -f "$HOME/.antrc" ] ; then
+        . "$HOME/.antrc"
+      fi
   fi
 
   # provide default configuration values
@@ -121,33 +121,33 @@ esac
 
 # By default we use the ant distribution shipped with easyant
 if ! $use_custom_ant ; then
- 	if [ -d "$ANT_HOME" ] ; then
- 		echo "WARNING:  ANT_HOME environment variable detected. If you want to use this ant installation, you must start easyant with '-use-custom-ant'." 
- 	fi
-	ANT_HOME="$EASYANT_HOME"
-	
+    if [ -d "$ANT_HOME" ] ; then
+        echo "WARNING:  ANT_HOME environment variable detected. If you want to use this ant installation, you must start easyant with '-use-custom-ant'." 
+    fi
+    ANT_HOME="$EASYANT_HOME"
+    
 else
-	if [ -z "$ANT_HOME" -o ! -d "$ANT_HOME" ] ; then
-	  ## resolve links - $0 may be a link to ant's home
-	  PRG="$0"
-	  progname=`basename "$0"`
-	
-	  # need this for relative symlinks
-	  while [ -h "$PRG" ] ; do
-	    ls=`ls -ld "$PRG"`
-	    link=`expr "$ls" : '.*-> \(.*\)$'`
-	    if expr "$link" : '/.*' > /dev/null; then
-	    PRG="$link"
-	    else
-	    PRG=`dirname "$PRG"`"/$link"
-	    fi
-	  done
-	
-	  ANT_HOME=`dirname "$PRG"`/..
-	
-	  # make it fully qualified
-	  ANT_HOME=`cd "$ANT_HOME" > /dev/null && pwd`
-	fi
+    if [ -z "$ANT_HOME" -o ! -d "$ANT_HOME" ] ; then
+      ## resolve links - $0 may be a link to ant's home
+      PRG="$0"
+      progname=`basename "$0"`
+    
+      # need this for relative symlinks
+      while [ -h "$PRG" ] ; do
+        ls=`ls -ld "$PRG"`
+        link=`expr "$ls" : '.*-> \(.*\)$'`
+        if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+        else
+        PRG=`dirname "$PRG"`"/$link"
+        fi
+      done
+    
+      ANT_HOME=`dirname "$PRG"`/..
+    
+      # make it fully qualified
+      ANT_HOME=`cd "$ANT_HOME" > /dev/null && pwd`
+    fi
 fi
 
 # For Cygwin and Mingw, ensure paths are in UNIX format before
@@ -364,28 +364,28 @@ fi
 # add a second backslash to variables terminated by a backslash under cygwin
 if $cygwin; then
   case "$ANT_HOME" in
-    *\\ )
-    ANT_HOME="$ANT_HOME\\"
+    *\ )
+    ANT_HOME="$ANT_HOME\"
     ;;
   esac
   case "$CYGHOME" in
-    *\\ )
-    CYGHOME="$CYGHOME\\"
+    *\ )
+    CYGHOME="$CYGHOME\"
     ;;
   esac
   case "$JIKESPATH" in
-    *\\ )
-    JIKESPATH="$JIKESPATH\\"
+    *\ )
+    JIKESPATH="$JIKESPATH\"
     ;;
   esac
   case "$LOCALCLASSPATH" in
-    *\\ )
-    LOCALCLASSPATH="$LOCALCLASSPATH\\"
+    *\ )
+    LOCALCLASSPATH="$LOCALCLASSPATH\"
     ;;
   esac
   case "$CLASSPATH" in
-    *\\ )
-    CLASSPATH="$CLASSPATH\\"
+    *\ )
+    CLASSPATH="$CLASSPATH\"
     ;;
   esac
 fi
@@ -412,4 +412,3 @@ if $ant_exec_debug ; then
     echo $ant_exec_command $ant_exec_args
 fi
 eval $ant_exec_command  "$ant_exec_args" 
-

@@ -16,32 +16,32 @@
 -->
 <project name="test-junit-test" xmlns:au="antlib:org.apache.ant.antunit">
 
-	<dirname file="${ant.file.test-junit-test}" property="test.dir"/>
-	<import file="${test.dir}/../../../common/test-utils.ant"/>
+    <dirname file="${ant.file.test-junit-test}" property="test.dir"/>
+    <import file="${test.dir}/../../../common/test-utils.ant"/>
 
-	<target name="clean" description="remove stale build artifacts before / after each test">
-		<delete dir="${basedir}" includeemptydirs="true">
-			<include name="**/target/**"/>
-			<include name="**/lib/**"/>
-		</delete>
-	</target>
+    <target name="clean" description="remove stale build artifacts before / after each test">
+        <delete dir="${basedir}" includeemptydirs="true">
+            <include name="**/target/**"/>
+            <include name="**/lib/**"/>
+        </delete>
+    </target>
 
-	<target name="setUp" depends="clean"/>
-	<target name="tearDown" depends="clean"/>
+    <target name="setUp" depends="clean"/>
+    <target name="tearDown" depends="clean"/>
 
-	<target name="testPassingIntegration" description="test successful compile / run of an integration test">
+    <target name="testPassingIntegration" description="test successful compile / run of an integration test">
 
-		<!-- verify test preconditions -->
-		<au:assertFileDoesntExist message="test environment is clean" file="${test.dir}/integrationTest/target"/>
+        <!-- verify test preconditions -->
+        <au:assertFileDoesntExist message="test environment is clean" file="${test.dir}/integrationTest/target"/>
 
         <!-- execute run tests and generate reports -->
         <easyant dir="${test.dir}/integrationTest" args="-Dtest.integration.run.includes.pattern=**/PassingIntegrationTest.class"
                  target="integration-test"/>
 
-		<!-- verify test artifacts created -->
+        <!-- verify test artifacts created -->
         <au:assertFileDoesntExist message="only requested test was run" file="${test.dir}/integrationTest/target/test/xml/TEST-org.apache.easyant.FailingIntegrationTest.xml"/>
         <au:assertFileExists message="only requested test was run" file="${test.dir}/integrationTest/target/test/xml/TEST-org.apache.easyant.PassingIntegrationTest.xml"/>
-	</target>
+    </target>
 
     <target name="testFailingIntegration" description="test failed compile / run of an integration test">
 

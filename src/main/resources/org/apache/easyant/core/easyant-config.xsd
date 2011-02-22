@@ -16,51 +16,51 @@
    limitations under the License.
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified">
+    elementFormDefault="qualified">
 
-	<xs:element name="easyant-config">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="ivysettings" minOccurs="0" maxOccurs="1">
-					<xs:complexType>
-						<xs:attribute name="file" type="xs:string" />
-						<xs:attribute name="url" type="xs:string" />
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="system-plugins" minOccurs="0"
-					maxOccurs="1">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="plugin" minOccurs="0" maxOccurs="unbounded">
-								<xs:complexType>
-									<xs:attribute name="mrid" type="xs:string" />
-									<xs:attribute name="organisation" type="xs:string" />
-									<xs:attribute name="org" type="xs:string" />
-									<xs:attribute name="module" type="xs:string" />
-									<xs:attribute name="revision" type="xs:string" />
-									<xs:attribute name="rev" type="xs:string" />
-									<xs:attribute name="as" type="xs:string" />
-									<xs:attribute name="mode" type="xs:string" />
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="properties" minOccurs="0" maxOccurs="1">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="property" minOccurs="0" maxOccurs="unbounded">
-								<xs:complexType>
-									<xs:attribute name="name" type="xs:string" />
-									<xs:attribute name="value" type="xs:string" />
-									<xs:attribute name="file" type="xs:string" />
-									<xs:attribute name="url" type="xs:string" />
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+    <xs:element name="easyant-config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ivysettings" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="file" type="xs:string" />
+                        <xs:attribute name="url" type="xs:string" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="system-plugins" minOccurs="0"
+                    maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="plugin" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="mrid" type="xs:string" />
+                                    <xs:attribute name="organisation" type="xs:string" />
+                                    <xs:attribute name="org" type="xs:string" />
+                                    <xs:attribute name="module" type="xs:string" />
+                                    <xs:attribute name="revision" type="xs:string" />
+                                    <xs:attribute name="rev" type="xs:string" />
+                                    <xs:attribute name="as" type="xs:string" />
+                                    <xs:attribute name="mode" type="xs:string" />
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="properties" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:attribute name="name" type="xs:string" />
+                                    <xs:attribute name="value" type="xs:string" />
+                                    <xs:attribute name="file" type="xs:string" />
+                                    <xs:attribute name="url" type="xs:string" />
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>

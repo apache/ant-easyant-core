@@ -18,60 +18,60 @@
 package org.apache.easyant.core.report;
 
 public class ParameterReport {
-	
-	private String name = null;
-	private String description = null;
-	private boolean required = false;
-	private String defaultValue = null;
-	private String value = null;
-	private final ParameterType type;
-	
-	public ParameterReport(ParameterType parameterType) {
-		this.type = parameterType;
-	}
+    
+    private String name = null;
+    private String description = null;
+    private boolean required = false;
+    private String defaultValue = null;
+    private String value = null;
+    private final ParameterType type;
+    
+    public ParameterReport(ParameterType parameterType) {
+        this.type = parameterType;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public boolean isRequired() {
-		return required;
-	}
+    public boolean isRequired() {
+        return required;
+    }
 
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
 
-	public String getDefaultValue() {
-		return defaultValue;
-	}
+    public String getDefaultValue() {
+        return defaultValue;
+    }
 
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-	}
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	public ParameterType getType() {
-		return type;
-	}
+    public ParameterType getType() {
+        return type;
+    }
 
 }

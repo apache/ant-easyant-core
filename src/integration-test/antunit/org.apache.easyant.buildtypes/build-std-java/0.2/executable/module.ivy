@@ -15,21 +15,21 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org">
-	<info organisation="org.apache.easyant" module="build-std-java-test" status="integration" revision="1.0">
-		<ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
-			<ea:property name="manifest.main.classname" value="org.apache.easyant.test.Main"/>
-			<ea:property name="retrieve.dependencies" value="true"/>
-			<ea:property name="lib.main" value="target/artifacts/lib"/>
-		</ea:build>
-	</info>
-	<configurations>
-		<conf name="default"/>
-		<conf name="test"/>
-	</configurations>
-	<publications>
-		<artifact type="jar"/>
-	</publications>
-	<dependencies>
-		<dependency org="junit" name="junit" rev="4.4" conf="default"/>
-	</dependencies>
+    <info organisation="org.apache.easyant" module="build-std-java-test" status="integration" revision="1.0">
+        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
+            <ea:property name="manifest.main.classname" value="org.apache.easyant.test.Main"/>
+            <ea:property name="retrieve.dependencies" value="true"/>
+            <ea:property name="lib.main" value="target/artifacts/lib"/>
+        </ea:build>
+    </info>
+    <configurations>
+        <conf name="default"/>
+        <conf name="test"/>
+    </configurations>
+    <publications>
+        <artifact type="jar"/>
+    </publications>
+    <dependencies>
+        <dependency org="junit" name="junit" rev="4.4" conf="default"/>
+    </dependencies>
 </ivy-module>

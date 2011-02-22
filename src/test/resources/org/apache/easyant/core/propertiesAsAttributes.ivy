@@ -15,15 +15,15 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
-		<ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2" my.property.inbuildtype="true"/>
-		<ea:plugin module="javadoc" revision="0.1" my.property.inplugin="true"/>
-		<ea:plugin module="javadoc" revision="0.1" my-dashes="true" my.property.inconf="true" conf="myBuild"/>
-		
- 	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-		<conf name="myBuild" ea:type="profile"/>
-	</configurations>
+    <info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
+        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2" my.property.inbuildtype="true"/>
+        <ea:plugin module="javadoc" revision="0.1" my.property.inplugin="true"/>
+        <ea:plugin module="javadoc" revision="0.1" my-dashes="true" my.property.inconf="true" conf="myBuild"/>
+        
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+        <conf name="myBuild" ea:type="profile"/>
+    </configurations>
 </ivy-module>

@@ -16,35 +16,35 @@
 -->
 <project name="org.apache.easyant.plugins#jetty-deploy" xmlns:ea="antlib:org.apache.easyant">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="package" />
-		<ea:parameter property="jetty.temp.dir" default="${target}/jetty-temp" description="Jetty temporary directory. If unspecified, defaults to target/jetty-temp" />
-		<ea:parameter property="jetty.xml" required="false" description="Jetty configuration XML. If unspecified, defaults to jetty.xml shipped with 6.1.4 jetty." />
-		<ea:parameter property="jetty.context" default="/" description="Application context in jetty. If unspecified, defaults to root (/)." />
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="package" />
+        <ea:parameter property="jetty.temp.dir" default="${target}/jetty-temp" description="Jetty temporary directory. If unspecified, defaults to target/jetty-temp" />
+        <ea:parameter property="jetty.xml" required="false" description="Jetty configuration XML. If unspecified, defaults to jetty.xml shipped with 6.1.4 jetty." />
+        <ea:parameter property="jetty.context" default="/" description="Application context in jetty. If unspecified, defaults to root (/)." />
 
 
-		<available property="jetty.available" classname="org.mortbay.jetty.ant.JettyRunTask" classpathref="org.apache.easyant.plugins#jetty-deploy.classpath" />
+        <available property="jetty.available" classname="org.mortbay.jetty.ant.JettyRunTask" classpathref="org.apache.easyant.plugins#jetty-deploy.classpath" />
 
-		<fail unless="jetty.available" message="Jetty is unavailable!" />
+        <fail unless="jetty.available" message="Jetty is unavailable!" />
 
 
-		<taskdef name="jetty" classname="org.mortbay.jetty.ant.JettyRunTask" classpathref="org.apache.easyant.plugins#jetty-deploy.classpath" />
-	</target>
+        <taskdef name="jetty" classname="org.mortbay.jetty.ant.JettyRunTask" classpathref="org.apache.easyant.plugins#jetty-deploy.classpath" />
+    </target>
 
-	<!-- default way jetty will be run:
-		jetty temp directory: target/jetty-temp 
-		jetty configuration xml: jetty.xml shipped with this module (standard 6.1.4 jetty.xml shipped with jetty) 
-		webapplication context: root (/)
-	-->
-	<target name=":run" depends="package" description="run your webapp inside a jetty application server">
-		<echo message="Deploying ${module.name} on Jetty .." />
-		<jetty tempDirectory="${jetty.temp.dir}" jettyXml="${jetty.xml}">
-			<webApp name="${module.name}" warfile="${target.artifacts}/${target.artifacts.main.war.name}" contextpath="${jetty.context}" />
-		</jetty>
-	</target>
+    <!-- default way jetty will be run:
+        jetty temp directory: target/jetty-temp 
+        jetty configuration xml: jetty.xml shipped with this module (standard 6.1.4 jetty.xml shipped with jetty) 
+        webapplication context: root (/)
+    -->
+    <target name=":run" depends="package" description="run your webapp inside a jetty application server">
+        <echo message="Deploying ${module.name} on Jetty .." />
+        <jetty tempDirectory="${jetty.temp.dir}" jettyXml="${jetty.xml}">
+            <webApp name="${module.name}" warfile="${target.artifacts}/${target.artifacts.main.war.name}" contextpath="${jetty.context}" />
+        </jetty>
+    </target>
 
-	<target name="doit" depends=":run" />
+    <target name="doit" depends=":run" />
 </project>

@@ -19,66 +19,66 @@ package org.apache.easyant.core;
 
 
 public interface EasyAntConstants {
-	
-	/**
-	 * Name of the task name used for internal easyant jobs
-	 */
-	public static final String EASYANT_TASK_NAME = "easyant";
-	
-	/**
-	 * Name of the default build module
-	 */
-	public static final String DEFAULT_BUILD_MODULE = "module.ivy";
-	
-	/**
-	 * Name of the default build file
-	 */
-	public static final String DEFAULT_BUILD_FILE = "module.ant";
-	
-	/**
-	 * Name of the default override build file
-	 */
-	public static final String DEFAULT_OVERRIDE_BUILD_FILE = "override.module.ant";
+    
+    /**
+     * Name of the task name used for internal easyant jobs
+     */
+    public static final String EASYANT_TASK_NAME = "easyant";
+    
+    /**
+     * Name of the default build module
+     */
+    public static final String DEFAULT_BUILD_MODULE = "module.ivy";
+    
+    /**
+     * Name of the default build file
+     */
+    public static final String DEFAULT_BUILD_FILE = "module.ant";
+    
+    /**
+     * Name of the default override build file
+     */
+    public static final String DEFAULT_OVERRIDE_BUILD_FILE = "override.module.ant";
 
-	/**
-	 * URI of easyant module descriptor namespace
-	 */
-	public static final String EASYANT_MD_NAMESPACE = "http://www.easyant.org";
+    /**
+     * URI of easyant module descriptor namespace
+     */
+    public static final String EASYANT_MD_NAMESPACE = "http://www.easyant.org";
 
-	/**
-	 * Name of the default target
-	 */
-	public static final String DEFAULT_TARGET = "doit";
+    /**
+     * Name of the default target
+     */
+    public static final String DEFAULT_TARGET = "doit";
 
-	/**
-	 * Name of the default easyant plugins organisation
-	 */
-	public static final String EASYANT_PLUGIN_ORGANISATION = "org.apache.easyant.plugins";
-	
-	/**
-	 * Name of the default easyant build types organisation
-	 */
-	public static final String EASYANT_BUILDTYPES_ORGANISATION = "org.apache.easyant.buildtypes";
-	
-	/**
-	 * Name of the default easyant skeletons organisation
-	 */
-	public static final String EASYANT_SKELETONS_ORGANISATION = "org.apache.easyant.skeletons";
+    /**
+     * Name of the default easyant plugins organisation
+     */
+    public static final String EASYANT_PLUGIN_ORGANISATION = "org.apache.easyant.plugins";
+    
+    /**
+     * Name of the default easyant build types organisation
+     */
+    public static final String EASYANT_BUILDTYPES_ORGANISATION = "org.apache.easyant.buildtypes";
+    
+    /**
+     * Name of the default easyant skeletons organisation
+     */
+    public static final String EASYANT_SKELETONS_ORGANISATION = "org.apache.easyant.skeletons";
 
-	/**
-	 * Default location of user's easyant ivysettings file
-	 */
-	public static final String DEFAULT_USER_EASYANT_IVYSETTINGS = "${user.home}/.easyant/easyant-ivysettings.xml";
+    /**
+     * Default location of user's easyant ivysettings file
+     */
+    public static final String DEFAULT_USER_EASYANT_IVYSETTINGS = "${user.home}/.easyant/easyant-ivysettings.xml";
 
-	/**
-	 * Default location of global easyant ivysettings file
-	 */
-	public static final String DEFAULT_GLOBAL_EASYANT_IVYSETTINGS = "file://${easyant.home}/easyant-ivysettings.xml";
+    /**
+     * Default location of global easyant ivysettings file
+     */
+    public static final String DEFAULT_GLOBAL_EASYANT_IVYSETTINGS = "file://${easyant.home}/easyant-ivysettings.xml";
 
-	/**
-	 * Default value for pre module targets
-	 */
-	public static final String DEFAULT_PRE_MODULE_TARGETS = "clean";
-	
+    /**
+     * Default value for pre module targets
+     */
+    public static final String DEFAULT_PRE_MODULE_TARGETS = "clean";
+    
 
 }

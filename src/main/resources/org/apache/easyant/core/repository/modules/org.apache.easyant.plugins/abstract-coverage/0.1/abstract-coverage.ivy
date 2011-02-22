@@ -15,16 +15,16 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="abstract-coverage"
-	       status="milestone"
-	       revision="0.1">
-	       <description>Abstract base plugin, that any modules providing
-	       test code coverage features should include.  abstract-coverage
-	       defines common configuration properties governing code coverage
-	       behavior.</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
+    <info organisation="org.apache.easyant.plugins"
+           module="abstract-coverage"
+           status="milestone"
+           revision="0.1">
+           <description>Abstract base plugin, that any modules providing
+           test code coverage features should include.  abstract-coverage
+           defines common configuration properties governing code coverage
+           behavior.</description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
 </ivy-module>

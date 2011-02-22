@@ -455,7 +455,7 @@
 
 <xsl:template name="JS-escape">
     <xsl:param name="string"/>
-    <xsl:param name="tmp1" select="stringutils:replace(string($string),'\','\\')"/>
+    <xsl:param name="tmp1" select="stringutils:replace(string($string),'\','\')"/>
     <xsl:param name="tmp2" select="stringutils:replace(string($tmp1),&quot;'&quot;,&quot;\&apos;&quot;)"/>
     <xsl:value-of select="$tmp2"/>
 </xsl:template>

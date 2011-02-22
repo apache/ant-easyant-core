@@ -22,7 +22,7 @@
         <attribute name="checkUpToDate"/>
         <attribute name="printerFriendly"/>
         <![CDATA[
-			print('Target Dir: ' + attributes.get("destdir"));
+            print('Target Dir: ' + attributes.get("destdir"));
             importClass(java.io.File);
 
             fs = elements.get("fileset").get(0);

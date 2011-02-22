@@ -22,12 +22,12 @@ import java.util.Properties;
 import junit.framework.TestCase;
 
 public class ExampleTest extends TestCase {
-	public void testExample() throws Exception {
-		assertEquals("Hello EasyAnt!", new Example().sayHello("EasyAnt"));
-	}
-	public void testTestResources() throws Exception {
-		Properties props = new Properties();
-		props.load(Example.class.getResourceAsStream("/test.properties"));
-		assertEquals("Hello Test", props.getProperty("test.example"));
-	}
+    public void testExample() throws Exception {
+        assertEquals("Hello EasyAnt!", new Example().sayHello("EasyAnt"));
+    }
+    public void testTestResources() throws Exception {
+        Properties props = new Properties();
+        props.load(Example.class.getResourceAsStream("/test.properties"));
+        assertEquals("Hello Test", props.getProperty("test.example"));
+    }
 }

@@ -16,83 +16,83 @@
 -->
 <project name="org.apache.easyant.plugins#manifest" xmlns:ea="antlib:org.apache.easyant">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
+    <ea:core-version requiredrevision="[0.8,+]" />
 
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="prepare-package" />
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="prepare-package" />
 
-		<ea:parameter property="project.main.classname" description="Used to define the project main class. The mainclass will then be used by many plugins (manifest, run-java, etc...)"/>
-		<ea:parameter property="manifest.main.classname" default="${project.main.classname}">
-	If defined, Main-Class and Class-Path attributes are added to produce an executable jar file.
-	By default this property take the same value as 'project.main.classname'  property.
-	If you are looking for a way to reference your mainclass one time for all plugins you should set project.main.classname instead.
-		</ea:parameter>
-		<ea:parameter property="manifest.classpath" required="false" description="If manifest.main.classname is defined, this will be used for the Class-Path attribute.  by default this will be automatically computed from the Ivy dependencies of the target artifact." />
-		<mkdir dir="${target.main.classes}/META-INF"/>
-		<ea:parameter property="manifest.file" default="${target}/MANIFEST.MF" description="the manifest-file to create/update." />
-		<ea:parameter property="version.properties.file" default="${target.main.classes}/META-INF/version.properties" description="the version.properties file to create/update." />
+        <ea:parameter property="project.main.classname" description="Used to define the project main class. The mainclass will then be used by many plugins (manifest, run-java, etc...)"/>
+        <ea:parameter property="manifest.main.classname" default="${project.main.classname}">
+    If defined, Main-Class and Class-Path attributes are added to produce an executable jar file.
+    By default this property take the same value as 'project.main.classname'  property.
+    If you are looking for a way to reference your mainclass one time for all plugins you should set project.main.classname instead.
+        </ea:parameter>
+        <ea:parameter property="manifest.classpath" required="false" description="If manifest.main.classname is defined, this will be used for the Class-Path attribute.  by default this will be automatically computed from the Ivy dependencies of the target artifact." />
+        <mkdir dir="${target.main.classes}/META-INF"/>
+        <ea:parameter property="manifest.file" default="${target}/MANIFEST.MF" description="the manifest-file to create/update." />
+        <ea:parameter property="version.properties.file" default="${target.main.classes}/META-INF/version.properties" description="the version.properties file to create/update." />
 
-		<!--TODO: maybe it will be more generic if we doesn't use ivy.* properties -->
-		<ea:parameter property="ivy.module" description="the name of the project, used to fill the Specification-Title and Implementation-Title in the manifest" />
-		<ea:parameter property="ivy.organisation" description="the name of the organisation that is the owner of this module, used to fill the Specification-Vendor and Implementation-Vendor in the manifest" />
-		<ea:parameter property="ivy.revision" description="the revision of the project, used to fill the Specification-Version and Implementation-Version in the manifest" />
-		<ea:parameter property="version" description="the full version of the project" />
-		<condition property="is.manifest.runnable">
-			<and>
-				<isset property="manifest.main.classname"/>
-				<not>
-				<equals arg1="${manifest.main.classname}" arg2="$${project.main.classname}"/>
-				</not>
-			</and>
-		</condition>
-	</target>
+        <!--TODO: maybe it will be more generic if we doesn't use ivy.* properties -->
+        <ea:parameter property="ivy.module" description="the name of the project, used to fill the Specification-Title and Implementation-Title in the manifest" />
+        <ea:parameter property="ivy.organisation" description="the name of the organisation that is the owner of this module, used to fill the Specification-Vendor and Implementation-Vendor in the manifest" />
+        <ea:parameter property="ivy.revision" description="the revision of the project, used to fill the Specification-Version and Implementation-Version in the manifest" />
+        <ea:parameter property="version" description="the full version of the project" />
+        <condition property="is.manifest.runnable">
+            <and>
+                <isset property="manifest.main.classname"/>
+                <not>
+                <equals arg1="${manifest.main.classname}" arg2="$${project.main.classname}"/>
+                </not>
+            </and>
+        </condition>
+    </target>
 
-	<target name="-generate-version-number" depends="validate" unless="version">
-		<tstamp>
-			<format property="now" pattern="yyyyMMddHHmmss" />
-		</tstamp>
+    <target name="-generate-version-number" depends="validate" unless="version">
+        <tstamp>
+            <format property="now" pattern="yyyyMMddHHmmss" />
+        </tstamp>
 
-		<property name="version" value="${ivy.revision}-build-${now}" />
-	</target>
+        <property name="version" value="${ivy.revision}-build-${now}" />
+    </target>
 
-	<target name=":manifest" depends="validate,-generate-version-number" phase="prepare-package" description="generate manifest file">
-		<manifest file="${manifest.file}">
-			<attribute name="Specification-Title" value="${ivy.module}" />
-			<attribute name="Specification-Version" value="${ivy.revision}" />
-			<attribute name="Specification-Vendor" value="${ivy.organisation}" />
-			<attribute name="Implementation-Title" value="${ivy.module}" />
-			<attribute name="Implementation-Version" value="${version}" />
-			<attribute name="Implementation-Vendor" value="${ivy.organisation}" />
-		</manifest>
+    <target name=":manifest" depends="validate,-generate-version-number" phase="prepare-package" description="generate manifest file">
+        <manifest file="${manifest.file}">
+            <attribute name="Specification-Title" value="${ivy.module}" />
+            <attribute name="Specification-Version" value="${ivy.revision}" />
+            <attribute name="Specification-Vendor" value="${ivy.organisation}" />
+            <attribute name="Implementation-Title" value="${ivy.module}" />
+            <attribute name="Implementation-Version" value="${version}" />
+            <attribute name="Implementation-Vendor" value="${ivy.organisation}" />
+        </manifest>
 
-		<!--generate a version.properties file -->
-		<propertyfile file="${version.properties.file}" comment="Generated by easyant">
-			<entry key="APPLICATION-NAME" value="${ivy.module}" />
-			<entry key="SPEC-VERSION" value="${ivy.revision}" />
-			<entry key="APPLICATION_ORG" value="${ivy.organisation}" />
-			<entry key="VERSION" value="${version}" />
-			<entry key="DATE" type="date" value="now" />
-		</propertyfile>
-	</target>
-	<!-- currently this target is only available if we use retrieve.dependencies=true because manifestclasspath is excepting a relative based structure which is not really usable using the ivy cache for example -->
-	<target name=":manifest-runnable" depends=":manifest" phase="prepare-package" description="add manifest attributes required for an executable jar" if="is.manifest.runnable">
-		<condition property="is.retrieve.dependencies.enabled">
-			<istrue value="${retrieve.dependencies}"/>
-		</condition>
-		<fail unless="is.retrieve.dependencies.enabled" message="manifest runnable feature can only be used if your the property retrieve.dependencies is enabled"/>
+        <!--generate a version.properties file -->
+        <propertyfile file="${version.properties.file}" comment="Generated by easyant">
+            <entry key="APPLICATION-NAME" value="${ivy.module}" />
+            <entry key="SPEC-VERSION" value="${ivy.revision}" />
+            <entry key="APPLICATION_ORG" value="${ivy.organisation}" />
+            <entry key="VERSION" value="${version}" />
+            <entry key="DATE" type="date" value="now" />
+        </propertyfile>
+    </target>
+    <!-- currently this target is only available if we use retrieve.dependencies=true because manifestclasspath is excepting a relative based structure which is not really usable using the ivy cache for example -->
+    <target name=":manifest-runnable" depends=":manifest" phase="prepare-package" description="add manifest attributes required for an executable jar" if="is.manifest.runnable">
+        <condition property="is.retrieve.dependencies.enabled">
+            <istrue value="${retrieve.dependencies}"/>
+        </condition>
+        <fail unless="is.retrieve.dependencies.enabled" message="manifest runnable feature can only be used if your the property retrieve.dependencies is enabled"/>
 
-		<!-- create the target artifact dir if it does not exists -->
-		<dirname file="${target.main.artifact}" property="target.artifacts"/>
-		<mkdir dir="${target.artifacts}"/>
-		<manifestclasspath property="manifest.classpath" jarfile="${target.main.artifact}">
-			<classpath refid="project.lib.main.classpath"/>
-		</manifestclasspath>
-		<manifest file="${manifest.file}" mode="update">
-			<attribute name="Main-Class" value="${manifest.main.classname}" />
-			<attribute name="Class-Path" value="${manifest.classpath}" />
-		</manifest>
-	</target>
+        <!-- create the target artifact dir if it does not exists -->
+        <dirname file="${target.main.artifact}" property="target.artifacts"/>
+        <mkdir dir="${target.artifacts}"/>
+        <manifestclasspath property="manifest.classpath" jarfile="${target.main.artifact}">
+            <classpath refid="project.lib.main.classpath"/>
+        </manifestclasspath>
+        <manifest file="${manifest.file}" mode="update">
+            <attribute name="Main-Class" value="${manifest.main.classname}" />
+            <attribute name="Class-Path" value="${manifest.classpath}" />
+        </manifest>
+    </target>
 
-	<target name="doit" depends=":manifest-runnable,:manifest" />
+    <target name="doit" depends=":manifest-runnable,:manifest" />
 </project>

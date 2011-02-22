@@ -25,86 +25,88 @@ import org.apache.tools.ant.BuildException;
  *
  */
 public class CheckResolver extends IvyTask {
-	
-	private String resolver;
-	
-	private String description;
+    
+    private String resolver;
+    
+    private String description;
 
-	@Override
-	public void doExecute() throws BuildException {
-		if (resolver ==null || resolver.equals("")) {
-			throw new BuildException("resolver attribute is mandatory");
-		}
-		String resolverProperty = getProject().getProperty(resolver);
-		if (resolverProperty==null) {
-			throw new BuildException("Can't check resolvers :Unknown property " + resolver);
-		}
-		if (!getSettings().getResolverNames().contains(resolverProperty)) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("resolver ").append(resolverProperty);
-			sb.append(" does not exist in current project, please check your project ivysettings.xml file.");
-			sb.append("\n");
-			if (getDescription() != null) {
-				sb.append(resolver);
-				sb.append(" : ");
-				sb.append(getDescription());
-				sb.append("\n");
-			}
-			sb.append("Available resolvers : ");
-			sb.append(getSettings().getResolverNames().toString());
-			throw new BuildException(sb.toString());
-		}
-		
-	}
+    @Override
+    public void doExecute() throws BuildException {
+        if (resolver ==null || resolver.equals("")) {
+            throw new BuildException("resolver attribute is mandatory");
+        }
+        String resolverProperty = getProject().getProperty(resolver);
+        if (resolverProperty==null) {
+            throw new BuildException("Can't check resolvers :Unknown property " + resolver);
+        }
+        if (!getSettings().getResolverNames().contains(resolverProperty)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("resolver ").append(resolverProperty);
+            sb.append(" does not exist in current project, please check your project ivysettings.xml file.");
+            sb.append("
+");
+            if (getDescription() != null) {
+                sb.append(resolver);
+                sb.append(" : ");
+                sb.append(getDescription());
+                sb.append("
+");
+            }
+            sb.append("Available resolvers : ");
+            sb.append(getSettings().getResolverNames().toString());
+            throw new BuildException(sb.toString());
+        }
+        
+    }
 
-	/**
-	 * Get property resolver name to check
-	 * @return the property name representing the resolver 
-	 */
-	public String getResolver() {
-		return resolver;
-	}
+    /**
+     * Get property resolver name to check
+     * @return the property name representing the resolver 
+     */
+    public String getResolver() {
+        return resolver;
+    }
 
-	/**
-	 * Set the property resolver name to check
-	 * @param resolver a property name representing the resolver 
-	 */
-	public void setResolver(String resolver) {
-		this.resolver = resolver;
-	}
-	
-	/**
-	 * Get a description to the property / path / phase
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
+    /**
+     * Set the property resolver name to check
+     * @param resolver a property name representing the resolver 
+     */
+    public void setResolver(String resolver) {
+        this.resolver = resolver;
+    }
+    
+    /**
+     * Get a description to the property / path / phase
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
 
-	/**
-	 * set a description to the property / path / phase
-	 * @param description the description
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
-	 * Appends CDATA text inside the Ant task to description
-	 * @see #setDescription(String)
-	 */
-	public void addText(String descriptionText) {
-		if (descriptionText.trim().length() > 0) {
-			descriptionText = getProject().replaceProperties(descriptionText);
-			if (getDescription() == null) {
-				setDescription(descriptionText);
-			} else {
-				setDescription(getDescription()+descriptionText);
-			}
-		}
-	}
+    /**
+     * set a description to the property / path / phase
+     * @param description the description
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
+    /**
+     * Appends CDATA text inside the Ant task to description
+     * @see #setDescription(String)
+     */
+    public void addText(String descriptionText) {
+        if (descriptionText.trim().length() > 0) {
+            descriptionText = getProject().replaceProperties(descriptionText);
+            if (getDescription() == null) {
+                setDescription(descriptionText);
+            } else {
+                setDescription(getDescription()+descriptionText);
+            }
+        }
+    }
 
 
-	
-	
+    
+    
 }

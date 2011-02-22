@@ -15,16 +15,16 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" > 
-	<info organisation="org.apache.easyant.plugins"
-	       module="osgi-bundle"
-	       status="milestone"
-	       revision="0.1">
-		<description>Provides osgi features.</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
-	<dependencies>
-		<dependency org="net.luminis" name="osgi-bundle-ant" rev="0.2.0"/>
-	</dependencies>
+    <info organisation="org.apache.easyant.plugins"
+           module="osgi-bundle"
+           status="milestone"
+           revision="0.1">
+        <description>Provides osgi features.</description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+    <dependencies>
+        <dependency org="net.luminis" name="osgi-bundle-ant" rev="0.2.0"/>
+    </dependencies>
 </ivy-module>

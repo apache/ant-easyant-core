@@ -15,19 +15,19 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="example-multimodule" revision="0.2" status="integration" >
-		<description>
-			This example show you how to use a meta build orchestrator to manage several submodules
-		</description>
-		<!--
-			This easyant section is equivalent to having a module.ant like this:
-			
-			<project name="org.apache.easyant#example-hello-world"
-				xmlns:ea="antlib:org.apache.easyant">
-				
-				<ea:import organisation="org.apache.easyant.buildtypes" module="meta-build" revision="0.2"/>
-			</project>				
-		  -->
-		<ea:build module="meta-build" revision="0.2"/>
-	</info>
+    <info organisation="org.apache.easyant" module="example-multimodule" revision="0.2" status="integration" >
+        <description>
+            This example show you how to use a meta build orchestrator to manage several submodules
+        </description>
+        <!--
+            This easyant section is equivalent to having a module.ant like this:
+            
+            <project name="org.apache.easyant#example-hello-world"
+                xmlns:ea="antlib:org.apache.easyant">
+                
+                <ea:import organisation="org.apache.easyant.buildtypes" module="meta-build" revision="0.2"/>
+            </project>              
+          -->
+        <ea:build module="meta-build" revision="0.2"/>
+    </info>
 </ivy-module>

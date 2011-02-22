@@ -15,14 +15,14 @@
    limitations under the License.
 -->
 <ivysettings>
-	<settings defaultResolver="third-party-lib"/>
-	<caches useOrigin="true"/>
-	<resolvers>
-		<!-- libs included in core easyant distribution -->
-		<filesystem name="third-party-lib">
-			<ivy pattern="${ivy.settings.dir}/[organisation]/[module]/[revision]/[module].ivy"/>
-			<artifact pattern="${ivy.settings.dir}/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
-		</filesystem>
-	</resolvers>
+    <settings defaultResolver="third-party-lib"/>
+    <caches useOrigin="true"/>
+    <resolvers>
+        <!-- libs included in core easyant distribution -->
+        <filesystem name="third-party-lib">
+            <ivy pattern="${ivy.settings.dir}/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="${ivy.settings.dir}/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+        </filesystem>
+    </resolvers>
 
 </ivysettings>

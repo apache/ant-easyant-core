@@ -15,14 +15,14 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.buildtypes"
-	       module="meta-build"
-	       status="milestone"
-	       revision="0.1">
-	       <description>This module is a meta module that allow you to build multi projects.</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-		<artifact type="properties" />
-	</publications>
+    <info organisation="org.apache.easyant.buildtypes"
+           module="meta-build"
+           status="milestone"
+           revision="0.1">
+           <description>This module is a meta module that allow you to build multi projects.</description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+        <artifact type="properties" />
+    </publications>
 </ivy-module>

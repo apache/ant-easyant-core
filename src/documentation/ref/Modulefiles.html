@@ -17,12 +17,12 @@
 -->
 <html>
 <head>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
-	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
-	<script type="text/javascript" src="../xooki/xooki.js"></script>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <script type="text/javascript">var xookiConfig = {level: 1};</script>   
+    <script type="text/javascript" src="../xooki/xooki.js"></script>
 </head>
 <body>
-	<textarea id="xooki-source">
+    <textarea id="xooki-source">
 <h1>Module files</h1>
 A project using EasyAnt <b>MUST</b> contain a file named module.ivy and an optional file named module.ant.
 
@@ -120,19 +120,19 @@ Consider the following module.ivy file:
 <p />
 <code type="xml">
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
+    <info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
                 <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
                         <ea:plugin organisation="org.apache.easyant.plugins" module="checkstyle" revision="0.1"/>
-                </ea:build>	
+                </ea:build> 
         </info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact"/>
-		<conf name="test" visibility="private" description="this scope indicates this is only available for the test compilation and execution phases."/>
-	</configurations>
-	<dependencies>
-		<dependency org="hsqldb" name="hsqldb" rev="1.8.0.7" conf="default->default"/>
-		<dependency org="junit" name="junit" rev="4.4" conf="test->default" />
-	</dependencies>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact"/>
+        <conf name="test" visibility="private" description="this scope indicates this is only available for the test compilation and execution phases."/>
+    </configurations>
+    <dependencies>
+        <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7" conf="default->default"/>
+        <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
+    </dependencies>
 </ivy-module>
 
 </code>
@@ -140,10 +140,10 @@ The above code snippet is a declaration of a easyant project that uses the stand
 
 <code type="xml">
 <project name="org.apache.easyant.buildtypes#standard-java-app"
-	xmlns:ea="antlib:org.apache.easyant">
-	<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+    xmlns:ea="antlib:org.apache.easyant">
+    <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
         <ea:plugin organisation="org.apache.easyant.plugins" module="checkstyle" revision="0.1"/>
-</project>				
+</project>              
 </code>
 <div id="note">Note: organisation are optionnal in <b>ea:build</b> / <b>ea:plugin</b>. If no organisation is set easyant will use the default one.
 <ul>
@@ -162,14 +162,14 @@ Let's try to add a target name hello world in the project.
 The module ivy looks like this : 
 <code type="xml">
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
+    <info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
                 <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
         </info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact"/>
-		<conf name="test" visibility="private" description="this scope indicates this is only available for the test compilation and execution phases."/>
-	</configurations>
-	<dependencies/>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact"/>
+        <conf name="test" visibility="private" description="this scope indicates this is only available for the test compilation and execution phases."/>
+    </configurations>
+    <dependencies/>
 </ivy-module>
 </code>
 
@@ -178,10 +178,10 @@ Here we're able to run any phase/target provided by the <b>build-std-java</b> bu
 Now we will add our helloWorld target in module.ant
 <code type="xml">
 <project name="org.apache.easyant.buildtypes#standard-java-app"
-	xmlns:ea="antlib:org.apache.easyant">
-	<target name="helloWorld" description="display a helloWorld message">
-		<echo message="Hello World!"/>
-	</target>
+    xmlns:ea="antlib:org.apache.easyant">
+    <target name="helloWorld" description="display a helloWorld message">
+        <echo message="Hello World!"/>
+    </target>
 </project>
 </code>
 
@@ -215,7 +215,7 @@ The <b>override.module.ant</b> is a true ant script loaded before the module.ivy
 For example suppose we want to introduce a new phase named my-phase run before the default package phase. 
 <code type="xml">
 <project name="org.apache.easyant.buildtypes#standard-java-app"
-	xmlns:ea="antlib:org.apache.easyant">
+    xmlns:ea="antlib:org.apache.easyant">
         <!-- Define a new phase -->
         <phase name="my-phase" description="foobar"/>
         <!-- Override the package phase that depends on my-phase and the default package phase -->

@@ -15,89 +15,89 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#documentation" xmlns:ea="antlib:org.apache.easyant">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
 
-	<dirname file="${org.apache.easyant.plugins#documentation.style.css.file}" property="org.apache.easyant.plugins#documentation.style.css.dir" />
+    <dirname file="${org.apache.easyant.plugins#documentation.style.css.file}" property="org.apache.easyant.plugins#documentation.style.css.dir" />
 
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="verify" />
-		<ea:parameter phase="documentation" />
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="verify" />
+        <ea:parameter phase="documentation" />
 
-		<ea:parameter property="documentation.xsl.file" default="${org.apache.easyant.plugins#documentation.site.xsl.file}" description="xsl, used to transform XML -> HTML" />
-		<ea:parameter property="documentation.css.dir" default="{org.apache.easyant.plugins#documentation.style.css.dir}" description="path where the css are stored, used for nice looking HTML" />
-		<ea:parameter property="target.documentation.dir" default="${target}/documentation" description="directory where the documentation will be generated to" />
-		<ea:parameter property="src.dir" default="${user.dir}/src" description="directory containing projects sources" />
-		<ea:parameter property="src.documentation.dir" default="${src.dir}/documentation" description="directory where the documentation is stored in the project" />
-		<ea:parameter property="documentation.menu.file" default="${src.documentation.dir}/menu.xml" description="the file, which stores the navigation" />
+        <ea:parameter property="documentation.xsl.file" default="${org.apache.easyant.plugins#documentation.site.xsl.file}" description="xsl, used to transform XML -> HTML" />
+        <ea:parameter property="documentation.css.dir" default="{org.apache.easyant.plugins#documentation.style.css.dir}" description="path where the css are stored, used for nice looking HTML" />
+        <ea:parameter property="target.documentation.dir" default="${target}/documentation" description="directory where the documentation will be generated to" />
+        <ea:parameter property="src.dir" default="${user.dir}/src" description="directory containing projects sources" />
+        <ea:parameter property="src.documentation.dir" default="${src.dir}/documentation" description="directory where the documentation is stored in the project" />
+        <ea:parameter property="documentation.menu.file" default="${src.documentation.dir}/menu.xml" description="the file, which stores the navigation" />
 
-		<condition property="xslt.available">
-			<available classname="org.apache.tools.ant.taskdefs.optional.TraXLiaison" />
-		</condition>
-		<fail message="Ant xslt was not found. Please install ant-nodeps in your ANT_HOME" unless="xslt.available" />
+        <condition property="xslt.available">
+            <available classname="org.apache.tools.ant.taskdefs.optional.TraXLiaison" />
+        </condition>
+        <fail message="Ant xslt was not found. Please install ant-nodeps in your ANT_HOME" unless="xslt.available" />
 
-		<available file="${documentation.xsl.file}" property="has.documentation.xsl.file" />
-		<fail message="documentation.xsl.file was not found. Please reference this file appropriately" unless="has.documentation.xsl.file" />
+        <available file="${documentation.xsl.file}" property="has.documentation.xsl.file" />
+        <fail message="documentation.xsl.file was not found. Please reference this file appropriately" unless="has.documentation.xsl.file" />
 
-		<available file="${src.documentation.dir}" property="has.src.documentation.dir" />
-		<available file="${documentation.menu.file}" property="has.documentation.menu.file" />
+        <available file="${src.documentation.dir}" property="has.src.documentation.dir" />
+        <available file="${documentation.menu.file}" property="has.documentation.menu.file" />
 
-		<available file="${documentation.css.dir}" property="has.documentation.css.dir" />
-	</target>
+        <available file="${documentation.css.dir}" property="has.documentation.css.dir" />
+    </target>
 
-	<target name="-warn-src.documentation.dir.missing" unless="has.src.documentation.dir">
-		<echo>WARN: Your project doesn't match with documentation structure.</echo>
-		<echo>	If you want to use the documentation feature you must create ${src.documentation.dir} directory. This directory must have a menu.xml file</echo>
-		<echo>	If you want to have more information, you should look at the documentation of this module.</echo>
-		<property name="skip.documentation" value="true" />
-	</target>
+    <target name="-warn-src.documentation.dir.missing" unless="has.src.documentation.dir">
+        <echo>WARN: Your project doesn't match with documentation structure.</echo>
+        <echo>  If you want to use the documentation feature you must create ${src.documentation.dir} directory. This directory must have a menu.xml file</echo>
+        <echo>  If you want to have more information, you should look at the documentation of this module.</echo>
+        <property name="skip.documentation" value="true" />
+    </target>
 
-	<target name="-warn-documentation.menu.file.missing" unless="has.documentation.menu.file">
-		<echo>WARN: Your project doesn't match with documentation structure (documentation menu file is missing).</echo> 
-		<echo>	If you want to have more information, you should look at the documentation of this module.</echo>
-		<property name="skip.documentation" value="true" />
-	</target>
+    <target name="-warn-documentation.menu.file.missing" unless="has.documentation.menu.file">
+        <echo>WARN: Your project doesn't match with documentation structure (documentation menu file is missing).</echo> 
+        <echo>  If you want to have more information, you should look at the documentation of this module.</echo>
+        <property name="skip.documentation" value="true" />
+    </target>
 
-	<target name="-documentation" unless="skip.documentation" 
-		phase="documentation" 
-		depends="validate, -warn-src.documentation.dir.missing, -warn-documentation.menu.file.missing, -copy-css, process-documentation-resources">
-		<mkdir dir="${target.documentation.dir}" />
+    <target name="-documentation" unless="skip.documentation" 
+        phase="documentation" 
+        depends="validate, -warn-src.documentation.dir.missing, -warn-documentation.menu.file.missing, -copy-css, process-documentation-resources">
+        <mkdir dir="${target.documentation.dir}" />
 
-		<echo message="Transforming the site documents..." />
-		<xslt basedir="${src.documentation.dir}" destdir="${target.documentation.dir}" extension=".html" style="${documentation.xsl.file}" excludes="${documentation.menu.file}" includes="*.xml">			<param name="relative-path" expression="." />
-			<param name="menu-src-path" expression="${src.documentation.dir}" />
-			<param name="menu-file" expression="${documentation.menu.file}" />
-		</xslt>
+        <echo message="Transforming the site documents..." />
+        <xslt basedir="${src.documentation.dir}" destdir="${target.documentation.dir}" extension=".html" style="${documentation.xsl.file}" excludes="${documentation.menu.file}" includes="*.xml">          <param name="relative-path" expression="." />
+            <param name="menu-src-path" expression="${src.documentation.dir}" />
+            <param name="menu-file" expression="${documentation.menu.file}" />
+        </xslt>
 
-		<!-- Copy static resource files 
+        <!-- Copy static resource files 
              in the future try to solve this via a patternset.
         -->
-		<echo message="Copying static resource files... (images)" />
-		<copy todir="${target.documentation.dir}" filtering="no">
-			<fileset dir="${src.documentation.dir}">
-				<include name="**/*.gif" />
-				<include name="**/*.png" />
-				<include name="**/*.jpg" />
-			</fileset>
-		</copy>
+        <echo message="Copying static resource files... (images)" />
+        <copy todir="${target.documentation.dir}" filtering="no">
+            <fileset dir="${src.documentation.dir}">
+                <include name="**/*.gif" />
+                <include name="**/*.png" />
+                <include name="**/*.jpg" />
+            </fileset>
+        </copy>
 
-	</target>
+    </target>
 
-	<!-- Copy CSS stylesheets -->
-	<target name="-copy-css" if="has.documentation.css.dir" unless="skip.documentation" phase="process-documentation-resources">
-		<echo message="Copying CSS files..." />
-		<copy todir="${target.documentation.dir}" filtering="no">
-			<fileset dir="${documentation.css.dir}">
-				<include name="**/*.css" />
-			</fileset>
-		</copy>
-	</target>
+    <!-- Copy CSS stylesheets -->
+    <target name="-copy-css" if="has.documentation.css.dir" unless="skip.documentation" phase="process-documentation-resources">
+        <echo message="Copying CSS files..." />
+        <copy todir="${target.documentation.dir}" filtering="no">
+            <fileset dir="${documentation.css.dir}">
+                <include name="**/*.css" />
+            </fileset>
+        </copy>
+    </target>
 
-	<target name=":documentation" depends="-documentation" unless="skip.documentation" description="generate documentation">
-		<fail if="documentation.failure" message="There are documentation violation(s)" />
-	</target>
+    <target name=":documentation" depends="-documentation" unless="skip.documentation" description="generate documentation">
+        <fail if="documentation.failure" message="There are documentation violation(s)" />
+    </target>
 
 
-	<target name="doit" depends=":documentation" />
+    <target name="doit" depends=":documentation" />
 </project>

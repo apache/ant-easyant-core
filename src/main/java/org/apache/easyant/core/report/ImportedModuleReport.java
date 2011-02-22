@@ -20,79 +20,79 @@ package org.apache.easyant.core.report;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 
 public class ImportedModuleReport {
-	String module = null;
-	String organisation = null;
-	String revision = null;
-	String moduleMrid = null;
-	String type = null;
-	String as = null;
-	boolean mandatory = false;
+    String module = null;
+    String organisation = null;
+    String revision = null;
+    String moduleMrid = null;
+    String type = null;
+    String as = null;
+    boolean mandatory = false;
 
-	EasyAntReport easyantReport = null;
+    EasyAntReport easyantReport = null;
 
-	public String getModule() {
-		return module;
-	}
+    public String getModule() {
+        return module;
+    }
 
-	public void setModule(String module) {
-		this.module = module;
-	}
+    public void setModule(String module) {
+        this.module = module;
+    }
 
-	public String getOrganisation() {
-		return organisation;
-	}
+    public String getOrganisation() {
+        return organisation;
+    }
 
-	public void setOrganisation(String organisation) {
-		this.organisation = organisation;
-	}
+    public void setOrganisation(String organisation) {
+        this.organisation = organisation;
+    }
 
-	public String getRevision() {
-		return revision;
-	}
+    public String getRevision() {
+        return revision;
+    }
 
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
 
-	public String getModuleMrid() {
-		return moduleMrid != null ? moduleMrid : ModuleRevisionId.newInstance(
-				organisation, module, revision).toString();
-	}
+    public String getModuleMrid() {
+        return moduleMrid != null ? moduleMrid : ModuleRevisionId.newInstance(
+                organisation, module, revision).toString();
+    }
 
-	public void setModuleMrid(String moduleMrid) {
-		this.moduleMrid = moduleMrid;
-	}
+    public void setModuleMrid(String moduleMrid) {
+        this.moduleMrid = moduleMrid;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public String getAs() {
-		return as;
-	}
+    public String getAs() {
+        return as;
+    }
 
-	public void setAs(String as) {
-		this.as = as;
-	}
+    public void setAs(String as) {
+        this.as = as;
+    }
 
-	public EasyAntReport getEasyantReport() {
-		return easyantReport;
-	}
+    public EasyAntReport getEasyantReport() {
+        return easyantReport;
+    }
 
-	public void setEasyantReport(EasyAntReport easyantReport) {
-		this.easyantReport = easyantReport;
-	}
+    public void setEasyantReport(EasyAntReport easyantReport) {
+        this.easyantReport = easyantReport;
+    }
 
-	public boolean isMandatory() {
-		return mandatory;
-	}
+    public boolean isMandatory() {
+        return mandatory;
+    }
 
-	public void setMandatory(boolean mandatory) {
-		this.mandatory = mandatory;
-	}
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
 
 }

@@ -58,59 +58,59 @@ import org.apache.tools.ant.util.FileNameMapper;
  * set of modules is specified using organisation/module and matcher.
  */
 public class RepositoryReport extends AbstractEasyAntTask {
-	private String organisation = "*";
+    private String organisation = "*";
 
-	private String module;
+    private String module;
 
-	private String branch;
+    private String branch;
 
-	private String revision = "latest.integration";
+    private String revision = "latest.integration";
 
-	private String matcher = PatternMatcher.EXACT_OR_REGEXP;
+    private String matcher = PatternMatcher.EXACT_OR_REGEXP;
 
-	private File todir;
+    private File todir;
 
-	private boolean graph = false;
+    private boolean graph = false;
 
-	private boolean dot = false;
+    private boolean dot = false;
 
-	private boolean xml = false;
+    private boolean xml = false;
 
-	private boolean xsl = true;
+    private boolean xsl = true;
 
-	private boolean displaySubProperties = false;
+    private boolean displaySubProperties = false;
 
-	private String xslFile;
+    private String xslFile;
 
-	private String outputname = "ivy-repository-report";
+    private String outputname = "ivy-repository-report";
 
-	private String xslext = "html";
+    private String xslext = "html";
 
     private String resolver;
 
-	private List<XSLTProcess.Param> params = new ArrayList<XSLTProcess.Param>();
+    private List<XSLTProcess.Param> params = new ArrayList<XSLTProcess.Param>();
 
-	private List<ReportMenu> menus = new ArrayList<ReportMenu>();
+    private List<ReportMenu> menus = new ArrayList<ReportMenu>();
 
-	public void execute() throws BuildException {
-		Ivy ivy = getEasyAntIvyInstance();
-		IvySettings settings = ivy.getSettings();
+    public void execute() throws BuildException {
+        Ivy ivy = getEasyAntIvyInstance();
+        IvySettings settings = ivy.getSettings();
 
-		ModuleRevisionId mrid = ModuleRevisionId.newInstance(organisation,
-				module, revision);
+        ModuleRevisionId mrid = ModuleRevisionId.newInstance(organisation,
+                module, revision);
 
-		PluginService pluginService = (PluginService) getProject()
-				.getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
-		try {
-			ModuleRevisionId[] mrids = pluginService.search(organisation,
-					module, revision, branch, matcher, resolver);
-			// replace all found revisions with the original requested revision
-			Set<ModuleRevisionId> modules = new HashSet<ModuleRevisionId>();
-			for (int i = 0; i < mrids.length; i++) {
-				modules.add(ModuleRevisionId.newInstance(mrids[i], revision));
-			}
+        PluginService pluginService = (PluginService) getProject()
+                .getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
+        try {
+            ModuleRevisionId[] mrids = pluginService.search(organisation,
+                    module, revision, branch, matcher, resolver);
+            // replace all found revisions with the original requested revision
+            Set<ModuleRevisionId> modules = new HashSet<ModuleRevisionId>();
+            for (int i = 0; i < mrids.length; i++) {
+                modules.add(ModuleRevisionId.newInstance(mrids[i], revision));
+            }
 
-			String conf = "default";
+            String conf = "default";
             XslReport xslReport = new XslReport();
 
             ResolutionCacheManager cacheMgr = ivy.getResolutionCacheManager();
@@ -118,51 +118,51 @@ public class RepositoryReport extends AbstractEasyAntTask {
             final String graphXsl = graph ? getGraphStylePath(cacheMgr.getResolutionCacheRoot()) : null;
             final String reportXsl = xsl ? getXslPath() : null;
 
-			for (Iterator iterator = modules.iterator(); iterator.hasNext();) {
-				ModuleRevisionId moduleRevisionId = (ModuleRevisionId) iterator
-						.next();
-				ModuleDescriptor md = DefaultModuleDescriptor
-						.newCallerInstance(moduleRevisionId, conf.split(","),
-								true, false);
-				outputname = moduleRevisionId.getName();
-				String resolveId = ResolveOptions.getDefaultResolveId(md);
-				EasyAntReport easyAntReport = null;
-				try {
-					easyAntReport = pluginService.getPluginInfo(
-						moduleRevisionId, conf);
-				} catch (Exception e) {
-					throw new Exception("can't parse " + moduleRevisionId.toString(),e);
-				}
-				if (easyAntReport == null
-						|| easyAntReport.getResolveReport() == null) {
-					throw new Exception("impossible to generate graph for "
-							+ moduleRevisionId.toString()
-							+ ": can't find easyant report");
-				}
+            for (Iterator iterator = modules.iterator(); iterator.hasNext();) {
+                ModuleRevisionId moduleRevisionId = (ModuleRevisionId) iterator
+                        .next();
+                ModuleDescriptor md = DefaultModuleDescriptor
+                        .newCallerInstance(moduleRevisionId, conf.split(","),
+                                true, false);
+                outputname = moduleRevisionId.getName();
+                String resolveId = ResolveOptions.getDefaultResolveId(md);
+                EasyAntReport easyAntReport = null;
+                try {
+                    easyAntReport = pluginService.getPluginInfo(
+                        moduleRevisionId, conf);
+                } catch (Exception e) {
+                    throw new Exception("can't parse " + moduleRevisionId.toString(),e);
+                }
+                if (easyAntReport == null
+                        || easyAntReport.getResolveReport() == null) {
+                    throw new Exception("impossible to generate graph for "
+                            + moduleRevisionId.toString()
+                            + ": can't find easyant report");
+                }
 
-				new XmlEasyAntReportOutputter().output(easyAntReport
-						.getResolveReport(), cacheMgr, new ResolveOptions(),
-						easyAntReport, displaySubProperties);
-				
+                new XmlEasyAntReportOutputter().output(easyAntReport
+                        .getResolveReport(), cacheMgr, new ResolveOptions(),
+                        easyAntReport, displaySubProperties);
+                
                 File xmlSource = cacheMgr.getConfigurationResolveReportInCache(
                         resolveId, "default");
 
-				if (graph) {
+                if (graph) {
                     xslReport.add(graphXsl, xmlSource, outputname, "graphml");
-				}
-				if (dot) {
+                }
+                if (dot) {
                     xslReport.add(dotXsl, xmlSource, outputname, "dot");
-				}
+                }
                 if (xsl) {
                     xslReport.add(reportXsl, xmlSource, outputname, getXslext());
                 }
-				if (xml) {
-					FileUtil.copy(cacheMgr
-							.getConfigurationResolveReportInCache(resolveId,
-									"default"), new File(getTodir(), outputname
-							+ ".xml"), null);
-				}
-			}
+                if (xml) {
+                    FileUtil.copy(cacheMgr
+                            .getConfigurationResolveReportInCache(resolveId,
+                                    "default"), new File(getTodir(), outputname
+                            + ".xml"), null);
+                }
+            }
 
             //run XSL transform on accumulated source files
             xslReport.generateAll();
@@ -183,165 +183,165 @@ public class RepositoryReport extends AbstractEasyAntTask {
                 }
             }
 
-		} catch (Exception e) {
-			throw new BuildException("impossible to generate graph for " + mrid
-					+ ": " + e, e);
-		}
-	}
+        } catch (Exception e) {
+            throw new BuildException("impossible to generate graph for " + mrid
+                    + ": " + e, e);
+        }
+    }
 
-	private String getGraphStylePath(File cache) throws IOException {
-		// style should be a file (and not an url)
-		// so we have to copy it from classpath to cache
-		File style = new File(cache, "easyant-report-graph.xsl");
-		FileUtil.copy(XmlReportOutputter.class
-				.getResourceAsStream("easyant-report-graph.xsl"), style, null);
-		return style.getAbsolutePath();
-	}
+    private String getGraphStylePath(File cache) throws IOException {
+        // style should be a file (and not an url)
+        // so we have to copy it from classpath to cache
+        File style = new File(cache, "easyant-report-graph.xsl");
+        FileUtil.copy(XmlReportOutputter.class
+                .getResourceAsStream("easyant-report-graph.xsl"), style, null);
+        return style.getAbsolutePath();
+    }
 
-	private String getXslPath() throws IOException {
-		if (xslFile != null) {
-			return xslFile;
-		}
-		// style should be a file (and not an url)
-		// so we have to copy it from classpath to cache
-		ResolutionCacheManager cacheMgr = getEasyAntIvyInstance()
-				.getResolutionCacheManager();
-		File style = new File(cacheMgr.getResolutionCacheRoot(),
-				"easyant-report.xsl");
-		FileUtil.copy(XmlEasyAntReportOutputter.class
-				.getResourceAsStream("easyant-report.xsl"), style, null);
-		return style.getAbsolutePath();
-	}
+    private String getXslPath() throws IOException {
+        if (xslFile != null) {
+            return xslFile;
+        }
+        // style should be a file (and not an url)
+        // so we have to copy it from classpath to cache
+        ResolutionCacheManager cacheMgr = getEasyAntIvyInstance()
+                .getResolutionCacheManager();
+        File style = new File(cacheMgr.getResolutionCacheRoot(),
+                "easyant-report.xsl");
+        FileUtil.copy(XmlEasyAntReportOutputter.class
+                .getResourceAsStream("easyant-report.xsl"), style, null);
+        return style.getAbsolutePath();
+    }
 
-	private String getDotStylePath(File cache) throws IOException {
-		// style should be a file (and not an url)
-		// so we have to copy it from classpath to cache
-		File style = new File(cache, "easyant-report-dot.xsl");
-		FileUtil.copy(XmlEasyAntReportOutputter.class
-				.getResourceAsStream("easyant-report-dot.xsl"), style, null);
-		return style.getAbsolutePath();
-	}
+    private String getDotStylePath(File cache) throws IOException {
+        // style should be a file (and not an url)
+        // so we have to copy it from classpath to cache
+        File style = new File(cache, "easyant-report-dot.xsl");
+        FileUtil.copy(XmlEasyAntReportOutputter.class
+                .getResourceAsStream("easyant-report-dot.xsl"), style, null);
+        return style.getAbsolutePath();
+    }
 
-	public File getTodir() {
-		if (todir == null && getProject() != null) {
-			return getProject().getBaseDir();
-		}
-		return todir;
-	}
+    public File getTodir() {
+        if (todir == null && getProject() != null) {
+            return getProject().getBaseDir();
+        }
+        return todir;
+    }
 
-	public void setTodir(File todir) {
-		this.todir = todir;
-	}
+    public void setTodir(File todir) {
+        this.todir = todir;
+    }
 
-	public boolean isGraph() {
-		return graph;
-	}
+    public boolean isGraph() {
+        return graph;
+    }
 
-	public void setGraph(boolean graph) {
-		this.graph = graph;
-	}
+    public void setGraph(boolean graph) {
+        this.graph = graph;
+    }
 
-	public String getXslfile() {
-		return xslFile;
-	}
+    public String getXslfile() {
+        return xslFile;
+    }
 
-	public void setXslfile(String xslFile) {
-		this.xslFile = xslFile;
-	}
+    public void setXslfile(String xslFile) {
+        this.xslFile = xslFile;
+    }
 
-	public boolean isXml() {
-		return xml;
-	}
+    public boolean isXml() {
+        return xml;
+    }
 
-	public void setXml(boolean xml) {
-		this.xml = xml;
-	}
+    public void setXml(boolean xml) {
+        this.xml = xml;
+    }
 
-	public boolean isXsl() {
-		return xsl;
-	}
+    public boolean isXsl() {
+        return xsl;
+    }
 
-	public void setXsl(boolean xsl) {
-		this.xsl = xsl;
-	}
+    public void setXsl(boolean xsl) {
+        this.xsl = xsl;
+    }
 
-	public String getXslext() {
-		return xslext;
-	}
+    public String getXslext() {
+        return xslext;
+    }
 
-	public void setXslext(String xslext) {
-		this.xslext = xslext;
-	}
+    public void setXslext(String xslext) {
+        this.xslext = xslext;
+    }
 
-	public XSLTProcess.Param createParam() {
-		XSLTProcess.Param result = new XSLTProcess.Param();
-		params.add(result);
-		return result;
-	}
+    public XSLTProcess.Param createParam() {
+        XSLTProcess.Param result = new XSLTProcess.Param();
+        params.add(result);
+        return result;
+    }
 
-	public String getOutputname() {
-		return outputname;
-	}
+    public String getOutputname() {
+        return outputname;
+    }
 
-	public void setOutputname(String outputpattern) {
-		outputname = outputpattern;
-	}
+    public void setOutputname(String outputpattern) {
+        outputname = outputpattern;
+    }
 
-	public String getMatcher() {
-		return matcher;
-	}
+    public String getMatcher() {
+        return matcher;
+    }
 
-	public void setMatcher(String matcher) {
-		this.matcher = matcher;
-	}
+    public void setMatcher(String matcher) {
+        this.matcher = matcher;
+    }
 
-	public String getModule() {
-		return module;
-	}
+    public String getModule() {
+        return module;
+    }
 
-	public void setModule(String module) {
-		this.module = module;
-	}
+    public void setModule(String module) {
+        this.module = module;
+    }
 
-	public String getOrganisation() {
-		return organisation;
-	}
+    public String getOrganisation() {
+        return organisation;
+    }
 
-	public void setOrganisation(String organisation) {
-		this.organisation = organisation;
-	}
+    public void setOrganisation(String organisation) {
+        this.organisation = organisation;
+    }
 
-	public String getRevision() {
-		return revision;
-	}
+    public String getRevision() {
+        return revision;
+    }
 
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
 
-	public String getBranch() {
-		return branch;
-	}
+    public String getBranch() {
+        return branch;
+    }
 
-	public void setBranch(String branch) {
-		this.branch = branch;
-	}
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
 
-	public boolean isDot() {
-		return dot;
-	}
+    public boolean isDot() {
+        return dot;
+    }
 
-	public void setDot(boolean dot) {
-		this.dot = dot;
-	}
+    public void setDot(boolean dot) {
+        this.dot = dot;
+    }
 
-	public boolean isDisplaySubProperties() {
-		return displaySubProperties;
-	}
+    public boolean isDisplaySubProperties() {
+        return displaySubProperties;
+    }
 
-	public void setDisplaySubProperties(boolean displaySubProperties) {
-		this.displaySubProperties = displaySubProperties;
-	}
+    public void setDisplaySubProperties(boolean displaySubProperties) {
+        this.displaySubProperties = displaySubProperties;
+    }
 
     public String getResolver() {
         return resolver;
@@ -355,116 +355,116 @@ public class RepositoryReport extends AbstractEasyAntTask {
         this.resolver = resolver;
     }
 
-	/**
-	 * Add a menu generator context, to which menu entries will be published for each report file created.
-	 */
-	public ReportMenu createMenuGenerator() {
-		ReportMenu menu = new ReportMenu();
-		menus.add(menu);
-		return menu;
-	}
+    /**
+     * Add a menu generator context, to which menu entries will be published for each report file created.
+     */
+    public ReportMenu createMenuGenerator() {
+        ReportMenu menu = new ReportMenu();
+        menus.add(menu);
+        return menu;
+    }
 
-	/**
-	 * Represents a single menu generator context, to which entries will be added as repository report files
-	 * are created.  The attribute {@link #setContext context} is required.  Additionally supports three optional nested
-	 * elements:
-	 * <ol>
-	 * <li><code>mapper</code> maps report file to menu item title and link path (both title and link path
-	 * will have the same value).  The mapped title and link path are arguments to {@link MenuGenerator#addEntry(String, String)}.</li>
-	 * <li><code>linkMapper</code> maps report file to menu item link.  <code>linkMapper</code> and <code>titleMapper</code>
-	 * can be used together as an alternative to <code>mapper</code>, in cases were the link and title for the menu entry
-	 * have different values.</li>
-	 * <li><code>titleMapper</code> maps report file to menu item title.  <code>linkMapper</code> and <code>titleMapper</code>
-	 * can be used together as an alternative to <code>mapper</code>, in cases were the link and title for the menu entry
-	 * have different values.</li>
-	 * </ol>
-	 * If none of the above elements are provided, 
-	 */
-	public class ReportMenu {
+    /**
+     * Represents a single menu generator context, to which entries will be added as repository report files
+     * are created.  The attribute {@link #setContext context} is required.  Additionally supports three optional nested
+     * elements:
+     * <ol>
+     * <li><code>mapper</code> maps report file to menu item title and link path (both title and link path
+     * will have the same value).  The mapped title and link path are arguments to {@link MenuGenerator#addEntry(String, String)}.</li>
+     * <li><code>linkMapper</code> maps report file to menu item link.  <code>linkMapper</code> and <code>titleMapper</code>
+     * can be used together as an alternative to <code>mapper</code>, in cases were the link and title for the menu entry
+     * have different values.</li>
+     * <li><code>titleMapper</code> maps report file to menu item title.  <code>linkMapper</code> and <code>titleMapper</code>
+     * can be used together as an alternative to <code>mapper</code>, in cases were the link and title for the menu entry
+     * have different values.</li>
+     * </ol>
+     * If none of the above elements are provided, 
+     */
+    public class ReportMenu {
 
-		private Mapper titleMapper;
-		private Mapper linkMapper;
+        private Mapper titleMapper;
+        private Mapper linkMapper;
 
-		private String context;
-		private MenuGeneratorRegistry registry;
+        private String context;
+        private MenuGeneratorRegistry registry;
 
-		//TreeMap to sort menu entries in alphabetical order.  should this behavior be configurable somehow?
-		private Map<String,String> entries = new TreeMap<String,String>();
+        //TreeMap to sort menu entries in alphabetical order.  should this behavior be configurable somehow?
+        private Map<String,String> entries = new TreeMap<String,String>();
 
-		/**
-		 * Set the menu generator context name.  Entries will be added to this context for each generated report file.
-		 * @see MenuGenerateRegistry
-		 */
-		public void setContext(String context) {
-			this.context = context;
-		}
+        /**
+         * Set the menu generator context name.  Entries will be added to this context for each generated report file.
+         * @see MenuGenerateRegistry
+         */
+        public void setContext(String context) {
+            this.context = context;
+        }
 
-		public Mapper createMapper() {
-			return createLinkMapper();
-		}
+        public Mapper createMapper() {
+            return createLinkMapper();
+        }
 
-		public void setMapper(String typeName, String from, String to) {
-			setLinkMapper(typeName, from, to);
-		}
+        public void setMapper(String typeName, String from, String to) {
+            setLinkMapper(typeName, from, to);
+        }
 
-		public Mapper createTitleMapper() {
-			return titleMapper = new Mapper(getProject());
-		}
+        public Mapper createTitleMapper() {
+            return titleMapper = new Mapper(getProject());
+        }
 
-		public void setTitleMapper(String typeName, String from, String to) {
-			configureMapper(createTitleMapper(), typeName, from, to);
-		}
+        public void setTitleMapper(String typeName, String from, String to) {
+            configureMapper(createTitleMapper(), typeName, from, to);
+        }
 
-		public Mapper createLinkMapper() {
-			return linkMapper = new Mapper(getProject());
-		}
+        public Mapper createLinkMapper() {
+            return linkMapper = new Mapper(getProject());
+        }
 
-		public void setLinkMapper(String typeName, String from, String to) {
-			configureMapper(createLinkMapper(), typeName, from, to);
-		}
+        public void setLinkMapper(String typeName, String from, String to) {
+            configureMapper(createLinkMapper(), typeName, from, to);
+        }
 
-		public void addEntry(String reportPath) {
-			String link = map(reportPath, linkMapper, reportPath);
-			String title = map(reportPath, titleMapper, link);
+        public void addEntry(String reportPath) {
+            String link = map(reportPath, linkMapper, reportPath);
+            String title = map(reportPath, titleMapper, link);
 
-			entries.put(title, link);
-		}
+            entries.put(title, link);
+        }
 
-		public void generate() throws IOException {
-			for (Map.Entry<String,String> entry : entries.entrySet()) {
-				for (MenuGenerator generator : getRegistry().getMenuGenerators()) {
-					generator.addEntry(entry.getValue(), entry.getKey());
-				}
-			}
-		}
+        public void generate() throws IOException {
+            for (Map.Entry<String,String> entry : entries.entrySet()) {
+                for (MenuGenerator generator : getRegistry().getMenuGenerators()) {
+                    generator.addEntry(entry.getValue(), entry.getKey());
+                }
+            }
+        }
 
-		private MenuGeneratorRegistry getRegistry() {
-			if (registry == null) {
-				registry = MenuGeneratorUtils.getRegistryForContext(getProject(), context, false);
-			}
-			return registry;
-		}
+        private MenuGeneratorRegistry getRegistry() {
+            if (registry == null) {
+                registry = MenuGeneratorUtils.getRegistryForContext(getProject(), context, false);
+            }
+            return registry;
+        }
 
-		private void configureMapper(Mapper mapper, String typeName, String from, String to) {
-			Mapper.MapperType type = new Mapper.MapperType();
-			type.setValue(typeName);
+        private void configureMapper(Mapper mapper, String typeName, String from, String to) {
+            Mapper.MapperType type = new Mapper.MapperType();
+            type.setValue(typeName);
 
-			mapper.setType(type);
-			mapper.setFrom(from);
-			mapper.setTo(to);
-		}
+            mapper.setType(type);
+            mapper.setFrom(from);
+            mapper.setTo(to);
+        }
 
-		private String map(String reportPath, Mapper mapper, String defaultValue) {
-			if (mapper != null) {
-				String[] mappedTitle = mapper.getImplementation().mapFileName(reportPath);
-				if (mappedTitle != null && mappedTitle.length > 0) {
-					return mappedTitle[0];
-				}
-			}
-			return defaultValue;
-		}
+        private String map(String reportPath, Mapper mapper, String defaultValue) {
+            if (mapper != null) {
+                String[] mappedTitle = mapper.getImplementation().mapFileName(reportPath);
+                if (mappedTitle != null && mappedTitle.length > 0) {
+                    return mappedTitle[0];
+                }
+            }
+            return defaultValue;
+        }
 
-	}
+    }
 
     /** accumulates a set of input XML files and their transformed destination files */
     private class XslReport {
@@ -531,9 +531,9 @@ public class RepositoryReport extends AbstractEasyAntTask {
 
                 xslt.execute();
 
-	            for (ReportMenu menu : menus) {
-		            menu.generate();
-	            }
+                for (ReportMenu menu : menus) {
+                    menu.generate();
+                }
             }
 
             /**
@@ -543,9 +543,9 @@ public class RepositoryReport extends AbstractEasyAntTask {
             public void add(File source, String destination) {
                 map.put(source.getPath(), destination + "." + extension);
                 createPathElement().setLocation(source);
-	            for (ReportMenu menu : menus) {
-		            menu.addEntry(destination);
-	            }
+                for (ReportMenu menu : menus) {
+                    menu.addEntry(destination);
+                }
             }
 
             public void setFrom(String s) {}

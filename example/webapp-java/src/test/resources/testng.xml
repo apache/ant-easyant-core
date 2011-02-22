@@ -16,9 +16,9 @@
    limitations under the License.
 -->
 <suite name="Easyant example test suite">
-	<test name="Easyant example test">
-		<classes>
-			<class name="org.apache.easyant.example.ExampleTest" />
-		</classes>
-	</test>
+    <test name="Easyant example test">
+        <classes>
+            <class name="org.apache.easyant.example.ExampleTest" />
+        </classes>
+    </test>
 </suite>

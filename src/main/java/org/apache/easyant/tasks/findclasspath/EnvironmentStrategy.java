@@ -24,59 +24,59 @@ import org.apache.tools.ant.types.FileSet;
 
 public class EnvironmentStrategy extends AbstractFindClassPathStrategy {
 
-	String env;
-	String layout = "/lib";
-	String filter;
+    String env;
+    String layout = "/lib";
+    String filter;
 
-	public String getEnv() {
-		return env;
-	}
+    public String getEnv() {
+        return env;
+    }
 
-	public void setEnv(String env) {
-		this.env = env;
-	}
-	
+    public void setEnv(String env) {
+        this.env = env;
+    }
+    
 
-	public String getLayout() {
-		return layout;
-	}
+    public String getLayout() {
+        return layout;
+    }
 
-	public void setLayout(String layout) {
-		this.layout = layout;
-	}
-	
+    public void setLayout(String layout) {
+        this.layout = layout;
+    }
+    
 
-	public String getFilter() {
-		return filter;
-	}
+    public String getFilter() {
+        return filter;
+    }
 
-	public void setFilter(String filter) {
-		this.filter = filter;
-	}
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
 
-	/**
-	 * check environment variable
-	 * 
-	 * @return return true if the environment variable exist
-	 */
-	protected boolean doCheck() {
-		log("Checking environment variable ...", Project.MSG_VERBOSE);
+    /**
+     * check environment variable
+     * 
+     * @return return true if the environment variable exist
+     */
+    protected boolean doCheck() {
+        log("Checking environment variable ...", Project.MSG_VERBOSE);
 
-		if (getEnv() != null && System.getenv(getEnv()) != null) {
-			log(getEnv() + " found !", Project.MSG_VERBOSE);
-			File libDir = new File(System.getenv(getEnv()),getLayout());
-			FileSet fileSet = new FileSet();
-			fileSet.setDir(libDir);
-			fileSet.setIncludes(getFilter());
-			fileSet.setProject(getProject());
-			fileSet.setLocation(getLocation());
+        if (getEnv() != null && System.getenv(getEnv()) != null) {
+            log(getEnv() + " found !", Project.MSG_VERBOSE);
+            File libDir = new File(System.getenv(getEnv()),getLayout());
+            FileSet fileSet = new FileSet();
+            fileSet.setDir(libDir);
+            fileSet.setIncludes(getFilter());
+            fileSet.setProject(getProject());
+            fileSet.setLocation(getLocation());
 
-			getPath().addFileset(fileSet);
-			getProject().addReference(getPathid(), getPath());
-			return true;
-		}
-		return false;
+            getPath().addFileset(fileSet);
+            getProject().addReference(getPathid(), getPath());
+            return true;
+        }
+        return false;
 
-	}
+    }
 
 }

@@ -17,19 +17,19 @@
 -->
 <project name="build-configuration-test" default="record-env" xmlns:ea="antlib:org.apache.easyant">
 
-	<!--
-		define a phase compile that extends the default compile phase 
-		(needed 'cause we need to bind record-env target to an compile phase) -->
-	<phase name="compile" depends="org.apache.easyant.plugins#phases-std.compile" />
-	<target name="record-env" phase="compile">
+    <!--
+        define a phase compile that extends the default compile phase 
+        (needed 'cause we need to bind record-env target to an compile phase) -->
+    <phase name="compile" depends="org.apache.easyant.plugins#phases-std.compile" />
+    <target name="record-env" phase="compile">
 
-		<property name="conf.cp" refid="compile.main.classpath" />
+        <property name="conf.cp" refid="compile.main.classpath" />
 
-		<propertyfile file="test.properties">
-			<entry key="path" value="${conf.cp}" />
-			<entry key="prop" value="${conf.setting}" />
-		</propertyfile>
+        <propertyfile file="test.properties">
+            <entry key="path" value="${conf.cp}" />
+            <entry key="prop" value="${conf.setting}" />
+        </propertyfile>
 
-	</target>
+    </target>
 
 </project>

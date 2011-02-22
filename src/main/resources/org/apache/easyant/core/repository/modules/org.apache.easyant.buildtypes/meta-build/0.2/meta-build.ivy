@@ -15,15 +15,15 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.buildtypes"
-	       module="meta-build"
-	       status="milestone"
-	       revision="0.2">
-	       <description>This build type allows you to recursively build multi-module projects,
-	       with internal dependencies between modules.</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-		<artifact type="properties" />
-	</publications>
+    <info organisation="org.apache.easyant.buildtypes"
+           module="meta-build"
+           status="milestone"
+           revision="0.2">
+           <description>This build type allows you to recursively build multi-module projects,
+           with internal dependencies between modules.</description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+        <artifact type="properties" />
+    </publications>
 </ivy-module>

@@ -29,111 +29,111 @@ import org.apache.tools.ant.Task;
 
 public class BindTarget extends Task {
 
-	private String target;
-	private String toPhase;
+    private String target;
+    private String toPhase;
 
-	private String buildConfigurations;
+    private String buildConfigurations;
 
-	public void execute() throws BuildException {
-		StringBuilder message = new StringBuilder();
-		message.append("Phase mapping for target ").append(getTarget()).append(
-				" ");
-		if (!BuildConfigurationHelper.isBuildConfigurationActive(
-				getBuildConfigurations(), getProject(), message.toString())) {
-			log(
-					"no matching build configuration for this phase mapping, this mapping will be ignored",
-					Project.MSG_DEBUG);
-			return;
-		}
-		Target t = (Target) getProject().getTargets().get(getTarget());
-		if (t == null) {
-			throw new BuildException("unable to find target " + getTarget());
-		}
+    public void execute() throws BuildException {
+        StringBuilder message = new StringBuilder();
+        message.append("Phase mapping for target ").append(getTarget()).append(
+                " ");
+        if (!BuildConfigurationHelper.isBuildConfigurationActive(
+                getBuildConfigurations(), getProject(), message.toString())) {
+            log(
+                    "no matching build configuration for this phase mapping, this mapping will be ignored",
+                    Project.MSG_DEBUG);
+            return;
+        }
+        Target t = (Target) getProject().getTargets().get(getTarget());
+        if (t == null) {
+            throw new BuildException("unable to find target " + getTarget());
+        }
 
-		// unbind current mapping
-		for (Iterator iterator = getProject().getTargets().values().iterator(); iterator
-				.hasNext();) {
-			Target current = (Target) iterator.next();
-			if (current instanceof Phase) {
-				Enumeration dependencies = current.getDependencies();
-				StringBuilder dependsOn = new StringBuilder();
-				boolean requiresUpdates = false;
-				while (dependencies.hasMoreElements()) {
-					String dep = (String) dependencies.nextElement();
-					if (dep.equals(getTarget())) {
-						log("target" + getTarget() + " is registred in phase"
-								+ current.getName(), Project.MSG_VERBOSE);
-						requiresUpdates = true;
-					} else {
-						dependsOn.append(dep);
-						dependsOn.append(",");
-					}
-				}
-				if (requiresUpdates) {
-					log("removing target" + getTarget() + " from phase"
-							+ current.getName(), Project.MSG_VERBOSE);
+        // unbind current mapping
+        for (Iterator iterator = getProject().getTargets().values().iterator(); iterator
+                .hasNext();) {
+            Target current = (Target) iterator.next();
+            if (current instanceof Phase) {
+                Enumeration dependencies = current.getDependencies();
+                StringBuilder dependsOn = new StringBuilder();
+                boolean requiresUpdates = false;
+                while (dependencies.hasMoreElements()) {
+                    String dep = (String) dependencies.nextElement();
+                    if (dep.equals(getTarget())) {
+                        log("target" + getTarget() + " is registred in phase"
+                                + current.getName(), Project.MSG_VERBOSE);
+                        requiresUpdates = true;
+                    } else {
+                        dependsOn.append(dep);
+                        dependsOn.append(",");
+                    }
+                }
+                if (requiresUpdates) {
+                    log("removing target" + getTarget() + " from phase"
+                            + current.getName(), Project.MSG_VERBOSE);
 
-					Phase p = new Phase();
-					p.setDescription(current.getDescription());
-					p.setIf(current.getIf());
-					p.setLocation(current.getLocation());
-					p.setName(current.getName());
-					p.setProject(current.getProject());
-					p.setUnless(current.getUnless());
-					String depends = dependsOn.toString();
-					if (depends.endsWith(",")) {
-						depends = depends.substring(0, depends.length() - 1);
-					}
-					p.setDepends(depends);
-					getProject().addOrReplaceTarget(p);
-				}
+                    Phase p = new Phase();
+                    p.setDescription(current.getDescription());
+                    p.setIf(current.getIf());
+                    p.setLocation(current.getLocation());
+                    p.setName(current.getName());
+                    p.setProject(current.getProject());
+                    p.setUnless(current.getUnless());
+                    String depends = dependsOn.toString();
+                    if (depends.endsWith(",")) {
+                        depends = depends.substring(0, depends.length() - 1);
+                    }
+                    p.setDepends(depends);
+                    getProject().addOrReplaceTarget(p);
+                }
 
-			}
-		}
+            }
+        }
 
-		if (getToPhase() != null && !getToPhase().equals("")) {
-			if (!getProject().getTargets().containsKey(getToPhase())) {
-				throw new BuildException("can't add target " + getTarget()
-						+ " to phase " + getToPhase() + " because the phase"
-						+ " is unknown.");
-			}
-			Target p = (Target) getProject().getTargets().get(getToPhase());
+        if (getToPhase() != null && !getToPhase().equals("")) {
+            if (!getProject().getTargets().containsKey(getToPhase())) {
+                throw new BuildException("can't add target " + getTarget()
+                        + " to phase " + getToPhase() + " because the phase"
+                        + " is unknown.");
+            }
+            Target p = (Target) getProject().getTargets().get(getToPhase());
 
-			if (!(p instanceof Phase)) {
-				throw new BuildException("referenced target " + getToPhase()
-						+ " is not a phase");
-			}
-			p.addDependency(getTarget());
-		}
+            if (!(p instanceof Phase)) {
+                throw new BuildException("referenced target " + getToPhase()
+                        + " is not a phase");
+            }
+            p.addDependency(getTarget());
+        }
 
-	}
+    }
 
-	public String getToPhase() {
-		return toPhase;
-	}
+    public String getToPhase() {
+        return toPhase;
+    }
 
-	public void setToPhase(String toPhase) {
-		this.toPhase = toPhase;
-	}
+    public void setToPhase(String toPhase) {
+        this.toPhase = toPhase;
+    }
 
-	public String getTarget() {
-		return target;
-	}
+    public String getTarget() {
+        return target;
+    }
 
-	public void setTarget(String target) {
-		this.target = target;
-	}
+    public void setTarget(String target) {
+        this.target = target;
+    }
 
-	public String getBuildConfigurations() {
-		return buildConfigurations;
-	}
+    public String getBuildConfigurations() {
+        return buildConfigurations;
+    }
 
-	public void setBuildConfigurations(String buildConfigurations) {
-		this.buildConfigurations = buildConfigurations;
-	}
+    public void setBuildConfigurations(String buildConfigurations) {
+        this.buildConfigurations = buildConfigurations;
+    }
 
-	public void setConf(String conf) {
-		this.buildConfigurations = conf;
-	}
+    public void setConf(String conf) {
+        this.buildConfigurations = conf;
+    }
 
 }

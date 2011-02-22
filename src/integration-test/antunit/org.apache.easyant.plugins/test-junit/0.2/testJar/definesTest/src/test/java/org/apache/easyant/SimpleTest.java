@@ -22,8 +22,8 @@ import org.junit.Test;
 
 public class SimpleTest {
 
-	@Test
-	public void testThatPasses() {
-		assertEquals("world", new HelloWorld().hello());
-	}
+    @Test
+    public void testThatPasses() {
+        assertEquals("world", new HelloWorld().hello());
+    }
 }

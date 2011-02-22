@@ -30,90 +30,90 @@ import org.apache.tools.ant.Task;
 
 public class EasyAntRunner extends Task {
 
-	private boolean fork = true;
+    private boolean fork = true;
 
-	private EasyAntConfiguration easyantConfiguration = new EasyAntConfiguration();
+    private EasyAntConfiguration easyantConfiguration = new EasyAntConfiguration();
 
-	@Override
-	public void execute() throws BuildException {
-		EasyAntEngine eaEngine = new EasyAntEngine(getEasyantConfiguration());
-		if (fork)  {
-			eaEngine.doBuild();
-		} else {
-			eaEngine.initProject(getProject());
-			getProject().executeTargets(getEasyantConfiguration().getTargets());
-		}
-	}
+    @Override
+    public void execute() throws BuildException {
+        EasyAntEngine eaEngine = new EasyAntEngine(getEasyantConfiguration());
+        if (fork)  {
+            eaEngine.doBuild();
+        } else {
+            eaEngine.initProject(getProject());
+            getProject().executeTargets(getEasyantConfiguration().getTargets());
+        }
+    }
 
-	public boolean isFork() {
-		return fork;
-	}
+    public boolean isFork() {
+        return fork;
+    }
 
-	public void setFork(boolean fork) {
-		this.fork = fork;
-	}
+    public void setFork(boolean fork) {
+        this.fork = fork;
+    }
 
-	public void setTargets(String targets) {
-		String[] targetsArray = targets.split(",");
-		for (int i = 0; i < targetsArray.length; i++) {
-			getEasyantConfiguration().getTargets().add(targetsArray[i]);
-		}
-	}
+    public void setTargets(String targets) {
+        String[] targetsArray = targets.split(",");
+        for (int i = 0; i < targetsArray.length; i++) {
+            getEasyantConfiguration().getTargets().add(targetsArray[i]);
+        }
+    }
 
-	public void setConfigurationFile(String configurationFile) {
-		File f = new File(configurationFile);
-		try {
-			EasyantConfigurationFactory.getInstance()
-					.createConfigurationFromFile(getEasyantConfiguration(),
-							f.toURL());
-		} catch (Exception e) {
-			throw new BuildException(
-					"Can't create easyantConfiguration from File "
-							+ configurationFile, e);
-		}
-	}
+    public void setConfigurationFile(String configurationFile) {
+        File f = new File(configurationFile);
+        try {
+            EasyantConfigurationFactory.getInstance()
+                    .createConfigurationFromFile(getEasyantConfiguration(),
+                            f.toURL());
+        } catch (Exception e) {
+            throw new BuildException(
+                    "Can't create easyantConfiguration from File "
+                            + configurationFile, e);
+        }
+    }
 
-	public void setConfigurationUrl(String configurationUrl) {
-		try {
-			URL url = new URL(configurationUrl);
-			EasyantConfigurationFactory
-					.getInstance()
-					.createConfigurationFromFile(getEasyantConfiguration(), url);
+    public void setConfigurationUrl(String configurationUrl) {
+        try {
+            URL url = new URL(configurationUrl);
+            EasyantConfigurationFactory
+                    .getInstance()
+                    .createConfigurationFromFile(getEasyantConfiguration(), url);
 
-		} catch (Exception e) {
-			throw new BuildException(
-					"Can't create easyantConfiguration from URL "
-							+ configurationUrl, e);
-		}
-	}
+        } catch (Exception e) {
+            throw new BuildException(
+                    "Can't create easyantConfiguration from URL "
+                            + configurationUrl, e);
+        }
+    }
 
-	public void setBuildConfiguration(String buildConfiguration) {
-		String[] buildConfs = buildConfiguration.split(",");
-		Set<String> buildConfigurations = new HashSet<String>();
-		for (String conf : buildConfs) {
-			buildConfigurations.add(conf);
-		}
-		getEasyantConfiguration().setActiveBuildConfigurations(
-				buildConfigurations);
-	}
+    public void setBuildConfiguration(String buildConfiguration) {
+        String[] buildConfs = buildConfiguration.split(",");
+        Set<String> buildConfigurations = new HashSet<String>();
+        for (String conf : buildConfs) {
+            buildConfigurations.add(conf);
+        }
+        getEasyantConfiguration().setActiveBuildConfigurations(
+                buildConfigurations);
+    }
 
-	public void setModuleIvy(String moduleIvy) {
-		File f = new File(moduleIvy);
-		getEasyantConfiguration().setBuildModule(f);
-	}
+    public void setModuleIvy(String moduleIvy) {
+        File f = new File(moduleIvy);
+        getEasyantConfiguration().setBuildModule(f);
+    }
 
-	public void setModuleAnt(String moduleAnt) {
-		File f = new File(moduleAnt);
-		getEasyantConfiguration().setBuildFile(f);
-	}
+    public void setModuleAnt(String moduleAnt) {
+        File f = new File(moduleAnt);
+        getEasyantConfiguration().setBuildFile(f);
+    }
 
-	public EasyAntConfiguration getEasyantConfiguration() {
-		return easyantConfiguration;
-	}
+    public EasyAntConfiguration getEasyantConfiguration() {
+        return easyantConfiguration;
+    }
 
-	public void setEasyantConfiguration(
-			EasyAntConfiguration easyantConfiguration) {
-		this.easyantConfiguration = easyantConfiguration;
-	}
+    public void setEasyantConfiguration(
+            EasyAntConfiguration easyantConfiguration) {
+        this.easyantConfiguration = easyantConfiguration;
+    }
 
 }

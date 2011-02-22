@@ -17,12 +17,12 @@
 -->
 <html>
 <head>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
-	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
-	<script type="text/javascript" src="../xooki/xooki.js"></script>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <script type="text/javascript">var xookiConfig = {level: 1};</script>   
+    <script type="text/javascript" src="../xooki/xooki.js"></script>
 </head>
 <body>
-	<textarea id="xooki-source">
+    <textarea id="xooki-source">
 <h1>Working with multi-modules</h1>
 
 <p>A "multi-module" project involves more than one subcomponent, with possible dependencies between components.  For example, one project may build three separate jar files, and then a single war with all of these jars copied into its WEB-INF/lib folder.</p>
@@ -126,16 +126,16 @@
 <code type="xml">
 <project name="org.apache.easyant#example-multimodule" xmlns:ea="antlib:org.apache.easyant">
 
-	<property name="target.dir" location="target/release"/>
-	<ea:import mrid="org.apache.easyant.buildtypes#meta-build;0.2"/>
-	
-	<target name="build-distribution" phase="package" description="gather the submodules into one archive">
-		<mkdir dir="${target.dir}"/>
-		<tar destfile="${target.dir}/distribution.tar.gz" compression="gzip">
-			<tarfileset prefix="lib" dir="example-core/target/artifacts" includes="*.jar"/>
-			<tarfileset prefix="lib" dir="example-hello-world/target/artifacts" includes="*.jar"/>
-		</tar>
-	</target>
+    <property name="target.dir" location="target/release"/>
+    <ea:import mrid="org.apache.easyant.buildtypes#meta-build;0.2"/>
+    
+    <target name="build-distribution" phase="package" description="gather the submodules into one archive">
+        <mkdir dir="${target.dir}"/>
+        <tar destfile="${target.dir}/distribution.tar.gz" compression="gzip">
+            <tarfileset prefix="lib" dir="example-core/target/artifacts" includes="*.jar"/>
+            <tarfileset prefix="lib" dir="example-hello-world/target/artifacts" includes="*.jar"/>
+        </tar>
+    </target>
 
 </project>
 </code>

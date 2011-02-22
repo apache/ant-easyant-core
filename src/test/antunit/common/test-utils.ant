@@ -17,7 +17,7 @@
 -->
 <project name="easyant-test-utils" xmlns:ea="antlib:org.apache.easyant">
 
-	<description>Macros and targets to assist in writing AntUnit test cases for EasyAnt</description>
+    <description>Macros and targets to assist in writing AntUnit test cases for EasyAnt</description>
 
     <dirname file="${ant.file.easyant-test-utils}" property="easyant.common.dir"/>
 

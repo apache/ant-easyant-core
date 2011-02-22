@@ -41,21 +41,21 @@ public class JarRepository extends URLRepository {
     /** lazily cache jar file directories to speed up repository searches and reporting */
     private HashMap<String, Directory> jarCache = new HashMap<String, Directory>();
 
-	public List list(String parent) throws IOException {
-		if (parent.startsWith("jar")) {
-			//extract path in parent
-			Matcher matcher = URL_PATTERN.matcher(parent);
-			matcher.find();
+    public List list(String parent) throws IOException {
+        if (parent.startsWith("jar")) {
+            //extract path in parent
+            Matcher matcher = URL_PATTERN.matcher(parent);
+            matcher.find();
 
             String baseUrl = matcher.group(1);
-			String path = matcher.group(2);
-			
+            String path = matcher.group(2);
+            
             //find the parent path in the directory.
             Directory directory = getDirectory(baseUrl, parent).findEntry(path);
             return new ArrayList<String>(directory.getChildren());
-		}
-		return super.list(parent);
-	}
+        }
+        return super.list(parent);
+    }
 
     @Override
     public void put(File source, String destination, boolean overwrite) throws IOException {

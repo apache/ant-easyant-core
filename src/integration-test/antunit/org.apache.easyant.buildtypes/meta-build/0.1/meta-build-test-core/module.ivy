@@ -15,14 +15,14 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="meta-build-test-core" status="integration" revision="1.0">
-		<extends organisation="org.apache.easyant" module="meta-build-test" revision="latest.revision" />
-		<ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
-			<ea:property name="project.ivy.settings.file" value="${basedir}/ivysettings.xml"/>
-			<ea:plugin module="javadoc" revision="0.1" as="javadoc"/>
-		</ea:build>
-	</info>
-	<publications>
-		<artifact type="jar"/>
-	</publications>
+    <info organisation="org.apache.easyant" module="meta-build-test-core" status="integration" revision="1.0">
+        <extends organisation="org.apache.easyant" module="meta-build-test" revision="latest.revision" />
+        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
+            <ea:property name="project.ivy.settings.file" value="${basedir}/ivysettings.xml"/>
+            <ea:plugin module="javadoc" revision="0.1" as="javadoc"/>
+        </ea:build>
+    </info>
+    <publications>
+        <artifact type="jar"/>
+    </publications>
 </ivy-module>

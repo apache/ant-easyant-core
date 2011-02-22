@@ -17,12 +17,12 @@
 -->
 <html>
 <head>
-	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
-	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
-	<script type="text/javascript" src="../xooki/xooki.js"></script>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+    <script type="text/javascript">var xookiConfig = {level: 1};</script>   
+    <script type="text/javascript" src="../xooki/xooki.js"></script>
 </head>
 <body>
-	<textarea id="xooki-source">
+    <textarea id="xooki-source">
 <h1>EasyAnt configuration file</h1>
 The configuration file named easyant-conf.xml allow you to tune :
 <ul>
@@ -33,15 +33,15 @@ The configuration file named easyant-conf.xml allow you to tune :
 <code type="xml">
 <easyant-config>
         <!-- Configure the easyant ivy instance -->
-	<ivysettings file="${easyant.home}/ivysettings.xml"/>
+    <ivysettings file="${easyant.home}/ivysettings.xml"/>
         <!-- Configure system plugins -->
-	<system-plugins>
-		<plugin organisation="org.apache.easyant.plugins" module="skeleton" revision="0.1" as="skeleton"/>
-		<plugin organisation="org.apache.easyant.plugins" module="ivy-repo-management" revision="0.1" as="repo-management"/>
-	</system-plugins>
+    <system-plugins>
+        <plugin organisation="org.apache.easyant.plugins" module="skeleton" revision="0.1" as="skeleton"/>
+        <plugin organisation="org.apache.easyant.plugins" module="ivy-repo-management" revision="0.1" as="repo-management"/>
+    </system-plugins>
         <!-- Configuring user properties -->
         <properties>
-        	<property name="my.property" value="foobar"/>
+            <property name="my.property" value="foobar"/>
         </properties>
 </easyant-config>
 </code>
@@ -109,20 +109,20 @@ This can be done writting your own ivysettings including if necessary the defaul
 <code type="xml">
 <ivysettings>
         <!-- import the default ivy settings -->
-	<include url="${easyant.default.ivysettings.url}"/>
-	<!-- define your own default resolver, here a chain that include a new repo + the default chain provided by easyant -->
-	<settings defaultResolver="my-chain"/>
-	<resolvers>
-		<filesystem name="my-custom-repo">
-		        <ivy pattern="/path/to/your/repo/[organisation]/[module]/ivy-[revision].xml"/>
-        		<artifact pattern="/path/to/your/repo/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
-      		</filesystem>
+    <include url="${easyant.default.ivysettings.url}"/>
+    <!-- define your own default resolver, here a chain that include a new repo + the default chain provided by easyant -->
+    <settings defaultResolver="my-chain"/>
+    <resolvers>
+        <filesystem name="my-custom-repo">
+                <ivy pattern="/path/to/your/repo/[organisation]/[module]/ivy-[revision].xml"/>
+                <artifact pattern="/path/to/your/repo/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
+            </filesystem>
 
-		<chain name="my-chain">
-			<resolver ref="my-custom-repo" />
-			<resolver ref="easyant-default-chain" />
-		</chain>
-	</resolvers>
+        <chain name="my-chain">
+            <resolver ref="my-custom-repo" />
+            <resolver ref="easyant-default-chain" />
+        </chain>
+    </resolvers>
 </ivysettings>
 </code>
 

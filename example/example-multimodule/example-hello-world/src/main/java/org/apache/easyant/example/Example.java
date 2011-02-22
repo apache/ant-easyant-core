@@ -23,12 +23,12 @@ import org.apache.easyant.example.core.ExampleCore;
 import org.apache.easyant.example.core.ExampleCoreImpl;
 
 public class Example {
-	public static void main(String[] args) throws IOException {
-		System.out.println(new Example().getMessage());
-	}
+    public static void main(String[] args) throws IOException {
+        System.out.println(new Example().getMessage());
+    }
 
-	public String getMessage() throws IOException {
-		ExampleCore exampleCore = new ExampleCoreImpl();
-		return exampleCore.getMessage();
-	}
+    public String getMessage() throws IOException {
+        ExampleCore exampleCore = new ExampleCoreImpl();
+        return exampleCore.getMessage();
+    }
 }

@@ -15,17 +15,17 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="example-core" revision="0.2" status="integration" >
-		<!-- inherit from parent -->
-		<extends organisation="org.apache.easyant" module="example-parent" revision="latest.revision" />
-		<!--
-			This easyant section is equivalent to having a module.ant like this:
-				
-			<project name="org.apache.easyant#standard-java-app"
-				xmlns:ea="antlib:org.apache.easyant">
-				<ea:import organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
-			</project>				
-		  -->
-		<ea:build module="build-std-java" revision="0.2"/>
-	</info>
+    <info organisation="org.apache.easyant" module="example-core" revision="0.2" status="integration" >
+        <!-- inherit from parent -->
+        <extends organisation="org.apache.easyant" module="example-parent" revision="latest.revision" />
+        <!--
+            This easyant section is equivalent to having a module.ant like this:
+                
+            <project name="org.apache.easyant#standard-java-app"
+                xmlns:ea="antlib:org.apache.easyant">
+                <ea:import organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+            </project>              
+          -->
+        <ea:build module="build-std-java" revision="0.2"/>
+    </info>
 </ivy-module>

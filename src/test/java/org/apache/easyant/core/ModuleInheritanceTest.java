@@ -20,30 +20,30 @@ package org.apache.easyant.core;
 import org.apache.tools.ant.Project;
 
 public class ModuleInheritanceTest extends EasyAntBaseTest {
-	
-	protected void setUp() throws Exception {
-		configureProject(this.getResource("multimodule/myapp-core/module.ivy"),Project.MSG_INFO);
-		
-		//Configure easyant ivy instance
-		conf.setEasyantIvySettingsUrl(this.getClass().getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
+    
+    protected void setUp() throws Exception {
+        configureProject(this.getResource("multimodule/myapp-core/module.ivy"),Project.MSG_INFO);
+        
+        //Configure easyant ivy instance
+        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
 
-		//init project with easyant configuration
-		initProject();
-	}
-	
-	public void clean() throws Exception {
-		executeTarget("clean:clean");
-	}
+        //init project with easyant configuration
+        initProject();
+    }
+    
+    public void clean() throws Exception {
+        executeTarget("clean:clean");
+    }
     
     public void testInheritablePluginWithScopeChild() throws Exception {
-    	clean();
-    	executeTarget("source-jar:init");
+        clean();
+        executeTarget("source-jar:init");
     }
     
     public void testNonInheritableElements() throws Exception {
-    	clean();
-    	expectBuildException("eadoc:init", "Target \"eadoc:init\" does not exist in the project \"myapp-core\"");
-    	expectPropertyUnset("validate", "my.property");
+        clean();
+        expectBuildException("eadoc:init", "Target \"eadoc:init\" does not exist in the project \"myapp-core\"");
+        expectPropertyUnset("validate", "my.property");
     }
     
     

@@ -15,15 +15,15 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org">
-	<info module="definesTest" status="integration">
+    <info module="definesTest" status="integration">
         <extends organisation="org.apache.easyant" module="test-junit-jar-testJar" revision="latest.integration" location="../module.ivy"/>
-		<description>Defines a test jar, to test junit plugin.</description>
-		<ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
-			<ea:plugin module="package-test-jar" revision="0.1" mandatory="true" as="test-jar"/>
-		</ea:build>
-	</info>
-	<publications>
-		<artifact name="definesTest" type="jar" conf="default,test"/>
-		<artifact name="definesTest-test" type="jar" conf="test"/>
-	</publications>
+        <description>Defines a test jar, to test junit plugin.</description>
+        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
+            <ea:plugin module="package-test-jar" revision="0.1" mandatory="true" as="test-jar"/>
+        </ea:build>
+    </info>
+    <publications>
+        <artifact name="definesTest" type="jar" conf="default,test"/>
+        <artifact name="definesTest-test" type="jar" conf="test"/>
+    </publications>
 </ivy-module>

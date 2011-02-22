@@ -15,40 +15,40 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#maven-version-strategy"
-	xmlns:ivy="antlib:org.apache.ivy.ant"
-	xmlns:ac="antlib:net.sf.antcontrib"
-	xmlns:ea="antlib:org.apache.easyant">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="generate-local-version"/>
-		<ea:parameter phase="generate-shared-version"/>
-		<ea:parameter phase="generate-release-version"/>
-		<ea:parameter property="publish.overwrite" default="false"
-				description="specify if publish should overwrite existing artifacts or not"/>
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:ac="antlib:net.sf.antcontrib"
+    xmlns:ea="antlib:org.apache.easyant">
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="generate-local-version"/>
+        <ea:parameter phase="generate-shared-version"/>
+        <ea:parameter phase="generate-release-version"/>
+        <ea:parameter property="publish.overwrite" default="false"
+                description="specify if publish should overwrite existing artifacts or not"/>
 
-	</target>
-	
-	<!-- version numbers -->
-	<target name="-local" phase="generate-local-version" depends="validate">
-		<!-- override version as if it was a SNAPSHOT -->
-		<ac:var name="version" value="${ivy.revision}-SNAPSHOT" />
-		<!-- SNAPSHOT need to be overwritten -->
-		<ac:var name="publish.overwrite" value="true"/>
-	</target>
-	
-	<target name="-shared" phase="generate-shared-version" depends="validate">
-		<!-- override version as if it was a SNAPSHOT -->
-		<ac:var name="version" value="${ivy.revision}-SNAPSHOT" />
-		<!-- SNAPSHOT need to be overwritten -->
-		<ac:var name="publish.overwrite" value="true"/>
-	</target>
+    </target>
+    
+    <!-- version numbers -->
+    <target name="-local" phase="generate-local-version" depends="validate">
+        <!-- override version as if it was a SNAPSHOT -->
+        <ac:var name="version" value="${ivy.revision}-SNAPSHOT" />
+        <!-- SNAPSHOT need to be overwritten -->
+        <ac:var name="publish.overwrite" value="true"/>
+    </target>
+    
+    <target name="-shared" phase="generate-shared-version" depends="validate">
+        <!-- override version as if it was a SNAPSHOT -->
+        <ac:var name="version" value="${ivy.revision}-SNAPSHOT" />
+        <!-- SNAPSHOT need to be overwritten -->
+        <ac:var name="publish.overwrite" value="true"/>
+    </target>
 
-	<target name="-release" phase="generate-release-version" depends="validate">
-		<ac:var name="version" value="${ivy.revision}" />
-	</target>
+    <target name="-release" phase="generate-release-version" depends="validate">
+        <ac:var name="version" value="${ivy.revision}" />
+    </target>
 
-	<target name="doit" depends=":init" />
+    <target name="doit" depends=":init" />
 </project>

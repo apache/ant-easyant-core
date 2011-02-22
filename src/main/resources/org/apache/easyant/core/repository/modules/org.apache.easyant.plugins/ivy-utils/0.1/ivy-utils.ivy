@@ -15,15 +15,15 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="ivy-utils"
-	       status="milestone"
-	       revision="0.1">
-	       <description>
-		       This module provides utilitaries target related to ivy (clean-cache / dependencies report)
-	       </description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
+    <info organisation="org.apache.easyant.plugins"
+           module="ivy-utils"
+           status="milestone"
+           revision="0.1">
+           <description>
+               This module provides utilitaries target related to ivy (clean-cache / dependencies report)
+           </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
 </ivy-module>

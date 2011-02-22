@@ -15,14 +15,14 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="skeleton"
-	       status="milestone"
-	       revision="0.1">
-	       <description>This modules provides targets to create or install skeleton of projects.</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-		<artifact name="ivy.xml" type="tpl"/>
-	</publications>
+    <info organisation="org.apache.easyant.plugins"
+           module="skeleton"
+           status="milestone"
+           revision="0.1">
+           <description>This modules provides targets to create or install skeleton of projects.</description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+        <artifact name="ivy.xml" type="tpl"/>
+    </publications>
 </ivy-module>

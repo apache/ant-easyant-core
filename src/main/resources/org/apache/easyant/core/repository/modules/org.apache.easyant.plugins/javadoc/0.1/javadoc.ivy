@@ -15,30 +15,30 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="javadoc"
-	       status="milestone"
-	       revision="0.1">
-	       <description>
-	       		<p>This module provides javadoc feature.</p>
-	       		<p>
-	       			You can bind targets of this plugin to package phase by using bindtarget element in your module.ivy file.
-	       			Example : 
-	       			<code type="xml">
-	       				<plugin name="javadoc" rev="0.1" as="javadoc"/>
-		       			<bindtarget target="javadoc:package" tophase="package"/>
-		       		</code>
-		       		Or as a nested element of the plugin
-		       		<code type="xml">
-	       				<plugin name="javadoc" rev="0.1" as="javadoc">
-	       					<!-- here, the target prefix is not mandatory as easyant can determine it from plugin element -->
-			       			<bindtarget target=":package" tophase="package"/>
-	       				</plugin>
-		       		</code>
-	       		</p>
-	       </description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
+    <info organisation="org.apache.easyant.plugins"
+           module="javadoc"
+           status="milestone"
+           revision="0.1">
+           <description>
+                <p>This module provides javadoc feature.</p>
+                <p>
+                    You can bind targets of this plugin to package phase by using bindtarget element in your module.ivy file.
+                    Example : 
+                    <code type="xml">
+                        <plugin name="javadoc" rev="0.1" as="javadoc"/>
+                        <bindtarget target="javadoc:package" tophase="package"/>
+                    </code>
+                    Or as a nested element of the plugin
+                    <code type="xml">
+                        <plugin name="javadoc" rev="0.1" as="javadoc">
+                            <!-- here, the target prefix is not mandatory as easyant can determine it from plugin element -->
+                            <bindtarget target=":package" tophase="package"/>
+                        </plugin>
+                    </code>
+                </p>
+           </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
 </ivy-module>

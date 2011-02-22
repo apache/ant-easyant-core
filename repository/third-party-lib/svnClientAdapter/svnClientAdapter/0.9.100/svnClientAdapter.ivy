@@ -15,13 +15,13 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="svnClientAdapter"
-	       module="svnClientAdapter"
-	       status="milestone"
-	       revision="0.9.100">
-	       <description>This module provides svnClientAdapter feature.</description>
-	</info>
-	<publications>
+    <info organisation="svnClientAdapter"
+           module="svnClientAdapter"
+           status="milestone"
+           revision="0.9.100">
+           <description>This module provides svnClientAdapter feature.</description>
+    </info>
+    <publications>
               <artifact type="jar" ext="jar"/>
-	</publications>
+    </publications>
 </ivy-module>

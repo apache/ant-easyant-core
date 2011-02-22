@@ -37,9 +37,9 @@
   <xsl:param    name="menu-src-path" select="'.'"/>
   <!-- Process an entire document into an HTML page -->
   <xsl:template match="document">
-	  <xsl:variable name="filename" select="concat($menu-src-path, '/menu.xml')"/>  
+      <xsl:variable name="filename" select="concat($menu-src-path, '/menu.xml')"/>  
     <xsl:variable name="project"
-	    select="document($filename)/project"/>
+        select="document($filename)/project"/>
 
     <xsl:variable name="homelink" select="project/@href"/>
     <xsl:variable name="title" select="$project/title"/>
@@ -65,7 +65,7 @@
   </xsl:if>
 
         <style type="text/css" media="all">
-			@import url("style.css");
+            @import url("style.css");
         </style>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
     </head>
@@ -75,10 +75,10 @@
         <div id="inner_body">
             <div id="frame_logo">
                 <div class="logo">
-				    <a href="{$homelink}" 
-				       title="{$title}">
-				       <img src="{$logo}" alt="{$title}" border="0" />
-				    </a>
+                    <a href="{$homelink}" 
+                       title="{$title}">
+                       <img src="{$logo}" alt="{$title}" border="0" />
+                    </a>
                 </div>
 
                 <div class="title">
@@ -96,11 +96,11 @@
                 </div>
             </div>
                 
-			<div id="footer">
+            <div id="footer">
                 <em>Copyright &#169; 1999-2008, The Apache Software Foundation</em>
             </div>
-		</div>	
-		</div>	
+        </div>  
+        </div>  
   </body>
   </html>
   </xsl:template>

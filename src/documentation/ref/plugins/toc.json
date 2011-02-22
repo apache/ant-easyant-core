@@ -16,6 +16,6 @@
  *
  */
 {
-	"id": "plugins",
-	"children":[]
+    "id": "plugins",
+    "children":[]
 } 

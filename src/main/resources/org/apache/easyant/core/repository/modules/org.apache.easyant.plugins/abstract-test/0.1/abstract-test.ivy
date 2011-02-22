@@ -15,20 +15,20 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="abstract-test"
-	       status="milestone"
-	       revision="0.1">
-	       <description>This module provides tests compilation feature.<br/>
+    <info organisation="org.apache.easyant.plugins"
+           module="abstract-test"
+           status="milestone"
+           revision="0.1">
+           <description>This module provides tests compilation feature.<br/>
 This module initialize compile.test.classpath and run.test.classpath.<br/>
 Tests can be skipped using skip.test property.</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
-	
-	<dependencies>
-		<dependency org="org.apache.ant" name="ant-junit" rev="1.8.2" />
-	</dependencies>
-	
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+    
+    <dependencies>
+        <dependency org="org.apache.ant" name="ant-junit" rev="1.8.2" />
+    </dependencies>
+    
 </ivy-module>

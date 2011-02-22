@@ -25,29 +25,29 @@ import org.apache.ivy.core.module.descriptor.InheritableItem;
  * This interface provides some useful methods to have fine grain control on inheritable elements
  */
 public interface AdvancedInheritableItem  extends InheritableItem {
-	
-	/**
-	 * Get the current inherit scope 
-	 * @return the inherit scope 
-	 */
-	public InheritableScope getInheritScope();
+    
+    /**
+     * Get the current inherit scope 
+     * @return the inherit scope 
+     */
+    public InheritableScope getInheritScope();
 
-	/**
-	 * Set inherit scope
-	 * @param inheritScope an inherit scope
-	 */
-	public void setInheritScope(InheritableScope inheritScope);
-	
-	/**
-	 * Check if element can be inherited
-	 * @return true if element can be inherited
-	 */
-	public boolean isInheritable();
-	
-	/**
-	 * Specify if an element can be inherited or not
-	 * @param isIneritable true if element can be inherited
-	 */
-	public void setInheritable(boolean isIneritable);
+    /**
+     * Set inherit scope
+     * @param inheritScope an inherit scope
+     */
+    public void setInheritScope(InheritableScope inheritScope);
+    
+    /**
+     * Check if element can be inherited
+     * @return true if element can be inherited
+     */
+    public boolean isInheritable();
+    
+    /**
+     * Specify if an element can be inherited or not
+     * @param isIneritable true if element can be inherited
+     */
+    public void setInheritable(boolean isIneritable);
 
 }

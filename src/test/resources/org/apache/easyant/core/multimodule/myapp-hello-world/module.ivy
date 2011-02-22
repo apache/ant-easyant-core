@@ -15,17 +15,17 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="myapp-hello-world" revision="0.2" status="integration" >
-		<ea:build module="build-std-java" revision="0.2">
-			<ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-	    </ea:build>
+    <info organisation="org.apache.easyant" module="myapp-hello-world" revision="0.2" status="integration" >
+        <ea:build module="build-std-java" revision="0.2">
+            <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
+        </ea:build>
 
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-	</configurations>
-	<dependencies>
-		<dependency org="org.apache.easyant" name="myapp-core" rev="latest.revision" conf="default->default"/>
-	</dependencies>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+    </configurations>
+    <dependencies>
+        <dependency org="org.apache.easyant" name="myapp-core" rev="latest.revision" conf="default->default"/>
+    </dependencies>
 </ivy-module>

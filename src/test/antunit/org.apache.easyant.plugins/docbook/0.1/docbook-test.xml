@@ -25,31 +25,31 @@
 
     <load-plugin name="docbook" rev="0.1" as="db" repository="${extra.plugins.dir}"/>
 
-	<target name="clean" description="remove stale build artifacts before / after each test">
-		<delete dir="${basedir}" includeemptydirs="true">
-			<include name="**/target/**"/>
-			<include name="**/lib/**"/>
-		</delete>
-	</target>
-	
-	<target name="setUp" depends="clean"/>
-	<target name="tearDown" depends="clean"/>
+    <target name="clean" description="remove stale build artifacts before / after each test">
+        <delete dir="${basedir}" includeemptydirs="true">
+            <include name="**/target/**"/>
+            <include name="**/lib/**"/>
+        </delete>
+    </target>
+    
+    <target name="setUp" depends="clean"/>
+    <target name="tearDown" depends="clean"/>
 
-	<target name="testHtmlChunked"
+    <target name="testHtmlChunked"
             depends="db:generate"
             description="test generation of multi-page HTML documentation from docbook sources">
 
-		<!-- verify output -->
-		<au:assertFileExists message="documentation was created"
-							 file="${basedir}/target/documentation"/>
+        <!-- verify output -->
+        <au:assertFileExists message="documentation was created"
+                             file="${basedir}/target/documentation"/>
 
-		<au:assertFilesMatch message="TOC page created"
-							 expected="${basedir}/docbook-test/index.html"
-							 actual="${basedir}/target/documentation/html/index.html"/>
-		<au:assertFilesMatch message="chapter document created"
-							 expected="${basedir}/docbook-test/ch01.html"
-							 actual="${basedir}/target/documentation/html/ch01.html"/>
+        <au:assertFilesMatch message="TOC page created"
+                             expected="${basedir}/docbook-test/index.html"
+                             actual="${basedir}/target/documentation/html/index.html"/>
+        <au:assertFilesMatch message="chapter document created"
+                             expected="${basedir}/docbook-test/ch01.html"
+                             actual="${basedir}/target/documentation/html/ch01.html"/>
 
-	</target>
+    </target>
 
 </project>

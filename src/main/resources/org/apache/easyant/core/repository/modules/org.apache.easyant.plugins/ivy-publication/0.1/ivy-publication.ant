@@ -15,131 +15,131 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#ivy-publication"
-	xmlns:ivy="antlib:org.apache.ivy.ant"
-	xmlns:ac="antlib:net.sf.antcontrib"
-	xmlns:ea="antlib:org.apache.easyant">
-	
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="publish-local" />
-		<ea:parameter phase="publish-shared"/>
-		<ea:parameter phase="release" />
-		<ea:parameter phase="generate-local-version"/>
-		<ea:parameter phase="generate-shared-version"/>
-		<ea:parameter phase="generate-release-version"/>
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:ac="antlib:net.sf.antcontrib"
+    xmlns:ea="antlib:org.apache.easyant">
+    
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="publish-local" />
+        <ea:parameter phase="publish-shared"/>
+        <ea:parameter phase="release" />
+        <ea:parameter phase="generate-local-version"/>
+        <ea:parameter phase="generate-shared-version"/>
+        <ea:parameter phase="generate-release-version"/>
 
-		<ea:parameter property="release.resolver" default="shared" 
-				description="the name of the resolver use for release publication"/>
-		<ea:parameter property="shared.resolver" default="shared" 
-				description="the name of the shared resolver"/>
-		<ea:parameter property="local.resolver" default="local" 
-				description="the name of the local resolver"/>
+        <ea:parameter property="release.resolver" default="shared" 
+                description="the name of the resolver use for release publication"/>
+        <ea:parameter property="shared.resolver" default="shared" 
+                description="the name of the shared resolver"/>
+        <ea:parameter property="local.resolver" default="local" 
+                description="the name of the local resolver"/>
 
-		<ea:parameter property="project.ivy.instance" default="project.ivy.instance" 
-				description="ivy instance name"/>
-		<ea:parameter property="project.ivy.file" required="true" 
-				description="ivy file (use to resolve dependencies for the project)"/>
-		<ea:parameter property="publish.overwrite" default="false"
-				description="specify if publish should overwrite existing artifacts or not"/>
-		
-		<ea:parameter property="ivy.haltonmissing" 
-				description="defines if ivy must halt when artifact is missing" default="true"/>
-		<!-- is project ivy settings configured ? -->
-		<ea:parameter property="project.ivy.settings.file" description="the ivysettings file used by your project" />
-		<ea:parameter property="project.ivy.settings.url" description="the ivysettings url used by your project" />
-		
-		<ea:parameter property="fail.publication.if.no.revision" default="true" description="fail build if current module has no revision in 'info' tag of the module.ivy"/>
-		<condition property="is.project.ivy.settings.configured">
-				<isreference refid="${project.ivy.instance}"/>
-		</condition>
-		<fail unless="is.project.ivy.settings.configured" message="project ivy instance is not configured, at least one of the following property must be set : project.ivy.settings.file, project.ivy.settings.url"/>
+        <ea:parameter property="project.ivy.instance" default="project.ivy.instance" 
+                description="ivy instance name"/>
+        <ea:parameter property="project.ivy.file" required="true" 
+                description="ivy file (use to resolve dependencies for the project)"/>
+        <ea:parameter property="publish.overwrite" default="false"
+                description="specify if publish should overwrite existing artifacts or not"/>
+        
+        <ea:parameter property="ivy.haltonmissing" 
+                description="defines if ivy must halt when artifact is missing" default="true"/>
+        <!-- is project ivy settings configured ? -->
+        <ea:parameter property="project.ivy.settings.file" description="the ivysettings file used by your project" />
+        <ea:parameter property="project.ivy.settings.url" description="the ivysettings url used by your project" />
+        
+        <ea:parameter property="fail.publication.if.no.revision" default="true" description="fail build if current module has no revision in 'info' tag of the module.ivy"/>
+        <condition property="is.project.ivy.settings.configured">
+                <isreference refid="${project.ivy.instance}"/>
+        </condition>
+        <fail unless="is.project.ivy.settings.configured" message="project ivy instance is not configured, at least one of the following property must be set : project.ivy.settings.file, project.ivy.settings.url"/>
 
-	</target>
-	
-	<macrodef name="check-version-number">
-		<sequential>
-			<property name="pub.no.revision.message" value="It seems that you did not specify the revision number of your project, we strongly recommend you to set it through the 'info' tag in your module ivy before any publication"/>
-			<ac:if>
-				<contains string="${ivy.revision}" substring="working@"/>
-				<ac:then>
-					<ac:if>
-						<istrue value="${fail.publication.if.no.revision}"/>
-						<ac:then>
-							<fail message="${pub.no.revision.message}"/>
-						</ac:then>
-						<ac:else>
-							<echo message="Warning : ${pub.no.revision.message}" level="warning"/>
-						</ac:else>
-					</ac:if>
-				</ac:then>
-			</ac:if>
-		</sequential>
-	</macrodef>
-	
-	<!-- ================================= 
+    </target>
+    
+    <macrodef name="check-version-number">
+        <sequential>
+            <property name="pub.no.revision.message" value="It seems that you did not specify the revision number of your project, we strongly recommend you to set it through the 'info' tag in your module ivy before any publication"/>
+            <ac:if>
+                <contains string="${ivy.revision}" substring="working@"/>
+                <ac:then>
+                    <ac:if>
+                        <istrue value="${fail.publication.if.no.revision}"/>
+                        <ac:then>
+                            <fail message="${pub.no.revision.message}"/>
+                        </ac:then>
+                        <ac:else>
+                            <echo message="Warning : ${pub.no.revision.message}" level="warning"/>
+                        </ac:else>
+                    </ac:if>
+                </ac:then>
+            </ac:if>
+        </sequential>
+    </macrodef>
+    
+    <!-- ================================= 
           target: release              
          ================================= -->
-	<target name=":release" phase="release" depends="generate-release-version,verify">
-		<ea:checkresolver resolver="release.resolver" settingsRef="${project.ivy.instance}" description="name of the repository used to publish releases"/>
-		<check-version-number/>
-		<ivy:publish artifactspattern="${target.artifacts}/[artifact](-[classifier]).[ext]" 
-			resolver="${release.resolver}" 
-			pubrevision="${version}" 
-			status="release" 
-			settingsRef="${project.ivy.instance}"
-			overwrite="${publish.overwrite}"
-			haltonmissing="${ivy.haltonmissing}" 
-			update="true"/>
-		<echo message="project ${module.name} released with version ${version}" />
-	</target>
+    <target name=":release" phase="release" depends="generate-release-version,verify">
+        <ea:checkresolver resolver="release.resolver" settingsRef="${project.ivy.instance}" description="name of the repository used to publish releases"/>
+        <check-version-number/>
+        <ivy:publish artifactspattern="${target.artifacts}/[artifact](-[classifier]).[ext]" 
+            resolver="${release.resolver}" 
+            pubrevision="${version}" 
+            status="release" 
+            settingsRef="${project.ivy.instance}"
+            overwrite="${publish.overwrite}"
+            haltonmissing="${ivy.haltonmissing}" 
+            update="true"/>
+        <echo message="project ${module.name} released with version ${version}" />
+    </target>
 
-	<!-- ================================= 
+    <!-- ================================= 
           target: publish-shared              
          ================================= -->
-	<target name=":publish-shared" phase="publish-shared" depends="generate-shared-version,package">
-		<ea:checkresolver resolver="shared.resolver" settingsRef="${project.ivy.instance}" description="name of the repository used to publish shared integration versions (snapshots)"/>
-		<check-version-number/>
-		<tstamp>
-			<format property="now" pattern="yyyyMMddHHmmss" />
-		</tstamp>
-		<ivy:publish artifactspattern="${target.artifacts}/[artifact](-[classifier]).[ext]" 
-			resolver="${shared.resolver}" 
-			forcedeliver="true" 
-			pubdate="${now}" 
-			pubrevision="${version}" 
-			status="integration"
-			overwrite="${publish.overwrite}"
-			settingsRef="${project.ivy.instance}" 
-			haltonmissing="${ivy.haltonmissing}"/>
-		<echo message="project ${module.name} published with version ${version}" />
-	</target>
+    <target name=":publish-shared" phase="publish-shared" depends="generate-shared-version,package">
+        <ea:checkresolver resolver="shared.resolver" settingsRef="${project.ivy.instance}" description="name of the repository used to publish shared integration versions (snapshots)"/>
+        <check-version-number/>
+        <tstamp>
+            <format property="now" pattern="yyyyMMddHHmmss" />
+        </tstamp>
+        <ivy:publish artifactspattern="${target.artifacts}/[artifact](-[classifier]).[ext]" 
+            resolver="${shared.resolver}" 
+            forcedeliver="true" 
+            pubdate="${now}" 
+            pubrevision="${version}" 
+            status="integration"
+            overwrite="${publish.overwrite}"
+            settingsRef="${project.ivy.instance}" 
+            haltonmissing="${ivy.haltonmissing}"/>
+        <echo message="project ${module.name} published with version ${version}" />
+    </target>
 
-	
-	<!-- ================================= 
+    
+    <!-- ================================= 
           target: publish-local              
          ================================= -->
-	<target name=":publish-local" phase="publish-local" depends="generate-local-version,package">
-		<check-version-number/>
-		<ivy:publish artifactspattern="${target.artifacts}/[artifact](-[classifier]).[ext]" 
-			resolver="${local.resolver}" 
-			pubrevision="${version}" 
-			pubdate="${now}" 
-			status="integration" 
-			forcedeliver="true" 
-			overwrite="${publish.overwrite}"
-			settingsRef="${project.ivy.instance}" 
-			haltonmissing="${ivy.haltonmissing}"/>
-		<echo message="project ${module.name} published locally with version ${version}" />
-	</target>
+    <target name=":publish-local" phase="publish-local" depends="generate-local-version,package">
+        <check-version-number/>
+        <ivy:publish artifactspattern="${target.artifacts}/[artifact](-[classifier]).[ext]" 
+            resolver="${local.resolver}" 
+            pubrevision="${version}" 
+            pubdate="${now}" 
+            status="integration" 
+            forcedeliver="true" 
+            overwrite="${publish.overwrite}"
+            settingsRef="${project.ivy.instance}" 
+            haltonmissing="${ivy.haltonmissing}"/>
+        <echo message="project ${module.name} published locally with version ${version}" />
+    </target>
 
-	<!-- ================================= 
+    <!-- ================================= 
           target: clean-local              
          ================================= -->
-	<target name=":clean-local" description="cleans the local repository">
-		<delete dir="${ivy.local.default.root}" />
-	</target>
+    <target name=":clean-local" description="cleans the local repository">
+        <delete dir="${ivy.local.default.root}" />
+    </target>
 
-	<target name="doit" depends=":publish-local" />
+    <target name="doit" depends=":publish-local" />
 </project>

@@ -15,52 +15,52 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#compile-java"
-	xmlns:ea="antlib:org.apache.easyant">
+    xmlns:ea="antlib:org.apache.easyant">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate" />
-		<ea:parameter phase="compile" />
-		
-		<ea:parameter property="src.main.java" required="true"
-			description="directory where sources to be compiled are" />
-		<ea:parameter property="target.main.classes" required="true" 
-			description="destination directory for compiled test classes" />
-		<ea:parameter property="javac.debug.mode" default="true" 
-			description="javac debug mode, true or false" />
-		
-		<ea:parameter property="compile.java.includes.pattern" default="**/*.java" 
-			description="Pattern describing files included in compilation process" />
-		<ea:parameter property="compile.java.excludes.pattern" default="" 
-			description="Pattern describing files excluded in compilation process" />
-		
-		<ea:parameter property="compile.java.target.version" default="${ant.java.version}" 
-			description="Specify a VM version for Generated class files (e.g., 1.1 or 1.2)." />
-		<ea:parameter property="compile.java.source.version" default="${ant.java.version}" 
-			description="Specify a value of the -source command-line switch; will be ignored by all implementations prior to javac1.4 (or modern when Ant is not running in a 1.3 VM) and jikes" />
-		<ea:parameter property="compile.java.include.antruntime" default="false" 
-					description="Whether to include the Ant run-time libraries in the classpath. It is usually best to set this to false so the script's behavior is not sensitive to the environment in which it is run." />
-		
-		<available file="${src.main.java}" property="has.src.main.java" />
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate" />
+        <ea:parameter phase="compile" />
+        
+        <ea:parameter property="src.main.java" required="true"
+            description="directory where sources to be compiled are" />
+        <ea:parameter property="target.main.classes" required="true" 
+            description="destination directory for compiled test classes" />
+        <ea:parameter property="javac.debug.mode" default="true" 
+            description="javac debug mode, true or false" />
+        
+        <ea:parameter property="compile.java.includes.pattern" default="**/*.java" 
+            description="Pattern describing files included in compilation process" />
+        <ea:parameter property="compile.java.excludes.pattern" default="" 
+            description="Pattern describing files excluded in compilation process" />
+        
+        <ea:parameter property="compile.java.target.version" default="${ant.java.version}" 
+            description="Specify a VM version for Generated class files (e.g., 1.1 or 1.2)." />
+        <ea:parameter property="compile.java.source.version" default="${ant.java.version}" 
+            description="Specify a value of the -source command-line switch; will be ignored by all implementations prior to javac1.4 (or modern when Ant is not running in a 1.3 VM) and jikes" />
+        <ea:parameter property="compile.java.include.antruntime" default="false" 
+                    description="Whether to include the Ant run-time libraries in the classpath. It is usually best to set this to false so the script's behavior is not sensitive to the environment in which it is run." />
+        
+        <available file="${src.main.java}" property="has.src.main.java" />
 
-		<ea:path pathid="compile.main.classpath" overwrite="false" />
-	</target>	
-	
-	<target name=":compile" depends="validate" if="has.src.main.java"
-		phase="compile">
-		<mkdir dir="${target.main.classes}" />
+        <ea:path pathid="compile.main.classpath" overwrite="false" />
+    </target>   
+    
+    <target name=":compile" depends="validate" if="has.src.main.java"
+        phase="compile">
+        <mkdir dir="${target.main.classes}" />
         <javac  srcdir="${src.main.java}"
                 destdir="${target.main.classes}"
                 debug="${javac.debug.mode}"
-        		source="${compile.java.source.version}"
-				target="${compile.java.target.version}"
-        		classpathref="compile.main.classpath"
-				includeantruntime="${compile.java.include.antruntime}"
-        		includes="${compile.java.includes.pattern}"
-        		excludes="${compile.java.excludes.pattern}">
-        </javac>	
-	</target>	
-	
-	<target name="doit" depends=":compile" />
+                source="${compile.java.source.version}"
+                target="${compile.java.target.version}"
+                classpathref="compile.main.classpath"
+                includeantruntime="${compile.java.include.antruntime}"
+                includes="${compile.java.includes.pattern}"
+                excludes="${compile.java.excludes.pattern}">
+        </javac>    
+    </target>   
+    
+    <target name="doit" depends=":compile" />
 </project>

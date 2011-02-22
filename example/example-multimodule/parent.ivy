@@ -15,15 +15,15 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-	<info organisation="org.apache.easyant" module="example-multimodule" revision="0.2" status="integration" >
-		<description>
-			This example show you how to use module inheritance to share common stuff between modules
-		</description>
-	</info>
-	<configurations>
-		<conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
-		<conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-	</configurations>
+    <info organisation="org.apache.easyant" module="example-multimodule" revision="0.2" status="integration" >
+        <description>
+            This example show you how to use module inheritance to share common stuff between modules
+        </description>
+    </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+    </configurations>
     <dependencies>
          <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7" conf="default->default"/>
          <dependency org="junit" name="junit" rev="4.4" conf="test->default" />

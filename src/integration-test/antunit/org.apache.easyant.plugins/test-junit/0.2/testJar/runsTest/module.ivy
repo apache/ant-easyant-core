@@ -15,14 +15,14 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org">
-	<info module="runsTest" status="integration" >
+    <info module="runsTest" status="integration" >
         <extends organisation="org.apache.easyant" module="test-junit-jar-testJar" revision="latest.integration" location="../module.ivy"/>
-		<description>Runs a test jar defined in another module.</description>
-		<ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
+        <description>Runs a test jar defined in another module.</description>
+        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
             <ea:property name="test.scan.path" value="true"/>
         </ea:build>
-	</info>
-	<dependencies>
+    </info>
+    <dependencies>
         <dependency org="org.apache.easyant" name="definesTest" rev="latest.integration" conf="test->test"/>
-	</dependencies>
+    </dependencies>
 </ivy-module>

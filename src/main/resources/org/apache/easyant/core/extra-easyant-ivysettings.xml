@@ -15,16 +15,16 @@
    limitations under the License.
 -->
 <ivysettings>
-	<include url="${easyant.default.ivysettings.url}"/>
-	<settings defaultResolver="easyant-extra-chain"/>
-	<resolvers>
-		<jar name="easyant-extra-modules">
-			<ivy pattern="${easyant.extramodules.repo.url}/[organisation]/[module]/[revision]/[module].ivy"/>
-			<artifact pattern="${easyant.extramodules.repo.url}/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
-		</jar>
-		<chain name="easyant-extra-chain" returnFirst="true">
-			<resolver ref="easyant-extra-modules" />
-			<resolver ref="easyant-default-chain" />
-		</chain>
-	</resolvers>
+    <include url="${easyant.default.ivysettings.url}"/>
+    <settings defaultResolver="easyant-extra-chain"/>
+    <resolvers>
+        <jar name="easyant-extra-modules">
+            <ivy pattern="${easyant.extramodules.repo.url}/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="${easyant.extramodules.repo.url}/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+        </jar>
+        <chain name="easyant-extra-chain" returnFirst="true">
+            <resolver ref="easyant-extra-modules" />
+            <resolver ref="easyant-default-chain" />
+        </chain>
+    </resolvers>
 </ivysettings>

@@ -15,18 +15,18 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#clean-std"
-	xmlns:ea="antlib:org.apache.easyant">
+    xmlns:ea="antlib:org.apache.easyant">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<target name=":init" phase="validate">
-		<ea:parameter phase="validate"/>
-		<ea:parameter property="target" required="true"
-	                  description="the target directory to clean" />
-	</target>
-	
-	<target name=":clean" phase="clean" depends=":init" description="clean project">
-		<delete dir="${target}"/>
-	</target>
-	
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <target name=":init" phase="validate">
+        <ea:parameter phase="validate"/>
+        <ea:parameter property="target" required="true"
+                      description="the target directory to clean" />
+    </target>
+    
+    <target name=":clean" phase="clean" depends=":init" description="clean project">
+        <delete dir="${target}"/>
+    </target>
+    
 </project>

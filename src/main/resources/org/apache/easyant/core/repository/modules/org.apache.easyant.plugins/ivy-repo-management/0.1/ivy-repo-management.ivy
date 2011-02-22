@@ -15,35 +15,35 @@
    limitations under the License.
 -->
 <ivy-module version="2.0"> 
-	<info organisation="org.apache.easyant.plugins"
-	       module="ivy-repo-management"
-	       status="milestone"
-	       revision="0.1">
-	       <description>
-	       <p>
-		       This module provides features to install artifacts on a given repository.<br/>
-		       This module can be used in interactive (ie. let easyant ask questions) or directly from the command line by settings -Dproperty.<br/>
-		       By default interactive mode is enabled.<br/>
-		       If you prefer you can directly set the property on the command line.<br/>
-		   </p>
-	       <p>
-		       Example: 
-		       <div class="code">
-		       		easyant install-ext-artifact -Dorg=myOrgName -Dmodule=myModuleName -Drev=myRevisionNumber
-		       </div>
-		       Example2:
-		       <div class="code">
-		       		easyant install-artifact -Dorg=myOrgName -Dmodule=myModuleName -Drev=myRevisionNumber -Dartifact=myFile
-		       </div>
-	       </p>
-	       <p>
-	       		If one of the property is not set, easyant will ask you the question if interactive mode is set to "true".
-	       		If you want to disable interactive mode you should set "install.interactive.mode" property to "false".
-	       </p>
-	       </description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-		<artifact name="ivy.xml" type="tpl"/>
-	</publications>
+    <info organisation="org.apache.easyant.plugins"
+           module="ivy-repo-management"
+           status="milestone"
+           revision="0.1">
+           <description>
+           <p>
+               This module provides features to install artifacts on a given repository.<br/>
+               This module can be used in interactive (ie. let easyant ask questions) or directly from the command line by settings -Dproperty.<br/>
+               By default interactive mode is enabled.<br/>
+               If you prefer you can directly set the property on the command line.<br/>
+           </p>
+           <p>
+               Example: 
+               <div class="code">
+                    easyant install-ext-artifact -Dorg=myOrgName -Dmodule=myModuleName -Drev=myRevisionNumber
+               </div>
+               Example2:
+               <div class="code">
+                    easyant install-artifact -Dorg=myOrgName -Dmodule=myModuleName -Drev=myRevisionNumber -Dartifact=myFile
+               </div>
+           </p>
+           <p>
+                If one of the property is not set, easyant will ask you the question if interactive mode is set to "true".
+                If you want to disable interactive mode you should set "install.interactive.mode" property to "false".
+           </p>
+           </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+        <artifact name="ivy.xml" type="tpl"/>
+    </publications>
 </ivy-module>

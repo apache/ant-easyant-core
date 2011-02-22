@@ -31,36 +31,36 @@ import org.apache.tools.ant.taskdefs.Property;
  */
 public class PropertyTask extends Property {
 
-	private String buildConfigurations = null;
+    private String buildConfigurations = null;
 
-	@Override
-	public void execute() throws BuildException {
-		//Build the message
-		StringBuilder message= new StringBuilder("property ");
-		if (getName() != null ) {
-			message.append(getName());
-		}
-		if (getFile()!=null) {
-			message.append("file ").append(getFile());
-		}
-		
-		if (BuildConfigurationHelper.isBuildConfigurationActive(getBuildConfigurations(), getProject(), message.toString())) {
-			super.execute();
-		} else {
-				log("this property will be skipped ", Project.MSG_DEBUG);
-		}
-	}
+    @Override
+    public void execute() throws BuildException {
+        //Build the message
+        StringBuilder message= new StringBuilder("property ");
+        if (getName() != null ) {
+            message.append(getName());
+        }
+        if (getFile()!=null) {
+            message.append("file ").append(getFile());
+        }
+        
+        if (BuildConfigurationHelper.isBuildConfigurationActive(getBuildConfigurations(), getProject(), message.toString())) {
+            super.execute();
+        } else {
+                log("this property will be skipped ", Project.MSG_DEBUG);
+        }
+    }
 
-	public String getBuildConfigurations() {
-		return buildConfigurations;
-	}
+    public String getBuildConfigurations() {
+        return buildConfigurations;
+    }
 
-	public void setBuildConfigurations(String confs) {
-		this.buildConfigurations = confs;
-	}
-	
-	public void setConf(String conf) {
-		this.buildConfigurations = conf;
-	}
+    public void setBuildConfigurations(String confs) {
+        this.buildConfigurations = confs;
+    }
+    
+    public void setConf(String conf) {
+        this.buildConfigurations = conf;
+    }
 
 }

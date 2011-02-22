@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ExampleCoreImpl implements ExampleCore {
-	public String getMessage() {
-		return "Hello World !";
-	}
+    public String getMessage() {
+        return "Hello World !";
+    }
 }

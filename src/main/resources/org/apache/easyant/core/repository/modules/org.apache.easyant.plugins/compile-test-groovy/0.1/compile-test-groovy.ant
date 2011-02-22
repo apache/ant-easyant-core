@@ -15,42 +15,42 @@
    limitations under the License.
 -->
 <project name="org.apache.easyant.plugins#compile-test-groovy"
-	xmlns:ea="antlib:org.apache.easyant">
+    xmlns:ea="antlib:org.apache.easyant">
 
-	<ea:core-version requiredrevision="[0.8,+]" />
-	
-	<ea:include mrid="org.apache.easyant.plugins#abstract-test;0.1" as=":abstract-test"/>
+    <ea:core-version requiredrevision="[0.8,+]" />
+    
+    <ea:include mrid="org.apache.easyant.plugins#abstract-test;0.1" as=":abstract-test"/>
 
-	<macrodef name="compile-groovy-tests">
-		<attribute name="prefix"/>
-		<sequential>
-			<mkdir dir="${target.@{test}.classes}" />
-	        <groovyc  srcdir="${src.@{test}.java}"
+    <macrodef name="compile-groovy-tests">
+        <attribute name="prefix"/>
+        <sequential>
+            <mkdir dir="${target.@{test}.classes}" />
+            <groovyc  srcdir="${src.@{test}.java}"
                 destdir="${target.@{test}.classes}"
                 classpathref="compile.test.classpath"
-        		includes="${@{test}.compile.includes.pattern}"
-        	    excludes="${@{test}.compile.excludes.pattern}"/>
-		</sequential>
-	</macrodef>
-	
-	<target name="-configure" phase="provision">
-		<ea:findclasspath pathid="resolved.groovy.classpath" organisation="org.codehaus.groovy" module="groovy-all" revision="1.6.0">
-			<ea:project-dependency-strategy />
-			<ea:environment-strategy env="GROOVY_HOME"/>
-			<ea:basic-configuration-strategy />
-		</ea:findclasspath>
+                includes="${@{test}.compile.includes.pattern}"
+                excludes="${@{test}.compile.excludes.pattern}"/>
+        </sequential>
+    </macrodef>
+    
+    <target name="-configure" phase="provision">
+        <ea:findclasspath pathid="resolved.groovy.classpath" organisation="org.codehaus.groovy" module="groovy-all" revision="1.6.0">
+            <ea:project-dependency-strategy />
+            <ea:environment-strategy env="GROOVY_HOME"/>
+            <ea:basic-configuration-strategy />
+        </ea:findclasspath>
 
-		<taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="resolved.groovy.classpath" />
-	</target>
-	
-	<target name=":compile" depends="validate, compile, test-process-resources" if="has.src.test.java"
-		phase="test-compile">
-		<compile-groovy-tests prefix="test"/>
-	</target>
+        <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" classpathref="resolved.groovy.classpath" />
+    </target>
+    
+    <target name=":compile" depends="validate, compile, test-process-resources" if="has.src.test.java"
+        phase="test-compile">
+        <compile-groovy-tests prefix="test"/>
+    </target>
 
-	<target name=":compile-integration" depends="validate, compile, test-process-resources" if="has.src.test.integration.java"
-		phase="test-compile">
-		<compile-groovy-tests prefix="test.integration"/>
-	</target>
+    <target name=":compile-integration" depends="validate, compile, test-process-resources" if="has.src.test.integration.java"
+        phase="test-compile">
+        <compile-groovy-tests prefix="test.integration"/>
+    </target>
 
 </project>

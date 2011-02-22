@@ -15,36 +15,36 @@
    limitations under the License.
 -->
 <project name="coverage-cobertura-test" xmlns:au="antlib:org.apache.ant.antunit">
-	
-	<dirname file="${ant.file.coverage-cobertura-test}" property="test.dir"/>
-	<import file="${test.dir}/../../../common/test-utils.ant"/>
+    
+    <dirname file="${ant.file.coverage-cobertura-test}" property="test.dir"/>
+    <import file="${test.dir}/../../../common/test-utils.ant"/>
 
-	<target name="clean" description="remove stale build artifacts before / after each test">
-		<delete dir="${basedir}" includeemptydirs="true">
-			<include name="**/target/**"/>
-			<include name="**/lib/**"/>
-		</delete>
-	</target>
-	
-	<target name="setUp" depends="clean"/>
-	<target name="tearDown" depends="clean"/>
+    <target name="clean" description="remove stale build artifacts before / after each test">
+        <delete dir="${basedir}" includeemptydirs="true">
+            <include name="**/target/**"/>
+            <include name="**/lib/**"/>
+        </delete>
+    </target>
+    
+    <target name="setUp" depends="clean"/>
+    <target name="tearDown" depends="clean"/>
 
-	<target name="testCoverage" description="test generation of coverage reports using emma">
-		
-		<!-- verify test preconditions -->
-		<au:assertFileDoesntExist message="test environment is clean" file="${basedir}/target"/>
+    <target name="testCoverage" description="test generation of coverage reports using emma">
+        
+        <!-- verify test preconditions -->
+        <au:assertFileDoesntExist message="test environment is clean" file="${basedir}/target"/>
 
-		<!-- execute run tests and generate reports -->	
-		<easyant target="report"/>
+        <!-- execute run tests and generate reports --> 
+        <easyant target="report"/>
 
-		<!-- verify coverage artifacts created -->
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/cobertura.ser"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/index.html"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/frame-summary.html"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/frame-sourcefiles.html"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/frame-packages.html"/>
-		<au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/org.apache.easyant.plugins.coverage.HelloWorld.html"/>
+        <!-- verify coverage artifacts created -->
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/cobertura.ser"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/index.html"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/frame-summary.html"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/frame-sourcefiles.html"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/frame-packages.html"/>
+        <au:assertFileExists message="coverage artifacts created" file="${basedir}/target/report/coverage/org.apache.easyant.plugins.coverage.HelloWorld.html"/>
 
-	</target>
-	
+    </target>
+    
 </project>

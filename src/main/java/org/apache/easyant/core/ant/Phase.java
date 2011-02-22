@@ -29,8 +29,8 @@ import org.apache.tools.ant.Task;
  * @since Ant 1.8.0
  */
 public class Phase extends Target {
-	
-	// no "clone" constructor since I'm not really sure where it is
+    
+    // no "clone" constructor since I'm not really sure where it is
     // used
 
     private static final String NO_CHILDREN_ALLOWED

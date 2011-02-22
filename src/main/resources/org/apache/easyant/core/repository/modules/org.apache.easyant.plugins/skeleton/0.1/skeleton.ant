@@ -41,8 +41,8 @@
         <condition property="skeleton.is.interactive">
             <istrue value="${skeleton.interactive.mode}"/>
         </condition>
-    	
-    	<echo message="skeleton 0.1 has been deprecated, we strongly recommend you to switch to the most recent one compatible with your easyant distribution" level="warning"/>
+        
+        <echo message="skeleton 0.1 has been deprecated, we strongly recommend you to switch to the most recent one compatible with your easyant distribution" level="warning"/>
    
     </target>
    
@@ -53,19 +53,19 @@
     <target name="-create-usage">
         <echo level="info">This target will now create a new project from a project skeleton.</echo>
         <echo level="info">This target can be called with -Dparameters, refer to the skeleton plugin documentation to have more informations.</echo>
-    	<ac:if>
-    		<and>
-    			<isset property="skeleton.org"/>
-    			<isset property="skeleton.module"/>
-    			<isset property="skeleton.rev"/>
-    		</and>
-    		<ac:then>
-    			<echo level="info">    Example: easyant skeleton:create -Dskeleton.org=${skeleton.org} -Dskeleton.module=${skeleton.module} -Dskeleton.rev=${skeleton.rev} -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
-    		</ac:then>
-    		<ac:else>
-    			<echo level="info">    Example: easyant skeleton:create -Dskeleton.org=foo -Dskeleton.module=bar-skeleton -Dskeleton.rev=0.1 -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
-    		</ac:else>
-    	</ac:if>
+        <ac:if>
+            <and>
+                <isset property="skeleton.org"/>
+                <isset property="skeleton.module"/>
+                <isset property="skeleton.rev"/>
+            </and>
+            <ac:then>
+                <echo level="info">    Example: easyant skeleton:create -Dskeleton.org=${skeleton.org} -Dskeleton.module=${skeleton.module} -Dskeleton.rev=${skeleton.rev} -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
+            </ac:then>
+            <ac:else>
+                <echo level="info">    Example: easyant skeleton:create -Dskeleton.org=foo -Dskeleton.module=bar-skeleton -Dskeleton.rev=0.1 -Dproject.org=org.mycompany -Dproject.module=myproject -Dproject.ref=0.1</echo>
+            </ac:else>
+        </ac:if>
     </target>
 
     <target name="-check-create" if="skeleton.is.interactive">
@@ -81,7 +81,7 @@
     </target>
    
     <target name="-generate" depends="validate" if="skeleton.is.interactive">
-    	<echo>Choose a skeleton in the following list:</echo>
+        <echo>Choose a skeleton in the following list:</echo>
         <ea:searchmodule organisation="org.apache.easyant.skeletons" module="*" revision="*" propertyprefix="skeleton" settingsRef="easyant.ivy.instance"/>
     </target>
    

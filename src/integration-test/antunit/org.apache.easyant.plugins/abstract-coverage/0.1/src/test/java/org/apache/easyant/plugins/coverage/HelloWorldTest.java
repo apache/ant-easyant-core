@@ -26,10 +26,9 @@ import org.junit.Test;
  */
 public class HelloWorldTest {
 
-	@Test
-	public void testHello() {
-		assertEquals("Bonjour, le monde.", new HelloWorld().hello());
-	}
-	
+    @Test
+    public void testHello() {
+        assertEquals("Bonjour, le monde.", new HelloWorld().hello());
+    }
+    
 }
-

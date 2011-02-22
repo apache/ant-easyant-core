@@ -35,7 +35,7 @@ import org.apache.ivy.util.Message;
  * resolution cache.
  */
 public class XmlEasyAntReportOutputter {
-	
+    
     public static final String CONSOLE = "console";
 
     public static final String XML = "xml";
@@ -58,7 +58,7 @@ public class XmlEasyAntReportOutputter {
     public void output(ConfigurationResolveReport report, String resolveId, 
             String[] confs, ResolutionCacheManager cacheMgr, EasyAntReport easyAntReport , boolean displaySubProperties) 
             throws IOException {
-    	writer.setDisplaySubProperties(displaySubProperties);
+        writer.setDisplaySubProperties(displaySubProperties);
         File reportFile = cacheMgr.getConfigurationResolveReportInCache(
             resolveId, report.getConfiguration());
         File reportParentDir = reportFile.getParentFile();
@@ -82,4 +82,3 @@ public class XmlEasyAntReportOutputter {
         }
     }
 }
-

@@ -15,20 +15,20 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" > 
-	<info organisation="org.apache.easyant.plugins"
-	       module="emma"
-	       status="milestone"
-	       revision="0.1">
-		<description>
+    <info organisation="org.apache.easyant.plugins"
+           module="emma"
+           status="milestone"
+           revision="0.1">
+        <description>
 This module provides coverage report using emma framework.<br/>
 Emma library and instrumentation classes (classes used for coverage report) will be prepended at the begining of compile.test.classpath and lib.test.classpath.
-		</description>
-	</info>
-	<publications>
-		<artifact type="ant" />
-	</publications>
-	<dependencies>
-		<dependency org="emma" name="emma" rev="2.0.5312"/>
-		<dependency org="emma" name="emma_ant" rev="2.0.5312"/>
-	</dependencies>
+        </description>
+    </info>
+    <publications>
+        <artifact type="ant" />
+    </publications>
+    <dependencies>
+        <dependency org="emma" name="emma" rev="2.0.5312"/>
+        <dependency org="emma" name="emma_ant" rev="2.0.5312"/>
+    </dependencies>
 </ivy-module>
