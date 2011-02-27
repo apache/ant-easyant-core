@@ -88,11 +88,11 @@ public class SearchModule extends IvyTask {
             sb.append(i).append(": ");
             sb.append(mrids[i].getName());
             sb.append(" v").append(mrids[i].getRevision());
-			// hide organization if its the default one
-			if (!EasyAntConstants.EASYANT_SKELETONS_ORGANISATION
-					.equals(mrids[i].getOrganisation())) {
-				sb.append(" by ").append(mrids[i].getOrganisation());
-			}
+            // hide organization if its the default one
+            if (!EasyAntConstants.EASYANT_SKELETONS_ORGANISATION
+                    .equals(mrids[i].getOrganisation())) {
+                sb.append(" by ").append(mrids[i].getOrganisation());
+            }
             // Get the description
             ResolvedModuleRevision rmr = ivy.findModule(mrids[i]);
             if (rmr.getDescriptor().getDescription() != null
@@ -103,10 +103,9 @@ public class SearchModule extends IvyTask {
             log(sb.toString());
 
         }
-        
-        
+
         // ask end user to select a module
-        //TODO handle a default value
+        // TODO handle a default value
         Integer value = new Integer(getInput("Choose a number:", null, choices));
         ModuleRevisionId moduleToRetrieve = mrids[value];
 
@@ -120,7 +119,8 @@ public class SearchModule extends IvyTask {
 
     }
 
-    protected String getInput(String message, String defaultvalue, Vector<String> choices) {
+    protected String getInput(String message, String defaultvalue,
+            Vector<String> choices) {
         InputRequest request = null;
         request = new MultipleChoiceInputRequest(message, choices);
         request.setDefaultValue(defaultvalue);
