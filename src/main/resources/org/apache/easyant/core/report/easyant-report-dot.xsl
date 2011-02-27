@@ -24,8 +24,7 @@
      <xsl:for-each select="dependencies/module">
         "<xsl:value-of select="@organisation"/>-<xsl:value-of select="@name"/>" [label="<xsl:value-of select="@name"/>
             <xsl:for-each select="revision">
-                  <xsl:text>
-</xsl:text>
+                  <xsl:text>\n</xsl:text>
                   <xsl:value-of select="@name"/><xsl:if test="@error"> (error)</xsl:if><xsl:if test="@evicted"> (evicted)</xsl:if>
             </xsl:for-each>
          <xsl:text>"];
