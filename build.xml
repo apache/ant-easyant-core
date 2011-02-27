@@ -69,6 +69,8 @@
             <arg line="-config-file ${basedir}/easyant-conf.xml" />
             <arg line="-f ${basedir}/module.ivy" />
             <arg line="dist" />
+	    <arg line="-Dskip.xooki=true"/>
+	    <arg line="-Dskip.emma=true"/>
         </java>
     </target>
 
