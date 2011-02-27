@@ -43,14 +43,12 @@ public class CheckResolver extends IvyTask {
             StringBuilder sb = new StringBuilder();
             sb.append("resolver ").append(resolverProperty);
             sb.append(" does not exist in current project, please check your project ivysettings.xml file.");
-            sb.append("
-");
+            sb.append("\n");
             if (getDescription() != null) {
                 sb.append(resolver);
                 sb.append(" : ");
                 sb.append(getDescription());
-                sb.append("
-");
+                sb.append("\n");
             }
             sb.append("Available resolvers : ");
             sb.append(getSettings().getResolverNames().toString());

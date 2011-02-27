@@ -88,7 +88,7 @@ public class BuildConfigurationHelper {
      *         spaces.
      */
     public static String removeSpaces(String confs) {
-        return confs.replaceAll("\s", "");
+        return confs.replaceAll("\\s", "");
     }
 
     public static List<String> buildList(String conf) {

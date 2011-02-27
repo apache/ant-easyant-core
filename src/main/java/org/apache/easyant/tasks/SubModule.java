@@ -139,8 +139,7 @@ public class SubModule extends Task {
                 if (file.isDirectory()) {
                     if (verbose) {
                         subdirPath = file.getPath();
-                        log("Entering directory: " + subdirPath + "
-",
+                        log("Entering directory: " + subdirPath + "\n",
                                 Project.MSG_INFO);
                     }
                     file = new File(file, moduleFile);
@@ -148,15 +147,13 @@ public class SubModule extends Task {
                 directory = file.getParentFile();
                 execute(file, directory);
                 if (verbose && subdirPath != null) {
-                    log("Leaving directory: " + subdirPath + "
-",
+                    log("Leaving directory: " + subdirPath + "\n",
                             Project.MSG_INFO);
                 }
             } catch (RuntimeException ex) {
                 if (!(getProject().isKeepGoingMode())) {
                     if (verbose && subdirPath != null) {
-                        log("Leaving directory: " + subdirPath + "
-",
+                        log("Leaving directory: " + subdirPath + "\n",
                                 Project.MSG_INFO);
                     }
                     throw ex; // throw further
@@ -165,8 +162,7 @@ public class SubModule extends Task {
             } catch (Throwable ex) {
                 if (!(getProject().isKeepGoingMode())) {
                     if (verbose && subdirPath != null) {
-                        log("Leaving directory: " + subdirPath + "
-",
+                        log("Leaving directory: " + subdirPath + "\n",
                                 Project.MSG_INFO);
                     }
                     throw new BuildException(ex);
@@ -192,8 +188,7 @@ public class SubModule extends Task {
                     }
                 }
                 if (verbose && subdirPath != null) {
-                    log("Leaving directory: " + subdirPath + "
-",
+                    log("Leaving directory: " + subdirPath + "\n",
                             Project.MSG_INFO);
                 }
             }

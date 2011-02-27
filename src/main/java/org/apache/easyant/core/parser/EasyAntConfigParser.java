@@ -112,11 +112,9 @@ public class EasyAntConfigParser {
 
         protected void addError(String msg) {
             if (configUrl != null) {
-                errors.add(msg + " in " + configUrl + "
-");
+                errors.add(msg + " in " + configUrl + "\n");
             } else {
-                errors.add(msg + "
-");
+                errors.add(msg + "\n");
             }
         }
 

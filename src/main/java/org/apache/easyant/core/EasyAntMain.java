@@ -353,8 +353,7 @@ public class EasyAntMain implements AntMain {
                 String msg = "Ant's Main method is being handed "
                         + "an option " + arg
                         + " that is only for the launcher class."
-                        + "
-This can be caused by a version mismatch between "
+                        + "\nThis can be caused by a version mismatch between "
                         + "the ant script/.bat file and Ant itself.";
                 throw new BuildException(msg);
             } else if (arg.equals("-autoproxy")) {

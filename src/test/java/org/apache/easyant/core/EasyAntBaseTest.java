@@ -285,8 +285,7 @@ public abstract class EasyAntBaseTest extends TestCase {
         boolean cr = false;
         for (int i = 0; i < buffer.length(); i++) {
             char ch = buffer.charAt(i);
-            if (ch == '
-') {
+            if (ch == '\r') {
                 cr = true;
                 continue;
             }
