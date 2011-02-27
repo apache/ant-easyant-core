@@ -364,28 +364,28 @@ fi
 # add a second backslash to variables terminated by a backslash under cygwin
 if $cygwin; then
   case "$ANT_HOME" in
-    *\ )
-    ANT_HOME="$ANT_HOME\"
+    *\\ )
+    ANT_HOME="$ANT_HOME\\"
     ;;
   esac
   case "$CYGHOME" in
-    *\ )
-    CYGHOME="$CYGHOME\"
+    *\\ )
+    CYGHOME="$CYGHOME\\"
     ;;
   esac
   case "$JIKESPATH" in
-    *\ )
-    JIKESPATH="$JIKESPATH\"
+    *\\ )
+    JIKESPATH="$JIKESPATH\\"
     ;;
   esac
   case "$LOCALCLASSPATH" in
-    *\ )
-    LOCALCLASSPATH="$LOCALCLASSPATH\"
+    *\\ )
+    LOCALCLASSPATH="$LOCALCLASSPATH\\"
     ;;
   esac
   case "$CLASSPATH" in
-    *\ )
-    CLASSPATH="$CLASSPATH\"
+    *\\ )
+    CLASSPATH="$CLASSPATH\\"
     ;;
   esac
 fi
