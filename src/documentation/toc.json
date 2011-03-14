@@ -246,13 +246,15 @@
                       ]
                   },
                   {
+                    "id":"ref/buildtypes/buildtypes",
                     "title":"Build Types",
-                    "importNode":"buildtypes",
-                    "importRoot":"ref/buildtypes"                  },
+                    "children":[]
+                  },
                   {
+                    "id":"ref/plugins/plugins",
                     "title":"Plugins",
-                    "importNode":"plugins",
-                    "importRoot":"ref/plugins"                  },
+                    "children":[]
+                  },
                   {
                     "id":"ref/EasyAntconfigurationfile",
                     "title":"EasyAnt configuration file",
