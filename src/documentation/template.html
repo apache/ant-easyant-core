@@ -24,10 +24,17 @@
   <link rel="stylesheet" type="text/css" href="style/style.css" media="screen"/>
   <!-- for tree, see if it would better go in xooki.js -->
   <link rel="stylesheet" type="text/css" href="style/tree.css" />
-  <script type="text/javascript" src="sortable.js"></script>
+  <script src="js/jquery.pack.js" type="text/javascript"></script>
+  <script src="js/jquery.treeview.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  $(document).ready(function(){$("#treemenu").Treeview({speed: "fast",store: true});});
+  </script>
 </head>
 <body>
 <div id="header">
+    <div id="incubatorlogo">
+	<img src="images/apache-incubator-logo.png"/>
+    </div>
     <div id="topmenu">
         <ul>
             <li><a href="index.html" id="topmenu1" accesskey="1" title="">Home</a></li>
@@ -51,7 +58,7 @@
     </div>
     <!-- end #posts -->
     <div id="sidebar" class="boxed">
-        <h2 class="title">EasyAnt Menu</h2>
+        <h2 class="title">EasyAnt&#153;</h2>
         <div id="links">
                 ${menu}
         </div>
@@ -61,7 +68,11 @@
 </div>
 <!-- end #content -->
 <div id="footer">
-    <p id="legal">Copyright &copy; 2008-2010 EasyAnt project. Designed by <a href="http://www.freecsstemplates.org/">Free CSS Templates</a></p>
+    <p id="legal">
+        <i>Copyright &#169; 2011 The Apache Software Foundation, Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a>.</i><br>
+        <i>Apache EasyAnt, Apache Ivy, Apache Ant, Ivy, Ant, Apache, the Apache Ivy logo, the Apache Ant logo and the Apache feather logo are trademarks of The Apache Software Foundation.</i><br>
+        <i>All other marks mentioned may be trademarks or registered trademarks of their respective owners. </i>
+    </p>
 </div>
 <!-- end #footer -->
 </body>

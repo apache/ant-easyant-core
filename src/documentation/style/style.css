@@ -103,6 +103,11 @@ table, sortable {
     color: #FFFFFF;
 }
 
+#incubatorlogo  {
+    float: right;
+    padding: 65px 0 0 0;
+}
+
 /* Header > Top Menu */
 
 #topmenu {
@@ -230,7 +235,6 @@ table, sortable {
     height: 29px;
     padding: 11px 0 0 27px;
     background: url(../images/img08.gif) no-repeat 10px 50%;
-    text-transform: uppercase;
     font-size: 1.2em;
     color: #FFFFFF;
 }
@@ -242,8 +246,8 @@ table, sortable {
 /* Posts */
 
 #posts {
-    float: left;
-    width: 75%;
+    float: right;
+    width: 79%;
 }
 
 /* Links */
@@ -287,8 +291,8 @@ table, sortable {
 /* Content > Sidebar */
 
 #sidebar {
-    float: right;
-    width: 23%;
+    float: left;
+    width: 20%;
 }
 
 td.spacer {
@@ -336,3 +340,25 @@ span.defaultValue, span.buildTypeValue {
     border: 1px solid #dddddd;
 
 }
+
+.release {
+    background-image: url('../images/package.png');
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+    font-weight: bold;
+    color: #EA672E;
+}
+
+table.list tbody tr.group td { padding: 0.8em 0 0.5em 0.3em; font-weight: bold; border-bottom: 1px solid #ccc; }
+table.list tbody tr.group { color: #aaa; font-size: 80%; }
+
+table.list tbody tr:hover { background-color:#ffffdd; }
+table.list tbody tr.group:hover { background-color:inherit; }
+
+table {
+    width: 100%;
+}
+
