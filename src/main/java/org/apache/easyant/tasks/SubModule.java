@@ -334,6 +334,7 @@ public class SubModule extends Task {
                         ivyPublish.setOwningTarget(getOwningTarget());
                         ivyPublish.setLocation(getLocation());
                         ivyPublish.setOverwrite(overwrite);
+                        ivyPublish.setTaskName("publish-buildscoped-repository");
                         ivyPublish.execute();
                     } else {
                         subModule.log("Skipping publish because "
