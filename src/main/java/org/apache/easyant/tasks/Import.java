@@ -630,7 +630,6 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
         }
     }
 
-    @Override
     public void setDynamicAttribute(String attributeName, String value)
             throws BuildException {
         PropertyTask property = new PropertyTask();
