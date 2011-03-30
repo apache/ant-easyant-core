@@ -64,7 +64,6 @@
     <phase name="pre-integration-test" depends="package"/>
     <phase name="distribution" description="create a distribution package" depends="package" />
     <property name="target.dist" value="${target}/dist" />
-    <property name="target.distribution" value="${target}/distribution" />
 
     <!-- override the default release phase -->
     <phase name="release" depends="generate-release-version, distribution, verify" description="done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects" />
@@ -94,7 +93,7 @@
 
     <target name="prepare-distribution">
 
-        <mkdir dir="${target.distribution}" />
+        <mkdir dir="${target.distributions}" />
 
         <patternset id="easyant-files.patternset">
             <exclude name="target/**"/>
@@ -189,7 +188,7 @@
     <target name="package-distribution" phase="distribution" depends="documentation, dist" description="package a distribution">
         <echo message="Packaging standard distribution." />
         <property name="root.dir" value="${ivy.module}-${ivy.revision}"/>
-        <bundle destfile="${target.distribution}/${ivy.module}-${version}">
+        <bundle destfile="${target.distributions}/${ivy.module}-${version}">
             <zipfileset dir="${target.dist}" prefix="${root.dir}">
                 <patternset refid="easyant-files.patternset"/>
             </zipfileset>
@@ -205,7 +204,7 @@
 
     <target name="package-documentation" phase="distribution" description="package the documentation" depends="documentation">
         <echo message="Packaging documentation distribution." />
-        <bundle destfile="${target.distribution}/${ivy.module}-${version}-docs">
+        <bundle destfile="${target.distributions}/${ivy.module}-${version}-docs">
             <zipfileset dir="${target.documentation.dir}" prefix="${ivy.module}-${ivy.revision}-docs"/>
         </bundle>
     </target>
@@ -214,7 +213,7 @@
     <target name="package-full-distribution" phase="distribution" depends="documentation, dist" description="package a distribution (including includes sources)">
         <echo message="Packaging full distribution." />
         <property name="full.root.dir" value="${ivy.module}-${ivy.revision}-full"/>
-        <bundle destfile="${target.distribution}/${ivy.module}-${version}-full">
+        <bundle destfile="${target.distributions}/${ivy.module}-${version}-full">
             <zipfileset dir="${target.dist}" prefix="${full.root.dir}">
                 <patternset refid="easyant-files.patternset"/>
             </zipfileset>
