@@ -73,7 +73,7 @@ public interface EasyAntConstants {
     /**
      * Default location of global easyant ivysettings file
      */
-    public static final String DEFAULT_GLOBAL_EASYANT_IVYSETTINGS = "file://${easyant.home}/easyant-ivysettings.xml";
+    public static final String DEFAULT_GLOBAL_EASYANT_IVYSETTINGS = "${easyant.home}/easyant-ivysettings.xml";
 
     /**
      * Default value for pre module targets

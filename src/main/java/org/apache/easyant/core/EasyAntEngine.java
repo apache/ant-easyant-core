@@ -200,7 +200,7 @@ public class EasyAntEngine {
             try {
                 path = f.toURL().toExternalForm();
             } catch (MalformedURLException e) {
-                throw new BuildException("Can't load easyant ivysettings file from "+ f.getAbsolutePath());
+                throw new BuildException("Can't load easyant ivysettings file from "+ f.getAbsolutePath(),e);
             }
         }
         if (configuration.getEasyantIvySettingsUrl() != null) {
@@ -213,8 +213,16 @@ public class EasyAntEngine {
         }
         // if no property is set check the default location
         if (path == null) {
-            path = helper.replaceProperties(
-                    EasyAntConstants.DEFAULT_GLOBAL_EASYANT_IVYSETTINGS);
+        	File defaultGlboalEasyAntIvySettings =  new File(helper.replaceProperties(
+                    EasyAntConstants.DEFAULT_GLOBAL_EASYANT_IVYSETTINGS));
+        	if (!defaultGlboalEasyAntIvySettings.exists()) {
+        		return null;
+        	}
+        	try {
+				path = defaultGlboalEasyAntIvySettings.toURL().toExternalForm();
+			} catch (MalformedURLException e) {
+				throw new BuildException("Can't load easyant ivysettings file from "+ defaultGlboalEasyAntIvySettings.getAbsolutePath(),e);
+			}
         }
         project.log("global easyant-ivysettings file : " + path,
                 Project.MSG_DEBUG);
