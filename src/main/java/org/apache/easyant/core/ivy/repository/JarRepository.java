@@ -19,9 +19,15 @@ package org.apache.easyant.core.ivy.repository;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
@@ -42,18 +48,29 @@ public class JarRepository extends URLRepository {
     private HashMap<String, Directory> jarCache = new HashMap<String, Directory>();
 
     public List list(String parent) throws IOException {
-        if (parent.startsWith("jar")) {
+    	URL url = new URL(parent);    	
+    	if ("jar".equals(url.getProtocol())) {
             //extract path in parent
             Matcher matcher = URL_PATTERN.matcher(parent);
             matcher.find();
-
+            
             String baseUrl = matcher.group(1);
             String path = matcher.group(2);
             
             //find the parent path in the directory.
-            Directory directory = getDirectory(baseUrl, parent).findEntry(path);
-            return new ArrayList<String>(directory.getChildren());
-        }
+            Directory directory = getDirectoryFromJar(baseUrl, url).findEntry(path);
+            return new ArrayList<String>(directory.getChildren());   
+        
+        // Hook required to embed Easyant in OSGi container
+        // Equinox used a custom "bundleresource" protocol 
+        // (Other OSGi implementations like Felix use file:// ou jar:// standard protocols)        
+        }else if ("bundleresource".equals(url.getProtocol())) {        	          
+             String baseUrl = url.getHost();
+             String path = url.getPath();
+             //find the parent path in the directory.
+             Directory directory = getDirectoryFromEquinoxBundle(baseUrl, url).findEntry(path);
+             return new ArrayList<String>(directory.getChildren());
+		}    	       
         return super.list(parent);
     }
 
@@ -69,12 +86,11 @@ public class JarRepository extends URLRepository {
      * @param baseName the base URL of the jar file
      * @param jarUrl complete URL to the entry being searched
      */
-    private Directory getDirectory(String baseName, String jarUrl) throws IOException {
+    private Directory getDirectoryFromJar(String baseName, URL jarUrl) throws IOException {
         synchronized (jarCache) {
             Directory cached = jarCache.get(baseName);
-            if (cached == null) {
-                URL url = new URL(jarUrl);
-                JarURLConnection conn = (JarURLConnection) url.openConnection();
+            if (cached == null) {                                         
+                JarURLConnection conn = (JarURLConnection) jarUrl.openConnection();
                 JarFile file = conn.getJarFile();
                 if (file == null) {
                     return emptyNode;
@@ -85,7 +101,36 @@ public class JarRepository extends URLRepository {
                         cached.addEntry(entry.getName());
                     }
                     jarCache.put(baseName, cached);
-                }
+                }                
+            }
+            return cached;
+        }
+    }
+    
+    private static Method getLocalURL;
+    /**
+     * get a sorted list of entries in the given OSGi bundle
+     * @param baseName the base URL of the OSGi bundle
+     * @param jarUrl complete URL to the entry being searched
+     */
+    private Directory getDirectoryFromEquinoxBundle(String baseName, URL jarUrl) throws IOException {
+        synchronized (jarCache) {
+            Directory cached = jarCache.get(baseName);
+            if (cached == null) {
+            	try {
+	                URLConnection conn = jarUrl.openConnection();
+	                if(getLocalURL==null && "org.eclipse.osgi.framework.internal.core.BundleURLConnection".equals(conn.getClass().getName())){
+	                	JarRepository.getLocalURL = conn.getClass().getMethod("getLocalURL", null);
+						getLocalURL.setAccessible(true);
+	                }
+	                if(getLocalURL!=null && conn!=null){
+	                	URL localJarUrl = (URL)getLocalURL.invoke(conn, null);	                	
+	                	Directory directory = getDirectoryFromJar(baseName, localJarUrl);	                	
+	                	return directory;
+	                }
+            	} catch (Throwable throwable) {
+					throw new IOException("Cannot get directory from Equinox OSGi bundle", throwable);
+				}              
             }
             return cached;
         }
