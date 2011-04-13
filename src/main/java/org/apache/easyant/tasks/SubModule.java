@@ -21,15 +21,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
+import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
+import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyPublish;
@@ -85,7 +89,7 @@ public class SubModule extends Task {
             BuildListener l = (BuildListener) i.next();
             if (l instanceof DefaultLogger) {
                 Field fields[];
-                //case of classes extending DefaultLogger
+                // case of classes extending DefaultLogger
                 if (l.getClass().getSuperclass() == DefaultLogger.class) {
                     fields = l.getClass().getSuperclass().getDeclaredFields();
                 } else {
@@ -231,6 +235,9 @@ public class SubModule extends Task {
                     .getBuildListeners().elementAt(i);
             subModule.addBuildListener(buildListener);
         }
+        // explicitly add the execution timer to time
+        // sub builds
+        subModule.addBuildListener(new SubBuildExecutionTimer());
 
         subModule.setName(file.getName());
         subModule.setBaseDir(directory);
@@ -263,7 +270,8 @@ public class SubModule extends Task {
                     PropertyType.USER);
 
             // copy easyantIvyInstance
-            IvyAntSettings ivyAntSettings = IvyInstanceHelper.getEasyAntIvyAntSettings(getProject());
+            IvyAntSettings ivyAntSettings = IvyInstanceHelper
+                    .getEasyAntIvyAntSettings(getProject());
             subModule.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE,
                     ivyAntSettings);
 
@@ -319,7 +327,8 @@ public class SubModule extends Task {
                                 Project.MSG_INFO);
                         // Publish on build scoped repository
                         IvyPublish ivyPublish = new IvyPublish();
-                        ivyPublish.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(subModule));
+                        ivyPublish.setSettingsRef(IvyInstanceHelper
+                                .buildProjectIvyReference(subModule));
                         ivyPublish.setResolver(resolver);
                         // TODO: this should be more flexible!
                         ivyPublish
@@ -334,7 +343,8 @@ public class SubModule extends Task {
                         ivyPublish.setOwningTarget(getOwningTarget());
                         ivyPublish.setLocation(getLocation());
                         ivyPublish.setOverwrite(overwrite);
-                        ivyPublish.setTaskName("publish-buildscoped-repository");
+                        ivyPublish
+                                .setTaskName("publish-buildscoped-repository");
                         ivyPublish.execute();
                     } else {
                         subModule.log("Skipping publish because "
@@ -352,8 +362,27 @@ public class SubModule extends Task {
         } catch (BuildException e) {
             subModule.fireSubBuildFinished(e);
             throw e;
+        } finally {
+            // add execution times for the current submodule to parent
+            // project references for access from MetaBuildExecutor
+            storeExecutionTimes(getProject(), subModule);
         }
 
+    }
+
+    private void storeExecutionTimes(Project parent, Project child) {
+        List<ExecutionResult> allresults = (List<ExecutionResult>) parent
+                .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+        if (allresults == null) {
+            allresults = new ArrayList<ExecutionResult>();
+            parent.addReference(
+                    SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS,
+                    allresults);
+        }
+        List<ExecutionResult> childResults = (List<ExecutionResult>) child
+                .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+        if (childResults != null)
+            allresults.addAll(childResults);
     }
 
     /**
