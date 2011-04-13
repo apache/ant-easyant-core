@@ -54,7 +54,7 @@ import org.apache.tools.ant.util.StringUtils;
 public class MetaBuildExecutor extends DefaultExecutor {
 
     private static final String DEMARKER = "======================================================================";
-    
+
     @Override
     public void executeTargets(Project project, String[] targets)
             throws BuildException {
@@ -202,14 +202,17 @@ public class MetaBuildExecutor extends DefaultExecutor {
     private void printExecutionSubBuildsExecutionTimes(Project project) {
         List<ExecutionResult> allSubBuildResults = (List<ExecutionResult>) project
                 .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
-        StringBuilder sb = new StringBuilder();
-        sb.append(StringUtils.LINE_SEP).append(DEMARKER).append(
-                StringUtils.LINE_SEP);
-        sb.append("Project Sub-modules Summary: ").append(StringUtils.LINE_SEP).append(
-                DEMARKER);
-        sb.append(StringUtils.LINE_SEP).append(
-                BuildExecutionTimer.formatExecutionResults(allSubBuildResults));
-        sb.append(StringUtils.LINE_SEP).append(DEMARKER);
-        project.log(sb.toString());
+        if (allSubBuildResults != null && allSubBuildResults.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(StringUtils.LINE_SEP).append(DEMARKER).append(
+                    StringUtils.LINE_SEP);
+            sb.append("Project Sub-modules Summary: ").append(
+                    StringUtils.LINE_SEP).append(DEMARKER);
+            sb.append(StringUtils.LINE_SEP).append(
+                    BuildExecutionTimer
+                            .formatExecutionResults(allSubBuildResults));
+            sb.append(StringUtils.LINE_SEP).append(DEMARKER);
+            project.log(sb.toString());
+        }
     }
 }
