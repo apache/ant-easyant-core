@@ -25,6 +25,9 @@ import java.util.List;
 
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
+import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
+import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.tasks.SubModule;
 import org.apache.easyant.tasks.SubModule.TargetList;
@@ -43,12 +46,15 @@ import org.apache.tools.ant.helper.DefaultExecutor;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.selectors.FilenameSelector;
+import org.apache.tools.ant.util.StringUtils;
 
 /**
  * Recursively executes build targets on sub-modules for a multi-module project.
  */
 public class MetaBuildExecutor extends DefaultExecutor {
 
+    private static final String DEMARKER = "======================================================================";
+    
     @Override
     public void executeTargets(Project project, String[] targets)
             throws BuildException {
@@ -130,8 +136,8 @@ public class MetaBuildExecutor extends DefaultExecutor {
                 if (project.getTargets().get(targets[i]) != null) {
                     postTargetsToRun.add(targets[i]);
                 } else {
-                    project.log("Skipping undefined target '" + targets[i] + "'",
-                            Project.MSG_VERBOSE);
+                    project.log("Skipping undefined target '" + targets[i]
+                            + "'", Project.MSG_VERBOSE);
                 }
 
             }
@@ -140,6 +146,8 @@ public class MetaBuildExecutor extends DefaultExecutor {
         // now call the default executor to include any extra
         // targets defined in the root module.ant
         super.executeTargets(project, preTargetsToRun.toArray(new String[] {}));
+
+        printSubBuildsInOrder(project);
 
         // delegate to the ea:submodule task to execute the list of targets on
         // all modules in the build list
@@ -163,6 +171,45 @@ public class MetaBuildExecutor extends DefaultExecutor {
         super
                 .executeTargets(project, postTargetsToRun
                         .toArray(new String[] {}));
+
+        printExecutionSubBuildsExecutionTimes(project);
     }
 
+    /*
+     * informs all the sub-modules that will be built, in the order they will be
+     * built
+     */
+    private void printSubBuildsInOrder(Project project) {
+        // print all sub modules and order in which they will
+        // be executed
+        String sortedModules = project.getProperty("ivy.sorted.modules");
+        if (sortedModules != null && sortedModules.length() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(DEMARKER).append(StringUtils.LINE_SEP);
+            sb.append("Build Order for Sub Modules").append(
+                    StringUtils.LINE_SEP);
+            sb.append(DEMARKER).append(StringUtils.LINE_SEP);
+            String[] subModules = sortedModules.split("\\,");
+            for (int i = 0; i < subModules.length; i++) {
+                sb.append(" * ").append(subModules[i].trim()).append(
+                        StringUtils.LINE_SEP);
+            }
+            sb.append(DEMARKER);
+            project.log(sb.toString());
+        }
+    }
+
+    private void printExecutionSubBuildsExecutionTimes(Project project) {
+        List<ExecutionResult> allSubBuildResults = (List<ExecutionResult>) project
+                .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+        StringBuilder sb = new StringBuilder();
+        sb.append(StringUtils.LINE_SEP).append(DEMARKER).append(
+                StringUtils.LINE_SEP);
+        sb.append("Project Sub-modules Summary: ").append(StringUtils.LINE_SEP).append(
+                DEMARKER);
+        sb.append(StringUtils.LINE_SEP).append(
+                BuildExecutionTimer.formatExecutionResults(allSubBuildResults));
+        sb.append(StringUtils.LINE_SEP).append(DEMARKER);
+        project.log(sb.toString());
+    }
 }
