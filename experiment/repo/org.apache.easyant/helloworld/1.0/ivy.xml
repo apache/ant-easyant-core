@@ -1,0 +1,6 @@
+<ivy-module version="2.0">
+    <info organisation="org.apache.easyant" module="helloworld" revision="1.0" />
+    <publications>
+        <artifact name="helloworld" ext="xml" type="antscript" />
+    </publications>
+</ivy-module>

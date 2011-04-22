@@ -1,0 +1,10 @@
+<project name="org.apache.easyant#groovyfrontend">
+
+    <typedef name="groovyfrontend" classname="org.apache.ant.groovyfront.GroovyFrontProjectHelper">
+        <classpath refid="org.apache.easyant#groovyfrontend[projecthelper]" />
+    </typedef>
+    <projecthelper>
+        <groovyfrontend />
+    </projecthelper>
+
+</project>

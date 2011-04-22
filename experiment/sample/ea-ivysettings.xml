@@ -1,0 +1,9 @@
+<ivysettings>
+
+    <include file="${ivy.settings.dir}/../repo/ivysettings.xml" />
+
+    <caches resolutionCacheDir="${ivy.settings.dir}/.resolution-cache" />
+
+    <settings defaultResolver="easyant-chain" />
+
+</ivysettings>

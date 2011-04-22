@@ -1,0 +1,22 @@
+<ivysettings>
+
+    <caches>
+        <!--  since it is all filesystem with useOrigin=true, nothing should actually be put in cache -->
+        <cache name="easyant-repo-cache" useOrigin="true" basedir="${ivy.settings.dir}/.cache" />
+    </caches>
+
+    <resolvers>
+        <filesystem name="easyant-repo" cache="easyant-repo-cache">
+            <ivy pattern="${ivy.settings.dir}/[organization]/[module]/[revision]/ivy.xml" />
+            <artifact pattern="${ivy.settings.dir}/[organization]/[module]/[revision]/[type]s/[artifact].[ext]" />
+        </filesystem>
+
+        <ibiblio name="maven" m2compatible="true" />
+
+        <chain name="easyant-chain">
+            <resolver ref="easyant-repo" />
+            <resolver ref="maven" />
+        </chain>
+    </resolvers>
+
+</ivysettings>

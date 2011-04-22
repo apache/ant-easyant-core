@@ -1,0 +1,12 @@
+<project name="myproject" default="hello">
+
+    <property file="build.properties" />
+
+    <path id="anttasks.classpath">
+        <fileset dir="${basedir}/ea-jars" includes="*.jar" />
+    </path>
+    <typedef name="importantscripts" classname="org.apache.easyant.tasks.ImportAntscripts" classpathref="anttasks.classpath" loaderref="anttasks.classpath.loader" />
+
+    <importantscripts ivyfile="${basedir}/ea-ivy.xml" ivysettings="${basedir}/ea-ivysettings.xml" />
+
+</project>

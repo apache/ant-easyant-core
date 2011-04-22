@@ -1,0 +1,13 @@
+<ivy-module version="2.0">
+    <info organisation="org.apache.easyant" module="groovyfrontend" revision="1.0" />
+    <configurations>
+        <conf name="default" />
+        <conf name="projecthelper" />
+    </configurations>
+    <publications>
+        <artifact name="groovyfrontend" ext="xml" type="antscript" conf="default" />
+    </publications>
+    <dependencies>
+        <dependency org="org.apache.ant" name="ant-groovyfront" rev="1.0.0" conf="projecthelper->default" />
+    </dependencies>
+</ivy-module>

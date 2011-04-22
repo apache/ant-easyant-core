@@ -1,0 +1,16 @@
+<ivy-module version="2.0">
+    <info organisation="org.apache.ant" module="ant-groovyfront" revision="1.0.0" />
+    <configurations defaultconfmapping="default->default;sources->sources;javadoc->javadoc">
+        <conf name="default" />
+        <conf name="sources" />
+        <conf name="javadoc" />
+    </configurations>
+    <publications>
+        <artifact name="ant-groovyfront" ext="jar" type="jar" conf="default" />
+    </publications>
+    <dependencies>
+        <dependency org="org.codehaus.groovy" name="groovy" rev="1.7.9" transitive="false" />
+        <dependency org="antlr"               name="antlr"  rev="2.7.7" transitive="false" />
+        <dependency org="asm"                 name="asm"    rev="3.2"   transitive="false" />
+    </dependencies>
+</ivy-module>

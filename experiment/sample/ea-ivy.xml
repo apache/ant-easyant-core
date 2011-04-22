@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+    <info organisation="com.acme" module="myproject_easyant" />
+    <dependencies>
+        <dependency org="org.apache.easyant" name="helloworld"  rev="1.0" />
+        <dependency org="org.apache.easyant" name="hellogroovy" rev="1.0" />
+    </dependencies>
+</ivy-module>

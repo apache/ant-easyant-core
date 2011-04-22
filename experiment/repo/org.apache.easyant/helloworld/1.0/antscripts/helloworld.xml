@@ -1,0 +1,7 @@
+<project name="org.apache.easyant#helloworld">
+
+    <target name="hello">
+        <echo message="hello world !" />
+    </target>
+
+</project>

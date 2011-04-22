@@ -1,0 +1,9 @@
+<ivy-module version="2.0">
+    <info organisation="org.apache.easyant" module="hellogroovy" revision="1.0" />
+    <publications>
+        <artifact name="hellogroovy" ext="groovy" type="antscript" />
+    </publications>
+    <dependencies>
+        <dependency org="org.apache.easyant" name="groovyfrontend" rev="1.0" conf="default->default" />
+    </dependencies>
+</ivy-module>
