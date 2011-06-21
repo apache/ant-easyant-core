@@ -67,36 +67,6 @@ public interface EasyAntModuleDescriptor {
     List<PluginDescriptor> getPlugins();
 
     /**
-     * Add a plugin to the easyant context (considered as include)
-     * 
-     * @param pluginModule
-     *            a string that represents a module revision id
-     * @param as
-     *            a string that represents an alias
-     * @param mandatory
-     *            is this plugin mandatory?
-     * @deprecated since 0.6
-     */
-    void addPlugin(String pluginModule, String as, boolean mandatory);
-
-    /**
-     * Add a plugin to the easyant context and define if we should include or
-     * import it
-     * 
-     * @param pluginModule
-     *            a string that represents a module revision id
-     * @param as
-     *            a string that represents an alias
-     * @param mandatory
-     *            is this plugin mandatory?
-     * @param mode
-     *            a string that represents the import mode (include / import)
-     * @deprecated since 0.6
-     */
-    void addPlugin(String pluginModule, String as, boolean mandatory,
-            String mode);
-
-    /**
      * Add a plugin to the easyant context
      * 
      * @param pluginDescriptor

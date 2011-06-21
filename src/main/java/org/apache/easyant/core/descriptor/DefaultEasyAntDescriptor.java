@@ -62,22 +62,6 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
         this.properties = properties;
 
     }
-
-    public void addPlugin(String pluginModule, String as, boolean mandatory) {
-        addPlugin(pluginModule, as, mandatory, "include");
-    }
-
-    public void addPlugin(String pluginModule, String as, boolean mandatory, String mode) {
-        PluginDescriptor plugin = new PluginDescriptor();
-        plugin.setModule(pluginModule);
-        plugin.setAs(as);
-        
-        plugin.setMandatory(mandatory);
-        if (mode != null) {
-            plugin.setMode(mode);
-        } else plugin.setMode("include");
-        this.plugins.add(plugin);
-    }
     
     public void addPlugin(PluginDescriptor pluginDescriptor) {
         if (pluginDescriptor == null) {
