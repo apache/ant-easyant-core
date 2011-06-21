@@ -49,13 +49,13 @@ public class PluginServiceTest {
     public static void setUp() throws ParseException, IOException {
         // configure the ivyinstance
         Ivy ivy = IvyContext.pushNewContext().getIvy();
-        ivy.setVariable(EasyAntMagicNames.EASYANT_CORE_REPO_URL,
+        ivy.setVariable(
+                EasyAntMagicNames.EASYANT_CORE_REPO_URL,
                 PluginServiceTest.class.getResource(
                         "/org/apache/easyant/core/repository/modules")
                         .toExternalForm());
-        ivy
-                .configure(PluginServiceTest.class
-                        .getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
+        ivy.configure(PluginServiceTest.class
+                .getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
         pluginService = new DefaultPluginServiceImpl(ivy);
 
     }
@@ -71,9 +71,10 @@ public class PluginServiceTest {
     @Test
     public void testSearchAllResolvers() throws Exception {
         ModuleRevisionId[] mrids = pluginService.search(
-                "org.apache.easyant.buildtypes", "build-std-java",
-                null, null, PatternMatcher.EXACT, "*");
-        // the module should be found once each in easyant repo and in chained resolver
+                "org.apache.easyant.buildtypes", "build-std-java", null, null,
+                PatternMatcher.EXACT, "*");
+        // the module should be found once each in easyant repo and in chained
+        // resolver
         Assert.assertEquals(2, mrids.length);
         Assert.assertEquals(mrids[0], mrids[1]);
     }
@@ -86,10 +87,17 @@ public class PluginServiceTest {
         Assert.assertEquals(1, mrids.length);
     }
 
+    private EasyAntReport generateReport() throws Exception {
+        File module = new File(this.getClass().getResource("module.ivy")
+                .toURI());
+        File moduleAnt = new File(this.getClass().getResource("module.ant")
+                .toURI());
+        return pluginService.generateEasyAntReport(module, moduleAnt, null);
+    }
+
     @Test
     public void testGenerateReport() throws Exception {
-        File module = new File("example/standard-java-app/module.ivy");
-        EasyAntReport eaReport = pluginService.generateEasyAntReport(module);
+        EasyAntReport eaReport = generateReport();
         Assert.assertNotNull(eaReport);
 
         // the report should contain the run-java plugin
@@ -115,16 +123,15 @@ public class PluginServiceTest {
                 "run.main.classname");
         Assert.assertNotNull(property);
         // check the value of the property
-        Assert.assertEquals("org.apache.easyant.example.Example", property
-                .getValue());
+        Assert.assertEquals("org.apache.easyant.example.Example",
+                property.getValue());
 
         // be sure that the property exist
         PropertyDescriptor srcMainJava = eaReport.getAvailableProperties().get(
                 "src.main.java");
         Assert.assertNotNull(srcMainJava);
         // check the value of the property
-        Assert.assertEquals("${basedir}/src/main/java", srcMainJava
-                .getValue());
+        Assert.assertEquals("${basedir}/src/main/java", srcMainJava.getValue());
 
         // the property should also be contained in getAvailableProperties which
         // list all properties (those for the current module and those in
@@ -132,8 +139,8 @@ public class PluginServiceTest {
         property = eaReport.getAvailableProperties().get("run.main.classname");
         Assert.assertNotNull(property);
         // check the value of the property
-        Assert.assertEquals("org.apache.easyant.example.Example", property
-                .getValue());
+        Assert.assertEquals("org.apache.easyant.example.Example",
+                property.getValue());
 
         // check that package phase exists and that jar:jar target is bound to
         // this phase
@@ -147,12 +154,31 @@ public class PluginServiceTest {
 
         Assert.assertNotNull(packagePhase);
         List<TargetReport> targets = packagePhase.getTargetReports();
-        Set<String> expectedTargets = new HashSet<String>(Arrays.asList("jar:jar", "test-jar:jar"));
-        Assert.assertEquals("test and main jars included in package phase", expectedTargets.size(), targets.size());
+        Set<String> expectedTargets = new HashSet<String>(Arrays.asList(
+                "jar:jar", "test-jar:jar"));
+        Assert.assertEquals("test and main jars included in package phase",
+                expectedTargets.size(), targets.size());
 
         for (TargetReport target : packagePhase.getTargetReports()) {
-            Assert.assertTrue("expected to find " + target.getName(), expectedTargets.remove(target.getName()));
+            Assert.assertTrue("expected to find " + target.getName(),
+                    expectedTargets.remove(target.getName()));
         }
+
+    }
+
+    @Test
+    public void shouldHaveModuleAntFile() throws Exception {
+        EasyAntReport eaReport = generateReport();
+        boolean hasHelloWorldTarget = false;
+        for (TargetReport targetReport : eaReport.getAvailableTargets()) {
+            if ("hello-world".equals(targetReport.getName())) {
+                Assert.assertTrue("process-sources".equals(targetReport
+                        .getPhase()));
+                hasHelloWorldTarget = true;
+                break;
+            }
+        }
+        Assert.assertTrue(hasHelloWorldTarget);
     }
 
     @Test

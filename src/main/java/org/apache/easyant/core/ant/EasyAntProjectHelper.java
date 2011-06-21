@@ -227,8 +227,9 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
                     for (Iterator iter = Target.parseDepends(depends, name,
                             "depends").iterator(); iter.hasNext();) {
                         String curTarget = (String) iter.next();
-                        if (projectTargets.containsKey(curTarget) && (projectTargets.get(curTarget) instanceof Phase)) {
-                            
+                        if (projectTargets.containsKey(curTarget)
+                                && (projectTargets.get(curTarget) instanceof Phase)) {
+
                             target.addDependency(curTarget);
                         } else {
                             target.addDependency(prefix + sep + curTarget);
@@ -264,17 +265,25 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
             }
             if (phase != null) {
                 if (!projectTargets.containsKey(phase)) {
-                    throw new BuildException("can't add target " + name
-                            + " to phase " + phase + " because the phase"
-                            + " is unknown.");
+                    if (!Project.toBoolean(project.getProperty("audit.mode"))) {
+                        throw new BuildException("can't add target " + name
+                                + " to phase " + phase + " because the phase"
+                                + " is unknown.");
+                    } else {
+                        Phase p = new Phase();
+                        p.setName(phase);
+                        project.addTarget(p);
+                    }
                 }
-                Target t = (Target) projectTargets.get(phase);
 
-                if (!(t instanceof Phase)) {
-                    throw new BuildException("referenced target " + phase
-                            + " is not a phase");
+                Target t = (Target) projectTargets.get(phase);
+                if (t != null) {
+                    if (!(t instanceof Phase)) {
+                        throw new BuildException("referenced target " + phase
+                                + " is not a phase");
+                    }
+                    t.addDependency(name);
                 }
-                t.addDependency(name);
             }
 
         }

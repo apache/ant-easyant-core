@@ -83,12 +83,14 @@ public class ProjectMan {
      * @param moduleDescriptor
      *          The build module file. This MUST not be left unspecified. 
      *          This value does not default to module.ivy in current directory.
+     * @param optionalAntModule The optional build file
+     * @param overrideAntModule The optional override build file.
      */
-    public boolean setContext(Project p, File moduleDescriptor) {
+    public boolean setContext(Project p, File moduleDescriptor, File optionalAntModule, File overrideAntModule) {
         project = p;
         try {
             PluginService pluginService = (PluginService)project.getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
-            earep = pluginService.generateEasyAntReport(moduleDescriptor);
+            earep = pluginService.generateEasyAntReport(moduleDescriptor,optionalAntModule,overrideAntModule);
             inited = true;
         } catch (Throwable t) {
             project.log("EasyAntMan could not be initialized. Details: " + t.getMessage());

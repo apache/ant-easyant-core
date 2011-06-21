@@ -91,7 +91,7 @@ public class EasyAntEngine {
      *            project instance
      * @return a configured {@link Ivy} instance
      */
-    protected Ivy configureEasyAntIvyInstance(Project project) {
+    public Ivy configureEasyAntIvyInstance(Project project) {
         IvyConfigure easyantIvyConfigure = new IvyConfigure();
         easyantIvyConfigure
                 .setSettingsId(EasyAntMagicNames.EASYANT_IVY_INSTANCE);

@@ -601,8 +601,11 @@ public class EasyAntMain implements AntMain {
         } else if(projectMan) {
             EasyAntEngine.configureAndInitProject(project, easyAntConfiguration);
             File moduleDescriptor =new File(project.getProperty(EasyAntMagicNames.EASYANT_FILE));
-            if (moduleDescriptor.exists()) {
-                man.setContext(project, moduleDescriptor);
+            File optionalAntModule =new File(moduleDescriptor.getParent(),EasyAntConstants.DEFAULT_BUILD_FILE);
+            File overrideAntModule =new File(moduleDescriptor.getParent(),EasyAntConstants.DEFAULT_OVERRIDE_BUILD_FILE);
+            
+            if (moduleDescriptor.exists()||optionalAntModule.exists()||overrideAntModule.exists()) {
+                man.setContext(project, moduleDescriptor,optionalAntModule,overrideAntModule);
                 man.execute();
             } else {
                 project.log("Can't print project manual, there is no module descriptor available.");

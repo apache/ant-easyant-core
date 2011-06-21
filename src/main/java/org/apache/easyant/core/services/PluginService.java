@@ -122,11 +122,26 @@ public interface PluginService {
      * 
      * @param moduleDescriptor
      *            a file that represent the module descriptor
+     * @param optionalAntModule the optional build file
+     * @param overrideAntModule an optional override buildfile
+     * @return an easyantReport for a given moduleDescriptor
+     * @throws Exception
+     */
+    EasyAntReport generateEasyAntReport(File moduleDescriptor, File optionalAntModule, File overrideAntModule) throws Exception;
+
+    /**
+     * Generate an easyantReport for a given moduleDescriptor. Using this report
+     * you should have all properties / plugins / targets loaded in your module
+     * descriptor
+     * 
+     * @param moduleDescriptor
+     *            a file that represent the module descriptor
      * @return an easyantReport for a given moduleDescriptor
      * @throws Exception
      */
     EasyAntReport generateEasyAntReport(File moduleDescriptor) throws Exception;
 
+    
     /**
      * Return the EasyAnt model containing all data of the module described in
      * given file.
