@@ -32,7 +32,6 @@ import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.tasks.SubModule;
 import org.apache.easyant.tasks.SubModule.TargetList;
 import org.apache.ivy.ant.IvyAntSettings;
-import org.apache.ivy.ant.IvyBuildList;
 import org.apache.ivy.core.module.descriptor.Artifact;
 import org.apache.ivy.core.module.descriptor.MDArtifact;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
@@ -43,9 +42,7 @@ import org.apache.ivy.plugins.repository.url.URLResource;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.helper.DefaultExecutor;
-import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.types.selectors.FilenameSelector;
 import org.apache.tools.ant.util.StringUtils;
 
 /**
@@ -58,29 +55,9 @@ public class MetaBuildExecutor extends DefaultExecutor {
     @Override
     public void executeTargets(Project project, String[] targets)
             throws BuildException {
-
-        // delegate to the ivy:buildlist task to compute an ordered list of
-        // submodules
-        FilenameSelector ivySelector = new FilenameSelector();
-        ivySelector.setProject(project);
-        ivySelector.setName("**/module.ivy");
-
-        FileSet ivyFiles = (FileSet) project.createDataType("fileset");
-        ivyFiles.setDir(project.getBaseDir());
-        ivyFiles.setExcludes("module.ivy"); // exclude the root module ivy.
-        ivyFiles.setIncludes(project.getProperty("submodule.dirs"));
-        ivyFiles.addFilename(ivySelector);
-
-        IvyBuildList buildList = new IvyBuildList();
-        buildList.setTaskName("meta:buildlist");
-        buildList.setProject(project);
-        buildList.setReference("build-path");
-        buildList.setIvyfilepath("module.ivy");
-        buildList.setSettingsRef(IvyInstanceHelper
-                .buildProjectIvyReference(project));
-        buildList.addFileset(ivyFiles);
-
-        buildList.execute();
+        if (project.getReference("build-path")==null) {
+            throw new BuildException("build-path is required to use MetaBuildExecutor");
+        }
 
         // publish the parent module descriptor into the build-scoped
         // repository, so that it can
@@ -95,8 +72,7 @@ public class MetaBuildExecutor extends DefaultExecutor {
 
             IvyAntSettings projectSettings = IvyInstanceHelper
                     .getProjectIvyAntSettings(project);
-            IvySettings ivy = projectSettings.getConfiguredIvyInstance(
-                    buildList).getSettings();
+            IvySettings ivy = projectSettings.getConfiguredIvyInstance(null).getSettings();
 
             try {
                 URL ivyUrl = moduleFile.toURL();
