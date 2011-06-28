@@ -23,11 +23,13 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
+/**
+ * Find parent directory containing a given file
+ */
 public class FindParentDirectory extends Task {
     
     private String filename=null;
     private String property=null;
-    private String mode="highest";
     private boolean haltonmissing=true;
     private boolean haltonfirstfound=false;
 
@@ -59,42 +61,66 @@ public class FindParentDirectory extends Task {
         getProject().setProperty(getProperty(), highest);
     }
 
+    /**
+     * get file name to search on parent directories
+     * @return a relative filename
+     */
     public String getFilename() {
         return filename;
     }
 
+    /**
+     * file name to search on parent directories
+     * @param filename a relative filename
+     */
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
+    /**
+     * Get property to set when parent directory contains requested file 
+     * @return name of the property
+     */
     public String getProperty() {
         return property;
     }
 
+    /**
+     * Set the property name used when parent directory contains requested file
+     * @param property name of the property
+     */
     public void setProperty(String property) {
         this.property = property;
     }
 
-    public String getMode() {
-        return mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
+    /**
+     * Specify if the task should stop when a parent directory is missing the requested file
+     * @return 
+     */
     public boolean isHaltonmissing() {
         return haltonmissing;
     }
 
+    /**
+     * Specify if the task should stop when a parent directory is missing the requested file
+     * @param haltonmissing
+     */
     public void setHaltonmissing(boolean haltonmissing) {
         this.haltonmissing = haltonmissing;
     }
 
+    /**
+     * Specify if the task should stop when first parent directory is found
+     * @return
+     */
     public boolean isHaltonfirstfound() {
         return haltonfirstfound;
     }
 
+    /**
+     * Specify if the task should stop when first parent directory is found
+     * @param haltonfirstfound
+     */
     public void setHaltonfirstfound(boolean haltonfirstfound) {
         this.haltonfirstfound = haltonfirstfound;
     }
