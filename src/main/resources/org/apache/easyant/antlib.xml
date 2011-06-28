@@ -38,7 +38,7 @@
     
     <taskdef name="registerartifact" classname="org.apache.easyant.tasks.RegisterArtifact"/>
     <taskdef name="bindtarget" classname="org.apache.easyant.tasks.BindTarget"/>
-    
+    <taskdef name="findparentdir" classname="org.apache.easyant.tasks.FindParentDirectory"/>    
 
     <taskdef name="checkresolver" classname="org.apache.easyant.tasks.CheckResolver"/>
     <taskdef name="easyant" classname="org.apache.easyant.tasks.EasyAntRunner"/>
