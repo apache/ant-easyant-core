@@ -415,49 +415,6 @@ public class EasyAntEngine {
 
         project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
 
-        File buildModule = configuration.getBuildModule();
-        File buildFile = configuration.getBuildFile();
-
-        if (buildModule == null) {
-            buildModule = new File(EasyAntConstants.DEFAULT_BUILD_MODULE);
-        }
-
-        if (!buildModule.exists() && configuration.isBuildModuleLookupEnabled()) {
-            buildModule = findBuildModule(System.getProperty("user.dir"),
-                    buildModule.toString());
-        }
-
-        // calculate buildFile location based on buildModule directory
-        if (buildModule.exists() && buildFile == null) {
-            buildFile = new File(buildModule.getParentFile(),
-                    EasyAntConstants.DEFAULT_BUILD_FILE);
-        }
-
-        if (buildFile == null && configuration.isBuildModuleLookupEnabled()) {
-            buildFile = findBuildModule(System.getProperty("user.dir"),
-                    EasyAntConstants.DEFAULT_BUILD_FILE);
-        }
-
-        // Normalize buildFile for re-import detection
-        if (buildModule != null) {
-            buildModule = FileUtils.getFileUtils().normalize(
-                    buildModule.getAbsolutePath());
-            project.setNewProperty(EasyAntMagicNames.EASYANT_FILE, buildModule
-                    .getAbsolutePath());
-
-        }
-
-        if (buildFile != null) {
-            buildFile = FileUtils.getFileUtils().normalize(
-                    buildFile.getAbsolutePath());
-            project.setNewProperty(MagicNames.ANT_FILE, buildFile
-                    .getAbsolutePath());
-
-        }
-
-        configuration.setBuildFile(buildFile);
-        configuration.setBuildModule(buildModule);
-
         // Emulate an empty project
         // import task check that projectHelper is at toplevel by checking the
         // size of projectHelper.getImportTask()
@@ -527,6 +484,53 @@ public class EasyAntEngine {
             importTask.setLocation(mainscriptLocation);
             importTask.execute();
         }
+        File buildModule = configuration.getBuildModule();
+        File buildFile = configuration.getBuildFile();
+        
+        if (project.getProperty("project.basedir")!=null) {
+            project.setBaseDir(new File(project.getProperty("project.basedir")));
+        }
+
+        if (buildModule == null) {
+            buildModule = new File(project.getBaseDir(),EasyAntConstants.DEFAULT_BUILD_MODULE);
+        }
+
+        if (!buildModule.exists() && configuration.isBuildModuleLookupEnabled()) {
+            buildModule = findBuildModule(System.getProperty("user.dir"),
+                    buildModule.toString());
+        }
+
+        // calculate buildFile location based on buildModule directory
+        if (buildModule.exists() && buildFile == null) {
+            buildFile = new File(buildModule.getParentFile(),
+                    EasyAntConstants.DEFAULT_BUILD_FILE);
+        }
+
+        if (buildFile == null && configuration.isBuildModuleLookupEnabled()) {
+            buildFile = findBuildModule(System.getProperty("user.dir"),
+                    EasyAntConstants.DEFAULT_BUILD_FILE);
+        }
+
+        // Normalize buildFile for re-import detection
+        if (buildModule != null) {
+            buildModule = FileUtils.getFileUtils().normalize(
+                    buildModule.getAbsolutePath());
+            project.setNewProperty(EasyAntMagicNames.EASYANT_FILE, buildModule
+                    .getAbsolutePath());
+
+        }
+
+        if (buildFile != null) {
+            buildFile = FileUtils.getFileUtils().normalize(
+                    buildFile.getAbsolutePath());
+            project.setNewProperty(MagicNames.ANT_FILE, buildFile
+                    .getAbsolutePath());
+
+        }
+
+        configuration.setBuildFile(buildFile);
+        configuration.setBuildModule(buildModule);
+
 
         if (configuration.getBuildModule() != null
                 || configuration.getBuildFile() != null) {
