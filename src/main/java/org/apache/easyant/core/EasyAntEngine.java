@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import org.apache.easyant.core.ant.Phase;
+import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ant.listerners.DefaultEasyAntLogger;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.factory.EasyantConfigurationFactory;
@@ -48,7 +49,6 @@ import org.apache.tools.ant.Main;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.PropertyHelper;
-import org.apache.tools.ant.Target;
 import org.apache.tools.ant.input.DefaultInputHandler;
 import org.apache.tools.ant.input.InputHandler;
 import org.apache.tools.ant.util.ClasspathUtils;
@@ -415,26 +415,11 @@ public class EasyAntEngine {
 
         project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
 
-        // Emulate an empty project
-        // import task check that projectHelper is at toplevel by checking the
-        // size of projectHelper.getImportTask()
         ProjectHelper helper = ProjectHelper.getProjectHelper();
-        File mainscript = null;
-        try {
-            mainscript = File.createTempFile(
-                    EasyAntConstants.EASYANT_TASK_NAME, null);
-            mainscript.deleteOnExit();
-        } catch (IOException e1) {
-            throw new BuildException("Can't create temp file", e1);
-        }
-
-        Location mainscriptLocation = new Location(mainscript.toString());
+        File mainscript = ProjectUtils.createMainScript();
+        Location mainscriptLocation = new Location(mainscript.getAbsolutePath());
         helper.getImportStack().addElement(mainscript);
         project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
-
-        // Used to emulate top level target
-        Target topLevel = new Target();
-        topLevel.setName("");
 
         // Validate Phase is used by several system plugin so we should
         // initialize it
@@ -480,7 +465,7 @@ public class EasyAntEngine {
             importTask.setMandatory(systemPlugin.isMandatory());
             importTask.setProject(project);
             importTask.setTaskName(EasyAntConstants.EASYANT_TASK_NAME);
-            importTask.setOwningTarget(topLevel);
+            importTask.setOwningTarget(ProjectUtils.createTopLevelTarget());
             importTask.setLocation(mainscriptLocation);
             importTask.execute();
         }
@@ -539,7 +524,7 @@ public class EasyAntEngine {
             lm.setBuildFile(configuration.getBuildFile());
             lm.setTaskName(EasyAntConstants.EASYANT_TASK_NAME);
             lm.setProject(project);
-            lm.setOwningTarget(topLevel);
+            lm.setOwningTarget(ProjectUtils.createTopLevelTarget());
             lm.setLocation(mainscriptLocation);
             lm.execute();
         }

@@ -18,11 +18,10 @@
 package org.apache.easyant.tasks;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -31,23 +30,25 @@ import java.util.Vector;
 
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.ant.ProjectUtils;
+import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
-import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyPublish;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
-import org.apache.tools.ant.BuildLogger;
-import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.MagicNames;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectComponent;
 import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.Ant;
+import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.util.StringUtils;
 
@@ -56,534 +57,662 @@ import org.apache.tools.ant.util.StringUtils;
  */
 public class SubModule extends Task {
 
-    private boolean failOnError = true;
-    private boolean verbose = false;
-    private String moduleFile = EasyAntConstants.DEFAULT_BUILD_MODULE;
+	private boolean failOnError = true;
+	private boolean verbose = false;
+	private String moduleFile = EasyAntConstants.DEFAULT_BUILD_MODULE;
 
-    private Path buildpath;
-    private TargetList targets = null;
-    private boolean useBuildRepository = false;
-    private boolean overwrite = true;
+	private Path buildpath;
+	private TargetList targets = null;
+	private boolean useBuildRepository = false;
+	private boolean overwrite = true;
 
-    public void execute() throws BuildException {
-        if (buildpath == null) {
-            throw new BuildException("No buildpath specified");
-        }
-        final String[] filenames = buildpath.list();
-        final int count = filenames.length;
-        if (count < 1) {
-            log("No sub-builds to iterate on", Project.MSG_WARN);
-            return;
-        }
+	private boolean inheritRefs = false;
+	private Vector properties = new Vector();
+	private Vector references = new Vector();
+	private Vector propertySets = new Vector();
 
-        // Change the default output logger
-        PrintStream out = System.out;
-        PrintStream err = System.err;
-        int currentLogLevel = Project.MSG_INFO;
-        log("removing current logger", Project.MSG_DEBUG);
-        // since BuildLogger doesn't offer any way to get the out / err print
-        // streams we should use reflection
-        // TODO: we should find a better way to do this
-        for (Iterator<?> i = getProject().getBuildListeners().iterator(); i
-                .hasNext();) {
-            BuildListener l = (BuildListener) i.next();
-            if (l instanceof DefaultLogger) {
-                Field fields[];
-                // case of classes extending DefaultLogger
-                if (l.getClass().getSuperclass() == DefaultLogger.class) {
-                    fields = l.getClass().getSuperclass().getDeclaredFields();
-                } else {
-                    fields = l.getClass().getDeclaredFields();
-                }
-                
-                for (int j = 0; j < fields.length; j++) {
-                    try {
-                        if (fields[j].getType().equals(PrintStream.class)
-                                && fields[j].getName().equals("out")) {
-                            fields[j].setAccessible(true);
-                            out = (PrintStream) fields[j].get(l);
-                            fields[j].setAccessible(false);
-                        }
-                        if (fields[j].getType().equals(PrintStream.class)
-                                && fields[j].getName().equals("err")) {
-                            fields[j].setAccessible(true);
-                            err = (PrintStream) fields[j].get(l);
-                            fields[j].setAccessible(false);
-                        }
-                        if (fields[j].getName().equals("msgOutputLevel")) {
-                            fields[j].setAccessible(true);
-                            currentLogLevel = (Integer) fields[j].get(l);
-                            fields[j].setAccessible(false);
-                        }
-                    } catch (IllegalAccessException ex) {
-                        throw new BuildException(ex);
-                    }
-                }
-            }
-            getProject().removeBuildListener(l);
+	public void execute() throws BuildException {
+		if (buildpath == null) {
+			throw new BuildException("No buildpath specified");
+		}
+		final String[] filenames = buildpath.list();
+		final int count = filenames.length;
+		if (count < 1) {
+			log("No sub-builds to iterate on", Project.MSG_WARN);
+			return;
+		}
 
-        }
-        log("Initializing BigProjectLogger", Project.MSG_DEBUG);
-        // Intanciate the new logger
-        BuildLogger bl = new MultiModuleLogger();
-        bl.setOutputPrintStream(out);
-        bl.setErrorPrintStream(err);
-        bl.setMessageOutputLevel(currentLogLevel);
-        getProject().setProjectReference(bl);
-        getProject().addBuildListener(bl);
+		ProjectUtils.replaceMainLogger(getProject(), new MultiModuleLogger());
 
-        BuildException buildException = null;
-        for (int i = 0; i < count; ++i) {
-            File file = null;
-            String subdirPath = null;
-            Throwable thrownException = null;
-            try {
-                File directory = null;
-                file = new File(filenames[i]);
-                if (file.isDirectory()) {
-                    if (verbose) {
-                        subdirPath = file.getPath();
-                        log("Entering directory: " + subdirPath + "\n",
-                                Project.MSG_INFO);
-                    }
-                    file = new File(file, moduleFile);
-                }
-                directory = file.getParentFile();
-                execute(file, directory);
-                if (verbose && subdirPath != null) {
-                    log("Leaving directory: " + subdirPath + "\n",
-                            Project.MSG_INFO);
-                }
-            } catch (RuntimeException ex) {
-                if (!(getProject().isKeepGoingMode())) {
-                    if (verbose && subdirPath != null) {
-                        log("Leaving directory: " + subdirPath + "\n",
-                                Project.MSG_INFO);
-                    }
-                    throw ex; // throw further
-                }
-                thrownException = ex;
-            } catch (Throwable ex) {
-                if (!(getProject().isKeepGoingMode())) {
-                    if (verbose && subdirPath != null) {
-                        log("Leaving directory: " + subdirPath + "\n",
-                                Project.MSG_INFO);
-                    }
-                    throw new BuildException(ex);
-                }
-                thrownException = ex;
-            }
-            if (thrownException != null) {
-                if (thrownException instanceof BuildException) {
-                    log("File '" + file + "' failed with message '"
-                            + thrownException.getMessage() + "'.",
-                            Project.MSG_ERR);
-                    // only the first build exception is reported
-                    if (buildException == null) {
-                        buildException = (BuildException) thrownException;
-                    }
-                } else {
-                    log("Target '" + file + "' failed with message '"
-                            + thrownException.getMessage() + "'.",
-                            Project.MSG_ERR);
-                    thrownException.printStackTrace(System.err);
-                    if (buildException == null) {
-                        buildException = new BuildException(thrownException);
-                    }
-                }
-                if (verbose && subdirPath != null) {
-                    log("Leaving directory: " + subdirPath + "\n",
-                            Project.MSG_INFO);
-                }
-            }
-        }
-        // check if one of the builds failed in keep going mode
-        if (buildException != null) {
-            throw buildException;
-        }
-    }
+		BuildException buildException = null;
+		for (int i = 0; i < count; ++i) {
+			File file = null;
+			String subdirPath = null;
+			Throwable thrownException = null;
+			try {
+				File directory = null;
+				file = new File(filenames[i]);
+				if (file.isDirectory()) {
+					if (verbose) {
+						subdirPath = file.getPath();
+						log("Entering directory: " + subdirPath + "\n",
+								Project.MSG_INFO);
+					}
+					file = new File(file, moduleFile);
+				}
+				directory = file.getParentFile();
+				execute(file, directory);
+				if (verbose && subdirPath != null) {
+					log("Leaving directory: " + subdirPath + "\n",
+							Project.MSG_INFO);
+				}
+			} catch (RuntimeException ex) {
+				if (!(getProject().isKeepGoingMode())) {
+					if (verbose && subdirPath != null) {
+						log("Leaving directory: " + subdirPath + "\n",
+								Project.MSG_INFO);
+					}
+					throw ex; // throw further
+				}
+				thrownException = ex;
+			} catch (Throwable ex) {
+				if (!(getProject().isKeepGoingMode())) {
+					if (verbose && subdirPath != null) {
+						log("Leaving directory: " + subdirPath + "\n",
+								Project.MSG_INFO);
+					}
+					throw new BuildException(ex);
+				}
+				thrownException = ex;
+			}
+			if (thrownException != null) {
+				if (thrownException instanceof BuildException) {
+					log("File '" + file + "' failed with message '"
+							+ thrownException.getMessage() + "'.",
+							Project.MSG_ERR);
+					// only the first build exception is reported
+					if (buildException == null) {
+						buildException = (BuildException) thrownException;
+					}
+				} else {
+					log("Target '" + file + "' failed with message '"
+							+ thrownException.getMessage() + "'.",
+							Project.MSG_ERR);
+					thrownException.printStackTrace(System.err);
+					if (buildException == null) {
+						buildException = new BuildException(thrownException);
+					}
+				}
+				if (verbose && subdirPath != null) {
+					log("Leaving directory: " + subdirPath + "\n",
+							Project.MSG_INFO);
+				}
+			}
+		}
+		// check if one of the builds failed in keep going mode
+		if (buildException != null) {
+			throw buildException;
+		}
+	}
 
-    /**
-     * Runs the given target on the provided build file.
-     * 
-     * @param file
-     *            the build file to execute
-     * @param directory
-     *            the directory of the current iteration
-     * @throws BuildException
-     *             is the file cannot be found, read, is a directory, or the
-     *             target called failed, but only if <code>failOnError</code> is
-     *             <code>true</code>. Otherwise, a warning log message is simply
-     *             output.
-     */
-    private void execute(File file, File directory) throws BuildException {
-        if (!file.exists() || file.isDirectory() || !file.canRead()) {
-            String msg = "Invalid file: " + file;
-            if (failOnError) {
-                throw new BuildException(msg);
-            }
-            log(msg, Project.MSG_WARN);
-            return;
-        }
+	/**
+	 * Runs the given target on the provided build file.
+	 * 
+	 * @param file
+	 *            the build file to execute
+	 * @param directory
+	 *            the directory of the current iteration
+	 * @throws BuildException
+	 *             is the file cannot be found, read, is a directory, or the
+	 *             target called failed, but only if <code>failOnError</code> is
+	 *             <code>true</code>. Otherwise, a warning log message is simply
+	 *             output.
+	 */
+	private void execute(File file, File directory) throws BuildException {
+		if (!file.exists() || file.isDirectory() || !file.canRead()) {
+			String msg = "Invalid file: " + file;
+			if (failOnError) {
+				throw new BuildException(msg);
+			}
+			log(msg, Project.MSG_WARN);
+			return;
+		}
 
-        Project subModule = getProject().createSubProject();
+		Project subModule = configureSubModule(file, directory);
+		subModule.fireSubBuildStarted();
 
-        subModule.setJavaVersionProperty();
+		try {
+			// buildFile should be in the same directory of buildModule
+			File buildfile = new File(directory,
+					EasyAntConstants.DEFAULT_BUILD_FILE);
+			if (buildfile.exists()) {
+				subModule.setNewProperty(MagicNames.ANT_FILE,
+						buildfile.getAbsolutePath());
+			}
+			subModule.setNewProperty(EasyAntMagicNames.EASYANT_FILE,
+					file.getAbsolutePath());
 
-        for (int i = 0; i < getProject().getBuildListeners().size(); i++) {
-            BuildListener buildListener = (BuildListener) getProject()
-                    .getBuildListeners().elementAt(i);
-            subModule.addBuildListener(buildListener);
-        }
-        // explicitly add the execution timer to time
-        // sub builds
-        subModule.addBuildListener(new SubBuildExecutionTimer());
+	        ProjectHelper helper = ProjectHelper.getProjectHelper();
+	        File mainscript = ProjectUtils.createMainScript();
+	        Location mainscriptLocation = new Location(mainscript.getAbsolutePath());
+	        helper.getImportStack().addElement(mainscript);
+	        subModule.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
 
-        subModule.setName(file.getName());
-        subModule.setBaseDir(directory);
+			LoadModule lm = new LoadModule();
+			lm.setBuildModule(file);
+			lm.setBuildFile(buildfile);
+			lm.setTaskName(EasyAntConstants.EASYANT_TASK_NAME);
+			lm.setProject(subModule);
+			lm.setOwningTarget(ProjectUtils.createTopLevelTarget());
+			lm.setLocation(new Location(mainscript.toString()));
+			lm.setUseBuildRepository(useBuildRepository);
+			lm.execute();
 
-        subModule.fireSubBuildStarted();
+			filterTargets(subModule);
+			printExecutingTargetMsg(subModule);
 
-        try {
-            // Emulate an empty project
-            // import task check that projectHelper is at toplevel by checking
-            // the
-            // size of projectHelper.getImportTask()
-            ProjectHelper projectHelper = ProjectHelper.getProjectHelper();
-            File mainscript;
-            try {
-                mainscript = File.createTempFile(
-                        EasyAntConstants.EASYANT_TASK_NAME, null);
-                mainscript.deleteOnExit();
-            } catch (IOException e1) {
-                throw new BuildException("Can't create temp file", e1);
-            }
+			if (targets != null && !targets.isEmpty()) {
+				subModule.executeTargets(targets);
+				if (useBuildRepository) {
 
-            @SuppressWarnings("unchecked")
-            Vector<File> imports = projectHelper.getImportStack();
-            imports.addElement(mainscript);
-            subModule.addReference(ProjectHelper.PROJECTHELPER_REFERENCE,
-                    projectHelper);
+					File artifactsDir = subModule.resolveFile(subModule
+							.getProperty("target.artifacts"));
+					if (artifactsDir.isDirectory()) {
 
-            // copy all User properties
-            addAlmostAll(getProject().getUserProperties(), subModule,
-                    PropertyType.USER);
+						// this property set by LoadModule task when it
+						// configures the build repo
+						String resolver = subModule
+								.getProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY);
 
-            // copy easyantIvyInstance
-            IvyAntSettings ivyAntSettings = IvyInstanceHelper
-                    .getEasyAntIvyAntSettings(getProject());
-            subModule.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE,
-                    ivyAntSettings);
+						subModule.log("Publishing in build scoped repository",
+								Project.MSG_INFO);
+						// Publish on build scoped repository
+						IvyPublish ivyPublish = new IvyPublish();
+						ivyPublish.setSettingsRef(IvyInstanceHelper
+								.buildProjectIvyReference(subModule));
+						ivyPublish.setResolver(resolver);
+						// TODO: this should be more flexible!
+						ivyPublish
+								.setArtifactspattern("${target.artifacts}/[artifact](-[classifier]).[ext]");
+						// not all sub-build targets will generate ivy
+						// artifacts. we don't want to fail
+						// a successful build just because there's nothing to
+						// publish.
+						ivyPublish.setWarnonmissing(false);
+						ivyPublish.setHaltonmissing(false);
+						ivyPublish.setProject(subModule);
+						ivyPublish.setOwningTarget(getOwningTarget());
+						ivyPublish.setLocation(getLocation());
+						ivyPublish.setOverwrite(overwrite);
+						ivyPublish
+								.setTaskName("publish-buildscoped-repository");
+						ivyPublish.execute();
+					} else {
+						subModule.log("Skipping publish because "
+								+ artifactsDir.getPath()
+								+ " is not a directory", Project.MSG_VERBOSE);
+					}
+				}
+			} else {
+				subModule
+						.log("Skipping sub-project build because no matching targets were found",
+								Project.MSG_VERBOSE);
+			}
+			subModule.fireSubBuildFinished(null);
+		} catch (BuildException e) {
+			subModule.fireSubBuildFinished(e);
+			throw e;
+		} finally {
+			// add execution times for the current submodule to parent
+			// project references for access from MetaBuildExecutor
+			storeExecutionTimes(getProject(), subModule);
+		}
 
-            // buildFile should be in the same directory of buildModule
-            File buildfile = new File(directory,
-                    EasyAntConstants.DEFAULT_BUILD_FILE);
-            if (buildfile.exists()) {
-                subModule.setNewProperty(MagicNames.ANT_FILE, buildfile
-                        .getAbsolutePath());
-            }
-            subModule.setNewProperty(EasyAntMagicNames.EASYANT_FILE, file
-                    .getAbsolutePath());
+	}
 
-            // inherit meta.target directory, for shared build repository.
-            String metaTarget = getProject().getProperty("meta.target");
-            if (metaTarget != null) {
-                File metaDir = getProject().resolveFile(metaTarget);
-                subModule.setNewProperty("meta.target", metaDir
-                        .getAbsolutePath());
-            }
+	private Project configureSubModule(File file, File directory) {
+		Project subModule = getProject().createSubProject();
+		for (int i = 0; i < getProject().getBuildListeners().size(); i++) {
+			BuildListener buildListener = (BuildListener) getProject()
+					.getBuildListeners().elementAt(i);
+			subModule.addBuildListener(buildListener);
+		}
+		// explicitly add the execution timer to time
+		// sub builds
+		subModule.addBuildListener(new SubBuildExecutionTimer());
+		
 
-            // Used to emulate top level target
-            Target topLevel = new Target();
-            topLevel.setName("");
+		// copy all User properties
+		addAlmostAll(getProject().getUserProperties(), subModule,
+				PropertyType.USER);
 
-            LoadModule lm = new LoadModule();
-            lm.setBuildModule(file);
-            lm.setBuildFile(buildfile);
-            lm.setTaskName(EasyAntConstants.EASYANT_TASK_NAME);
-            lm.setProject(subModule);
-            lm.setOwningTarget(topLevel);
-            lm.setLocation(new Location(mainscript.toString()));
-            lm.setUseBuildRepository(useBuildRepository);
-            lm.execute();
+		// copy easyantIvyInstance
+		IvyAntSettings ivyAntSettings = IvyInstanceHelper
+				.getEasyAntIvyAntSettings(getProject());
+		subModule.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE,
+				ivyAntSettings);
 
-            filterTargets(subModule);
-            printExecutingTargetMsg(subModule);
+		// inherit meta.target directory, for shared build repository.
+		String metaTarget = getProject().getProperty("meta.target");
+		if (metaTarget != null) {
+			File metaDir = getProject().resolveFile(metaTarget);
+			subModule.setNewProperty("meta.target",
+					metaDir.getAbsolutePath());
+		}
+		
+		subModule.initProperties();
+		
+		//copy nested properties
+		Enumeration e = propertySets.elements();
+		while (e.hasMoreElements()) {
+			PropertySet ps = (PropertySet) e.nextElement();
+			addAlmostAll(ps.getProperties(), subModule, PropertyType.PLAIN);
+		}
 
-            if (targets != null && !targets.isEmpty()) {
-                subModule.executeTargets(targets);
-                if (useBuildRepository) {
+		overrideProperties(subModule);
+		addReferences(subModule);
+		
+		subModule.setName(file.getName());
+		subModule.setBaseDir(directory);
+		return subModule;
+	}
 
-                    File artifactsDir = subModule.resolveFile(subModule
-                            .getProperty("target.artifacts"));
-                    if (artifactsDir.isDirectory()) {
+	private void storeExecutionTimes(Project parent, Project child) {
+		List<ExecutionResult> allresults = (List<ExecutionResult>) parent
+				.getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+		if (allresults == null) {
+			allresults = new ArrayList<ExecutionResult>();
+			parent.addReference(
+					SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS,
+					allresults);
+		}
+		List<ExecutionResult> childResults = (List<ExecutionResult>) child
+				.getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+		if (childResults != null)
+			allresults.addAll(childResults);
+	}
 
-                        // this property set by LoadModule task when it
-                        // configures the build repo
-                        String resolver = subModule
-                                .getProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY);
+	/**
+	 * Filter the active set of targets to only those defined in the given
+	 * project.
+	 */
+	private void filterTargets(Project subProject) {
+		Set<?> keys = subProject.getTargets().keySet();
+		for (Iterator<String> it = targets.iterator(); it.hasNext();) {
+			String target = it.next();
+			if (!keys.contains(target) && target.trim().length() > 0) {
+				subProject.log("Skipping undefined target '" + target + "'",
+						Project.MSG_VERBOSE);
+				it.remove();
+			}
+		}
+	}
 
-                        subModule.log("Publishing in build scoped repository",
-                                Project.MSG_INFO);
-                        // Publish on build scoped repository
-                        IvyPublish ivyPublish = new IvyPublish();
-                        ivyPublish.setSettingsRef(IvyInstanceHelper
-                                .buildProjectIvyReference(subModule));
-                        ivyPublish.setResolver(resolver);
-                        // TODO: this should be more flexible!
-                        ivyPublish
-                                .setArtifactspattern("${target.artifacts}/[artifact](-[classifier]).[ext]");
-                        // not all sub-build targets will generate ivy
-                        // artifacts. we don't want to fail
-                        // a successful build just because there's nothing to
-                        // publish.
-                        ivyPublish.setWarnonmissing(false);
-                        ivyPublish.setHaltonmissing(false);
-                        ivyPublish.setProject(subModule);
-                        ivyPublish.setOwningTarget(getOwningTarget());
-                        ivyPublish.setLocation(getLocation());
-                        ivyPublish.setOverwrite(overwrite);
-                        ivyPublish
-                                .setTaskName("publish-buildscoped-repository");
-                        ivyPublish.execute();
-                    } else {
-                        subModule.log("Skipping publish because "
-                                + artifactsDir.getPath()
-                                + " is not a directory", Project.MSG_VERBOSE);
-                    }
-                }
-            } else {
-                subModule
-                        .log(
-                                "Skipping sub-project build because no matching targets were found",
-                                Project.MSG_VERBOSE);
-            }
-            subModule.fireSubBuildFinished(null);
-        } catch (BuildException e) {
-            subModule.fireSubBuildFinished(e);
-            throw e;
-        } finally {
-            // add execution times for the current submodule to parent
-            // project references for access from MetaBuildExecutor
-            storeExecutionTimes(getProject(), subModule);
-        }
+	/**
+	 * Print a message when executing the target
+	 * 
+	 * @param subProject
+	 *            a subproject where the log will be printed
+	 */
+	private void printExecutingTargetMsg(Project subProject) {
+		final String HEADER = "======================================================================";
+		StringBuilder sb = new StringBuilder();
+		sb.append(HEADER).append(StringUtils.LINE_SEP);
+		sb.append("Executing ").append(targets).append(" on ")
+				.append(subProject.getName());
+		sb.append(StringUtils.LINE_SEP).append(HEADER);
+		subProject.log(sb.toString());
+	}
 
-    }
+	/**
+	 * Copies all properties from the given table to the new project - omitting
+	 * those that have already been set in the new project as well as properties
+	 * named basedir or ant.file.
+	 * 
+	 * @param props
+	 *            properties <code>Hashtable</code> to copy to the new project.
+	 * @param the
+	 *            type of property to set (a plain Ant property, a user property
+	 *            or an inherited property).
+	 * @since Ant 1.8.0
+	 */
+	private void addAlmostAll(Hashtable<?, ?> props, Project subProject,
+			PropertyType type) {
+		Enumeration<?> e = props.keys();
+		while (e.hasMoreElements()) {
+			String key = e.nextElement().toString();
+			if (MagicNames.PROJECT_BASEDIR.equals(key)
+					|| MagicNames.ANT_FILE.equals(key)) {
+				// basedir and ant.file get special treatment in execute()
+				continue;
+			}
 
-    private void storeExecutionTimes(Project parent, Project child) {
-        List<ExecutionResult> allresults = (List<ExecutionResult>) parent
-                .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
-        if (allresults == null) {
-            allresults = new ArrayList<ExecutionResult>();
-            parent.addReference(
-                    SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS,
-                    allresults);
-        }
-        List<ExecutionResult> childResults = (List<ExecutionResult>) child
-                .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
-        if (childResults != null)
-            allresults.addAll(childResults);
-    }
+			String value = props.get(key).toString();
+			if (type == PropertyType.PLAIN) {
+				// don't re-set user properties, avoid the warning message
+				if (subProject.getProperty(key) == null) {
+					// no user property
+					subProject.setNewProperty(key, value);
+				}
+			} else if (type == PropertyType.USER) {
+				subProject.setUserProperty(key, value);
+			} else if (type == PropertyType.INHERITED) {
+				subProject.setInheritedProperty(key, value);
+			}
+		}
+	}
 
-    /**
-     * Filter the active set of targets to only those defined in the given
-     * project.
-     */
-    private void filterTargets(Project subProject) {
-        Set<?> keys = subProject.getTargets().keySet();
-        for (Iterator<String> it = targets.iterator(); it.hasNext();) {
-            String target = it.next();
-            if (!keys.contains(target) && target.trim().length() > 0) {
-                subProject.log("Skipping undefined target '" + target + "'",
-                        Project.MSG_VERBOSE);
-                it.remove();
-            }
-        }
-    }
+	private static final class PropertyType {
+		private PropertyType() {
+		}
 
-    /**
-     * Print a message when executing the target
-     * 
-     * @param subProject
-     *            a subproject where the log will be printed
-     */
-    private void printExecutingTargetMsg(Project subProject) {
-        final String HEADER = "======================================================================";
-        StringBuilder sb = new StringBuilder();
-        sb.append(HEADER).append(StringUtils.LINE_SEP);
-        sb.append("Executing ").append(targets).append(" on ").append(
-                subProject.getName());
-        sb.append(StringUtils.LINE_SEP).append(HEADER);
-        subProject.log(sb.toString());
-    }
+		private static final PropertyType PLAIN = new PropertyType();
+		private static final PropertyType INHERITED = new PropertyType();
+		private static final PropertyType USER = new PropertyType();
+	}
 
-    /**
-     * Copies all properties from the given table to the new project - omitting
-     * those that have already been set in the new project as well as properties
-     * named basedir or ant.file.
-     * 
-     * @param props
-     *            properties <code>Hashtable</code> to copy to the new project.
-     * @param the
-     *            type of property to set (a plain Ant property, a user property
-     *            or an inherited property).
-     * @since Ant 1.8.0
-     */
-    private void addAlmostAll(Hashtable<?, ?> props, Project subProject,
-            PropertyType type) {
-        Enumeration<?> e = props.keys();
-        while (e.hasMoreElements()) {
-            String key = e.nextElement().toString();
-            if (MagicNames.PROJECT_BASEDIR.equals(key)
-                    || MagicNames.ANT_FILE.equals(key)) {
-                // basedir and ant.file get special treatment in execute()
-                continue;
-            }
+	/**
+	 * The target to call on the different sub-builds. Set to "" to execute the
+	 * default target.
+	 * 
+	 * @param target
+	 *            the target
+	 *            <p>
+	 */
+	// REVISIT: Defaults to the target name that contains this task if not
+	// specified.
+	public void setTarget(String target) {
+		setTargets(new TargetList(target));
+	}
 
-            String value = props.get(key).toString();
-            if (type == PropertyType.PLAIN) {
-                // don't re-set user properties, avoid the warning message
-                if (subProject.getProperty(key) == null) {
-                    // no user property
-                    subProject.setNewProperty(key, value);
-                }
-            } else if (type == PropertyType.USER) {
-                subProject.setUserProperty(key, value);
-            } else if (type == PropertyType.INHERITED) {
-                subProject.setInheritedProperty(key, value);
-            }
-        }
-    }
+	/**
+	 * The targets to call on the different sub-builds.
+	 * 
+	 * @param target
+	 *            a list of targets to execute
+	 */
+	public void setTargets(TargetList targets) {
+		this.targets = targets;
+	}
 
-    private static final class PropertyType {
-        private PropertyType() {
-        }
+	/**
+	 * Set the buildpath to be used to find sub-projects.
+	 * 
+	 * @param s
+	 *            an Ant Path object containing the buildpath.
+	 */
+	public void setBuildpath(Path s) {
+		getBuildpath().append(s);
+	}
 
-        private static final PropertyType PLAIN = new PropertyType();
-        private static final PropertyType INHERITED = new PropertyType();
-        private static final PropertyType USER = new PropertyType();
-    }
+	/**
+	 * Gets the implicit build path, creating it if <code>null</code>.
+	 * 
+	 * @return the implicit build path.
+	 */
+	private Path getBuildpath() {
+		if (buildpath == null) {
+			buildpath = new Path(getProject());
+		}
+		return buildpath;
+	}
 
-    /**
-     * The target to call on the different sub-builds. Set to "" to execute the
-     * default target.
-     * 
-     * @param target
-     *            the target
-     *            <p>
-     */
-    // REVISIT: Defaults to the target name that contains this task if not
-    // specified.
-    public void setTarget(String target) {
-        setTargets(new TargetList(target));
-    }
+	/**
+	 * Buildpath to use, by reference.
+	 * 
+	 * @param r
+	 *            a reference to an Ant Path object containing the buildpath.
+	 */
+	public void setBuildpathRef(Reference r) {
+		createBuildpath().setRefid(r);
+	}
 
-    /**
-     * The targets to call on the different sub-builds.
-     * 
-     * @param target
-     *            a list of targets to execute
-     */
-    public void setTargets(TargetList targets) {
-        this.targets = targets;
-    }
+	/**
+	 * Creates a nested build path, and add it to the implicit build path.
+	 * 
+	 * @return the newly created nested build path.
+	 */
+	public Path createBuildpath() {
+		return getBuildpath().createPath();
+	}
 
-    /**
-     * Set the buildpath to be used to find sub-projects.
-     * 
-     * @param s
-     *            an Ant Path object containing the buildpath.
-     */
-    public void setBuildpath(Path s) {
-        getBuildpath().append(s);
-    }
+	/**
+	 * Enable/ disable verbose log messages showing when each sub-build path is
+	 * entered/ exited. The default value is "false".
+	 * 
+	 * @param on
+	 *            true to enable verbose mode, false otherwise (default).
+	 */
+	public void setVerbose(boolean on) {
+		this.verbose = on;
+	}
 
-    /**
-     * Gets the implicit build path, creating it if <code>null</code>.
-     * 
-     * @return the implicit build path.
-     */
-    private Path getBuildpath() {
-        if (buildpath == null) {
-            buildpath = new Path(getProject());
-        }
-        return buildpath;
-    }
+	/**
+	 * Sets whether to fail with a build exception on error, or go on.
+	 * 
+	 * @param failOnError
+	 *            the new value for this boolean flag.
+	 */
+	public void setFailonerror(boolean failOnError) {
+		this.failOnError = failOnError;
+	}
 
-    /**
-     * Buildpath to use, by reference.
-     * 
-     * @param r
-     *            a reference to an Ant Path object containing the buildpath.
-     */
-    public void setBuildpathRef(Reference r) {
-        createBuildpath().setRefid(r);
-    }
+	/**
+	 * Sets whether a submodule should use build repository or not
+	 * 
+	 * @param useBuildRepository
+	 *            the new value for this boolean flag
+	 */
+	public void setUseBuildRepository(boolean useBuildRepository) {
+		this.useBuildRepository = useBuildRepository;
+	}
 
-    /**
-     * Creates a nested build path, and add it to the implicit build path.
-     * 
-     * @return the newly created nested build path.
-     */
-    public Path createBuildpath() {
-        return getBuildpath().createPath();
-    }
+	/**
+	 * Set whether publish operations for the
+	 * {@link #setUseBuildRepository(boolean) build-scoped repository} should
+	 * overwrite existing artifacts. Defaults to <code>true</code> if
+	 * unspecified.
+	 */
+	public void setOverwrite(boolean overwrite) {
+		this.overwrite = overwrite;
+	}
 
-    /**
-     * Enable/ disable verbose log messages showing when each sub-build path is
-     * entered/ exited. The default value is "false".
-     * 
-     * @param on
-     *            true to enable verbose mode, false otherwise (default).
-     */
-    public void setVerbose(boolean on) {
-        this.verbose = on;
-    }
+	/**
+	 * Corresponds to <code>&lt;ant&gt;</code>'s <code>inheritrefs</code>
+	 * attribute.
+	 * 
+	 * @param b
+	 *            the new value for this boolean flag.
+	 */
+	public void setInheritrefs(boolean b) {
+		this.inheritRefs = b;
+	}
 
-    /**
-     * Sets whether to fail with a build exception on error, or go on.
-     * 
-     * @param failOnError
-     *            the new value for this boolean flag.
-     */
-    public void setFailonerror(boolean failOnError) {
-        this.failOnError = failOnError;
-    }
+	/**
+	 * Corresponds to <code>&lt;ant&gt;</code>'s nested
+	 * <code>&lt;property&gt;</code> element.
+	 * 
+	 * @param p
+	 *            the property to pass on explicitly to the sub-build.
+	 */
+	public void addProperty(Property p) {
+		properties.addElement(p);
+	}
 
-    /**
-     * Sets whether a submodule should use build repository or not
-     * 
-     * @param useBuildRepository
-     *            the new value for this boolean flag
-     */
-    public void setUseBuildRepository(boolean useBuildRepository) {
-        this.useBuildRepository = useBuildRepository;
-    }
+	/**
+	 * Corresponds to <code>&lt;ant&gt;</code>'s nested
+	 * <code>&lt;reference&gt;</code> element.
+	 * 
+	 * @param r
+	 *            the reference to pass on explicitly to the sub-build.
+	 */
+	public void addReference(Ant.Reference r) {
+		references.addElement(r);
+	}
 
-    /**
-     * Set whether publish operations for the
-     * {@link #setUseBuildRepository(boolean) build-scoped repository} should
-     * overwrite existing artifacts. Defaults to <code>true</code> if
-     * unspecified.
-     */
-    public void setOverwrite(boolean overwrite) {
-        this.overwrite = overwrite;
-    }
+	/**
+	 * Corresponds to <code>&lt;ant&gt;</code>'s nested
+	 * <code>&lt;propertyset&gt;</code> element.
+	 * 
+	 * @param ps
+	 *            the propertset
+	 */
+	public void addPropertyset(PropertySet ps) {
+		propertySets.addElement(ps);
+	}
 
-    /**
-     * A Vector or target names, which can be constructed from a simple
-     * comma-separated list of values.
-     */
-    public static class TargetList extends Vector<String> {
-        private static final long serialVersionUID = 2302999727821991487L;
+	/**
+	 * Override the properties in the new project with the one explicitly
+	 * defined as nested elements here.
+	 * 
+	 * @param subproject a subproject
+	 * @throws BuildException
+	 *             under unknown circumstances.
+	 */
+	private void overrideProperties(Project subproject) throws BuildException {
+		// remove duplicate properties - last property wins
+		// Needed for backward compatibility
+		Set set = new HashSet();
+		for (int i = properties.size() - 1; i >= 0; --i) {
+			Property p = (Property) properties.get(i);
+			if (p.getName() != null && !p.getName().equals("")) {
+				if (set.contains(p.getName())) {
+					properties.remove(i);
+				} else {
+					set.add(p.getName());
+				}
+			}
+		}
+		Enumeration e = properties.elements();
+		while (e.hasMoreElements()) {
+			Property p = (Property) e.nextElement();
+			p.setProject(subproject);
+			p.execute();
+		}
 
-        public TargetList(String commaSeparated) {
-            this(commaSeparated.split(","));
-        }
+		getProject().copyInheritedProperties(subproject);
+	}
 
-        public TargetList(String... targets) {
-            for (String target : targets)
-                add(target);
-        }
-    }
+	/**
+	 * Add the references explicitly defined as nested elements to the new
+	 * project. Also copy over all references that don't override existing
+	 * references in the new project if inheritrefs has been requested.
+	 * 
+	 * @param subproject a subproject
+	 * @throws BuildException
+	 *             if a reference does not have a refid.
+	 */
+	private void addReferences(Project subproject) throws BuildException {
+		Hashtable thisReferences = (Hashtable) getProject().getReferences()
+				.clone();
+		Hashtable newReferences = subproject.getReferences();
+		Enumeration e;
+		if (references.size() > 0) {
+			for (e = references.elements(); e.hasMoreElements();) {
+				org.apache.tools.ant.taskdefs.Ant.Reference ref = (org.apache.tools.ant.taskdefs.Ant.Reference) e.nextElement();
+				String refid = ref.getRefId();
+				if (refid == null) {
+					throw new BuildException("the refid attribute is required"
+							+ " for reference elements");
+				}
+				if (!thisReferences.containsKey(refid)) {
+					log("Parent project doesn't contain any reference '"
+							+ refid + "'", Project.MSG_WARN);
+					continue;
+				}
+
+				thisReferences.remove(refid);
+				String toRefid = ref.getToRefid();
+				if (toRefid == null) {
+					toRefid = refid;
+				}
+				copyReference(subproject, refid, toRefid);
+			}
+		}
+
+		// Now add all references that are not defined in the
+		// subproject, if inheritRefs is true
+		if (inheritRefs) {
+			for (e = thisReferences.keys(); e.hasMoreElements();) {
+				String key = (String) e.nextElement();
+				if (newReferences.containsKey(key)) {
+					continue;
+				}
+				copyReference(subproject, key, key);
+				subproject.inheritIDReferences(getProject());
+			}
+		}
+	}
+
+	/**
+	 * Try to clone and reconfigure the object referenced by oldkey in the
+	 * parent project and add it to the new project with the key newkey.
+	 * 
+	 * <p>
+	 * If we cannot clone it, copy the referenced object itself and keep our
+	 * fingers crossed.
+	 * </p>
+	 * 
+	 * @param oldKey
+	 *            the reference id in the current project.
+	 * @param newKey
+	 *            the reference id in the new project.
+	 */
+	private void copyReference(Project subproject, String oldKey, String newKey) {
+		Object orig = getProject().getReference(oldKey);
+		if (orig == null) {
+			log("No object referenced by " + oldKey + ". Can't copy to "
+					+ newKey, Project.MSG_WARN);
+			return;
+		}
+
+		Class c = orig.getClass();
+		Object copy = orig;
+		try {
+			Method cloneM = c.getMethod("clone", new Class[0]);
+			if (cloneM != null) {
+				copy = cloneM.invoke(orig, new Object[0]);
+				log("Adding clone of reference " + oldKey, Project.MSG_DEBUG);
+			}
+		} catch (Exception e) {
+			// not Clonable
+		}
+
+		if (copy instanceof ProjectComponent) {
+			((ProjectComponent) copy).setProject(subproject);
+		} else {
+			try {
+				Method setProjectM = c.getMethod("setProject",
+						new Class[] { Project.class });
+				if (setProjectM != null) {
+					setProjectM.invoke(copy, new Object[] { subproject });
+				}
+			} catch (NoSuchMethodException e) {
+				// ignore this if the class being referenced does not have
+				// a set project method.
+			} catch (Exception e2) {
+				String msg = "Error setting new project instance for "
+						+ "reference with id " + oldKey;
+				throw new BuildException(msg, e2, getLocation());
+			}
+		}
+		subproject.addReference(newKey, copy);
+	}
+
+	/**
+	 * A Vector or target names, which can be constructed from a simple
+	 * comma-separated list of values.
+	 */
+	public static class TargetList extends Vector<String> {
+		private static final long serialVersionUID = 2302999727821991487L;
+
+		public TargetList(String commaSeparated) {
+			this(commaSeparated.split(","));
+		}
+
+		public TargetList(String... targets) {
+			for (String target : targets)
+				add(target);
+		}
+	}
 }
