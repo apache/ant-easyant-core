@@ -248,27 +248,30 @@ public class DefaultPluginServiceImpl implements PluginService {
             throws IOException {
         Map<String, String> attributes = task.getRuntimeConfigurableWrapper()
                 .getAttributeMap();
-        if (attributes.get("file") != null
-                && !Project.toBoolean(attributes.get("optional"))) {
+        if (attributes.get("file") != null) {
             Properties propToLoad = new Properties();
             File f = new File(PropertyHelper.getPropertyHelper(
                     task.getProject())
                     .replaceProperties(attributes.get("file")));
-            try {
-                propToLoad.load(new FileInputStream(f));
-                for (Iterator iter = propToLoad.keySet().iterator(); iter
-                        .hasNext();) {
-                    String key = (String) iter.next();
-                    PropertyDescriptor propertyDescriptor = new PropertyDescriptor(
-                            key);
-                    propertyDescriptor.setValue(propToLoad.getProperty(key));
-                    eaReport.addPropertyDescriptor(
-                            propertyDescriptor.getName(), propertyDescriptor);
-                }
+            if (f.exists()) {
+                try {
+                    propToLoad.load(new FileInputStream(f));
+                    for (Iterator iter = propToLoad.keySet().iterator(); iter
+                            .hasNext();) {
+                        String key = (String) iter.next();
+                        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(
+                                key);
+                        propertyDescriptor
+                                .setValue(propToLoad.getProperty(key));
+                        eaReport.addPropertyDescriptor(
+                                propertyDescriptor.getName(),
+                                propertyDescriptor);
+                    }
 
-            } catch (IOException e) {
-                throw new IOException("Unable to parse the property file :"
-                        + attributes.get("file"), e);
+                } catch (IOException e) {
+                    throw new IOException("Unable to parse the property file :"
+                            + attributes.get("file"), e);
+                }
             }
         }
     }
@@ -449,7 +452,8 @@ public class DefaultPluginServiceImpl implements PluginService {
                     PluginDescriptor plugin = (PluginDescriptor) iterator
                             .next();
                     ImportedModuleReport pluginReport = new ImportedModuleReport();
-                    ModuleRevisionId mrid = ModuleRevisionId.parse(plugin.getMrid());
+                    ModuleRevisionId mrid = ModuleRevisionId.parse(plugin
+                            .getMrid());
                     pluginReport.setModuleMrid(plugin.getMrid());
                     if (plugin.getAs() == null) {
                         pluginReport.setAs(mrid.getName());
