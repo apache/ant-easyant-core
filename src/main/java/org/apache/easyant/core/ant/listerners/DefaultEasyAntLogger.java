@@ -19,12 +19,12 @@ package org.apache.easyant.core.ant.listerners;
 
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.NoBannerLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.util.StringUtils;
 
-public class DefaultEasyAntLogger extends DefaultLogger {
+public class DefaultEasyAntLogger extends NoBannerLogger {
 
     private static final String WHERE_MSG = "* Where";
     private static final String DIAGNOSTIC_MSG = "* Dr Myrmex diagnostic";
