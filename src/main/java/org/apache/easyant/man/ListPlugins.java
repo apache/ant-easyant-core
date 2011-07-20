@@ -19,32 +19,32 @@ package org.apache.easyant.man;
 
 import java.util.List;
 
-import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
-import org.apache.tools.ant.Project;
 
 /**
  * Lists all available plugins (imported modules) for the specified 
  * build module.
  */
-public class ListPlugins implements ManCommand {
+public class ListPlugins extends EasyantOption {
 
-    public void addParam(String param) {
-        // DO NOTHING - NOT REQUIRED, SINCE THIS IS A 'LIST-ALL' COMMAND
+    
+    public ListPlugins()
+            throws IllegalArgumentException {
+        super("listPlugins",false,"List all plugins used by the project");
+        setStopBuild(true);
     }
 
-    public void execute(EasyAntReport earep, Project project) {
-        String lineSep = System.getProperty("line.separator");
-        project.log(lineSep + "--- Available Plugins for current project: " + project.getName() + " ---" + lineSep);
+    public void execute() {
+        getProject().log(LINE_SEP + "--- Available Plugins for current project: " + getProject().getName() + " ---" + LINE_SEP);
         
-        List<ImportedModuleReport> moduleReps = earep.getImportedModuleReports();
+        List<ImportedModuleReport> moduleReps = getEareport().getImportedModuleReports();
         for(int i = 0; i<moduleReps.size(); i++) {
-            project.log("\t" + moduleReps.get(i).getModuleMrid() + (moduleReps.get(i).getAs() == null ? 
+            getProject().log("\t" + moduleReps.get(i).getModuleMrid() + (moduleReps.get(i).getAs() == null ? 
                     "" : ": Known as " + moduleReps.get(i).getAs()));
         }
         
-        project.log(lineSep + lineSep + "For more information on a Plugin, run:" + lineSep + "\t easyant -describe <PLUGIN>");
-        project.log(lineSep + "--- End Of (Plugins Listing) ---");
+        getProject().log(LINE_SEP + LINE_SEP + "For more information on a Plugin, run:" + LINE_SEP + "\t easyant -describe <PLUGIN>");
+        getProject().log(LINE_SEP + "--- End Of (Plugins Listing) ---");
     }
 
 }

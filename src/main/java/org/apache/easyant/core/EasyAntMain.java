@@ -32,12 +32,23 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.easyant.core.ant.Phase;
 import org.apache.easyant.core.factory.EasyantConfigurationFactory;
-import org.apache.easyant.man.ProjectMan;
+import org.apache.easyant.man.Describe;
+import org.apache.easyant.man.EasyantOption;
+import org.apache.easyant.man.ListPhases;
+import org.apache.easyant.man.ListPlugins;
+import org.apache.easyant.man.ListProps;
+import org.apache.easyant.man.ListTargets;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DemuxInputStream;
-import org.apache.tools.ant.DemuxOutputStream;
 import org.apache.tools.ant.Diagnostics;
 import org.apache.tools.ant.ExitStatusException;
 import org.apache.tools.ant.Main;
@@ -72,20 +83,15 @@ public class EasyAntMain implements AntMain {
     }
     private EasyAntConfiguration easyAntConfiguration;
     private boolean projectHelp;
-    private boolean projectMan;
 
-    private ProjectMan man;
-    
+    private Options options = new Options();
+
     /**
      * Whether or not this instance has successfully been constructed and is
      * ready to run.
      */
     private boolean readyToRun;
     private Vector propertyFiles = new Vector(1);
-    private File buildFile;
-    private File buildModule;
-    private File easyantConfFile;
-    private String buildConf;
 
     /**
      * Prints the message of the Throwable if it (the message) is not
@@ -139,13 +145,16 @@ public class EasyAntMain implements AntMain {
     public void startAnt(String[] args, Properties additionalUserProperties,
             ClassLoader coreLoader) {
         easyAntConfiguration.setCoreLoader(coreLoader);
+        configureOptions();
+        CommandLineParser parser = new GnuParser();
+        CommandLine line = null;
         try {
-            Diagnostics.validateVersion();
-            processArgs(args);
-        } catch (Throwable exc) {
+            line = parser.parse(options, args);
+            processArgs(line);
+        } catch (ParseException exc) {
             if (easyAntConfiguration.getMsgOutputLevel() >= Project.MSG_VERBOSE) {
                 exc.printStackTrace();
-            } 
+            }
             handleLogfile();
             printMessage(exc);
             exit(1);
@@ -165,7 +174,7 @@ public class EasyAntMain implements AntMain {
         int exitCode = 1;
         try {
             try {
-                runBuild(coreLoader);
+                runBuild(line, coreLoader);
                 exitCode = 0;
             } catch (ExitStatusException ese) {
                 exitCode = ese.getStatus();
@@ -238,151 +247,152 @@ public class EasyAntMain implements AntMain {
      * 
      * @since Ant 1.6
      */
-    private void processArgs(String[] args) {
+    private void processArgs(CommandLine line) {
         String searchForThis = null;
         PrintStream logTo = null;
 
-        // cycle through given args
-
-        boolean justPrintUsage = false;
-        boolean justPrintVersion = false;
-        boolean justPrintDiagnostics = false;
-
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
-
-            if (arg.equals("-help") || arg.equals("-h")) {
-                justPrintUsage = true;
-            } else if (arg.equals("-version")) {
-                justPrintVersion = true;
-            } else if (arg.equals("-showMemoryDetails")) {
-                easyAntConfiguration.setShowMemoryDetails(true);
-            } else if (arg.equals("-diagnostics")) {
-                justPrintDiagnostics = true;
-            } else if (arg.equals("-quiet") || arg.equals("-q")) {
-                easyAntConfiguration.setMsgOutputLevel(Project.MSG_WARN);
-            } else if (arg.equals("-verbose") || arg.equals("-v")) {
-                easyAntConfiguration.setMsgOutputLevel(Project.MSG_VERBOSE);
-            } else if (arg.equals("-debug") || arg.equals("-d")) {
-                easyAntConfiguration.setMsgOutputLevel(Project.MSG_DEBUG);
-            } else if (arg.equals("-noinput")) {
-                easyAntConfiguration.setAllowInput(false);
-            } else if (arg.equals("-logfile") || arg.equals("-l")) {
-                try {
-                    File logFile = new File(args[i + 1]);
-                    i++;
-                    logTo = new PrintStream(new FileOutputStream(logFile));
-                    isLogFileUsed = true;
-                } catch (IOException ioe) {
-                    String msg = "Cannot write on the specified log file. "
-                            + "Make sure the path exists and you have write "
-                            + "permissions.";
-                    throw new BuildException(msg);
-                } catch (ArrayIndexOutOfBoundsException aioobe) {
-                    String msg = "You must specify a log file when "
-                            + "using the -log argument";
-                    throw new BuildException(msg);
-                }
-            } else if (arg.equals("-buildmodule") || arg.equals("-file")
-                    || arg.equals("-f")) {
-                i = handleArgBuildModule(args, i);
-                easyAntConfiguration.setBuildModule(buildModule);
-            } else if (arg.equals("-buildfile")) {
-                i = handleArgBuildFile(args, i);
-                easyAntConfiguration.setBuildFile(buildFile);
-            } else if (arg.equals("-buildconf") || arg.equals("-C")) {
-                i = handleArgBuildConf(args,i);
-                easyAntConfiguration.getActiveBuildConfigurations().add(buildConf);
-            } else if (arg.equals("-config-file")) {
-                i = handleArgEasyAntConf(args, i);
-                try {
-                    easyAntConfiguration = EasyantConfigurationFactory
-                            .getInstance().createConfigurationFromFile(
-                                    easyAntConfiguration,
-                                    easyantConfFile.toURL());
-                } catch (Exception e) {
-                    throw new BuildException(e);
-                }
-            } else if (arg.equals("-listener")) {
-                i = handleArgListener(args, i);
-            } else if (arg.startsWith("-D")) {
-                i = handleArgDefine(args, i);
-            } else if (arg.equals("-logger")) {
-                i = handleArgLogger(args, i);
-            } else if (arg.equals("-inputhandler")) {
-                i = handleArgInputHandler(args, i);
-            } else if (arg.equals("-emacs") || arg.equals("-e")) {
-                easyAntConfiguration.setEmacsMode(true);
-            } else if (arg.equals("-listTargets")
-                    || arg.equals("-describe")
-                    || arg.equals("-listProps")
-                    || arg.equals("-listPhases")
-                    || arg.equals("-listPlugins")) {
-                projectMan = true;
-                man = new ProjectMan();
-                man.setCommand(arg);
-                if(i < args.length-1 && !args[i+1].startsWith("-")) {
-                    man.addParam(args[++i]);
-                }
-            } else if(arg.equals("-projecthelp")
-                    || arg.equals("-p")) {
-                // set the flag to display the targets and quit
-                projectHelp = true;
-            } else if (arg.equals("-find") || arg.equals("-s")) {
-                // eat up next arg if present, default to module.ivy
-                if (i < args.length - 1) {
-                    searchForThis = args[++i];
-
-                } else {
-                    searchForThis = EasyAntConstants.DEFAULT_BUILD_MODULE;
-                }
-                easyAntConfiguration.setBuildModule(new File(searchForThis));
-                easyAntConfiguration.setBuildModuleLookupEnabled(true);
-            } else if (arg.startsWith("-propertyfile")) {
-                i = handleArgPropertyFile(args, i);
-            } else if (arg.equals("-k") || arg.equals("-keep-going")) {
-                easyAntConfiguration.setKeepGoingMode(true);
-            } else if (arg.equals("-offline") || arg.equals("-o")) {
-                easyAntConfiguration.setOffline(true);
-            } else if (arg.equals("-nice")) {
-                i = handleArgNice(args, i);
-            } else if (LAUNCH_COMMANDS.contains(arg)) {
-                // catch script/ant mismatch with a meaningful message
-                // we could ignore it, but there are likely to be other
-                // version problems, so we stamp down on the configuration now
-                String msg = "Ant's Main method is being handed "
-                        + "an option " + arg
-                        + " that is only for the launcher class."
-                        + "\nThis can be caused by a version mismatch between "
-                        + "the ant script/.bat file and Ant itself.";
-                throw new BuildException(msg);
-            } else if (arg.equals("-autoproxy")) {
-                easyAntConfiguration.setProxy(true);
-            } else if (arg.startsWith("-")) {
-                // we don't have any more args to recognize!
-                String msg = "Unknown argument: " + arg;
-                System.err.println(msg);
-                printUsage();
-                throw new BuildException("");
-            } else {
-                easyAntConfiguration.getTargets().addElement(arg);
-            }
-        }
-
-        if (easyAntConfiguration.getMsgOutputLevel() >= Project.MSG_VERBOSE
-                || justPrintVersion) {
-            printVersion(easyAntConfiguration.getMsgOutputLevel());
-        }
-
-        if (justPrintUsage || justPrintVersion || justPrintDiagnostics) {
-            if (justPrintUsage) {
-                printUsage();
-            }
-            if (justPrintDiagnostics) {
-                Diagnostics.doReport(System.out, easyAntConfiguration
-                        .getMsgOutputLevel());
-            }
+        if (line.hasOption("help")) {
+            printUsage();
             return;
+        }
+        if (easyAntConfiguration.getMsgOutputLevel() >= Project.MSG_VERBOSE
+                || line.hasOption("version")) {
+            printVersion(easyAntConfiguration.getMsgOutputLevel());
+            if (line.hasOption("version")) {
+                return;
+            }
+        }
+        if (line.hasOption("showMemoryDetails")) {
+            easyAntConfiguration.setShowMemoryDetails(true);
+        }
+        if (line.hasOption("diagnostics")) {
+            Diagnostics.doReport(System.out,
+                    easyAntConfiguration.getMsgOutputLevel());
+            return;
+        }
+        if (line.hasOption("quiet")) {
+            easyAntConfiguration.setMsgOutputLevel(Project.MSG_WARN);
+        }
+        if (line.hasOption("verbose")) {
+            easyAntConfiguration.setMsgOutputLevel(Project.MSG_VERBOSE);
+        }
+        if (line.hasOption("debug")) {
+            easyAntConfiguration.setMsgOutputLevel(Project.MSG_DEBUG);
+        }
+        if (line.hasOption("noinput")) {
+            easyAntConfiguration.setAllowInput(false);
+        }
+        if (line.hasOption("logfile")) {
+            try {
+                File logFile = new File(line.getOptionValue("logfile"));
+                logTo = new PrintStream(new FileOutputStream(logFile));
+                isLogFileUsed = true;
+            } catch (IOException ioe) {
+                String msg = "Cannot write on the specified log file. "
+                        + "Make sure the path exists and you have write "
+                        + "permissions.";
+                throw new BuildException(msg);
+            } catch (ArrayIndexOutOfBoundsException aioobe) {
+                String msg = "You must specify a log file when "
+                        + "using the -log argument";
+                throw new BuildException(msg);
+            }
+        }
+        if (line.hasOption("buildmodule")) {
+            File buildModule = new File(line.getOptionValue("buildmodule")
+                    .replace('/', File.separatorChar));
+            easyAntConfiguration.setBuildModule(buildModule);
+        }
+        if (line.hasOption("buildfile")) {
+            File buildFile = new File(line.getOptionValue("buildfile").replace(
+                    '/', File.separatorChar));
+            easyAntConfiguration.setBuildFile(buildFile);
+        }
+        if (line.hasOption("buildconf")) {
+            easyAntConfiguration.getActiveBuildConfigurations().add(
+                    line.getOptionValue("buildconf"));
+        }
+        if (line.hasOption("configfile")) {
+            try {
+                File easyantConfFile = new File(line.getOptionValue(
+                        "configfile").replace('/', File.separatorChar));
+                easyAntConfiguration = EasyantConfigurationFactory
+                        .getInstance().createConfigurationFromFile(
+                                easyAntConfiguration, easyantConfFile.toURL());
+            } catch (Exception e) {
+                throw new BuildException(e);
+            }
+        }
+        if (line.hasOption("listener")) {
+            easyAntConfiguration.getListeners().addElement(
+                    line.getOptionValue("listener"));
+        }
+        if (line.hasOption("D")) {
+            easyAntConfiguration.getDefinedProps().putAll(
+                    line.getOptionProperties("D"));
+        }
+        if (line.hasOption("logger")) {
+            if (easyAntConfiguration.getLoggerClassname() != null) {
+                throw new BuildException(
+                        "Only one logger class may be specified.");
+            }
+            easyAntConfiguration.setLoggerClassname(line
+                    .getOptionValue("logger"));
+        }
+        if (line.hasOption("inputhandler")) {
+            if (easyAntConfiguration.getInputHandlerClassname() != null) {
+                throw new BuildException("Only one input handler class may "
+                        + "be specified.");
+            }
+            easyAntConfiguration.setInputHandlerClassname(line
+                    .getOptionValue("inputhandler"));
+        }
+        if (line.hasOption("emacs")) {
+            easyAntConfiguration.setEmacsMode(true);
+        }
+        if (line.hasOption("projecthelp")) {
+            // set the flag to display the targets and quit
+            projectHelp = true;
+        }
+        if (line.hasOption("find")) {
+            // eat up next arg if present, default to module.ivy
+            if (line.getOptionValues("find").length > 0) {
+                searchForThis = line.getOptionValue("find");
+
+            } else {
+                searchForThis = EasyAntConstants.DEFAULT_BUILD_MODULE;
+            }
+            easyAntConfiguration.setBuildModule(new File(searchForThis));
+            easyAntConfiguration.setBuildModuleLookupEnabled(true);
+        }
+        if (line.hasOption("propertyfile")) {
+            propertyFiles.addElement(line.getOptionValue("propertyfile"));
+        }
+        if (line.hasOption("keep-going")) {
+            easyAntConfiguration.setKeepGoingMode(true);
+        }
+        if (line.hasOption("offline")) {
+            easyAntConfiguration.setOffline(true);
+        }
+        if (line.hasOption("nice")) {
+            easyAntConfiguration.setThreadPriority(Integer.decode(line
+                    .getOptionValue("nice")));
+
+            if (easyAntConfiguration.getThreadPriority().intValue() < Thread.MIN_PRIORITY
+                    || easyAntConfiguration.getThreadPriority().intValue() > Thread.MAX_PRIORITY) {
+                throw new BuildException(
+                        "Niceness value is out of the range 1-10");
+            }
+        }
+        if (line.hasOption("autoproxy")) {
+            easyAntConfiguration.setProxy(true);
+        }
+        if (line.getArgList().size() > 0) {
+            for (Iterator iterator = line.getArgList().iterator(); iterator
+                    .hasNext();) {
+                String target = (String) iterator.next();
+                easyAntConfiguration.getTargets().addElement(target);
+            }
         }
 
         // Load the property files specified by -propertyfile
@@ -395,154 +405,6 @@ public class EasyAntMain implements AntMain {
             System.setErr(easyAntConfiguration.getErr());
         }
         readyToRun = true;
-    }
-
-    // --------------------------------------------------------
-    // Methods for handling the command line arguments
-    // --------------------------------------------------------
-
-    /** Handle the -buildfile, -file, -f argument */
-    private int handleArgBuildFile(String[] args, int pos) {
-        try {
-            buildFile = new File(args[++pos].replace('/', File.separatorChar));
-            ++pos;
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            throw new BuildException(
-                    "You must specify a buildfile when using the -buildfile argument");
-        }
-        return pos;
-    }
-
-    private int handleArgBuildModule(String[] args, int pos) {
-        try {
-            buildModule = new File(args[++pos].replace('/', File.separatorChar));
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            throw new BuildException(
-                    "You must specify a buildfile when using the -buildmodule argument");
-        }
-        return pos;
-    }
-    
-    private int handleArgBuildConf(String[] args, int pos) {
-        try {
-            buildConf = args[++pos];
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            throw new BuildException(
-                    "You must specify a build configuration when using the -buildconf argument");
-        }
-        return pos;
-    }
-
-    /** Handle -config-file argument */
-    private int handleArgEasyAntConf(String[] args, int pos) {
-        try {
-            easyantConfFile = new File(args[++pos].replace('/',
-                    File.separatorChar));
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            throw new BuildException(
-                    "You must specify an easyant ivy configuration when using the -easyantivyconf argument");
-        }
-        return pos;
-    }
-
-    /** Handle -listener argument */
-    private int handleArgListener(String[] args, int pos) {
-        try {
-            easyAntConfiguration.getListeners().addElement(args[pos + 1]);
-            pos++;
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            String msg = "You must specify a classname when "
-                    + "using the -listener argument";
-            throw new BuildException(msg);
-        }
-        return pos;
-    }
-
-    /** Handler -D argument */
-    private int handleArgDefine(String[] args, int argPos) {
-        /*
-         * Interestingly enough, we get to here when a user uses -Dname=value.
-         * However, in some cases, the OS goes ahead and parses this out to args
-         * {"-Dname", "value"} so instead of parsing on "=", we just make the
-         * "-D" characters go away and skip one argument forward.
-         * 
-         * I don't know how to predict when the JDK is going to help or not, so
-         * we simply look for the equals sign.
-         */
-        String arg = args[argPos];
-        String name = arg.substring(2, arg.length());
-        String value = null;
-        int posEq = name.indexOf("=");
-        if (posEq > 0) {
-            value = name.substring(posEq + 1);
-            name = name.substring(0, posEq);
-        } else if (argPos < args.length - 1) {
-            value = args[++argPos];
-        } else {
-            throw new BuildException("Missing value for property " + name);
-        }
-        easyAntConfiguration.getDefinedProps().put(name, value);
-        return argPos;
-    }
-
-    /** Handle the -logger argument. */
-    private int handleArgLogger(String[] args, int pos) {
-        if (easyAntConfiguration.getLoggerClassname() != null) {
-            throw new BuildException("Only one logger class may be specified.");
-        }
-        try {
-            easyAntConfiguration.setLoggerClassname(args[++pos]);
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            throw new BuildException(
-                    "You must specify a classname when using the -logger argument");
-        }
-        return pos;
-    }
-
-    /** Handle the -inputhandler argument. */
-    private int handleArgInputHandler(String[] args, int pos) {
-        if (easyAntConfiguration.getInputHandlerClassname() != null) {
-            throw new BuildException("Only one input handler class may "
-                    + "be specified.");
-        }
-        try {
-            easyAntConfiguration.setInputHandlerClassname(args[++pos]);
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            throw new BuildException("You must specify a classname when"
-                    + " using the -inputhandler" + " argument");
-        }
-        return pos;
-    }
-
-    /** Handle the -propertyfile argument. */
-    private int handleArgPropertyFile(String[] args, int pos) {
-        try {
-            propertyFiles.addElement(args[++pos]);
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            String msg = "You must specify a property filename when "
-                    + "using the -propertyfile argument";
-            throw new BuildException(msg);
-        }
-        return pos;
-    }
-
-    /** Handle the -nice argument. */
-    private int handleArgNice(String[] args, int pos) {
-        try {
-            easyAntConfiguration.setThreadPriority(Integer.decode(args[++pos]));
-        } catch (ArrayIndexOutOfBoundsException aioobe) {
-            throw new BuildException("You must supply a niceness value (1-10)"
-                    + " after the -nice option");
-        } catch (NumberFormatException e) {
-            throw new BuildException("Unrecognized niceness value: "
-                    + args[pos]);
-        }
-
-        if (easyAntConfiguration.getThreadPriority().intValue() < Thread.MIN_PRIORITY
-                || easyAntConfiguration.getThreadPriority().intValue() > Thread.MAX_PRIORITY) {
-            throw new BuildException("Niceness value is out of the range 1-10");
-        }
-        return pos;
     }
 
     // --------------------------------------------------------
@@ -591,27 +453,31 @@ public class EasyAntMain implements AntMain {
      * @exception BuildException
      *                if the build fails
      */
-    private void runBuild(ClassLoader coreLoader) throws BuildException {
-        Project project = new Project();
+    private void runBuild(CommandLine line, ClassLoader coreLoader)
+            throws BuildException {
+
         if (!readyToRun) {
             return;
         }
         if (projectHelp) {
             displayProjectHelp();
-        } else if(projectMan) {
-            EasyAntEngine.configureAndInitProject(project, easyAntConfiguration);
-            File moduleDescriptor =new File(project.getProperty(EasyAntMagicNames.EASYANT_FILE));
-            File optionalAntModule =new File(moduleDescriptor.getParent(),EasyAntConstants.DEFAULT_BUILD_FILE);
-            File overrideAntModule =new File(moduleDescriptor.getParent(),EasyAntConstants.DEFAULT_OVERRIDE_BUILD_FILE);
-            
-            if (moduleDescriptor.exists()||optionalAntModule.exists()||overrideAntModule.exists()) {
-                man.setContext(project, moduleDescriptor,optionalAntModule,overrideAntModule);
-                man.execute();
-            } else {
-                project.log("Can't print project manual, there is no module descriptor available.");
-            }
         } else {
-            EasyAntEngine.runBuild(easyAntConfiguration);
+            EasyAntEngine eaEngine = new EasyAntEngine(easyAntConfiguration);
+            Project project = new Project();
+            eaEngine.configureProject(project);
+            eaEngine.initProject(project);
+            // handle other easyant option (-listTargets,-describe,etc..)
+            for (int i = 0; i < line.getOptions().length; i++) {
+                if (line.getOptions()[i] instanceof EasyantOption) {
+                    EasyantOption eaoption = (EasyantOption) line.getOptions()[i];
+                    eaoption.setProject(project);
+                    eaoption.execute();
+                    if (eaoption.isStopBuild()) {
+                        return;
+                    }
+                }
+            }
+            eaEngine.doBuild();
         }
 
     }
@@ -722,8 +588,8 @@ public class EasyAntMain implements AntMain {
             msg.append(" ");
             msg.append(names.elementAt(i));
             if (descriptions != null) {
-                msg.append(spaces.substring(0, maxlen
-                        - ((String) names.elementAt(i)).length() + 2));
+                msg.append(spaces.substring(0,
+                        maxlen - ((String) names.elementAt(i)).length() + 2));
                 msg.append(descriptions.elementAt(i));
             }
             msg.append(lSep);
@@ -811,147 +677,139 @@ public class EasyAntMain implements AntMain {
 
         try {
 
-            PrintStream savedErr = System.err;
-            PrintStream savedOut = System.out;
-            InputStream savedIn = System.in;
+            EasyAntEngine
+                    .configureAndInitProject(project, easyAntConfiguration);
+            printDescription(project);
+            printTargets(project,
+                    easyAntConfiguration.getMsgOutputLevel() > Project.MSG_INFO);
 
-            // use a system manager that prevents from System.exit()
-            SecurityManager oldsm = null;
-            oldsm = System.getSecurityManager();
-
-            // SecurityManager can not be installed here for backwards
-            // compatibility reasons (PD). Needs to be loaded prior to
-            // ant class if we are going to implement it.
-            // System.setSecurityManager(new NoExitSecurityManager());
-            try {
-                if (easyAntConfiguration.isAllowInput()) {
-                    project.setDefaultInputStream(System.in);
-                }
-                System.setIn(new DemuxInputStream(project));
-                System.setOut(new PrintStream(new DemuxOutputStream(project,
-                        false)));
-                System.setErr(new PrintStream(new DemuxOutputStream(project,
-                        true)));
-                EasyAntEngine.configureAndInitProject(project, easyAntConfiguration);
-                printDescription(project);
-                printTargets(project,
-                        easyAntConfiguration.getMsgOutputLevel() > Project.MSG_INFO);
-            } finally {
-                // put back the original security manager
-                // The following will never eval to true. (PD)
-                if (oldsm != null) {
-                    System.setSecurityManager(oldsm);
-                }
-
-                System.setOut(savedOut);
-                System.setErr(savedErr);
-                System.setIn(savedIn);
-            }
         } catch (RuntimeException exc) {
             error = exc;
             throw exc;
-        } catch (Error e) {
-            error = e;
-            throw e;
         } finally {
             if (error != null) {
                 project.log(error.toString(), Project.MSG_ERR);
             }
         }
     }
-    
+
+    /**
+     * Configure command line options
+     */
+    public void configureOptions() {
+        options.addOption("h", "help", false, "print this message");
+
+        options.addOption("p", "projecthelp", false,
+                "print project help information");
+        options.addOption("version", false,
+                "print the version information and exit");
+        options.addOption("diagnostics", false,
+                "print information that might be helpful to diagnose or report problems");
+        options.addOption("showMemoryDetails", false,
+                "print memory details (used/free/total)");
+        options.addOption("q", "quiet", false, "be extra quiet");
+        options.addOption("v", "verbose", false, "be extra verbose");
+        options.addOption("d", "debug", false, "print debugging information");
+        options.addOption("e", "emacs", false,
+                "produce logging information without adornments");
+        Option lib = OptionBuilder
+                .withArgName("path")
+                .hasArg()
+                .withDescription(
+                        "specifies a path to search for jars and classes")
+                .create("lib");
+        options.addOption(lib);
+        Option logfile = OptionBuilder.withArgName("file").hasArg()
+                .withDescription("use given file for log").create("logfile");
+        options.addOption(logfile);
+        Option logger = OptionBuilder.withArgName("classname").hasArg()
+                .withDescription("the class which it to perform " + "logging")
+                .create("logger");
+        options.addOption(logger);
+        Option listener = OptionBuilder
+                .withArgName("classname")
+                .hasArg()
+                .withDescription(
+                        "add an instance of class as " + "a project listener")
+                .create("listener");
+        options.addOption(listener);
+        Option buildfile = OptionBuilder.withArgName("file").hasArg()
+                .withDescription("use given buildfile").create("buildfile");
+        options.addOption(buildfile);
+        Option find = OptionBuilder
+                .withArgName("file")
+                .hasOptionalArg()
+                .withDescription(
+                        "search for buildfile towards the "
+                                + "root of the filesystem and use it")
+                .withLongOpt("find").create("s");
+        options.addOption(find);
+        options.addOption("noinput", false, "do not allow interactive input");
+        Option buildmodule = OptionBuilder.withArgName("file").hasArg()
+                .withDescription("use given buildmodule")
+                .withLongOpt("buildmodule").create("f");
+        options.addOption(buildmodule);
+
+        Option buildconf = OptionBuilder.withArgName("confs").hasArg()
+                .withDescription("specify build configurations (profiles)")
+                .withLongOpt("buildconf").create("C");
+        options.addOption(buildconf);
+        Option configFile = OptionBuilder.withArgName("file").hasArg()
+                .withDescription("use given easyant configuration")
+                .create("configfile");
+        options.addOption(configFile);
+        Option property = OptionBuilder.withArgName("property=value")
+                .hasArgs(2).withValueSeparator()
+                .withDescription("use value for given property").create("D");
+        options.addOption(property);
+        options.addOption("k", "keep-going", false,
+                "execute all targets that do not depend on failed target(s)");
+        Option propertiesfile = OptionBuilder
+                .withArgName("file")
+                .hasArg()
+                .withDescription(
+                        "load all properties from file with -D properties taking precedence")
+                .create("propertyfile");
+        options.addOption(buildfile);
+        Option inputhandler = OptionBuilder.withArgName("classname").hasArg()
+                .withDescription("the class which will handle input requests")
+                .create("inputhandler");
+        options.addOption(listener);
+        Option nice = OptionBuilder
+                .withArgName("number")
+                .hasArg()
+                .withDescription(
+                        "A niceness value for the main thread: 1 (lowest) to 10 (highest); 5 is the default")
+                .create("nice");
+        options.addOption(nice);
+        options.addOption("nouserlib", false,
+                "Run ant without using the jar files from ${user.home}/.ant/lib");
+        options.addOption("noclasspath", false,
+                "Run ant without using CLASSPATH");
+        options.addOption("autoproxy", false,
+                "Java1.5+: use the OS proxy settings");
+        Option main = OptionBuilder.withArgName("classname").hasArg()
+                .withDescription("override EasyAnt's normal entry point")
+                .create("main");
+        options.addOption(main);
+        options.addOption("o", "offline", false,
+                "turns EasyAnt in offline mode");
+        options.addOption(new Describe());
+        options.addOption(new ListPhases());
+        options.addOption(new ListTargets());
+        options.addOption(new ListProps());
+        options.addOption(new ListPlugins());
+    }
+
     /**
      * Prints the usage information for this class to <code>System.out</code>.
      */
-    private static void printUsage() {
-        String lSep = System.getProperty("line.separator");
-        StringBuffer msg = new StringBuffer();
-        msg.append("easyant [options] [target [target2 [target3] ...]]" + lSep);
-        msg.append("Options: " + lSep);
-        msg.append("  -help, -h              print this message" + lSep);
-        msg.append("  -projecthelp, -p       print project help information"
-                + lSep);
-        msg
-                .append("  -version               print the version information and exit"
-                        + lSep);
-        msg
-                .append("  -diagnostics           print information that might be helpful to"
-                        + lSep);
-        msg.append("                         diagnose or report problems."
-                + lSep);
-        msg
-                .append("  -showMemoryDetails     print memory details (used/free/total)"
-                        + lSep);
-        msg.append("  -quiet, -q             be extra quiet" + lSep);
-        msg.append("  -verbose, -v           be extra verbose" + lSep);
-        msg.append("  -debug, -d             print debugging information"
-                + lSep);
-        msg
-                .append("  -emacs, -e             produce logging information without adornments"
-                        + lSep);
-        msg
-                .append("  -lib <path>            specifies a path to search for jars and classes"
-                        + lSep);
-        msg.append("  -logfile <file>        use given file for log" + lSep);
-        msg.append("    -l     <file>                ''" + lSep);
-        msg
-                .append("  -logger <classname>    the class which is to perform logging"
-                        + lSep);
-        msg
-                .append("  -listener <classname>  add an instance of class as a project listener"
-                        + lSep);
-        msg.append("  -noinput               do not allow interactive input"
-                + lSep);
-        msg.append("  -buildmodule <file>    use given buildmodule" + lSep);
-        msg.append("    -file    <file>              ''" + lSep);
-        msg.append("    -f       <file>              ''" + lSep);
-        msg.append("  -listTargets           Lists all targets available"+lSep);
-        msg.append("  -listTargets <arg>     Lists all targets associated with specified phase / plugin as argument"+lSep);
-        msg.append("  -listPhases            Lists all phases available"+lSep);
-        msg.append("  -listPlugins           Lists all plugins / modules imported by specified build module"+lSep);
-        msg.append("  -listProps <plugin>    Lists all properties available in the specified imported module"+lSep);
-        msg.append("  -describe <arg>        Describes the phase / target / property specified by the argument"+lSep);
-        msg.append("  -buildconf <confs>     specify build configurations (profiles)"+lSep);
-        msg.append("    -C  <confs>                  ''"+lSep);
-        msg.append("  -buildfile <file>      use given buildfile" + lSep);
-        msg.append("  -config-file <file>    use given easyant configuration"
-                + lSep);
-        msg.append("  -D<property>=<value>   use value for given property"
-                + lSep);
-        msg
-                .append("  -keep-going, -k        execute all targets that do not depend"
-                        + lSep);
-        msg.append("                         on failed target(s)" + lSep);
-        msg
-                .append("  -propertyfile <name>   load all properties from file with -D"
-                        + lSep);
-        msg.append("                         properties taking precedence"
-                + lSep);
-        msg
-                .append("  -inputhandler <class>  the class which will handle input requests"
-                        + lSep);
-        msg
-                .append("  -find <file>           (s)earch for buildfile towards the root of"
-                        + lSep);
-        msg.append("    -s  <file>           the filesystem and use it" + lSep);
-        msg
-                .append("  -nice  number          A niceness value for the main thread:"
-                        + lSep
-                        + "                         1 (lowest) to 10 (highest); 5 is the default"
-                        + lSep);
-        msg
-                .append("  -nouserlib             Run ant without using the jar files from"
-                        + lSep
-                        + "                         ${user.home}/.ant/lib"
-                        + lSep);
-        msg.append("  -noclasspath           Run ant without using CLASSPATH"
-                + lSep);
-        msg
-                .append("  -autoproxy             Java1.5+: use the OS proxy settings"
-                        + lSep);
-        msg
-                .append("  -main <class>          override Ant's normal entry point");
-        System.out.println(msg.toString());
+    private void printUsage() {
+
+        HelpFormatter help = new HelpFormatter();
+        help.printHelp("easyant [options] [target [target2 [target3] ...]]",
+                options);
+
     }
 
     /**

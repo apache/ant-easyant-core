@@ -19,7 +19,6 @@ package org.apache.easyant.man;
 
 import java.util.List;
 
-import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
 import org.apache.easyant.core.report.PhaseReport;
 import org.apache.easyant.core.report.TargetReport;
@@ -34,22 +33,21 @@ import org.apache.tools.ant.Project;
  * If no phase / plugin name is specified, then this command
  * lists all targets available in the project (module.ivy)
  */
-public class ListTargets implements ManCommand {
-    /*
-     * name of the phase or plugin for which the targets 
-     * have been requested for.
-     */
-    private String container = null;
+public class ListTargets extends EasyantOption {
     
+    
+    public ListTargets() {
+        super("listTargets", false, "List all targets available or associated with a given phase or plugin as argument");
+        setOptionalArg(true);
+        setStopBuild(true);
+    }
+
+
     /*
      * defining some convenient string constants
      */
     private static final String NONE = "NONE";
     
-    public void addParam(String param) {
-        this.container = param;
-    }
-
     /*
      * simply look up for all targets belonging to a phase named <container>, is such
      * a phase exists. then list all targets listed in a module named <container>, is
@@ -58,28 +56,27 @@ public class ListTargets implements ManCommand {
      * however, if the this.container variable has not been initialized then simply list
      * down all targets in the current module and all imported sub-modules.
      */
-    public void execute(EasyAntReport earep, Project project) {
-        String lineSep = System.getProperty("line.separator");
+    public void execute() {
         
-        project.log(lineSep + "--- Available Targets for current project: " + project.getName() + " ---" + lineSep);
-        
-        if(this.container == null || this.container.trim().length() == 0) {
-            project.log(lineSep + "No Phase / Plugin specified. Listing all targets available in the project.");
+        getProject().log(LINE_SEP + "--- Available Targets for current project: " + getProject().getName() + " ---" + LINE_SEP);
+        String container = getValue();
+        if(container == null || container.trim().length() == 0) {
+            getProject().log(LINE_SEP+ "No Phase / Plugin specified. Listing all targets available in the project.");
             
-            List<TargetReport> targets = earep.getAvailableTargets();
-            printTargets(targets, project);
+            List<TargetReport> targets = getEareport().getAvailableTargets();
+            printTargets(targets, getProject());
         } else {
-            PhaseReport phase = earep.getPhaseReport(this.container, true);
+            PhaseReport phase = getEareport().getPhaseReport(container, true);
             
             if(phase != null) {
-                project.log("Targets for Phase: " + this.container);
+                getProject().log("Targets for Phase: " + container);
                 List<TargetReport> targets = phase.getTargetReports();
-                printTargets(targets, project);
+                printTargets(targets, getProject());
             } else {
-                project.log("\tNo Phase found by name: " + this.container);
+                getProject().log("\tNo Phase found by name: " + container);
             }
             
-            List<ImportedModuleReport> modules = earep.getImportedModuleReports();
+            List<ImportedModuleReport> modules = getEareport().getImportedModuleReports();
             ImportedModuleReport selected = null;
             for(int i = 0; i<modules.size(); i++) {
                 selected = modules.get(i);
@@ -88,16 +85,16 @@ public class ListTargets implements ManCommand {
                 }
             }
             if(selected != null) {
-                project.log(lineSep + "Targets for Module: " + this.container);
+                getProject().log(LINE_SEP + "Targets for Module: " + container);
                 List<TargetReport> targets = selected.getEasyantReport().getTargetReports();
-                printTargets(targets, project);
+                printTargets(targets, getProject());
             } else {
-                project.log(lineSep + "\tNo Module / Plugin found by name: " + this.container);
+                getProject().log(LINE_SEP + "\tNo Module / Plugin found by name: " + container);
             }
                 
-            project.log(lineSep + lineSep + "For more information on a Phase, run:" + lineSep + "\t easyant -describe <PHASE>");
+            getProject().log(LINE_SEP+LINE_SEP+ "For more information on a Phase, run:" + LINE_SEP + "\t easyant -describe <PHASE>");
         }
-        project.log(lineSep + "--- End Of (Phases Listing) ---");
+        getProject().log(LINE_SEP + "--- End Of (Phases Listing) ---");
     }
 
     /*

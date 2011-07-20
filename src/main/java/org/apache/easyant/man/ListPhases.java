@@ -19,9 +19,7 @@ package org.apache.easyant.man;
 
 import java.util.List;
 
-import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.PhaseReport;
-import org.apache.tools.ant.Project;
 
 /**
  * ManCommand implementation to list all phases associated with specified 
@@ -29,23 +27,25 @@ import org.apache.tools.ant.Project;
  * 
  * Supports the -listPhases switch.
  */
-public class ListPhases implements ManCommand {
+public class ListPhases extends EasyantOption{
     
-    public void addParam(String param) {
-        // this command does not make use of params
+    public ListPhases()
+            throws IllegalArgumentException {
+        super("listPhases", false, "List all phases available");
+        setOptionalArg(true);
+        setStopBuild(true);
     }
 
-    public void execute(EasyAntReport earep, Project project) {
-        String lineSep = System.getProperty("line.separator");
-        project.log(lineSep + "--- Available Phases for current project: " + project.getName() + " ---" + lineSep);
+    public void execute() {
+        getProject().log(LINE_SEP+ "--- Available Phases for current project: " + getProject().getName() + " ---" + LINE_SEP);
         
-        List<PhaseReport> phases = earep.getAvailablePhases();
+        List<PhaseReport> phases = getEareport().getAvailablePhases();
         for(int i = 0; i<phases.size(); i++) {
-            project.log("\t" + phases.get(i).getName());
+            getProject().log("\t" + phases.get(i).getName());
         }
         
-        project.log(lineSep + lineSep + "For more information on a Phase, run:" + lineSep + "\t easyant -describe <PHASE>");
-        project.log(lineSep + "--- End Of (Phases Listing) ---");
+        getProject().log(LINE_SEP+ LINE_SEP+ "For more information on a Phase, run:" + LINE_SEP + "\t easyant -describe <PHASE>");
+        getProject().log(LINE_SEP+ "--- End Of (Phases Listing) ---");
     }
 
 }

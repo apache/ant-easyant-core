@@ -537,6 +537,13 @@ public class EasyAntEngine {
      */
     public void doBuild() throws BuildException {
         final Project project = new Project();
+        configureProject(project);
+        initProject(project);
+        doBuild(project);
+        
+    }
+
+    private void doBuild(final Project project) throws Error {
         project.fireBuildStarted();
 
         Throwable error = null;
@@ -564,8 +571,6 @@ public class EasyAntEngine {
                         false)));
                 System.setErr(new PrintStream(new DemuxOutputStream(project,
                         true)));
-                configureProject(project);
-                initProject(project);
 
                 // make sure that we have a target to execute
                 if (configuration.getTargets().size() == 0) {
@@ -614,7 +619,6 @@ public class EasyAntEngine {
                 || configuration.getMsgOutputLevel() >= Project.MSG_VERBOSE) {
             printMemoryDetails(project);
         }
-
     }
 
     /**
