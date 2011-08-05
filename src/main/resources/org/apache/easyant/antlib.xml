@@ -43,12 +43,6 @@
     <taskdef name="checkresolver" classname="org.apache.easyant.tasks.CheckResolver"/>
     <taskdef name="easyant" classname="org.apache.easyant.tasks.EasyAntRunner"/>
     
-    <taskdef name="startmenu" classname="org.apache.easyant.tasks.menu.StartMenuTask"/>
-    <taskdef name="addmenuentry" classname="org.apache.easyant.tasks.menu.AddMenuEntryTask"/>
-    <taskdef name="registermenugenerator" classname="org.apache.easyant.tasks.menu.RegisterMenuGeneratorTask"/>
-    <typedef name="menuentry" classname="org.apache.easyant.tasks.menu.MenuEntry"/>
-    <taskdef name="endmenu" classname="org.apache.easyant.tasks.menu.EndMenuTask"/>
-
     <presetdef name="include">
         <current:import mode="include" />
     </presetdef>
