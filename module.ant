@@ -61,7 +61,6 @@
     <ea:plugin module="package-test-jar" rev="0.1" as="test-jar" />
     <ea:plugin module="distribution" rev="0.1" as="distribution" />
 
-    <phase name="pre-integration-test" depends="package"/>
     <phase name="distribution" description="create a distribution package" depends="package" />
     <property name="target.dist" value="${target}/dist" />
 
@@ -181,8 +180,6 @@
         </fileset>
 
     </target>
-
-    <target name="setup-integration-environment" phase="pre-integration-test" depends="dist"/>
 
     <!-- Create a zip for distribution -->
     <target name="package-distribution" phase="distribution" depends="documentation, dist" description="package a distribution">
