@@ -64,12 +64,6 @@
             <available file="${xooki.history.dir}" type="dir"/>
         </condition>
         
-        <ac:for list="${xooki.menu.contexts}" param="context.name">
-            <sequential>
-                <ea:registermenugenerator context="@{context.name}" type="xooki"
-                    classpathref="org.apache.easyant.plugins#xooki.classpath"/>
-            </sequential>
-        </ac:for>
     </target>
     
     <target name=":create-skeleton" depends="validate">
