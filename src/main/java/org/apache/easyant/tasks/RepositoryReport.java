@@ -29,12 +29,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.easyant.core.menu.MenuGenerator;
-import org.apache.easyant.core.menu.MenuGeneratorRegistry;
 import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.XmlEasyAntReportOutputter;
 import org.apache.easyant.core.services.PluginService;
-import org.apache.easyant.tasks.menu.MenuGeneratorUtils;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.core.cache.ResolutionCacheManager;
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
@@ -386,7 +383,6 @@ public class RepositoryReport extends AbstractEasyAntTask {
         private Mapper linkMapper;
 
         private String context;
-        private MenuGeneratorRegistry registry;
 
         //TreeMap to sort menu entries in alphabetical order.  should this behavior be configurable somehow?
         private Map<String,String> entries = new TreeMap<String,String>();
@@ -432,17 +428,8 @@ public class RepositoryReport extends AbstractEasyAntTask {
 
         public void generate() throws IOException {
             for (Map.Entry<String,String> entry : entries.entrySet()) {
-                for (MenuGenerator generator : getRegistry().getMenuGenerators()) {
-                    generator.addEntry(entry.getValue(), entry.getKey());
-                }
+            	// TODO
             }
-        }
-
-        private MenuGeneratorRegistry getRegistry() {
-            if (registry == null) {
-                registry = MenuGeneratorUtils.getRegistryForContext(getProject(), context, false);
-            }
-            return registry;
         }
 
         private void configureMapper(Mapper mapper, String typeName, String from, String to) {
