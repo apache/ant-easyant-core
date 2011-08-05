@@ -35,9 +35,6 @@
     <property name="retrieve.dependencies" value="true"/>
 
     <property name="test.run.excludes.pattern" value="**/EasyAntBaseTest*,**/*AntTestListener*,**/*AntOutputStream*" />
-    <!-- bind antunit output dir to the same directory of junit output dir 
-        this will allow hudson to take all the test files in the same directory -->
-    <property name="target.antunit.xml" value="${basedir}/target/test/xml" />
 
     <!-- override main artifact retrieve pattern -->
     <property name="retrieve.pattern.lib.main" value="${basedir}/lib/main/[artifact].[ext]" />
@@ -56,7 +53,6 @@
     <ea:plugin module="scm-svn" rev="0.1" as="svn" />
     <ea:plugin module="emma" rev="0.1" as="emma" />
     <ea:plugin module="eadoc" rev="0.1" as="eadoc" />
-    <ea:plugin module="antunit" rev="0.1" as="antunit"/>
     <ea:plugin module="javadoc" rev="0.1" as="javadoc" />
     <ea:plugin module="package-test-jar" rev="0.1" as="test-jar" />
     <ea:plugin module="distribution" rev="0.1" as="distribution" />

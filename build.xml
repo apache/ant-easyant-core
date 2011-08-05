@@ -68,10 +68,9 @@
             <sysproperty key="easyant.home" file="${basedir}" />
             <arg line="-configfile ${basedir}/easyant-conf.xml" />
             <arg line="-f ${basedir}/module.ivy" />
-	    <arg line="-Dskip.xooki=true"/>
-	    <arg line="-Dskip.svn=true"/>
-	    <arg line="-Dskip.emma=true"/>
-	    <arg line="-Dskip.antunit=true"/>
+            <arg line="-Dskip.xooki=true"/>
+            <arg line="-Dskip.svn=true"/>
+            <arg line="-Dskip.emma=true"/>
             <arg line="dist" />
         </java>
     </target>
