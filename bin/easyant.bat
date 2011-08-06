@@ -156,18 +156,7 @@ if "%_JAVACMD%" == "" set _JAVACMD=java.exe
 :checkJikes
 if not "%JIKESPATH%"=="" goto runAntWithJikes
 
-rem use Ivy to compute bootstrap classpath
-set IVY_VERSION=2.1.0-patched
-set IVY_REPOSITORY_PATH=%EASYANT_HOME%\repository
-set IVY_JAR=%IVY_REPOSITORY_PATH%\third-party-lib\org.apache.ivy\ivy\%IVY_VERSION%\ivy.jar
-set IVY_BOOTSTRAP_CACHE=%IVY_REPOSITORY_PATH%\bootstrap-cache
-
-rem default to latest version of easyant in the repository
-set EASYANT_VERSION=latest.integration
-
-"%_JAVACMD%" -jar "%IVY_JAR%" -dependency org.apache.easyant easyant-core %EASYANT_VERSION% -confs extra -cachepath "%IVY_BOOTSTRAP_CACHE%\easyant.path" -settings "%IVY_REPOSITORY_PATH%\third-party-lib\third-party-ivysettings.xml" -cache "%IVY_BOOTSTRAP_CACHE%"
-
-set /P EASYANT_BOOTSTRAP_PATH=<"%IVY_BOOTSTRAP_CACHE%\easyant.path"
+set EASYANT_BOOTSTRAP_PATH="@windows.dist.path@"
 
 rem prepend custom ant launcher if requested.
 if "%_USE_CUSTOM_ANT%" == "yes" set EASYANT_BOOTSTRAP_PATH=%ANT_HOME%\lib\ant-launcher.jar;%EASYANT_BOOTSTRAP_PATH%
