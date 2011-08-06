@@ -158,9 +158,6 @@ if not "%JIKESPATH%"=="" goto runAntWithJikes
 
 set EASYANT_BOOTSTRAP_PATH="@windows.dist.path@"
 
-rem add Javac classes to path, so that Ant doesn't have to try too hard to find it.
-if exist "%JAVA_HOME%\lib\tools.jar" set EASYANT_BOOTSTRAP_PATH=%EASYANT_BOOTSTRAP_PATH%;%JAVA_HOME%\lib\tools.jar
-
 rem prepend custom ant launcher if requested.
 if "%_USE_CUSTOM_ANT%" == "yes" set EASYANT_BOOTSTRAP_PATH=%ANT_HOME%\lib\ant-launcher.jar;%EASYANT_BOOTSTRAP_PATH%
 
