@@ -230,7 +230,22 @@ if [ ! -x "$JAVACMD" ] ; then
   exit 1
 fi
 
-EASYANT_BOOTSTRAP_PATH="@unix.dist.path@"
+# use Ivy to compute bootstrap classpath
+IVY_VERSION=2.1.0-patched
+IVY_REPOSITORY_PATH=$(normalize_path "${EASYANT_HOME}/repository")
+IVY_JAR=$(normalize_path "${IVY_REPOSITORY_PATH}/third-party-lib/org.apache.ivy/ivy/${IVY_VERSION}/ivy.jar")
+IVY_BOOTSTRAP_CACHE=$(normalize_path "${IVY_REPOSITORY_PATH}/bootstrap-cache")
+
+# default to latest version of easyant in the repository
+EASYANT_VERSION=latest.integration
+
+ivy_exec_command="\"$JAVACMD\" -jar \"${IVY_JAR}\" -dependency org.apache.easyant easyant-core ${EASYANT_VERSION} -confs extra -cachepath \"${IVY_BOOTSTRAP_CACHE}/easyant.path\" -settings \"${IVY_REPOSITORY_PATH}/third-party-lib/third-party-ivysettings.xml\" -cache \"${IVY_BOOTSTRAP_CACHE}\""
+if $ant_exec_debug ; then
+    echo $ivy_exec_command
+fi
+eval $ivy_exec_command
+
+EASYANT_BOOTSTRAP_PATH=$(cat ${IVY_BOOTSTRAP_CACHE}/easyant.path)
 
 # prepend custom ant launcher if requested.
 if $use_custom_ant; then

@@ -116,50 +116,13 @@
 
     </target>
 
-    <target name="dist" depends="jar:jar,test-jar:jar, package-extra-modules, prepare-distribution"
-            description="update the dist directory (used for development and packaging)">
+    <target name="stage-dist" depends="prepare-distribution">
 
         <mkdir dir="${target.dist}" />
 
-        <!-- copy easyant data files -->
         <copy todir="${target.dist}">
             <fileset dir="${basedir}">
                 <patternset refid="easyant-files.patternset"/>
-            </fileset>
-        </copy>
-
-        <!-- isolate build cache in case there are multiple easyant workspaces (e.g. on hudson) -->
-        <property name="wrapper.target.settings" location="${target.dist}/repository/third-party-lib/third-party-ivysettings.xml"/>
-        <property name="wrapper.cache.dir" location="${basedir}/target/tmp/build-cache"/>
-
-        <!-- publish latest easyant artifacts into dist repository -->
-        <ivy:settings id="dist.ivy.settings" file="${basedir}/src/build/etc/cache-wrapper-ivysettings.xml"/>
-        <ivy:cleancache settingsRef="dist.ivy.settings"/>
-
-        <ivy:publish settingsRef="dist.ivy.settings" resolver="third-party-lib" overwrite="true"
-                     srcivypattern="module.ivy" artifactspattern="${target.artifacts}/[artifact].[ext]"/>
-        <!-- compute runtime classpath for easyant distribution -->
-        <ivy:cachepath settingsRef="dist.ivy.settings" pathid="dist.class.path" conf="extra" inline="true"
-                       organisation="org.apache.easyant" module="easyant-core" revision="latest.integration"
-                       useOrigin="true"/>
-
-        <!-- generate platform-specific path strings for launch scripts -->
-        <property name="dist.prefix" location="${target.dist}"/>
-        <pathconvert refid="dist.class.path" property="unix.dist.path" pathsep=":">
-            <map from="${dist.prefix}" to="$${EASYANT_HOME}"/>
-        </pathconvert>
-
-        <pathconvert refid="dist.class.path" property="windows.dist.path" pathsep=";">
-            <map from="${dist.prefix}" to="%EASYANT_HOME%"/>
-        </pathconvert>
-
-        <!-- copy easyant scripts, including substitution of runtime classpath value -->
-        <copy todir="${target.dist}" filtering="true" overwrite="true">
-            <filterset>
-                <filter token="unix.dist.path" value="${unix.dist.path}"/>
-                <filter token="windows.dist.path" value="${windows.dist.path}"/>
-            </filterset>
-            <fileset dir="${basedir}">
                 <patternset refid="easyant-exec.patternset"/>
             </fileset>
         </copy>
@@ -168,6 +131,15 @@
         <chmod perm="744" dir="${target.dist}">
             <patternset refid="easyant-exec.patternset"/>
         </chmod>
+
+    </target>
+
+	<target name="dist" depends="stage-dist, jar:jar, package-extra-modules" description="update the dist directory (used for development)">
+
+        <!-- publish latest easyant artifacts into dist repository -->
+        <ivy:settings id="dist.ivy.settings" file="${target.dist}/repository/third-party-lib/third-party-ivysettings.xml"/>
+        <ivy:publish settingsRef="dist.ivy.settings" resolver="third-party-lib" overwrite="true"
+                     srcivypattern="module.ivy" artifactspattern="${target.artifacts}/[artifact].[ext]"/>
 
         <!-- declare distribution fileset for use in packaging targets -->
         <fileset id="easyant-dist.fileset" dir="${target.dist}">
