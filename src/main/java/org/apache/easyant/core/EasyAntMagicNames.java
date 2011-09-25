@@ -116,10 +116,10 @@ public interface EasyAntMagicNames {
     public static final String PROJECT_DEFAULT_IVYSETTINGS = "project.default.ivysettings.url";
 
     /**
-     * Name of the property containing the easyant core repository Value:
+     * Name of the property containing the url of the easyant core jar:
      * {@value}
      */
-    public static final String EASYANT_CORE_REPO_URL = "easyant.core.repo.url";
+    public static final String EASYANT_CORE_JAR_URL = "easyant.core.jar.url";
 
     /**
      * Name of the property containing the easyant extra repository Value:

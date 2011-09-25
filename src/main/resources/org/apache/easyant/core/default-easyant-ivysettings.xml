@@ -17,11 +17,10 @@
 <ivysettings>
     <settings defaultResolver="easyant-default-chain"/>
     <caches defaultCacheDir="${user.home}/.easyant/easyant-cache" useOrigin="true" />
-    <typedef name="jar" classname="org.apache.easyant.core.ivy.resolvers.JarResolver"/>
     <resolvers>
-        <jar name="easyant-core-modules">
-            <ivy pattern="${easyant.core.repo.url}/[organisation]/[module]/[revision]/[module].ivy"/>
-            <artifact pattern="${easyant.core.repo.url}/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+        <jar name="easyant-core-modules" url="${easyant.core.jar.url}">
+            <ivy pattern="org/apache/easyant/core/repository/modules/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="org/apache/easyant/core/repository/modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
         </jar>
         <filesystem name="easyant-shared-modules">
             <ivy pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[module].ivy"/>

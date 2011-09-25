@@ -27,6 +27,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.report.EasyAntReport;
@@ -50,10 +51,7 @@ public class PluginServiceTest {
         // configure the ivyinstance
         Ivy ivy = IvyContext.pushNewContext().getIvy();
         ivy.setVariable(
-                EasyAntMagicNames.EASYANT_CORE_REPO_URL,
-                PluginServiceTest.class.getResource(
-                        "/org/apache/easyant/core/repository/modules")
-                        .toExternalForm());
+                EasyAntMagicNames.EASYANT_CORE_JAR_URL, EasyAntEngine.guessEasyantCoreJarUrl().toExternalForm());
         ivy.configure(PluginServiceTest.class
                 .getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
         pluginService = new DefaultPluginServiceImpl(ivy);

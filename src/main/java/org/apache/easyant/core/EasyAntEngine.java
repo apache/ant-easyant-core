@@ -21,7 +21,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -113,10 +118,7 @@ public class EasyAntEngine {
                                         "/org/apache/easyant/core/extra-easyant-ivysettings.xml")
                                 .toExternalForm());
 
-        project.setNewProperty(EasyAntMagicNames.EASYANT_CORE_REPO_URL, this
-                .getClass().getResource(
-                        "/org/apache/easyant/core/repository/modules")
-                .toExternalForm());
+        project.setNewProperty(EasyAntMagicNames.EASYANT_CORE_JAR_URL, guessEasyantCoreJarUrl().toExternalForm());
         if (this.getClass().getResource(
                 "/org/apache/easyant/repository/extra-modules") != null) {
             project.setNewProperty(EasyAntMagicNames.EASYANT_EXTRA_REPO_URL,
@@ -164,6 +166,41 @@ public class EasyAntEngine {
         IvyAntSettings ivyAntSettings = IvyInstanceHelper
                 .getEasyAntIvyAntSettings(project);
         return ivyAntSettings.getConfiguredIvyInstance(easyantIvyConfigure);
+    }
+
+    private static Method getLocalURL;
+
+    public static URL guessEasyantCoreJarUrl() {
+        URL url = EasyAntEngine.class.getResource("/");
+        try {
+            if ("jar".equals(url.getProtocol())) {
+                return getJarUrl(url);
+            } else if ("bundleresource".equals(url.getProtocol())) {
+                URLConnection conn = url.openConnection();
+                try {
+                    if (getLocalURL == null
+                            && "org.eclipse.osgi.framework.internal.core.BundleURLConnection".equals(conn.getClass()
+                                    .getName())) {
+                        EasyAntEngine.getLocalURL = conn.getClass().getMethod("getLocalURL", null);
+                        getLocalURL.setAccessible(true);
+                    }
+                    if (getLocalURL != null && conn != null) {
+                        URL localJarUrl = (URL) getLocalURL.invoke(conn, null);
+                        return getJarUrl(localJarUrl);
+                    }
+                } catch (Throwable throwable) {
+                    throw new IOException("Cannot get jar url from Equinox OSGi bundle", throwable);
+                }
+            }
+        } catch (IOException ioe) {
+            throw new RuntimeException("Easyant jar cannot be guessed", ioe);
+        }
+        return url;
+    }
+
+    private static URL getJarUrl(URL url) throws IOException {
+        JarURLConnection conn = (JarURLConnection) url.openConnection();
+        return conn.getJarFileURL();
     }
 
     /**
