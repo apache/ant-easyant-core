@@ -22,7 +22,6 @@
     <taskdef name="import" classname="org.apache.easyant.tasks.Import"/>
     <taskdef name="loadmodule" classname="org.apache.easyant.tasks.LoadModule"/>
     <taskdef name="submodule" classname="org.apache.easyant.tasks.SubModule"/>
-    <taskdef name="repreport" classname="org.apache.easyant.tasks.RepositoryReport"/>
     <taskdef name="core-version" classname="org.apache.easyant.tasks.CoreRevisionCheckerTask"/>
     <taskdef name="property" classname="org.apache.easyant.tasks.PropertyTask"/>
     
