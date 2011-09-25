@@ -54,7 +54,6 @@
     <ea:plugin module="emma" rev="0.1" as="emma" />
     <ea:plugin module="eadoc" rev="0.1" as="eadoc" />
     <ea:plugin module="javadoc" rev="0.1" as="javadoc" />
-    <ea:plugin module="package-test-jar" rev="0.1" as="test-jar" />
     <ea:plugin module="distribution" rev="0.1" as="distribution" />
 
     <phase name="distribution" description="create a distribution package" depends="package" />

@@ -19,7 +19,6 @@
         <ea:build module="build-std-java" revision="0.2">
             <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
             <ea:plugin module="run-java" revision="0.1"/>
-            <ea:plugin module="package-test-jar" revision="0.1" as="test-jar"/>
         </ea:build>
     </info>
     <configurations>

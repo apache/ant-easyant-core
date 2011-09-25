@@ -35,9 +35,6 @@
             <ea:property name="default.build.number" value="10"/>
             <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
             <ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
-            
-            <ea:plugin module="package-test-jar" revision="0.1" as="test-jar" />
-            
         </ea:build>
     </info>
     <configurations>
