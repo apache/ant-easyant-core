@@ -41,33 +41,20 @@ import org.apache.tools.ant.taskdefs.ImportTask;
 import org.apache.tools.ant.types.Path;
 
 /**
- * This task is used to include / import an EasyAnt module, such as a buildtype
- * or plugin. The module is located using one of three methods:
- * <ol>
- * <li>A full Ivy Module Revision ID is specified with {@link #setMrid(String)
- * mrid}. The Ivy descriptor and other artifacts for the module are then located
- * in Ivy repositories.</li>
- * <li>Module Revision ID is specified with the {@link #setOrganisation(String)
- * org}, {@link #setModule(String) module}, and {@link #setRevision(String) rev}
- * attributes.</li>
- * <li>a filesystem path to the module Ivy descriptor is given with
- * {@link #setFile(String) file}. Other module artifacts (Ant scripts, etc) are
- * assumed to be in the same parent directory as this file.</li>
- * </ol>
+ * This task is used to include / import scripts.
  * 
- * <p>
- * The include mechanism is similar to the Ant import task, excepts that it
- * automatically prefix all targets of the module ant script with the value of
- * {@link #setAs(String) as} attribute. The prefix used by default is the name
- * of the imported project, but it can be overridden when calling "include".
- * This is useful to use features provided by many build modules, while
- * preserving a namespace isolation to avoid collisions.
- * </p>
+ * The include mechanism is similar to the current import task, excepts that it
+ * automatically prefix all targets of the used build module (=ant script). The
+ * prefix used by default is the name of the imported project, but it can be
+ * overriden when calling "include".
  * 
- * <p>
- * While possible, overriding a target defined in an included module is not
- * recommended. To do so, the normal Ant import mechanism is preferred.
- * </p>
+ * This is useful to use features provided by a build module, while preserving a
+ * namespace isolation to avoid names collisions.
+ * 
+ * While possible, overriding a target defined in a included module is not
+ * recommended. To do so, the import mechanism is preferred.
+ * 
+ * The import mechanism is equivalent to the current import mechanism.
  */
 public class Import extends AbstractEasyAntTask implements DynamicAttribute {
 
@@ -76,9 +63,6 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
     private String revision;
 
     private String mrid;
-
-    private String file;
-    private String settingsRef;
 
     private String as;
     private String mode;
@@ -235,32 +219,6 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
         this.buildConfigurations = conf;
     }
 
-    public String getFile() {
-        return file;
-    }
-
-    /**
-     * Set the filesystem location of the module descriptor to load. This is an
-     * alternative to specifying a repository location using
-     * {@link #setMrid(String)} or {@link #setModule(String)}
-     */
-    public void setFile(String file) {
-        this.file = file;
-    }
-
-    public String getSettingsRef() {
-        return settingsRef;
-    }
-
-    /**
-     * Optionally specify the Ivy settings instance used to resolve module
-     * dependencies and publications. If unspecified, the EasyAnt Ivy settings
-     * are used.
-     */
-    public void setSettingsRef(String settingsRef) {
-        this.settingsRef = settingsRef;
-    }
-
     /**
      * Get the main configuration where plugin are resolved
      * 
@@ -314,22 +272,17 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
     }
 
     public void execute() throws BuildException {
-
-        ImportStrategy strategy = null;
+    	ModuleRevisionId moduleRevisionId = null;
         if (mrid != null) {
-            strategy = new RepositoryImportStrategy(ModuleRevisionId
-                    .parse(mrid));
+        	moduleRevisionId = ModuleRevisionId.parse(mrid);
         } else if (organisation != null && module != null && revision != null) {
-            strategy = new RepositoryImportStrategy(ModuleRevisionId
-                    .newInstance(organisation, module, revision));
-        } else if (file != null) {
-            strategy = new FileImportStrategy(new File(file));
+        	moduleRevisionId = ModuleRevisionId.newInstance(organisation,
+        								module, revision);
         } else {
-
             throw new BuildException(
-                    "You must specify exactly ONE of:  mrid, organisation + module + revision, or file");
+            		"The module to import is not properly specified, you must set the mrid attribute or set organisation / module / revision attributes");
         }
-        String moduleName = strategy.getModuleName();
+        String moduleName = moduleRevisionId.toString();
         if (!BuildConfigurationHelper.isBuildConfigurationActive(
                 getBuildConfigurations(), getProject(), "module" + getModule())) {
             log("no matching build configuration for module " + moduleName
@@ -341,7 +294,6 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
         if (as==null && "include".equals(getMode())) {
             //when using mrid style
             if (mrid!=null) {
-                ModuleRevisionId moduleRevisionId=ModuleRevisionId.parse(mrid);
                 as = moduleRevisionId.getName();
             //when using exploded style
             } else if (getModule() != null) {
@@ -350,8 +302,8 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
         }
         
         // check if a property skip.${module} or skip.${as} is set
-        boolean toBeSkipped = strategy.isSkipped()
-                || getProject().getProperty("skip." + getAs()) != null;
+        boolean toBeSkipped = getProject().getProperty("skip." + moduleName) != null
+        						|| getProject().getProperty("skip." + getAs()) != null;
 
         if (mandatory && toBeSkipped) {
             log("Impossible to skip a mandatory module : " + moduleName,
@@ -363,6 +315,7 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
             log(moduleName + " skipped !");
         } else {
             try {
+            	Ivy ivy = getEasyAntIvyInstance();
                 ResolveOptions resolveOptions = new ResolveOptions();
                 // TODO: This should be configurable
 
@@ -384,25 +337,26 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
                 // By default this configuration is provided.
                 
                 // An error can be thrown if module contains non-public configurations.
-                ResolveReport report = strategy.resolveModule(resolveOptions);
+                ResolveReport report = ivy.getResolveEngine().resolve(
+                								moduleRevisionId, resolveOptions, true);
                 // Check dependency on core
                 checkCoreCompliance(report, providedConf);
-
-                ModuleRevisionId moduleRevisionId = strategy
-                        .getModuleRevisionId(report);
 
                 Path path = new Path(getProject());
                 getProject().addReference(
                         moduleRevisionId.getModuleId().toString()
                                 + ".classpath", path);
-                File antFile = strategy.findAntScript(mainConf, report);
+                File antFile = null;
                 for (int j = 0; j < report.getConfigurationReport(mainConf)
                         .getAllArtifactsReports().length; j++) {
                     ArtifactDownloadReport artifact = report
                             .getConfigurationReport(mainConf)
                             .getAllArtifactsReports()[j];
 
-                    if ("jar".equals(artifact.getType())) {
+					if ("ant".equals(artifact.getType())
+							&& "ant".equals(artifact.getExt())) {
+						antFile = artifact.getLocalFile();
+					} else if ("jar".equals(artifact.getType())) {
                         path.createPathElement().setLocation(
                                 artifact.getLocalFile());
                     } else {
@@ -484,150 +438,6 @@ public class Import extends AbstractEasyAntTask implements DynamicAttribute {
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
 
-    }
-
-    /**
-     * Get the Ivy instance used to load the module artifacts.
-     * 
-     * @see #setSettingsRef(String)
-     */
-    private Ivy getIvyInstance() {
-        if (settingsRef != null) {
-            IvyAntSettings settings = IvyInstanceHelper.getIvyAntSettings(getProject(),settingsRef);
-            if (settings == null) {
-                throw new BuildException("Unable to find Ivy settings named '"
-                        + settingsRef + "'");
-            }
-            return settings.getConfiguredIvyInstance(this);
-        } else {
-            return getEasyAntIvyInstance();
-        }
-    }
-
-    /**
-     * Abstracts the mechanism used to locate a single module Ivy descriptor and
-     * its artifacts.
-     */
-    private static interface ImportStrategy {
-
-        /**
-         * Resolve the module using the given resolution options.
-         */
-        public ResolveReport resolveModule(ResolveOptions options)
-                throws ParseException, IOException;
-
-        public ModuleRevisionId getModuleRevisionId(ResolveReport report);
-
-        public File findAntScript(String conf, ResolveReport report);
-
-        /**
-         * Get this module's name, for logging purposes.
-         */
-        public String getModuleName();
-
-        /**
-         * @return true if this module should not be imported.
-         */
-        public boolean isSkipped();
-
-    }
-
-    /**
-     * Load the requested module and its artifacts from an Ivy repository.
-     */
-    private class RepositoryImportStrategy implements ImportStrategy {
-        private ModuleRevisionId mrid;
-
-        protected RepositoryImportStrategy(ModuleRevisionId mrid) {
-            this.mrid = mrid;
-        }
-
-        public ModuleRevisionId getModuleRevisionId(ResolveReport report) {
-            return mrid;
-        }
-
-        public ResolveReport resolveModule(ResolveOptions options)
-                throws ParseException, IOException {
-            Ivy ivy = getIvyInstance();
-            ivy.pushContext();
-            try {
-                return ivy.getResolveEngine().resolve(mrid, options, !options.isUseCacheOnly());
-            } finally {
-                ivy.popContext();
-            }
-        }
-
-        public String getModuleName() {
-            return mrid.toString();
-        }
-
-        public boolean isSkipped() {
-            return getProject().getProperty("skip." + getModuleName()) != null;
-        }
-
-        public File findAntScript(String conf, ResolveReport report) {
-            for (int j = 0; j < report.getConfigurationReport(conf)
-                    .getAllArtifactsReports().length; j++) {
-                ArtifactDownloadReport artifact = report
-                        .getConfigurationReport(conf).getAllArtifactsReports()[j];
-
-                if ("ant".equals(artifact.getType())
-                        && "ant".equals(artifact.getExt())) {
-                    return artifact.getLocalFile();
-                }
-            }
-            return null;
-        }
-    }
-
-    /**
-     * Load the requested module and its artifacts directly from the filesystem.
-     */
-    private class FileImportStrategy implements ImportStrategy {
-        private File descriptorFile;
-
-        private FileImportStrategy(File descriptorFile) {
-            this.descriptorFile = descriptorFile;
-        }
-
-        public ModuleRevisionId getModuleRevisionId(ResolveReport report) {
-            return report.getModuleDescriptor().getModuleRevisionId();
-        }
-
-        public ResolveReport resolveModule(ResolveOptions options)
-                throws ParseException, IOException {
-            return getIvyInstance().getResolveEngine().resolve(
-                    descriptorFile.toURL(), options);
-        }
-
-        public String getModuleName() {
-            return descriptorFile.getAbsolutePath();
-        }
-
-        public boolean isSkipped() {
-            return false;
-        }
-
-        public File findAntScript(String conf, ResolveReport report) {
-            ModuleDescriptor descriptor = report.getModuleDescriptor();
-            Artifact[] artifacts = descriptor.getArtifacts(conf);
-            for (int i = 0; i < artifacts.length; ++i) {
-                Artifact artifact = artifacts[i];
-                if ("ant".equals(artifact.getType())
-                        && "ant".equals(artifact.getExt())) {
-                    File file = getLocalArtifact(artifact.getName(), artifact
-                            .getExt());
-                    if (file.isFile()) {
-                        return file;
-                    }
-                }
-            }
-            return null;
-        }
-
-        private File getLocalArtifact(String name, String ext) {
-            return new File(descriptorFile.getParentFile(), name + "." + ext);
-        }
     }
 
     public void setDynamicAttribute(String attributeName, String value)
