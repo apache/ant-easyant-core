@@ -33,7 +33,7 @@ goto end
 
 :run
 rem set the default parameters for easyant
-set EASYANT_ARGS=-Dbasedir=. -main org.apache.easyant.core.EasyAntMain -configfile %EASYANT_HOME%/easyant-conf.xml -Deasyant.home=%EASYANT_HOME% %EASYANT_ARGS%
+set EASYANT_ARGS=-lib "%EASYANT_HOME%\lib\easyant-core.jar" -lib "%EASYANT_HOME%\lib\easyant-extra-modules.jar" -lib "%EASYANT_HOME%\lib\ivy.jar" -Dbasedir=. -main org.apache.easyant.core.EasyAntMain -config-file %EASYANT_HOME%/easyant-conf.xml -Deasyant.home=%EASYANT_HOME% %EASYANT_ARGS%
 
 
 rem This part is fully inspirated by ant's script with some easyant customisation
@@ -119,7 +119,7 @@ goto stripClasspath
 :findAntHome
 rem find ANT_HOME if it does not exist due to either an invalid value passed
 rem by the user or the %0 problem on Windows 9x
-if exist "%ANT_HOME%" goto checkJava
+if exist "%ANT_HOME%\lib\ant.jar" goto checkJava
 
 rem check for ant in Program Files
 if not exist "%ProgramFiles%\ant" goto checkSystemDrive
@@ -188,14 +188,14 @@ goto runAntWithJikes
 if "%_USE_CLASSPATH%"=="no" goto runAntWithJikesNoClasspath
 
 :runAntWithJikesAndClasspath
-"%_JAVACMD%" %ANT_OPTS% %EASYANT_OPTS% -classpath "%EASYANT_BOOTSTRAP_PATH%" "-Dant.home=%ANT_HOME%" "-Djikes.class.path=%JIKESPATH%" org.apache.tools.ant.launch.Launcher %ANT_ARGS% %EASYANT_ARGS%  -cp "%CLASSPATH%" %ANT_CMD_LINE_ARGS%
+"%_JAVACMD%" %ANT_OPTS% %EASYANT_OPTS% -classpath "%ANT_HOME%\lib\ant-launcher.jar" "-Dant.home=%ANT_HOME%" "-Djikes.class.path=%JIKESPATH%" org.apache.tools.ant.launch.Launcher %ANT_ARGS% %EASYANT_ARGS%  -cp "%CLASSPATH%" %ANT_CMD_LINE_ARGS%
 rem Check the error code of the Ant build
 if not "%OS%"=="Windows_NT" goto onError
 set ANT_ERROR=%ERRORLEVEL%
 goto end
 
 :runAntWithJikesNoClasspath
-"%_JAVACMD%" %ANT_OPTS% %EASYANT_OPTS% -classpath "%EASYANT_BOOTSTRAP_PATH%" "-Dant.home=%ANT_HOME%" "-Djikes.class.path=%JIKESPATH%" org.apache.tools.ant.launch.Launcher %ANT_ARGS% %EASYANT_ARGS% %ANT_CMD_LINE_ARGS%
+"%_JAVACMD%" %ANT_OPTS% %EASYANT_OPTS% -classpath "%ANT_HOME%\lib\ant-launcher.jar" "-Dant.home=%ANT_HOME%" "-Djikes.class.path=%JIKESPATH%" org.apache.tools.ant.launch.Launcher %ANT_ARGS% %EASYANT_ARGS% %ANT_CMD_LINE_ARGS%
 rem Check the error code of the Ant build
 if not "%OS%"=="Windows_NT" goto onError
 set ANT_ERROR=%ERRORLEVEL%

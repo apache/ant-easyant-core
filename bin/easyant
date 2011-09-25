@@ -21,6 +21,9 @@ if [ -z "$EASYANT_HOME" ]; then
     exit 3
 fi
 
+#set default EASYANT_ARGS
+EASYANT_ARGS="-lib $EASYANT_HOME/lib/easyant-core.jar -lib $EASYANT_HOME/lib/easyant-extra-modules.jar -lib $EASYANT_HOME/lib/ivy.jar -config-file $EASYANT_HOME/easyant-conf.xml -Dbasedir=. -main org.apache.easyant.core.EasyAntMain -Deasyant.home=$EASYANT_HOME $EASYANT_ARGS"
+
 # This part is fully inspirated by ant's script with some easyant customisation
 ant_exec_args=
 no_config=false
@@ -151,46 +154,13 @@ else
 fi
 
 # For Cygwin and Mingw, ensure paths are in UNIX format before
-# anything is touched.  we define a routine called 'normalize_path'
-# that can be used to switch paths to windows format before trying
-# to execute Java commands.
-
+# anything is touched
 if $cygwin ; then
-
   [ -n "$ANT_HOME" ] &&
     ANT_HOME=`cygpath --unix "$ANT_HOME"`
   [ -n "$JAVA_HOME" ] &&
     JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
-
-  # For Cygwin, switch paths to appropriate format before running java
-  # For PATHs convert to unix format first, then to windows format to ensure
-  # both formats are supported. Probably this will fail on directories with ;
-  # in the name in the path. Let's assume that paths containing ; are more
-  # rare than windows style paths on cygwin.
-  if [ "$OS" = "Windows_NT" ] && cygpath -m .>/dev/null 2>/dev/null ; then
-    format=mixed
-  else
-    format=windows
-  fi
-
-  normalize_path() {
-    local unix_val
-    if [ -n "$1" ]; then
-      unix_val=`cygpath --path --unix "$1"`
-      echo `cygpath --path --$format "$unix_val"`
-    else
-      echo $1
-    fi
-  }
-
-  CYGHOME=`cygpath --$format "$HOME"`
-else
-  # for other environments, this is just a no-op
-  normalize_path() {
-    echo $1
-  }
 fi
-
 if $mingw ; then
   [ -n "$ANT_HOME" ] &&
     ANT_HOME="`(cd "$ANT_HOME"; pwd)`"
@@ -199,6 +169,8 @@ if $mingw ; then
 fi
 
 ANT_LIB="${ANT_HOME}/lib"
+
+
 
 if [ -z "$JAVACMD" ] ; then
 
@@ -245,12 +217,7 @@ fi
 # request optional jars and their dependencies via the OPT_JAR_LIST
 # variable
 if $rpm_mode && [ -x /usr/bin/build-classpath ] ; then
-
-  if $use_custom_ant; then
-    LOCALCLASSPATH="$(/usr/bin/build-classpath ant ant-launcher jaxp_parser_impl xml-commons-apis):${EASYANT_BOOTSTRAP_PATH}"
-  else
-    LOCALCLASSPATH=${EASYANT_BOOTSTRAP_PATH}
-  fi
+  LOCALCLASSPATH="$(/usr/bin/build-classpath ant ant-launcher jaxp_parser_impl xml-commons-apis)"
 
   # If no optional jars have been specified then build the default list
   if [ -z "$OPT_JAR_LIST" ] ; then
@@ -312,9 +279,9 @@ if $rpm_mode && [ -x /usr/bin/build-classpath ] ; then
 else
   # not using rpm_mode; use launcher to determine classpaths
   if [ -z "$LOCALCLASSPATH" ] ; then
-    LOCALCLASSPATH=${EASYANT_BOOTSTRAP_PATH}
+      LOCALCLASSPATH=$ANT_LIB/ant-launcher.jar
   else
-    LOCALCLASSPATH=${EASYANT_BOOTSTRAP_PATH}:$LOCALCLASSPATH
+      LOCALCLASSPATH=$ANT_LIB/ant-launcher.jar:$LOCALCLASSPATH
   fi
 fi
 
@@ -336,12 +303,28 @@ if $usejikes; then
   ANT_OPTS="$ANT_OPTS -Dbuild.compiler=jikes"
 fi
 
-ANT_HOME=$(normalize_path "$ANT_HOME")
-ANT_LIB=$(normalize_path "$ANT_LIB")
-JAVA_HOME=$(normalize_path "$JAVA_HOME")
-LOCALCLASSPATH=$(normalize_path "$LOCALCLASSPATH")
-CLASSPATH=$(normalize_path "$CLASSPATH")
-EASYANT_HOME=$(normalize_path "$EASYANT_HOME")
+# For Cygwin, switch paths to appropriate format before running java
+# For PATHs convert to unix format first, then to windows format to ensure
+# both formats are supported. Probably this will fail on directories with ;
+# in the name in the path. Let's assume that paths containing ; are more
+# rare than windows style paths on cygwin.
+if $cygwin; then
+  if [ "$OS" = "Windows_NT" ] && cygpath -m .>/dev/null 2>/dev/null ; then
+    format=mixed
+  else
+    format=windows
+  fi
+  [ -n "$ANT_HOME" ] && ANT_HOME=`cygpath --$format "$ANT_HOME"`
+  ANT_LIB=`cygpath --$format "$ANT_LIB"`
+  [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --$format "$JAVA_HOME"`
+  LCP_TEMP=`cygpath --path --unix "$LOCALCLASSPATH"`
+  LOCALCLASSPATH=`cygpath --path --$format "$LCP_TEMP"`
+  if [ -n "$CLASSPATH" ] ; then
+    CP_TEMP=`cygpath --path --unix "$CLASSPATH"`
+    CLASSPATH=`cygpath --path --$format "$CP_TEMP"`
+  fi
+  CYGHOME=`cygpath --$format "$HOME"`
+fi
 
 # Show script help if requested
 if $show_help ; then
