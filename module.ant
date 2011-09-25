@@ -193,11 +193,4 @@
         </bundle>
     </target>
 
-    <target name="reports">
-        <ea:repreport organisation="org.apache.easyant.plugins"
-            module="*" toDir="${target}/report/repository"
-            dot="true">
-        </ea:repreport>
-    </target>
-
 </project>
