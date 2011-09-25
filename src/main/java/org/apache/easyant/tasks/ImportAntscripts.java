@@ -31,10 +31,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.ivy.Ivy;
+import org.apache.ivy.ant.AntMessageLogger;
 import org.apache.ivy.core.cache.DefaultRepositoryCacheManager;
 import org.apache.ivy.core.cache.DefaultResolutionCacheManager;
 import org.apache.ivy.core.cache.RepositoryCacheManager;
 import org.apache.ivy.core.cache.ResolutionCacheManager;
+import org.apache.ivy.core.module.descriptor.Configuration;
+import org.apache.ivy.core.module.descriptor.DefaultDependencyDescriptor;
+import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 import org.apache.ivy.core.module.id.ModuleId;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
@@ -102,107 +106,133 @@ public class ImportAntscripts extends Task {
 
         // configure ivy, which may be the local retrieve repo, depending of the setup
         Ivy ivy = getIvy();
-        ModuleDescriptor md = getMd(ivy, ivyfile);
+        ivy.pushContext();
 
-        ArtifactDownloadReport[] artifacts;
-        List<ModuleDescriptor> dependencies = new ArrayList<ModuleDescriptor>();
+        try {
+            ModuleDescriptor md = getMd(ivy, ivyfile);
 
-        // first, let's resolve the ant scripts, just the scripts, not their possible jar dependencies, thus only the
-        // configuration "default"
+            ArtifactDownloadReport[] artifacts;
+            List<ModuleDescriptor> dependencies = new ArrayList<ModuleDescriptor>();
 
-        XmlReportParser xmlreport = null;
-        if (!refresh) {
-            // first try to relad the resolve from the last report
-            xmlreport = getResolveReport(ivy, md.getModuleRevisionId().getModuleId(), "default");
-        }
-        if (xmlreport != null) {
-            // collect the ant scripts
-            artifacts = xmlreport.getArtifactReports();
+            // first, let's resolve the ant scripts, just the scripts, not their possible jar dependencies, thus only
+            // the configuration "default"
 
-            // collect the descriptor associated with each ant script
-            ModuleRevisionId[] depIds = xmlreport.getDependencyRevisionIds();
-            for (int i = 0; i < depIds.length; i++) {
-                File depIvyFile = xmlreport.getMetadataArtifactReport(depIds[i]).getLocalFile();
-                dependencies.add(getMd(ivy, depIvyFile));
+            XmlReportParser xmlreport = null;
+            if (!refresh) {
+                // first try to relad the resolve from the last report
+                xmlreport = getResolveReport(ivy, md.getModuleRevisionId().getModuleId(), "default", ivyfile);
             }
-        } else {
-            // do a full resolve
+            if (xmlreport != null) {
+                // collect the ant scripts
+                artifacts = xmlreport.getArtifactReports();
 
-            // if in a retrieved setup, clean the repo and repopulate it
-            maybeClearLocalRepo();
-            maybeRetrieve(md, "default");
+                // collect the descriptor associated with each ant script
+                ModuleRevisionId[] depIds = xmlreport.getDependencyRevisionIds();
+                for (int i = 0; i < depIds.length; i++) {
+                    File depIvyFile = xmlreport.getMetadataArtifactReport(depIds[i]).getLocalFile();
+                    dependencies.add(getMd(ivy, depIvyFile));
+                }
+            } else {
+                // do a full resolve
 
-            // launch the actual resolve
-            ResolveReport resolveReport = resolve(ivy, md, "default");
-            ConfigurationResolveReport confReport = resolveReport.getConfigurationReport("default");
+                // if in a retrieved setup, clean the repo and repopulate it
+                maybeClearLocalRepo();
+                maybeRetrieve(md, "default");
 
-            // collect the ant scripts
-            artifacts = confReport.getAllArtifactsReports();
+                // launch the actual resolve
+                ResolveReport resolveReport = resolve(ivy, md, "default");
+                ConfigurationResolveReport confReport = resolveReport.getConfigurationReport("default");
 
-            // collect the descriptor associated with each ant script
-            Set<ModuleRevisionId> mrids = confReport.getModuleRevisionIds();
-            for (ModuleRevisionId mrid : mrids) {
-                dependencies.add(confReport.getDependency(mrid).getDescriptor());
+                // collect the ant scripts
+                artifacts = confReport.getAllArtifactsReports();
+
+                // collect the descriptor associated with each ant script
+                Set<ModuleRevisionId> mrids = confReport.getModuleRevisionIds();
+                for (ModuleRevisionId mrid : mrids) {
+                    dependencies.add(confReport.getDependency(mrid).getDescriptor());
+                }
             }
-        }
 
-        int nbPaths = 1;
+            int nbPaths = 1;
 
-        // save the collection of ant scripts as a path
-        Path antScriptsPath = makePath("easyant.antscripts", sortArtifacts(ivy, artifacts, dependencies));
+            // save the collection of ant scripts as a path
+            Path antScriptsPath = makePath("easyant.antscripts", sortArtifacts(ivy, artifacts, dependencies));
 
-        // now, for each ant script descriptor, search for an ivy configuration which is used by the ant script itself
+            // now, for each ant script descriptor, search for an ivy configuration which is used by the ant script
+            // itself
 
-        for (ModuleDescriptor depmd : dependencies) {
-            log("Searching for external conf for " + depmd.getModuleRevisionId(), Project.MSG_VERBOSE);
-            String[] confs = depmd.getConfigurationsNames();
-            log("configurations for " + depmd.getModuleRevisionId() + " : " + Arrays.toString(confs), Project.MSG_DEBUG);
-            for (String conf : confs) {
-                if (conf.equals("default")) {
-                    continue;
+            for (ModuleDescriptor depmd : dependencies) {
+                log("Searching for external conf for " + depmd.getModuleRevisionId(), Project.MSG_VERBOSE);
+                String[] confs = depmd.getConfigurationsNames();
+                log("configurations for " + depmd.getModuleRevisionId() + " : " + Arrays.toString(confs),
+                        Project.MSG_DEBUG);
+
+                // some trick here: launching a resolve on a module won't resolve the artifacts of the module itself but
+                // only of its dependencies. So we'll create a mock one which will depend on the real one
+                String mockOrg = "_easyant_mocks_";
+                String mockName = depmd.getModuleRevisionId().getOrganisation() + "__"
+                        + depmd.getModuleRevisionId().getName();
+                ModuleRevisionId mockmrid = ModuleRevisionId.newInstance(mockOrg, mockName, depmd.getModuleRevisionId()
+                        .getBranch(), depmd.getRevision(), depmd.getExtraAttributes());
+                DefaultModuleDescriptor mock = new DefaultModuleDescriptor(mockmrid, depmd.getStatus(),
+                        depmd.getPublicationDate(), depmd.isDefault());
+                DefaultDependencyDescriptor mockdd = new DefaultDependencyDescriptor(depmd.getModuleRevisionId(), false);
+                for (String conf : confs) {
+                    mock.addConfiguration(new Configuration(conf));
+                    mockdd.addDependencyConfiguration(conf, conf);
                 }
+                mock.addDependency(mockdd);
 
-                nbPaths++;
-                log("Found configuration " + conf, Project.MSG_VERBOSE);
+                for (String conf : confs) {
+                    if (conf.equals("default")) {
+                        continue;
+                    }
 
-                // same process than for the ant script:
-                // * trust the last resolve report
-                // * or launch a full resolve
-                // A full resolve might trigger a retrieve to populate the local repo
+                    nbPaths++;
+                    log("Found configuration " + conf, Project.MSG_VERBOSE);
 
-                XmlReportParser xmldepreport = null;
-                if (!refresh) {
-                    xmldepreport = getResolveReport(ivy, depmd.getModuleRevisionId().getModuleId(), conf);
+                    // same process than for the ant script:
+                    // * trust the last resolve report
+                    // * or launch a full resolve
+                    // A full resolve might trigger a retrieve to populate the local repo
+
+                    XmlReportParser xmldepreport = null;
+                    if (!refresh) {
+                        xmldepreport = getResolveReport(ivy, mock.getModuleRevisionId().getModuleId(), conf, null);
+                    }
+                    if (xmldepreport != null) {
+                        artifacts = xmldepreport.getArtifactReports();
+                    } else {
+                        maybeRetrieve(mock, conf);
+                        ResolveReport resolveReport = resolve(ivy, mock, conf);
+                        ConfigurationResolveReport confReport = resolveReport.getConfigurationReport(conf);
+                        artifacts = confReport.getAllArtifactsReports();
+                    }
+
+                    // finally make the resolved artifact a path which can be used by the ant script itself
+                    makePath(depmd.getModuleRevisionId().getModuleId().toString() + "[" + conf + "]",
+                            Arrays.asList(artifacts));
                 }
-                if (xmldepreport != null) {
-                    artifacts = xmldepreport.getArtifactReports();
-                } else {
-                    maybeRetrieve(depmd, conf);
-                    ResolveReport resolveReport = resolve(ivy, depmd, conf);
-                    ConfigurationResolveReport confReport = resolveReport.getConfigurationReport(conf);
-                    artifacts = confReport.getAllArtifactsReports();
-                }
-
-                // finally make the resolved artifact a path which can be used by the ant script itself
-                makePath(depmd.getModuleRevisionId().getModuleId().toString() + "[" + conf + "]",
-                        Arrays.asList(artifacts));
             }
+
+            log(nbPaths + " paths resolved in " + (System.currentTimeMillis() - startTime) + "ms.", Project.MSG_VERBOSE);
+
+            log("Importing " + antScriptsPath.size() + " ant scripts", Project.MSG_VERBOSE);
+            Iterator itScripts = antScriptsPath.iterator();
+            while (itScripts.hasNext()) {
+                log("\t" + itScripts.next(), Project.MSG_VERBOSE);
+            }
+
+            ImportTask importTask = new ImportTask();
+            importTask.setProject(getProject());
+            importTask.setOwningTarget(getOwningTarget());
+            importTask.setLocation(getLocation());
+            importTask.add(antScriptsPath);
+            importTask.execute();
+        } finally {
+            ivy.popContext();
         }
 
-        log(nbPaths + " paths resolved in " + (System.currentTimeMillis() - startTime) + "ms.", Project.MSG_VERBOSE);
-
-        log("Importing " + antScriptsPath.size() + " ant scripts", Project.MSG_VERBOSE);
-        Iterator itScripts = antScriptsPath.iterator();
-        while(itScripts.hasNext()) {
-            log("\t" + itScripts.next(), Project.MSG_VERBOSE);
-        }
-
-        ImportTask importTask = new ImportTask();
-        importTask.setProject(getProject());
-        importTask.setOwningTarget(getOwningTarget());
-        importTask.setLocation(getLocation());
-        importTask.add(antScriptsPath);
-        importTask.execute();
     }
 
     private List<ArtifactDownloadReport> sortArtifacts(Ivy ivy, ArtifactDownloadReport[] artifacts,
@@ -254,6 +284,7 @@ public class ImportAntscripts extends Task {
             } catch (IOException e) {
                 throw new BuildException("Incorrect setup of the ivysettings for easyant (" + e.getMessage() + ")", e);
             }
+            AntMessageLogger.register(this, externalIvy);
         }
         return externalIvy;
     }
@@ -278,19 +309,21 @@ public class ImportAntscripts extends Task {
             throw new BuildException("The file " + file + " is not a correct ivy file (" + e.getMessage() + ")", e);
         } catch (IOException e) {
             throw new BuildException("The file " + file + " could not be read (" + e.getMessage() + ")", e);
-        } finally {
-            ivy.popContext();
         }
         return md;
     }
 
     /**
-     * Try to load a resolve report. If not found or not available, it returns <code>null</code>.
+     * Try to load a resolve report. If not found, not available, out of date or contains resolve errors, it returns
+     * <code>null</code>.
      */
-    private XmlReportParser getResolveReport(Ivy ivy, ModuleId mid, String conf) {
+    private XmlReportParser getResolveReport(Ivy ivy, ModuleId mid, String conf, File ivyfile) {
         File report = ivy.getResolutionCacheManager().getConfigurationResolveReportInCache(
                 ResolveOptions.getDefaultResolveId(mid), conf);
         if (!report.exists()) {
+            return null;
+        }
+        if (ivyfile != null && ivyfile.lastModified() > report.lastModified()) {
             return null;
         }
         // found a report, try to parse it.
@@ -298,6 +331,9 @@ public class ImportAntscripts extends Task {
             log("Reading resolve report " + report, Project.MSG_DEBUG);
             XmlReportParser reportparser = new XmlReportParser();
             reportparser.parse(report);
+            if (reportparser.hasError()) {
+                return null;
+            }
             log("Loading last resolve report for " + mid + "[" + conf + "]", Project.MSG_VERBOSE);
             return reportparser;
         } catch (ParseException e) {
@@ -388,7 +424,9 @@ public class ImportAntscripts extends Task {
 
         settings.setDefaultResolver("local-repo");
 
-        return Ivy.newInstance(settings);
+        Ivy ivy = Ivy.newInstance(settings);
+        AntMessageLogger.register(this, ivy);
+        return ivy;
     }
 
     /**
@@ -438,5 +476,4 @@ public class ImportAntscripts extends Task {
             throw new BuildException("Unable to build the local repository", e);
         }
     }
-
 }
