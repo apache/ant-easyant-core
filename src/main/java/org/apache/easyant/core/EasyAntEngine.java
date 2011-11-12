@@ -119,13 +119,6 @@ public class EasyAntEngine {
                                 .toExternalForm());
 
         project.setNewProperty(EasyAntMagicNames.EASYANT_CORE_JAR_URL, guessEasyantCoreJarUrl().toExternalForm());
-        if (this.getClass().getResource(
-                "/org/apache/easyant/repository/extra-modules") != null) {
-            project.setNewProperty(EasyAntMagicNames.EASYANT_EXTRA_REPO_URL,
-                    this.getClass().getResource(
-                            "/org/apache/easyant/repository/extra-modules")
-                            .toExternalForm());
-        }
 
         File userSettings = getUserEasyAntIvySettings(project);
         String globalSettings = getGlobalEasyAntIvySettings(project);
@@ -171,7 +164,7 @@ public class EasyAntEngine {
     private static Method getLocalURL;
 
     public static URL guessEasyantCoreJarUrl() {
-        URL url = EasyAntEngine.class.getResource("/");
+        URL url = EasyAntEngine.class.getResource("/org/apache/easyant/antlib.xml");
         try {
             if ("jar".equals(url.getProtocol())) {
                 return getJarUrl(url);

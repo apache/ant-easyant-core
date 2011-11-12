@@ -31,7 +31,7 @@
         <dependency org="org.apache.ant" name="ant-testutil" rev="1.8.2" conf="test->default" transitive="false" />
 
         <dependency org="org.apache.ant" name="ant" rev="1.8.2" conf="default->default"/>
-        <dependency org="org.apache.ivy" name="ivy" rev="2.3.0-r1165119" conf="default->core"/>
+        <dependency org="org.apache.ivy" name="ivy" rev="2.3.0-r1201268" conf="default->core"/>
         <dependency org="ant-contrib" name="ant-contrib" rev="1.0b2" conf="default->default"/>
         <dependency org="commons-cli" name="commons-cli" rev="1.2" conf="default->default"/>
         <!-- ivy uses a different namespace to reference ant -->

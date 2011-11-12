@@ -18,7 +18,7 @@
 
     <target name="ivy:init">
         <path id="ivy.lib.path">
-            <fileset dir="${basedir}/repository/third-party-lib/org.apache.ivy/ivy/" includes="*/*.jar" />
+            <fileset dir="${basedir}/repository/third-party-lib/org.apache.ivy/ivy/2.3.0-r1201268" includes="*.jar" />
         </path>
         <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
     </target>
@@ -28,15 +28,18 @@
     </target>
 
     <target name="compile" depends="ivy:init">
-        <ivy:configure file="${basedir}/repository/third-party-lib/third-party-ivysettings.xml" />
+        <ivy:configure file="${basedir}/ivysettings-bootstrap.xml" />
         <ivy:resolve file="${basedir}/module.ivy" />
         <ivy:cachepath pathid="default.classpath" conf="default" />
         <mkdir dir="${basedir}/target/bootstrap/classes" />
-        <javac srcdir="${basedir}/src/main/java" destdir="${basedir}/target/bootstrap/classes" includeantruntime="false">
+        <javac srcdir="${basedir}/src/main/java" destdir="${basedir}/target/bootstrap/classes" includeantruntime="false" debug="true">
             <classpath refid="default.classpath" />
         </javac>
         <copy todir="${basedir}/target/bootstrap/classes">
             <fileset dir="${basedir}/src/main/resources" />
+        </copy>
+        <copy todir="${basedir}/target/bootstrap/classes/org/apache/easyant/">
+            <fileset dir="${basedir}/repository" includes="extra-modules/**" />
         </copy>
         <ivy:info file="${basedir}/module.ivy" />
         <tstamp>
@@ -52,18 +55,22 @@
         </propertyfile>
     </target>
 
-    <target name="dist" depends="compile">
+    <target name="jar" depends="compile">
+        <jar destfile="${basedir}/target/bootstrap/easyant.jar" basedir="${basedir}/target/bootstrap/classes" />
+    </target>
+
+    <target name="dist" depends="jar">
         <property name="bootstrap.fork" value="false"/>
         <java classname="org.apache.easyant.core.EasyAntMain" failonerror="true" fork="${bootstrap.fork}">
             <classpath>
                 <path refid="default.classpath" />
-                <pathelement location="${basedir}/target/bootstrap/classes" />
-    <!--
-           Ant will try to find the tools.jar using java.home System property, but sometimes
-           this points to JDK, and sometimes to JRE.
-           See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4200300
-        -->
-        <path path="${java.class.path}"/>
+                <pathelement location="${basedir}/target/bootstrap/easyant.jar" />
+                <!--
+                    Ant will try to find the tools.jar using java.home System property, but sometimes
+                    this points to JDK, and sometimes to JRE.
+                    See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4200300
+                -->
+                <path path="${java.class.path}"/>
             </classpath>
             <sysproperty key="easyant.home" file="${basedir}" />
             <arg line="-configfile ${basedir}/easyant-conf.xml" />

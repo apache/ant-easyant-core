@@ -122,12 +122,6 @@ public interface EasyAntMagicNames {
     public static final String EASYANT_CORE_JAR_URL = "easyant.core.jar.url";
 
     /**
-     * Name of the property containing the easyant extra repository Value:
-     * {@value}
-     */
-    public static final String EASYANT_EXTRA_REPO_URL = "easyant.extramodules.repo.url";
-
-    /**
      * Name of the property containing the log stategy for easyant modules
      * Value: {@value}
      */

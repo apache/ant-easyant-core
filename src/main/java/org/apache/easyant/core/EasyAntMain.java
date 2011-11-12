@@ -183,9 +183,7 @@ public class EasyAntMain implements AntMain {
                 }
             }
         } catch (BuildException be) {
-            if (easyAntConfiguration.getErr() != System.err) {
-                printMessage(be);
-            }
+            printMessage(be);
         } catch (Throwable exc) {
             exc.printStackTrace();
             printMessage(exc);
@@ -455,7 +453,6 @@ public class EasyAntMain implements AntMain {
      */
     private void runBuild(CommandLine line, ClassLoader coreLoader)
             throws BuildException {
-
         if (!readyToRun) {
             return;
         }

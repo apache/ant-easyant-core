@@ -15,16 +15,18 @@
    limitations under the License.
 -->
 <ivysettings>
-    <include url="${easyant.default.ivysettings.url}"/>
-    <settings defaultResolver="easyant-extra-chain"/>
+    <settings defaultResolver="main" />
     <resolvers>
-        <jar name="easyant-extra-modules" url="${easyant.core.jar.url}" descriptor="required">
-            <ivy pattern="org/apache/easyant/repository/extra-modules/[organisation]/[module]/[revision]/[module].ivy"/>
-            <artifact pattern="org/apache/easyant/repository/extra-modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
-        </jar>
-        <chain name="easyant-extra-chain" returnFirst="true">
-            <resolver ref="easyant-extra-modules" />
-            <resolver ref="easyant-default-chain" />
+        <!-- Maven central -->
+        <ibiblio name="maven2" m2compatible="true" />
+        <!-- for the ivy trunk -->
+        <filesystem name="third-party-lib">
+            <ivy pattern="${ivy.settings.dir}/repository/third-party-lib/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="${ivy.settings.dir}/repository/third-party-lib/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+        </filesystem>
+        <chain name="main" returnFirst="true">
+            <resolver ref="maven2" />
+            <resolver ref="third-party-lib" />
         </chain>
     </resolvers>
 </ivysettings>
