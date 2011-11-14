@@ -91,7 +91,7 @@
 
         <patternset id="easyant-files.patternset">
             <exclude name="target/**"/>
-            <exclude name="lib/**"/>
+            <include name="lib/*.jar"/>
 
             <include name="repository/**" />
             <exclude name="repository/extra-modules/**" />
@@ -115,7 +115,7 @@
 
     </target>
 
-    <target name="stage-dist" depends="prepare-distribution">
+    <target name="stage-dist" depends="prepare-distribution, provision">
 
         <mkdir dir="${target.dist}" />
 
@@ -126,6 +126,12 @@
             </fileset>
         </copy>
 
+	<mkdir dir="${target.dist}/lib/"/>
+	<copy todir="${target.dist}/lib">
+		<fileset dir="${basedir}/lib/main"/>
+	</copy>
+	<copy file="${target.main.artifact}" todir="${target.dist}/lib"/>
+
         <!-- makes easyant scripts executable -->
         <chmod perm="744" dir="${target.dist}">
             <patternset refid="easyant-exec.patternset"/>
@@ -133,7 +139,7 @@
 
     </target>
 
-	<target name="dist" depends="stage-dist, jar:jar, package-extra-modules" description="update the dist directory (used for development)">
+	<target name="dist" depends="jar:jar, stage-dist, package-extra-modules" description="update the dist directory (used for development)">
 
         <!-- publish latest easyant artifacts into dist repository -->
         <ivy:settings id="dist.ivy.settings" file="${target.dist}/repository/third-party-lib/third-party-ivysettings.xml"/>

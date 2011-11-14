@@ -21,9 +21,6 @@ if [ -z "$EASYANT_HOME" ]; then
     exit 3
 fi
 
-#set default EASYANT_ARGS
-EASYANT_ARGS="-lib $EASYANT_HOME/lib/easyant-core.jar -lib $EASYANT_HOME/lib/easyant-extra-modules.jar -lib $EASYANT_HOME/lib/ivy.jar -config-file $EASYANT_HOME/easyant-conf.xml -Dbasedir=. -main org.apache.easyant.core.EasyAntMain -Deasyant.home=$EASYANT_HOME $EASYANT_ARGS"
-
 # This part is fully inspirated by ant's script with some easyant customisation
 ant_exec_args=
 no_config=false
@@ -194,13 +191,6 @@ if [ ! -x "$JAVACMD" ] ; then
   echo "Error: JAVA_HOME is not defined correctly."
   echo "  We cannot execute $JAVACMD"
   exit 1
-fi
-
-EASYANT_BOOTSTRAP_PATH="@unix.dist.path@"
-
-# prepend custom ant launcher if requested.
-if $use_custom_ant; then
-  EASYANT_BOOTSTRAP_PATH=${ANT_LIB}/ant-launcher.jar:${EASYANT_BOOTSTRAP_PATH}
 fi
 
 # Build local classpath using just the launcher in non-rpm mode or
@@ -382,7 +372,7 @@ else
 fi
 
 #set default EASYANT_ARGS
-EASYANT_ARGS="-configfile \"$EASYANT_HOME/easyant-conf.xml\" -Dbasedir=. -main org.apache.easyant.core.EasyAntMain -Deasyant.home=\"$EASYANT_HOME\" $EASYANT_ARGS"
+EASYANT_ARGS="-configfile \"$EASYANT_HOME/easyant-conf.xml\" -lib \"$EASYANT_HOME/lib\" -Dbasedir=. -main org.apache.easyant.core.EasyAntMain -Deasyant.home=\"$EASYANT_HOME\" $EASYANT_ARGS"
 
 ant_exec_command="exec \"$JAVACMD\" $ANT_OPTS $EASYANT_OPTS -classpath \"$LOCALCLASSPATH\" -Dant.home=\"$ANT_HOME\" -Dant.library.dir=\"$ANT_LIB\" $ant_sys_opts org.apache.tools.ant.launch.Launcher $ANT_ARGS $EASYANT_ARGS -cp \"$CLASSPATH\""
 if $ant_exec_debug ; then

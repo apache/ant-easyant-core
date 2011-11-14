@@ -33,7 +33,7 @@ goto end
 
 :run
 rem set the default parameters for easyant
-set EASYANT_ARGS=-lib "%EASYANT_HOME%\lib\easyant-core.jar" -lib "%EASYANT_HOME%\lib\easyant-extra-modules.jar" -lib "%EASYANT_HOME%\lib\ivy.jar" -Dbasedir=. -main org.apache.easyant.core.EasyAntMain -config-file %EASYANT_HOME%/easyant-conf.xml -Deasyant.home=%EASYANT_HOME% %EASYANT_ARGS%
+set EASYANT_ARGS=-lib "%EASYANT_HOME%\lib" -Dbasedir=. -main org.apache.easyant.core.EasyAntMain -config-file %EASYANT_HOME%/easyant-conf.xml -Deasyant.home=%EASYANT_HOME% %EASYANT_ARGS%
 
 
 rem This part is fully inspirated by ant's script with some easyant customisation
@@ -156,22 +156,17 @@ if "%_JAVACMD%" == "" set _JAVACMD=java.exe
 :checkJikes
 if not "%JIKESPATH%"=="" goto runAntWithJikes
 
-set EASYANT_BOOTSTRAP_PATH="@windows.dist.path@"
-
-rem prepend custom ant launcher if requested.
-if "%_USE_CUSTOM_ANT%" == "yes" set EASYANT_BOOTSTRAP_PATH=%ANT_HOME%\lib\ant-launcher.jar;%EASYANT_BOOTSTRAP_PATH%
-
 :runAnt
 if "%_USE_CLASSPATH%"=="no" goto runAntNoClasspath
 :runAntWithClasspath
-"%_JAVACMD%" %ANT_OPTS% %EASYANT_OPTS% -classpath "%EASYANT_BOOTSTRAP_PATH%" "-Dant.home=%ANT_HOME%" org.apache.tools.ant.launch.Launcher %ANT_ARGS% %EASYANT_ARGS% -cp "%CLASSPATH%" %ANT_CMD_LINE_ARGS%
+"%_JAVACMD%" %ANT_OPTS% %EASYANT_OPTS% -classpath "%ANT_HOME%\lib\ant-launcher.jar" "-Dant.home=%ANT_HOME%" org.apache.tools.ant.launch.Launcher %ANT_ARGS% %EASYANT_ARGS% -cp "%CLASSPATH%" %ANT_CMD_LINE_ARGS%
 rem Check the error code of the Ant build
 if not "%OS%"=="Windows_NT" goto onError
 set ANT_ERROR=%ERRORLEVEL%
 goto end
 
 :runAntNoClasspath
-"%_JAVACMD%" %ANT_OPTS% %EASYANT_OPTS% -classpath "%EASYANT_BOOTSTRAP_PATH%" "-Dant.home=%ANT_HOME%" org.apache.tools.ant.launch.Launcher %ANT_ARGS% %EASYANT_ARGS% %ANT_CMD_LINE_ARGS%
+"%_JAVACMD%" %ANT_OPTS% %EASYANT_OPTS% -classpath "%ANT_HOME%\lib\ant-launcher.jar" "-Dant.home=%ANT_HOME%" org.apache.tools.ant.launch.Launcher %ANT_ARGS% %EASYANT_ARGS% %ANT_CMD_LINE_ARGS%
 rem Check the error code of the Ant build
 if not "%OS%"=="Windows_NT" goto onError
 set ANT_ERROR=%ERRORLEVEL%
