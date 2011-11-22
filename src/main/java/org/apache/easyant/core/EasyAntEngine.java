@@ -182,7 +182,9 @@ public class EasyAntEngine {
                         return getJarUrl(localJarUrl);
                     }
                 } catch (Throwable throwable) {
-                    throw new IOException("Cannot get jar url from Equinox OSGi bundle", throwable);
+                    IOException ioe = new IOException("Cannot get jar url from Equinox OSGi bundle");
+                    ioe.initCause(throwable);
+                    throw ioe;
                 }
             }
         } catch (IOException ioe) {

@@ -78,7 +78,7 @@
             <arg line="-Dskip.xooki=true"/>
             <arg line="-Dskip.svn=true"/>
             <arg line="-Dskip.emma=true"/>
-            <arg line="dist" />
+            <arg line="package-full-distribution" />
         </java>
     </target>
 

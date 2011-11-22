@@ -4,12 +4,12 @@
 	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="lib" path="lib/main/ant-launcher.jar"/>
 	<classpathentry kind="lib" path="lib/main/ant.jar"/>
-	<classpathentry kind="lib" path="lib/main/ivy.jar"/>
 	<classpathentry kind="lib" path="lib/main/ant-contrib.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="lib/main/commons-cli.jar"/>
+	<classpathentry kind="lib" path="repository/third-party-lib/org.apache.ivy/ivy/2.3.0-r1165119/ivy.jar"/>
 	<classpathentry kind="output" path="target/main/classes"/>
 </classpath>

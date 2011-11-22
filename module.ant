@@ -88,6 +88,7 @@
     <target name="prepare-distribution">
 
         <mkdir dir="${target.distributions}" />
+        <mkdir dir="${target.documentation.dir}" />
 
         <patternset id="easyant-files.patternset">
             <exclude name="target/**"/>

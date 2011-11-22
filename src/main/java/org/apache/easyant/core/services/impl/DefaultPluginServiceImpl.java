@@ -269,8 +269,10 @@ public class DefaultPluginServiceImpl implements PluginService {
                     }
 
                 } catch (IOException e) {
-                    throw new IOException("Unable to parse the property file :"
-                            + attributes.get("file"), e);
+                    IOException ioe = new IOException("Unable to parse the property file :"
+                            + attributes.get("file"));
+                    ioe.initCause(e);
+                    throw ioe;
                 }
             }
         }
