@@ -77,7 +77,6 @@
             <arg line="-f ${basedir}/module.ivy" />
             <arg line="-Dskip.xooki=true"/>
             <arg line="-Dskip.svn=true"/>
-            <arg line="-Dskip.emma=true"/>
             <arg line="package-full-distribution" />
         </java>
     </target>

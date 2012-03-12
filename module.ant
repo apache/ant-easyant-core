@@ -51,8 +51,6 @@
     <!-- Loading plugins -->
     <ea:plugin module="xooki" rev="0.1" as="xooki" />
     <ea:plugin module="scm-svn" rev="0.1" as="svn" />
-    <ea:plugin module="emma" rev="0.1" as="emma" />
-    <ea:plugin module="eadoc" rev="0.1" as="eadoc" />
     <ea:plugin module="javadoc" rev="0.1" as="javadoc" />
     <ea:plugin module="distribution" rev="0.1" as="distribution" />
 
