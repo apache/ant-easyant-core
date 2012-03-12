@@ -19,33 +19,33 @@ package org.apache.easyant.man;
 
 import java.util.List;
 
-import org.apache.easyant.core.report.PhaseReport;
+import org.apache.easyant.core.report.ExtensionPointReport;
 
 /**
- * ManCommand implementation to list all phases associated with specified 
+ * ManCommand implementation to list all extension points associated with specified 
  * build module.
  * 
- * Supports the -listPhases switch.
+ * Supports the -listExtensionPoints switch.
  */
-public class ListPhases extends EasyantOption{
+public class ListExtensionPoints extends EasyantOption{
     
-    public ListPhases()
+    public ListExtensionPoints()
             throws IllegalArgumentException {
-        super("listPhases", false, "List all phases available");
+        super("listExtensionPoints", false, "List all phases available");
         setOptionalArg(true);
         setStopBuild(true);
     }
 
     public void execute() {
-        getProject().log(LINE_SEP+ "--- Available Phases for current project: " + getProject().getName() + " ---" + LINE_SEP);
+        getProject().log(LINE_SEP+ "--- Available ExtensionPoints for current project: " + getProject().getName() + " ---" + LINE_SEP);
         
-        List<PhaseReport> phases = getEareport().getAvailablePhases();
-        for(int i = 0; i<phases.size(); i++) {
-            getProject().log("\t" + phases.get(i).getName());
+        List<ExtensionPointReport> extensionPoints = getEareport().getAvailableExtensionPoints();
+        for(int i = 0; i<extensionPoints.size(); i++) {
+            getProject().log("\t" + extensionPoints.get(i).getName());
         }
         
-        getProject().log(LINE_SEP+ LINE_SEP+ "For more information on a Phase, run:" + LINE_SEP + "\t easyant -describe <PHASE>");
-        getProject().log(LINE_SEP+ "--- End Of (Phases Listing) ---");
+        getProject().log(LINE_SEP+ LINE_SEP+ "For more information on an ExtensionPoint, run:" + LINE_SEP + "\t easyant -describe <EXTENSION POINT>");
+        getProject().log(LINE_SEP+ "--- End Of (ExtensionPoints Listing) ---");
     }
 
 }

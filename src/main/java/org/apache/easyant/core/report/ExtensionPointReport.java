@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PhaseReport {
+public class ExtensionPointReport {
     private final String name;
     private String description;
     private String depends;
 
     private List<TargetReport> targetReports;
 
-    public PhaseReport(String name) {
+    public ExtensionPointReport(String name) {
         super();
         this.name = name;
         targetReports = new ArrayList<TargetReport>();  
@@ -80,7 +80,7 @@ public class PhaseReport {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        PhaseReport other = (PhaseReport) obj;
+        ExtensionPointReport other = (ExtensionPointReport) obj;
         if (name == null) {
             if (other.name != null)
                 return false;

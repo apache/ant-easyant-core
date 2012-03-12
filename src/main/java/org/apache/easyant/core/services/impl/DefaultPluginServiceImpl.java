@@ -30,17 +30,16 @@ import java.util.Properties;
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.easyant.core.ant.Phase;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
 import org.apache.easyant.core.report.EasyAntReport;
+import org.apache.easyant.core.report.ExtensionPointReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
 import org.apache.easyant.core.report.ParameterReport;
 import org.apache.easyant.core.report.ParameterType;
-import org.apache.easyant.core.report.PhaseReport;
 import org.apache.easyant.core.report.TargetReport;
 import org.apache.easyant.core.services.PluginService;
 import org.apache.easyant.tasks.Import;
@@ -328,8 +327,7 @@ public class DefaultPluginServiceImpl implements PluginService {
      */
     private void handleTarget(EasyAntReport eaReport, Target target) {
         if (!"".equals(target.getName())) {
-            boolean isExtensionPoint = target instanceof ExtensionPoint
-                    || target instanceof Phase;
+            boolean isExtensionPoint = target instanceof ExtensionPoint;
             if (!isExtensionPoint) {
                 TargetReport targetReport = new TargetReport();
                 targetReport.setName(target.getName());
@@ -349,14 +347,13 @@ public class DefaultPluginServiceImpl implements PluginService {
                 for (Iterator iterator = target.getProject().getTargets()
                         .values().iterator(); iterator.hasNext();) {
                     Target currentTarget = (Target) iterator.next();
-                    if (currentTarget instanceof ExtensionPoint
-                            || currentTarget instanceof Phase) {
+                    if (currentTarget instanceof ExtensionPoint) {
                         Enumeration dependencies = currentTarget
                                 .getDependencies();
                         while (dependencies.hasMoreElements()) {
                             String dep = (String) dependencies.nextElement();
                             if (dep.equals(target.getName())) {
-                                targetReport.setPhase(currentTarget.getName());
+                                targetReport.setExtensionPoint(currentTarget.getName());
                             }
                         }
 
@@ -368,7 +365,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                 Message.debug("Ant file has a target called : "
                         + targetReport.getName());
             } else {
-                PhaseReport extensionPoint = new PhaseReport(target.getName());
+                ExtensionPointReport extensionPoint = new ExtensionPointReport(target.getName());
                 StringBuilder sb = new StringBuilder();
                 Enumeration targetDeps = target.getDependencies();
                 while (targetDeps.hasMoreElements()) {
@@ -380,7 +377,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                 }
                 extensionPoint.setDepends(sb.toString());
                 extensionPoint.setDescription(target.getDescription());
-                eaReport.addPhaseReport(extensionPoint);
+                eaReport.addExtensionPointReport(extensionPoint);
                 Message.debug("Ant file has an extensionPoint called : "
                         + extensionPoint.getName());
             }

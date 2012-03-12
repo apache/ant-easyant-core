@@ -223,7 +223,7 @@ public class XMLEasyAntReportWriter {
         out.println("                <easyant>");
         // targets
         outputTargets(report, out, dep, easyAntReport);
-        outputPhases(report, out, dep, easyAntReport);
+        outputExtensionPoints(report, out, dep, easyAntReport);
         outputImportedModules(report, out, dep, easyAntReport);
         outputParameters(report, out, dep, easyAntReport);
         outputProperties(report, out, dep, easyAntReport);
@@ -278,17 +278,7 @@ public class XMLEasyAntReportWriter {
         for (ParameterReport paramReport : easyAntReport.getParameterReports()) {
             StringBuffer param = new StringBuffer();
 
-            if (ParameterType.PHASE.equals(paramReport.getType())) {
-                param.append("                        <phase name=\"");
-                param.append(paramReport.getName());
-                param.append("\"");
-                if (paramReport.getDescription() != null) {
-                    param.append(" description=\"");
-                    param.append(paramReport.getDescription());
-                    param.append("\"");
-                }
-                param.append("/>");
-            } else if (ParameterType.PATH.equals(paramReport.getType())) {
+            if (ParameterType.PATH.equals(paramReport.getType())) {
                 param.append("                        <path name=\"");
                 param.append(paramReport.getName());
                 param.append("\"");
@@ -356,25 +346,25 @@ public class XMLEasyAntReportWriter {
 
     }
 
-    private void outputPhases(ConfigurationResolveReport report,
+    private void outputExtensionPoints(ConfigurationResolveReport report,
             PrintWriter out, IvyNode dep, EasyAntReport easyAntReport) {
-        out.println("                    <phases>");
-        for (PhaseReport phaseReport : easyAntReport.getPhaseReports()) {
-            StringBuffer phase = new StringBuffer();
-            phase.append("                        <phase name=\"").append(
-                    phaseReport.getName()).append("\"");
-            if (phaseReport.getDescription() != null) {
-                phase.append(" description=\"");
-                phase.append(phaseReport.getDescription());
-                phase.append("\"");
+        out.println("                    <extension-points>");
+        for (ExtensionPointReport extensionPointReport : easyAntReport.getExtensionPointReports()) {
+            StringBuffer extensionPoint = new StringBuffer();
+            extensionPoint.append("                        <extension-point name=\"").append(
+                    extensionPointReport.getName()).append("\"");
+            if (extensionPointReport.getDescription() != null) {
+                extensionPoint.append(" description=\"");
+                extensionPoint.append(extensionPointReport.getDescription());
+                extensionPoint.append("\"");
             }
-            if (phaseReport.getDepends() != null) {
-                phase.append(" depends=\"");
-                phase.append(phaseReport.getDepends());
-                phase.append("\"");
+            if (extensionPointReport.getDepends() != null) {
+                extensionPoint.append(" depends=\"");
+                extensionPoint.append(extensionPointReport.getDepends());
+                extensionPoint.append("\"");
             }
-            phase.append("/>");
-            out.println(phase.toString());
+            extensionPoint.append("/>");
+            out.println(extensionPoint.toString());
         }
         out.println("                    </phases>");
     }
@@ -401,9 +391,9 @@ public class XMLEasyAntReportWriter {
                 target.append(targetReport.getIfCase());
                 target.append("\"");
             }
-            if (targetReport.getPhase() != null) {
+            if (targetReport.getExtensionPoint() != null) {
                 target.append(" phase=\"");
-                target.append(targetReport.getPhase());
+                target.append(targetReport.getExtensionPoint());
                 target.append("\"");
             }
             if (targetReport.getUnlessCase() != null) {

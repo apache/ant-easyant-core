@@ -34,7 +34,7 @@ import org.apache.ivy.core.report.ResolveReport;
 public class EasyAntReport {
 
     private List<TargetReport> targetReports;
-    private List<PhaseReport> phaseReports;
+    private List<ExtensionPointReport> extensionPointReports;
     private List<ParameterReport> parameterReports;
     private List<ImportedModuleReport> importedModuleReports;
     private Map<String, PropertyDescriptor> propertyReports;
@@ -46,7 +46,7 @@ public class EasyAntReport {
     public EasyAntReport() {
         super();
         targetReports = new ArrayList<TargetReport>();
-        phaseReports = new ArrayList<PhaseReport>();
+        extensionPointReports = new ArrayList<ExtensionPointReport>();
         parameterReports = new ArrayList<ParameterReport>();
         importedModuleReports = new ArrayList<ImportedModuleReport>();
         propertyReports = new HashMap<String, PropertyDescriptor>();
@@ -100,43 +100,43 @@ public class EasyAntReport {
     }
 
     /**
-     * Get a phase by its name Return null if no phaseReport where found with
+     * Get an extension point by its name Return null if no extensionPointReport where found with
      * this name
      * 
      * @param name
-     *            represent the phase name
-     * @return a phase report
+     *            represent the extension point name
+     * @return an extension point report
      */
-    public PhaseReport getPhaseReport(String name) {
+    public ExtensionPointReport getExtensionPointReport(String name) {
         if (name == null || name.equals("")) {
-            throw new IllegalArgumentException("phase name cannot be null");
+            throw new IllegalArgumentException("extension point name cannot be null");
         }
-        for (PhaseReport phase : phaseReports) {
-            if (phase.getName().equals(name)) {
-                return phase;
+        for (ExtensionPointReport extensionPointReport : extensionPointReports) {
+            if (extensionPointReport.getName().equals(name)) {
+                return extensionPointReport;
             }
         }
         return null;
     }
 
     /**
-     * Get a phase by its name Return null if no phaseReport where found with
+     * Get an extension point by its name Return null if no extensionPointReport where found with
      * this name. The includeImports parameters can be additionally used to
      * extend the search to include imports by the current module.
      * 
      * @param name
-     *            represent the phase name
+     *            represent the extensionPoint name
      * @param includeImports
      *            should the method search included modules
-     * @return a phase report
+     * @return an extension point report
      */
-    public PhaseReport getPhaseReport(String name, boolean includeImports) {
-        PhaseReport retVal = getPhaseReport(name);
+    public ExtensionPointReport getExtensionPointReport(String name, boolean includeImports) {
+        ExtensionPointReport retVal = getExtensionPointReport(name);
         if(includeImports && retVal == null) {
-            List<PhaseReport> phases = getAvailablePhases();
-            for(PhaseReport phase : phases) {
-                if (phase.getName().equals(name)) {
-                    retVal = phase;
+            List<ExtensionPointReport> extensionPoints = getAvailableExtensionPoints();
+            for(ExtensionPointReport extensionPoint : extensionPoints) {
+                if (extensionPoint.getName().equals(name)) {
+                    retVal = extensionPoint;
                 }
             }
         }
@@ -144,25 +144,25 @@ public class EasyAntReport {
     }
     
     /**
-     * Get a list of phases available in this module
+     * Get a list of extension points available in this module
      * 
-     * @return a list of phases
+     * @return a list of extension points
      */
-    public List<PhaseReport> getPhaseReports() {
-        return Collections.unmodifiableList(phaseReports);
+    public List<ExtensionPointReport> getExtensionPointReports() {
+        return Collections.unmodifiableList(extensionPointReports);
     }
 
     /**
-     * Add a given phaseReport
+     * Add a given extensionPointReport
      * 
-     * @param phaseReport
-     *            a given phaseReport
+     * @param extensionPointReport
+     *            a given extensionPointReport
      */
-    public void addPhaseReport(PhaseReport phaseReport) {
-        if (phaseReport == null) {
-            throw new IllegalArgumentException("phaseReport cannot be null");
+    public void addExtensionPointReport(ExtensionPointReport extensionPointReport) {
+        if (extensionPointReport == null) {
+            throw new IllegalArgumentException("extensionPointReport cannot be null");
         }
-        phaseReports.add(phaseReport);
+        extensionPointReports.add(extensionPointReport);
     }
 
     /**
@@ -373,7 +373,7 @@ public class EasyAntReport {
                         target.setDepends(targetReport.getDepends());
                         target.setIfCase(targetReport.getIfCase());
                         target.setUnlessCase(targetReport.getUnlessCase());
-                        target.setPhase(targetReport.getPhase());
+                        target.setExtensionPoint(targetReport.getExtensionPoint());
                         targets.add(target);
                     }
                 }
@@ -390,50 +390,50 @@ public class EasyAntReport {
     public List<TargetReport> getUnboundTargets() {
         List<TargetReport> targets = new ArrayList<TargetReport>();
         for (TargetReport targetReport : getAvailableTargets()) {
-            if (targetReport.getPhase() == null) {
+            if (targetReport.getExtensionPoint() == null) {
                 targets.add(targetReport);
             }
         }
         return targets;
     }
 
-    private List<PhaseReport> getAvailablePhasesWithoutTarget() {
-        List<PhaseReport> phases = new ArrayList<PhaseReport>();
+    private List<ExtensionPointReport> getAvailableExtensionPointsWithoutTarget() {
+        List<ExtensionPointReport> extensionPoints = new ArrayList<ExtensionPointReport>();
 
-        phases.addAll(phaseReports);
+        extensionPoints.addAll(extensionPointReports);
         for (ImportedModuleReport importedModuleReport : importedModuleReports) {
             if (importedModuleReport.getEasyantReport() != null) {
-                phases.addAll(importedModuleReport.getEasyantReport()
-                        .getAvailablePhasesWithoutTarget());
+                extensionPoints.addAll(importedModuleReport.getEasyantReport()
+                        .getAvailableExtensionPointsWithoutTarget());
             }
         }
-        return phases;
+        return extensionPoints;
     }
     
     /**
-     * This utilitary function allow us to retrieve a list of all phaseReport
+     * This utilitary function allow us to retrieve a list of all ExtensionPointReport
      * available in this module and in all imported subModules
      * 
-     * @return a list of all PhaseReport available in the module or in its
+     * @return a list of all ExtensionPointReport available in the module or in its
      *         submodules
      */
-    public List<PhaseReport> getAvailablePhases() {
-        List<PhaseReport> phases = getAvailablePhasesWithoutTarget();
+    public List<ExtensionPointReport> getAvailableExtensionPoints() {
+        List<ExtensionPointReport> extensionPoints = getAvailableExtensionPointsWithoutTarget();
 
         // associate target to the phase
         List<TargetReport> targets = getAvailableTargets();
-        for (int i = 0; i < phases.size(); i++) {
-            PhaseReport phase = phases.get(i);
+        for (int i = 0; i < extensionPoints.size(); i++) {
+            ExtensionPointReport extensionPoint = extensionPoints.get(i);
             for (TargetReport target : targets) {
-                if (target.getPhase() != null
-                        && target.getPhase().equals(phase.getName())) {
-                    phase.addTargetReport(target);
-                    phases.set(i, phase);
+                if (target.getExtensionPoint() != null
+                        && target.getExtensionPoint().equals(extensionPoint.getName())) {
+                    extensionPoint.addTargetReport(target);
+                    extensionPoints.set(i, extensionPoint);
                 }
             }
         }
 
-        return phases;
+        return extensionPoints;
     }
 
 }

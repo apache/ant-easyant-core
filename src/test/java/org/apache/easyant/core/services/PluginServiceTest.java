@@ -31,6 +31,7 @@ import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.report.EasyAntReport;
+import org.apache.easyant.core.report.ExtensionPointReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
 import org.apache.easyant.core.report.PhaseReport;
 import org.apache.easyant.core.report.TargetReport;
@@ -140,24 +141,24 @@ public class PluginServiceTest {
         Assert.assertEquals("org.apache.easyant.example.Example",
                 property.getValue());
 
-        // check that package phase exists and that jar:jar target is bound to
+        // check that package ExtensionPoint exists and that jar:jar target is bound to
         // this phase
-        PhaseReport packagePhase = null;
-        for (PhaseReport phase : eaReport.getAvailablePhases()) {
-            if ("package".equals(phase.getName())) {
-                packagePhase = phase;
+        ExtensionPointReport packageEP = null;
+        for (ExtensionPointReport extensionPoint : eaReport.getAvailableExtensionPoints()) {
+            if ("package".equals(extensionPoint.getName())) {
+                packageEP = extensionPoint;
                 break;
             }
         }
 
-        Assert.assertNotNull(packagePhase);
-        List<TargetReport> targets = packagePhase.getTargetReports();
+        Assert.assertNotNull(packageEP);
+        List<TargetReport> targets = packageEP.getTargetReports();
         Set<String> expectedTargets = new HashSet<String>(Arrays.asList(
                 "jar:jar", "test-jar:jar"));
         Assert.assertEquals("test and main jars included in package phase",
                 expectedTargets.size(), targets.size());
 
-        for (TargetReport target : packagePhase.getTargetReports()) {
+        for (TargetReport target : packageEP.getTargetReports()) {
             Assert.assertTrue("expected to find " + target.getName(),
                     expectedTargets.remove(target.getName()));
         }
@@ -171,7 +172,7 @@ public class PluginServiceTest {
         for (TargetReport targetReport : eaReport.getAvailableTargets()) {
             if ("hello-world".equals(targetReport.getName())) {
                 Assert.assertTrue("process-sources".equals(targetReport
-                        .getPhase()));
+                        .getExtensionPoint()));
                 hasHelloWorldTarget = true;
                 break;
             }

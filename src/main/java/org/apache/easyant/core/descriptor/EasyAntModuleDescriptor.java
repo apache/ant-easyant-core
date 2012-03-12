@@ -104,15 +104,15 @@ public interface EasyAntModuleDescriptor {
     String getDescription();
     
     /**
-     * Get all registered phase mappings
-     * @return a list of {@link PhaseMappingDescriptor}
+     * Get all registered extension points mappings
+     * @return a list of {@link ExtensionPointMappingDescriptor}
      */
-    public List<PhaseMappingDescriptor> getPhaseMappings();
+    public List<ExtensionPointMappingDescriptor> getExtensionPointsMappings();
     
     /**
-     * Add a {@link PhaseMappingDescriptor} to the list of all registered phase mappings 
-     * @param phaseMappingDescriptor a {@link PhaseMappingDescriptor}
+     * Add a {@link ExtensionPointMappingDescriptor} to the list of all registered extension points mappings 
+     * @param extensionPointMappingDescriptor a {@link ExtensionPointMappingDescriptor}
      */
-    public void addPhaseMapping(PhaseMappingDescriptor phaseMappingDescriptor);
+    public void addExtensionPointMapping(ExtensionPointMappingDescriptor extensionPointMappingDescriptor);
 
 }

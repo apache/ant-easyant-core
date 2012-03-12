@@ -19,8 +19,8 @@ package org.apache.easyant.man;
 
 import java.util.List;
 
+import org.apache.easyant.core.report.ExtensionPointReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
-import org.apache.easyant.core.report.PhaseReport;
 import org.apache.easyant.core.report.TargetReport;
 import org.apache.tools.ant.Project;
 
@@ -30,7 +30,7 @@ import org.apache.tools.ant.Project;
  * This command lists all targets belonging to the specified 
  * phase / plugin. 
  * 
- * If no phase / plugin name is specified, then this command
+ * If no extension point / plugin name is specified, then this command
  * lists all targets available in the project (module.ivy)
  */
 public class ListTargets extends EasyantOption {
@@ -49,8 +49,8 @@ public class ListTargets extends EasyantOption {
     private static final String NONE = "NONE";
     
     /*
-     * simply look up for all targets belonging to a phase named <container>, is such
-     * a phase exists. then list all targets listed in a module named <container>, is
+     * simply look up for all targets belonging to a extension point named <container>, is such
+     * an extension point exists. then list all targets listed in a module named <container>, is
      * such a module exists.
      * 
      * however, if the this.container variable has not been initialized then simply list
@@ -61,19 +61,19 @@ public class ListTargets extends EasyantOption {
         getProject().log(LINE_SEP + "--- Available Targets for current project: " + getProject().getName() + " ---" + LINE_SEP);
         String container = getValue();
         if(container == null || container.trim().length() == 0) {
-            getProject().log(LINE_SEP+ "No Phase / Plugin specified. Listing all targets available in the project.");
+            getProject().log(LINE_SEP+ "No ExtensionPoint / Plugin specified. Listing all targets available in the project.");
             
             List<TargetReport> targets = getEareport().getAvailableTargets();
             printTargets(targets, getProject());
         } else {
-            PhaseReport phase = getEareport().getPhaseReport(container, true);
+            ExtensionPointReport extensionPointRep = getEareport().getExtensionPointReport(container, true);
             
-            if(phase != null) {
-                getProject().log("Targets for Phase: " + container);
-                List<TargetReport> targets = phase.getTargetReports();
+            if(extensionPointRep != null) {
+                getProject().log("Targets for ExtensionPoint: " + container);
+                List<TargetReport> targets = extensionPointRep.getTargetReports();
                 printTargets(targets, getProject());
             } else {
-                getProject().log("\tNo Phase found by name: " + container);
+                getProject().log("\tNo ExtensionPoint found by name: " + container);
             }
             
             List<ImportedModuleReport> modules = getEareport().getImportedModuleReports();
@@ -92,9 +92,9 @@ public class ListTargets extends EasyantOption {
                 getProject().log(LINE_SEP + "\tNo Module / Plugin found by name: " + container);
             }
                 
-            getProject().log(LINE_SEP+LINE_SEP+ "For more information on a Phase, run:" + LINE_SEP + "\t easyant -describe <PHASE>");
+            getProject().log(LINE_SEP+LINE_SEP+ "For more information on an ExtensionPoint, run:" + LINE_SEP + "\t easyant -describe <EXTENSION POINT>");
         }
-        getProject().log(LINE_SEP + "--- End Of (Phases Listing) ---");
+        getProject().log(LINE_SEP + "--- End Of (Targets Listing) ---");
     }
 
     /*
@@ -110,7 +110,7 @@ public class ListTargets extends EasyantOption {
         for(int i = 0; i<targets.size(); i++) {
             TargetReport targetRep = targets.get(i);
             project.log("\tTarget: " + targetRep.getName());
-            project.log("\t\tPhase: " + (targetRep.getPhase() == null ? NONE : targetRep.getPhase()));
+            project.log("\t\tPhase: " + (targetRep.getExtensionPoint() == null ? NONE : targetRep.getExtensionPoint()));
             project.log("\t\tDescription: " + (targetRep.getDescription() == null ? NONE : targetRep.getDescription()));
             project.log("\t\tDepends: " + (targetRep.getDepends() == null ? NONE : targetRep.getDepends()));
             project.log("\t\tIF: " + (targetRep.getIfCase() == null ? NONE : targetRep.getIfCase()));

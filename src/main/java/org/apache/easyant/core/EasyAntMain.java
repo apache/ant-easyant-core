@@ -44,13 +44,14 @@ import org.apache.easyant.core.ant.Phase;
 import org.apache.easyant.core.factory.EasyantConfigurationFactory;
 import org.apache.easyant.man.Describe;
 import org.apache.easyant.man.EasyantOption;
-import org.apache.easyant.man.ListPhases;
+import org.apache.easyant.man.ListExtensionPoints;
 import org.apache.easyant.man.ListPlugins;
 import org.apache.easyant.man.ListProps;
 import org.apache.easyant.man.ListTargets;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Diagnostics;
 import org.apache.tools.ant.ExitStatusException;
+import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Main;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
@@ -632,7 +633,7 @@ public class EasyAntMain implements AntMain {
                 int pos = findTargetPosition(subNames, targetName);
                 subNames.insertElementAt(targetName, pos);
             } else {
-                if (currentTarget instanceof Phase) {
+                if (currentTarget instanceof ExtensionPoint) {
                     int pos = findTargetPosition(phases, targetName);
                     phases.insertElementAt(targetName, pos);
                     phasesDescriptions.insertElementAt(targetDescription, pos);
@@ -792,7 +793,7 @@ public class EasyAntMain implements AntMain {
         options.addOption("o", "offline", false,
                 "turns EasyAnt in offline mode");
         options.addOption(new Describe());
-        options.addOption(new ListPhases());
+        options.addOption(new ListExtensionPoints());
         options.addOption(new ListTargets());
         options.addOption(new ListProps());
         options.addOption(new ListPlugins());

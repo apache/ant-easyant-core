@@ -23,7 +23,7 @@ public class TargetReport {
     private String ifCase = null;
     private String unlessCase = null;
     private String description = null;
-    private String phase = null;
+    private String extensionPoint = null;
 
     public String getName() {
         return name;
@@ -65,12 +65,12 @@ public class TargetReport {
         this.description = description;
     }
 
-    public String getPhase() {
-        return phase;
+    public String getExtensionPoint() {
+        return extensionPoint;
     }
 
-    public void setPhase(String phase) {
-        this.phase = phase;
+    public void setExtensionPoint(String extensionPoint) {
+        this.extensionPoint = extensionPoint;
     }
 
 }

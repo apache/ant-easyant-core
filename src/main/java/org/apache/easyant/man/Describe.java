@@ -18,20 +18,20 @@
 package org.apache.easyant.man;
 
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
-import org.apache.easyant.core.report.PhaseReport;
+import org.apache.easyant.core.report.ExtensionPointReport;
 import org.apache.easyant.core.report.TargetReport;
 
 /**
  * Implements support for -describe easyant switch.
  * 
- * This command searches for a phase, target, and properties by the 
+ * This command searches for extension point, target, and properties by the 
  * supplied search name and returns result for each of these sequentially. 
  */
 public class Describe extends EasyantOption {
     
     public Describe()
             throws IllegalArgumentException {
-        super("describe", true, "Describes the phase / target / property specified by the argument");
+        super("describe", true, "Describes extension points / target / property specified by the argument");
         setStopBuild(true);
     }
     // convenient string constants
@@ -47,28 +47,28 @@ public class Describe extends EasyantOption {
                 " in current project: " + getProject()
         .getName() + " ---" + LINE_SEP);
         
-        PhaseReport phaseRep = getEareport().getPhaseReport(target, true);
-        if(phaseRep != null) {
+        ExtensionPointReport extensionPointRep = getEareport().getExtensionPointReport(target, true);
+        if(extensionPointRep != null) {
             getProject()
-        .log("\tPhase: " + target);
+        .log("\tExtension Point: " + target);
             getProject()
-        .log("\t\tDescription: " + (phaseRep.getDescription() == null ? NONE : phaseRep.getDescription()));
+        .log("\t\tDescription: " + (extensionPointRep.getDescription() == null ? NONE : extensionPointRep.getDescription()));
             getProject()
-        .log("\t\tDepends: " + (phaseRep.getDepends() == null ? NONE : phaseRep.getDepends()));
+        .log("\t\tDepends: " + (extensionPointRep.getDepends() == null ? NONE : extensionPointRep.getDepends()));
             getProject()
         .log(LINE_SEP+ "\t\tFor information on targets attached to this phase, run:");
             getProject()
         .log("\t\teasyant -listTargets " + target);
         } else {
             getProject()
-        .log("\tNo Phase found for name: " + target);
+        .log("\tNo extrnsion point found for name: " + target);
         }
         TargetReport targetRep = getEareport().getTargetReport(target, true);
         if(targetRep != null) {
             getProject()
         .log("\tTarget: " + target);
             getProject()
-        .log("\t\tPhase: " + (targetRep.getPhase() == null ? NONE : targetRep.getPhase()));
+        .log("\t\tExtension Point: " + (targetRep.getExtensionPoint() == null ? NONE : targetRep.getExtensionPoint()));
             getProject()
         .log("\t\tDescription: " + (targetRep.getDescription() == null ? NONE : targetRep.getDescription()));
             getProject()

@@ -20,7 +20,5 @@ package org.apache.easyant.core.report;
 public enum ParameterType {
     
     PROPERTY,
-    PATH,
-    PHASE
-
+    PATH
 }

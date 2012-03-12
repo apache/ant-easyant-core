@@ -30,7 +30,7 @@ import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.descriptor.AdvancedInheritableItem;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
-import org.apache.easyant.core.descriptor.PhaseMappingDescriptor;
+import org.apache.easyant.core.descriptor.ExtensionPointMappingDescriptor;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.ivy.InheritableScope;
@@ -306,11 +306,11 @@ public class LoadModule extends AbstractEasyAntTask {
                 }
             }
             // Apply PhaseMapping
-            for (PhaseMappingDescriptor phaseMapping : md.getPhaseMappings()) {
+            for (ExtensionPointMappingDescriptor epMapping : md.getExtensionPointsMappings()) {
                 BindTarget bindTarget = new BindTarget();
-                bindTarget.setTarget(phaseMapping.getTarget());
-                bindTarget.setToPhase(phaseMapping.getToPhase());
-                bindTarget.setBuildConfigurations(phaseMapping
+                bindTarget.setTarget(epMapping.getTarget());
+                bindTarget.setExtensionOf(epMapping.getExtensionPoint());
+                bindTarget.setBuildConfigurations(epMapping
                         .getBuildConfigurations());
                 initTask(bindTarget).execute();
             }

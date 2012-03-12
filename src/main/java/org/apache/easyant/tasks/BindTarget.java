@@ -23,6 +23,7 @@ import java.util.Iterator;
 import org.apache.easyant.core.BuildConfigurationHelper;
 import org.apache.easyant.core.ant.Phase;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
@@ -54,14 +55,14 @@ public class BindTarget extends Task {
         for (Iterator iterator = getProject().getTargets().values().iterator(); iterator
                 .hasNext();) {
             Target current = (Target) iterator.next();
-            if (current instanceof Phase) {
+            if (current instanceof ExtensionPoint) {
                 Enumeration dependencies = current.getDependencies();
                 StringBuilder dependsOn = new StringBuilder();
                 boolean requiresUpdates = false;
                 while (dependencies.hasMoreElements()) {
                     String dep = (String) dependencies.nextElement();
                     if (dep.equals(getTarget())) {
-                        log("target" + getTarget() + " is registred in phase"
+                        log("target" + getTarget() + " is registred in extensionPoint"
                                 + current.getName(), Project.MSG_VERBOSE);
                         requiresUpdates = true;
                     } else {
@@ -112,7 +113,7 @@ public class BindTarget extends Task {
         return toPhase;
     }
 
-    public void setToPhase(String toPhase) {
+    public void setExtensionOf(String toPhase) {
         this.toPhase = toPhase;
     }
 

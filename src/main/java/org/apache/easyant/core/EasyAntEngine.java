@@ -453,14 +453,6 @@ public class EasyAntEngine {
         helper.getImportStack().addElement(mainscript);
         project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
 
-        // Validate Phase is used by several system plugin so we should
-        // initialize it
-        Phase validatePhase = new Phase();
-        validatePhase.setName("validate");
-        validatePhase
-                .setDescription("validate the project is correct and all necessary information is available");
-        project.addTarget("validate", validatePhase);
-
         Ivy easyantIvyInstance = configureEasyAntIvyInstance(project);
         configurePluginService(project, easyantIvyInstance);
 

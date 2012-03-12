@@ -33,7 +33,7 @@ import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.descriptor.AdvancedInheritableItem;
 import org.apache.easyant.core.descriptor.DefaultEasyAntDescriptor;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
-import org.apache.easyant.core.descriptor.PhaseMappingDescriptor;
+import org.apache.easyant.core.descriptor.ExtensionPointMappingDescriptor;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.ivy.InheritableScope;
@@ -392,8 +392,8 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends
         protected void bindTargetStarted(Attributes attributes) {
             String target = getSettings().substitute(
                     attributes.getValue("target"));
-            String toPhase = getSettings().substitute(
-                    attributes.getValue("tophase"));
+            String toExtensionPoint = getSettings().substitute(
+                    attributes.getValue("extensionOf"));
             String conf = getSettings().substitute(attributes.getValue("conf"));
             if (EasyAntState.PLUGIN == easyAntState && conf == null) {
                 conf = currentPluginDescriptor.getBuildConfigurations();
@@ -413,13 +413,13 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends
 
                 }
                 // put this variable on the context
-                PhaseMappingDescriptor phaseMappingDescriptor = new PhaseMappingDescriptor();
-                phaseMappingDescriptor.setBuildConfigurations(conf);
+                ExtensionPointMappingDescriptor extensionPointMappingDescriptor = new ExtensionPointMappingDescriptor();
+                extensionPointMappingDescriptor.setBuildConfigurations(conf);
                 // TODO: add a facility to get plugin alias if this is a
                 // declared as a subelement
-                phaseMappingDescriptor.setTarget(target);
-                phaseMappingDescriptor.setToPhase(toPhase);
-                easyAntModuleDescriptor.addPhaseMapping(phaseMappingDescriptor);
+                extensionPointMappingDescriptor.setTarget(target);
+                extensionPointMappingDescriptor.setExtensionPoint(toExtensionPoint);
+                easyAntModuleDescriptor.addExtensionPointMapping(extensionPointMappingDescriptor);
             }
 
         }

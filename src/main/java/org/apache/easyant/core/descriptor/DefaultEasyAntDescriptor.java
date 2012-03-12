@@ -34,7 +34,7 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
         properties = new HashMap<String,PropertyDescriptor>();
         plugins = new ArrayList<PluginDescriptor>();
         buildConfigurations = new ArrayList<String>();
-        phaseMappings = new ArrayList<PhaseMappingDescriptor>();
+        extensionPointsMappings = new ArrayList<ExtensionPointMappingDescriptor>();
     }
 
     private ModuleDescriptor ivyModuleDescriptor;
@@ -43,7 +43,7 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
     private List<PluginDescriptor> plugins;
     private List<String> buildConfigurations;
     
-    private List<PhaseMappingDescriptor> phaseMappings;
+    private List<ExtensionPointMappingDescriptor> extensionPointsMappings;
 
     public String getBuildType() {
         return buildType;
@@ -99,12 +99,12 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
         return getIvyModuleDescriptor().getDescription();
     }
 
-    public List<PhaseMappingDescriptor> getPhaseMappings() {
-        return phaseMappings;
+    public List<ExtensionPointMappingDescriptor> getExtensionPointsMappings() {
+        return extensionPointsMappings;
     }
     
-    public void addPhaseMapping(PhaseMappingDescriptor phaseMappingDescriptor) {
-        this.phaseMappings.add(phaseMappingDescriptor);
+    public void addExtensionPointMapping(ExtensionPointMappingDescriptor extensionPointMappingDescriptor) {
+        this.extensionPointsMappings.add(extensionPointMappingDescriptor);
     }
     
     

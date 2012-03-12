@@ -17,10 +17,10 @@
  */
 package org.apache.easyant.core.descriptor;
 
-public class PhaseMappingDescriptor {
+public class ExtensionPointMappingDescriptor {
     
     private String target;
-    private String toPhase;
+    private String extensionPoint;
     private String buildConfigurations;
     public String getTarget() {
         return target;
@@ -29,12 +29,11 @@ public class PhaseMappingDescriptor {
         this.target = target;
     }
     
-    public String getToPhase() {
-        return toPhase;
+    public String getExtensionPoint() {
+        return extensionPoint;
     }
-    
-    public void setToPhase(String toPhase) {
-        this.toPhase = toPhase;
+    public void setExtensionPoint(String extensionPoint) {
+        this.extensionPoint = extensionPoint;
     }
     
     /**

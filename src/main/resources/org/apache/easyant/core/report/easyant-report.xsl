@@ -43,7 +43,7 @@
 
     <xsl:variable name="easyant" select="$revisions/easyant" />
     <xsl:variable name="targets" select="$easyant/targets" />
-    <xsl:variable name="phases" select="$easyant/phases" />
+    <xsl:variable name="extensionPoints" select="$easyant/extension-points" />
     <xsl:variable name="imports" select="$easyant/imports" />
 
 
@@ -706,7 +706,7 @@
                 <tr>
                     <th>target name</th>
                     <th>description</th>
-                    <th>phase</th>
+                    <th>extension point</th>
                     <th>depends</th>
                 </tr>
             </thead>
@@ -715,7 +715,7 @@
             </tbody>
         </table>
 
-        <h2>Available phases</h2>
+        <h2>Available extension points</h2>
         <table>
             <thead>
                 <tr>
@@ -725,7 +725,7 @@
                 </tr>
             </thead>
             <tbody>
-                <xsl:apply-templates select="phases/phase" />
+                <xsl:apply-templates select="extension-points/extension-point" />
             </tbody>
         </table>
 
@@ -766,24 +766,6 @@
             </tbody>
         </table>
         
-        <h3>Phases</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>phase</th>
-                    <th>description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <xsl:for-each select="parameters/phase">
-                    <tr>
-                        <td><xsl:value-of select="@name"/></td>
-                        <td><xsl:value-of select="@description"/></td>
-                    </tr>
-                </xsl:for-each>
-            </tbody>
-        </table>
-
         <h3>Paths</h3>
         <table>
             <thead>
