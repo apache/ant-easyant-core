@@ -46,29 +46,32 @@
     <property file="module.properties" />
 
     <!--Loading build type -->
-    <ea:build module="build-std-java" rev="0.2" />
+    <ea:build module="build-std-java" rev="0.9" />
 
     <!-- Loading plugins -->
-    <ea:plugin module="xooki" rev="0.1" as="xooki" />
-    <ea:plugin module="scm-svn" rev="0.1" as="svn" />
-    <ea:plugin module="javadoc" rev="0.1" as="javadoc" />
-    <ea:plugin module="distribution" rev="0.1" as="distribution" />
+    <ea:plugin module="xooki" rev="0.9" as="xooki" />
+    <ea:plugin module="scm-svn" rev="0.9" as="svn" />
+    <ea:plugin module="javadoc" rev="0.9" as="javadoc" />
+    <ea:plugin module="distribution" rev="0.9" as="distribution" />
 
-    <phase name="distribution" description="create a distribution package" depends="package" />
+    <extension-point name="distribution" description="create a distribution package" depends="package-jar:jar" />
     <property name="target.dist" value="${target}/dist" />
 
     <!-- override the default release phase -->
+<!--
     <phase name="release" depends="generate-release-version, distribution, verify" description="done in an integration or release environment, copies the final package to the remote repository for sharing with other developers and projects" />
+-->
     <!-- override the default package phase -->
+<!--
     <phase name="package" depends="prepare-package" description="take the compiled code and package it in its distributable format, such as a JAR." />
-
-    <target name="package-extra-modules" phase="package" description="package easyant extra modules">
+-->
+    <target name="package-extra-modules" description="package easyant extra modules">
         <jar file="${target.artifacts}/easyant-extra-modules.jar">
             <zipfileset dir="repository/extra-modules" prefix="org/apache/easyant/repository/extra-modules" />
         </jar>
     </target>
 
-    <target name="test-setup" phase="validate" depends="compile:init,test:init"
+    <target name="test-setup" 
             description="add extra information to classpath for unit tests">
         <!--
            our unit test requires the JDK tools.jar to run, which cannot be defined normally
@@ -114,7 +117,7 @@
 
     </target>
 
-    <target name="stage-dist" depends="prepare-distribution, provision">
+    <target name="stage-dist" depends="prepare-distribution, abstract-provisioning:provisioning-finished">
 
         <mkdir dir="${target.dist}" />
 
@@ -138,7 +141,7 @@
 
     </target>
 
-	<target name="dist" depends="jar:jar, stage-dist, package-extra-modules" description="update the dist directory (used for development)">
+	<target name="dist" depends="package-jar:jar, stage-dist, package-extra-modules" description="update the dist directory (used for development)">
 
         <!-- publish latest easyant artifacts into dist repository -->
         <ivy:settings id="dist.ivy.settings" file="${target.dist}/repository/third-party-lib/third-party-ivysettings.xml"/>
@@ -154,7 +157,7 @@
     </target>
 
     <!-- Create a zip for distribution -->
-    <target name="package-distribution" phase="distribution" depends="documentation, dist" description="package a distribution">
+    <target name="package-distribution" depends="dist" description="package a distribution">
         <echo message="Packaging standard distribution." />
         <property name="root.dir" value="${ivy.module}-${ivy.revision}"/>
         <bundle destfile="${target.distributions}/${ivy.module}-${version}">
@@ -171,7 +174,7 @@
 
     </target>
 
-    <target name="package-documentation" phase="distribution" description="package the documentation" depends="documentation">
+    <target name="package-documentation" description="package the documentation"> 
         <echo message="Packaging documentation distribution." />
         <bundle destfile="${target.distributions}/${ivy.module}-${version}-docs">
             <zipfileset dir="${target.documentation.dir}" prefix="${ivy.module}-${ivy.revision}-docs"/>
@@ -179,7 +182,7 @@
     </target>
 
     <!-- Create a zip for full distribution  -->
-    <target name="package-full-distribution" phase="distribution" depends="documentation, dist" description="package a distribution (including includes sources)">
+    <target name="package-full-distribution" depends="dist" description="package a distribution (including includes sources)">
         <echo message="Packaging full distribution." />
         <property name="full.root.dir" value="${ivy.module}-${ivy.revision}-full"/>
         <bundle destfile="${target.distributions}/${ivy.module}-${version}-full">
