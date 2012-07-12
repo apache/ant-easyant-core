@@ -51,12 +51,11 @@ public class EasyAntConfigParser {
     }
 
     public URL getEasyAntConfigSchema() {
-        return getClass().getResource(
-                "/org/apache/easyant/core/easyant-config.xsd");
+        return getClass().getResource("/org/apache/easyant/core/easyant-config.xsd");
     }
 
-    public EasyAntConfiguration parseAndMerge(final URL configUrl,
-            final EasyAntConfiguration easyAntConfiguration) throws Exception {
+    public EasyAntConfiguration parseAndMerge(final URL configUrl, final EasyAntConfiguration easyAntConfiguration)
+            throws Exception {
         ConfigParser parser = new ConfigParser();
 
         URL schemaURL = null;
@@ -70,9 +69,7 @@ public class EasyAntConfigParser {
             XMLHelper.parse(configUrl, schemaURL, parser, null);
             parser.checkErrors();
         } catch (ParserConfigurationException ex) {
-            IllegalStateException ise = new IllegalStateException(ex
-                    .getMessage()
-                    + " in " + configUrl);
+            IllegalStateException ise = new IllegalStateException(ex.getMessage() + " in " + configUrl);
             ise.initCause(ex);
             throw ise;
 
@@ -89,7 +86,7 @@ public class EasyAntConfigParser {
     }
 
     public static class ConfigParser extends ContextualSAXHandler {
-        private List errors = new ArrayList();
+        private List<String> errors = new ArrayList<String>();
         private URL configUrl;
         private EasyAntConfiguration easyAntConfiguration;
 
@@ -105,8 +102,7 @@ public class EasyAntConfigParser {
             return easyAntConfiguration;
         }
 
-        public void setEasyAntConfiguration(
-                EasyAntConfiguration easyAntConfiguration) {
+        public void setEasyAntConfiguration(EasyAntConfiguration easyAntConfiguration) {
             this.easyAntConfiguration = easyAntConfiguration;
         }
 
@@ -147,63 +143,49 @@ public class EasyAntConfigParser {
         }
 
         public void warning(SAXParseException ex) {
-            Message.warn("xml parsing: " + getLocationString(ex) + ": "
-                    + ex.getMessage());
+            Message.warn("xml parsing: " + getLocationString(ex) + ": " + ex.getMessage());
         }
 
         public void error(SAXParseException ex) {
-            addError("xml parsing: " + getLocationString(ex) + ": "
-                    + ex.getMessage());
+            addError("xml parsing: " + getLocationString(ex) + ": " + ex.getMessage());
         }
 
         public void fatalError(SAXParseException ex) throws SAXException {
-            addError("[Fatal Error] " + getLocationString(ex) + ": "
-                    + ex.getMessage());
+            addError("[Fatal Error] " + getLocationString(ex) + ": " + ex.getMessage());
         }
 
-        public void startElement(String uri, String localName, String name,
-                Attributes attributes) throws SAXException {
+        public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
 
             super.startElement(uri, localName, name, attributes);
             if ("easyant-config/ivysettings".equals(getContext())) {
-                if (attributes.getValue("url") != null
-                        && !attributes.getValue("url").equals("")) {
-                    easyAntConfiguration.setEasyantIvySettingsUrl(attributes
-                            .getValue("url"));
+                if (attributes.getValue("url") != null && !attributes.getValue("url").equals("")) {
+                    easyAntConfiguration.setEasyantIvySettingsUrl(attributes.getValue("url"));
                 }
-                if (attributes.getValue("file") != null
-                        && !attributes.getValue("file").equals("")) {
-                    easyAntConfiguration.setEasyantIvySettingsFile(attributes
-                            .getValue("file"));
+                if (attributes.getValue("file") != null && !attributes.getValue("file").equals("")) {
+                    easyAntConfiguration.setEasyantIvySettingsFile(attributes.getValue("file"));
                 }
             }
             if ("easyant-config/system-plugins/plugin".equals(getContext())) {
                 PluginDescriptor pluginDescriptor = new PluginDescriptor();
-                String org = attributes.getValue("org") != null ? attributes
-                        .getValue("org") : attributes.getValue("organisation");
+                String org = attributes.getValue("org") != null ? attributes.getValue("org") : attributes
+                        .getValue("organisation");
                 pluginDescriptor.setOrganisation(org);
                 pluginDescriptor.setModule(attributes.getValue("module"));
-                String rev = attributes.getValue("rev") != null ? attributes
-                        .getValue("rev") : attributes.getValue("revision");
+                String rev = attributes.getValue("rev") != null ? attributes.getValue("rev") : attributes
+                        .getValue("revision");
                 pluginDescriptor.setRevision(rev);
                 pluginDescriptor.setMrid(attributes.getValue("mrid"));
                 pluginDescriptor.setAs(attributes.getValue("as"));
                 boolean mandatory = false;
-                if (attributes.getValue("mandatory") != null
-                        && attributes.getValue("mandatory").equals("true"))
+                if (attributes.getValue("mandatory") != null && attributes.getValue("mandatory").equals("true"))
                     mandatory = true;
                 ;
                 pluginDescriptor.setMandatory(mandatory);
-                String mode = attributes.getValue("mode");
-                if (mode != null) {
-                    pluginDescriptor.setMode(mode);
-                } else
-                    pluginDescriptor.setMode("include");
+                pluginDescriptor.setMode(attributes.getValue("mode"));
                 easyAntConfiguration.addSystemPlugin(pluginDescriptor);
             }
             if ("easyant-config/properties/property".equals(getContext())) {
-                if (attributes.getValue("file") != null
-                        || attributes.getValue("url") != null) {
+                if (attributes.getValue("file") != null || attributes.getValue("url") != null) {
                     Properties properties = new Properties();
 
                     try {
@@ -219,28 +201,21 @@ public class EasyAntConfigParser {
                             properties.load(is);
                             is.close();
                         }
-                        for (Iterator iterator = properties.keySet().iterator(); iterator
-                                .hasNext();) {
+                        for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();) {
                             String key = (String) iterator.next();
-                            easyAntConfiguration.getDefinedProps().put(key,
-                                    properties.get(key));
+                            easyAntConfiguration.getDefinedProps().put(key, properties.get(key));
                         }
 
                     } catch (Exception e) {
                         if (attributes.getValue("file") != null) {
-                            throw new SAXException(
-                                    "can't read property file at : "
-                                            + attributes.getValue("file"));
+                            throw new SAXException("can't read property file at : " + attributes.getValue("file"));
                         } else if (attributes.getValue("url") != null) {
-                            throw new SAXException(
-                                    "can't read property file at : "
-                                            + attributes.getValue("url"));
+                            throw new SAXException("can't read property file at : " + attributes.getValue("url"));
                         }
 
                     }
                 } else if (attributes.getValue("name") != null) {
-                    easyAntConfiguration.getDefinedProps().put(
-                            attributes.getValue("name"),
+                    easyAntConfiguration.getDefinedProps().put(attributes.getValue("name"),
                             attributes.getValue("value"));
                 }
 

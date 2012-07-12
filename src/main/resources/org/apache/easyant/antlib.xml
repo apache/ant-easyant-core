@@ -51,6 +51,6 @@
     </presetdef>
     
     <presetdef name="plugin">
-        <current:import mode="include" organisation="org.apache.easyant.plugins"/>
+        <current:import organisation="org.apache.easyant.plugins"/>
     </presetdef>
 </antlib>
