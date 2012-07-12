@@ -40,7 +40,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.easyant.core.ant.Phase;
 import org.apache.easyant.core.factory.EasyantConfigurationFactory;
 import org.apache.easyant.man.Describe;
 import org.apache.easyant.man.EasyantOption;
@@ -475,7 +474,7 @@ public class EasyAntMain implements AntMain {
                     }
                 }
             }
-            eaEngine.doBuild();
+            eaEngine.doBuild(project);
         }
 
     }

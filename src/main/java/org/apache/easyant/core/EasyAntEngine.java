@@ -604,7 +604,7 @@ public class EasyAntEngine {
         
     }
 
-    private void doBuild(final Project project) throws Error {
+    public void doBuild(final Project project) throws Error {
         project.fireBuildStarted();
 
         Throwable error = null;
