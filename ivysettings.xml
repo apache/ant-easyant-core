@@ -15,7 +15,6 @@
    limitations under the License.
 -->
 <ivysettings>
-    <property name="apache.easyant.public.url" value="http://repository.easyant.org/apache-easyant"/>
     <include file="${ivy.settings.dir}/repository/third-party-lib/third-party-ivysettings.xml"/>
     <include url="${easyant.extra.ivysettings.url}"/>
     <settings defaultResolver="main"/>
@@ -30,10 +29,8 @@
             <!-- core modules provided by easyant full distribution -->
             <resolver ref="easyant-core-modules"/>
             <resolver ref="easyant-shared-modules"/>
-            <url name="apache-easyant-plugins">
-                <ivy pattern="${apache.easyant.public.url}/[organization]/[module]/[revision]/[type]s/ivy-[revision].xml" />
-                <artifact pattern="${apache.easyant.public.url}/[organization]/[module]/[revision]/[type]s/[module](-[classifier])-[revision].[ext]" />
-            </url>
+            <!-- easyant public repository -->
+            <resolver ref="apache-easyant-plugins"/>
             <!-- extra modules provided by easyant full distribution -->
             <resolver ref="easyant-extra-modules" />
             <resolver ref="third-party-lib" />
