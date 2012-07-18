@@ -174,7 +174,7 @@
     </target>
 
     <!-- Create a zip for full distribution  -->
-    <target name="package-full-distribution" depends="dist" description="package a distribution (including includes sources)">
+    <target name="package-full-distribution" depends="distribution:init,dist" description="package a distribution (including includes sources)">
         <echo message="Packaging full distribution." />
         <property name="full.root.dir" value="${ivy.module}-${ivy.revision}-full"/>
         <bundle destfile="${target.distributions}/${ivy.module}-${version}-full">
