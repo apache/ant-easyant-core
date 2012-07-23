@@ -18,18 +18,12 @@
 package org.apache.easyant.tasks;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.Iterator;
 
 import org.apache.easyant.core.BuildConfigurationHelper;
 import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.Ivy;
-import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.core.LogOptions;
-import org.apache.ivy.core.module.descriptor.Artifact;
-import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.core.report.ArtifactDownloadReport;
 import org.apache.ivy.core.report.ResolveReport;
