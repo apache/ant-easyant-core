@@ -20,6 +20,7 @@
     <taskdef name="parameter" classname="org.apache.easyant.tasks.ParameterTask"/>
     
     <taskdef name="import" classname="org.apache.easyant.tasks.Import"/>
+    <taskdef name="import-test-module" classname="org.apache.easyant.tasks.ImportTestModule"/>
     <taskdef name="loadmodule" classname="org.apache.easyant.tasks.LoadModule"/>
     <taskdef name="submodule" classname="org.apache.easyant.tasks.SubModule"/>
     <taskdef name="core-version" classname="org.apache.easyant.tasks.CoreRevisionCheckerTask"/>
