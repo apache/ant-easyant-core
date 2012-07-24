@@ -73,7 +73,7 @@ public class ImportTestModule extends AbstractImport {
         for (int i = 0; i < report.getModuleDescriptor().getAllArtifacts().length; i++) {
             Artifact artifact = report.getModuleDescriptor().getAllArtifacts()[i];
             File localResourceFile = new File(sourceDirectory, artifact.getName() + "." + artifact.getExt());
-            if ("ant".equals(artifact.getType()) && "ant".equals(artifact.getExt())) {
+            if ("ant".equals(artifact.getType())) {
                 antFile = localResourceFile;
             } else {
                 handleOtherResourceFile(moduleRevisionId,artifact.getName(),artifact.getExt(), localResourceFile);

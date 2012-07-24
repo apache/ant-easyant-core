@@ -58,7 +58,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
         for (int j = 0; j < report.getConfigurationReport(mainConf).getAllArtifactsReports().length; j++) {
             ArtifactDownloadReport artifact = report.getConfigurationReport(mainConf).getAllArtifactsReports()[j];
 
-            if ("ant".equals(artifact.getType()) && "ant".equals(artifact.getExt())) {
+            if ("ant".equals(artifact.getType())) {
                 antFile = artifact.getLocalFile();
             } else if ("jar".equals(artifact.getType())) {
                 path.createPathElement().setLocation(artifact.getLocalFile());
