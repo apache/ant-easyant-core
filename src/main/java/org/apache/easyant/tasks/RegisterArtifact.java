@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.ivy.ant.IvyPostResolveTask;
 import org.apache.ivy.core.cache.ResolutionCacheManager;
+import org.apache.ivy.core.module.descriptor.Configuration;
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
 import org.apache.ivy.core.module.descriptor.MDArtifact;
 import org.apache.ivy.plugins.parser.xml.XmlModuleDescriptorWriter;
@@ -64,6 +65,11 @@ public class RegisterArtifact extends IvyPostResolveTask {
                     md.addArtifact(declaredConfs[j], artifact);
                 }
             } else {
+                //create configuration if it doesn't exist
+                if (md.getConfiguration(configurations[i]) == null) {
+                    Configuration generatedConfiguration = new Configuration(configurations[i]);
+                    md.addConfiguration(generatedConfiguration);
+                }
                 artifact.addConfiguration(configurations[i]);
                 md.addArtifact(configurations[i], artifact);
             }
