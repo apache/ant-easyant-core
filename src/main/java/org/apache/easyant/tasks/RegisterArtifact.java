@@ -34,51 +34,51 @@ public class RegisterArtifact extends IvyPostResolveTask {
     private String name;
     private String type;
     private String ext;
-    private String conf="*";
+    private String conf = "*";
     private String classifier;
-    
+
     @Override
     public void doExecute() throws BuildException {
         prepareAndCheck();
-        DefaultModuleDescriptor md= (DefaultModuleDescriptor) getResolvedReport().getModuleDescriptor();
+        DefaultModuleDescriptor md = (DefaultModuleDescriptor) getResolvedReport().getModuleDescriptor();
 
-         // this is a published artifact
+        // this is a published artifact
         String artName = getSettings().substitute(getName());
         artName = artName == null ? md.getModuleRevisionId().getName() : artName;
         String type = getSettings().substitute(getType());
         type = type == null ? "jar" : type;
         String ext = getSettings().substitute(getExt());
         ext = ext != null ? ext : type;
-        Map<String,String>  extraAttributes = new  HashMap<String,String>();
-        if (getClassifier()!=null) {
+        Map<String, String> extraAttributes = new HashMap<String, String>();
+        if (getClassifier() != null) {
             md.addExtraAttributeNamespace("m", "http://ant.apache.org/ivy/maven");
             extraAttributes.put("m:classifier", getClassifier());
         }
-
         MDArtifact artifact = new MDArtifact(md, artName, type, ext, null, extraAttributes);
-        if ("*".equals(getConf())) {
-             String[] confs = md.getConfigurationsNames();
-             for (int i = 0; i < confs.length; i++) {
-             artifact.addConfiguration(confs[i]);
-             md.addArtifact(confs[i], artifact);
-             }
-        } else {
-             artifact.addConfiguration(getConf());
-             md.addArtifact(getConf(), artifact);
-        } 
-        
-        
-        
-        ResolutionCacheManager cacheManager= getSettings().getResolutionCacheManager();
+        String[] configurations = getConf().split(",");
+        for (int i = 0; i < configurations.length; i++) {
+            if ("*".equals(configurations[i])) {
+                String[] declaredConfs = md.getConfigurationsNames();
+                for (int j = 0; j < declaredConfs.length; j++) {
+                    artifact.addConfiguration(declaredConfs[j]);
+                    md.addArtifact(declaredConfs[j], artifact);
+                }
+            } else {
+                artifact.addConfiguration(configurations[i]);
+                md.addArtifact(configurations[i], artifact);
+            }
+        }
+
+        ResolutionCacheManager cacheManager = getSettings().getResolutionCacheManager();
         File ivyFileInCache = cacheManager.getResolvedIvyFileInCache(md.getResolvedModuleRevisionId());
         try {
             XmlModuleDescriptorWriter.write(md, ivyFileInCache);
         } catch (IOException e) {
-            throw new BuildException("Can't register specified artifact",e);
+            throw new BuildException("Can't register specified artifact", e);
         }
-        
+
     }
-    
+
     public String getName() {
         return name;
     }
@@ -118,7 +118,5 @@ public class RegisterArtifact extends IvyPostResolveTask {
     public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
-    
-     
 
 }
