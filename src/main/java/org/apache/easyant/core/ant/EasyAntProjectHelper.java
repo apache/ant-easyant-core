@@ -123,6 +123,7 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
             String depends = "";
             String extensionPoint = null;
             String phase = null;
+            OnMissingExtensionPoint extensionPointMissing = null; 
 
             Project project = context.getProject();
 
@@ -168,6 +169,12 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
                     target.setDescription(value);
                 } else if (key.equals("extensionOf")) {
                     extensionPoint = value;
+                } else if (key.equals("onMissingExtensionPoint")) {
+                    try {
+                        extensionPointMissing = OnMissingExtensionPoint.valueOf(value);
+                    } catch (IllegalArgumentException e) {
+                        throw new BuildException("Invalid onMissingExtensionPoint " + value);
+                    }
                 } else if (key.equals("phase")) {
                     phase = value;
                 } else {
@@ -247,6 +254,11 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
                 context.getCurrentTargets().put(newName, newTarget);
                 project.addOrReplaceTarget(newName, newTarget);
             }
+            if (extensionPointMissing != null && extensionPoint == null) { 
+                throw new BuildException("onMissingExtensionPoint attribute cannot " +
+                        "be specified unless extensionOf is specified", 
+                        target.getLocation()); 
+            }
             if (extensionPoint != null) {
                 ProjectHelper helper = (ProjectHelper) context.getProject()
                         .getReference(ProjectHelper.PROJECTHELPER_REFERENCE);
@@ -256,11 +268,14 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
                     if (isInIncludeMode()) {
                         tgName = prefix + sep + tgName;
                     }
+                    if (extensionPointMissing == null) {
+                        extensionPointMissing = OnMissingExtensionPoint.FAIL; 
+                    }
 
                     // defer extensionpoint resolution until the full
                     // import stack has been processed
                     helper.getExtensionStack().add(
-                            new String[] { tgName, name });
+                            new String[] { tgName, name, extensionPointMissing.name()});
                 }
             }
             if (phase != null) {
