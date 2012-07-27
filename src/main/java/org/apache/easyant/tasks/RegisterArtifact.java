@@ -35,7 +35,7 @@ public class RegisterArtifact extends IvyPostResolveTask {
     private String name;
     private String type;
     private String ext;
-    private String conf = "*";
+    private String confs = "*";
     private String classifier;
 
     @Override
@@ -56,7 +56,7 @@ public class RegisterArtifact extends IvyPostResolveTask {
             extraAttributes.put("m:classifier", getClassifier());
         }
         MDArtifact artifact = new MDArtifact(md, artName, type, ext, null, extraAttributes);
-        String[] configurations = getConf().split(",");
+        String[] configurations = getConfs().split(",");
         for (int i = 0; i < configurations.length; i++) {
             if ("*".equals(configurations[i])) {
                 String[] declaredConfs = md.getConfigurationsNames();
@@ -109,12 +109,12 @@ public class RegisterArtifact extends IvyPostResolveTask {
         this.ext = ext;
     }
 
-    public String getConf() {
-        return conf;
+    public String getConfs() {
+        return confs;
     }
 
-    public void setConf(String conf) {
-        this.conf = conf;
+    public void setConfs(String confs) {
+        this.confs = confs;
     }
 
     public String getClassifier() {
