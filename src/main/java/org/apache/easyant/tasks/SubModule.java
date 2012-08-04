@@ -193,7 +193,7 @@ public class SubModule extends Task {
 					file.getAbsolutePath());
 
 	        ProjectHelper helper = ProjectHelper.getProjectHelper();
-	        File mainscript = ProjectUtils.createMainScript();
+	        File mainscript = ProjectUtils.emulateMainScript(getProject());
 	        Location mainscriptLocation = new Location(mainscript.getAbsolutePath());
 	        helper.getImportStack().addElement(mainscript);
 	        subModule.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);

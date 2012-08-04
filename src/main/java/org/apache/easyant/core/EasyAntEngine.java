@@ -450,7 +450,7 @@ public class EasyAntEngine {
         project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
 
         ProjectHelper helper = ProjectHelper.getProjectHelper();
-        File mainscript = ProjectUtils.createMainScript();
+        File mainscript = ProjectUtils.emulateMainScript(project);
         Location mainscriptLocation = new Location(mainscript.getAbsolutePath());
         helper.getImportStack().addElement(mainscript);
         project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);

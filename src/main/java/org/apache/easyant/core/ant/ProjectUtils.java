@@ -54,16 +54,8 @@ public class ProjectUtils {
      * 
      * @return a temporary file acting as a mainscript
      */
-    public static File createMainScript() {
-        File mainscript = new File(EasyAntConstants.EASYANT_TASK_NAME);
-        try {
-            mainscript = File.createTempFile(
-                    EasyAntConstants.EASYANT_TASK_NAME, null);
-            mainscript.deleteOnExit();
-        } catch (IOException e1) {
-            throw new BuildException("Can't create temp file", e1);
-        }
-        return mainscript;
+    public static File emulateMainScript(Project project) {
+        return project.getBaseDir();
     }
     
     /**
