@@ -18,7 +18,6 @@
 package org.apache.easyant.tasks;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,19 +36,13 @@ import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
-import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.ant.IvyInfo;
-import org.apache.ivy.core.cache.DefaultRepositoryCacheManager;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
-import org.apache.ivy.core.settings.IvySettings;
 import org.apache.ivy.plugins.parser.ModuleDescriptorParser;
 import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
 import org.apache.ivy.plugins.repository.url.URLResource;
-import org.apache.ivy.plugins.resolver.ChainResolver;
-import org.apache.ivy.plugins.resolver.DependencyResolver;
-import org.apache.ivy.plugins.resolver.FileSystemResolver;
 import org.apache.ivy.util.StringUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -450,90 +443,7 @@ public class LoadModule extends AbstractEasyAntTask {
      */
     private void configureBuildRepository(IvyAntSettings projectSettings)
             throws BuildException {
-        String target = getProject().getProperty(EasyAntMagicNames.META_TARGET);
-        if (target == null) {
-            target = getProject().getProperty(EasyAntMagicNames.TARGET);
-        }
-        if (target == null) {
-            target = getProject().getBaseDir() + "/target";
-        }
-
-        // be sure that we have an absolute path
-        File targetDir = new File(target);
-        target = targetDir.getAbsolutePath();
-
-        final String DEFAULT_BUILD_SCOPED_REPOSITORY_DIR = target
-                + "/repository";
-        final String DEFAULT_CACHE_BUILD_SCOPED_REPO = target + "/cache";
-        getProject().log(
-                "Registering build scoped repository in "
-                        + DEFAULT_BUILD_SCOPED_REPOSITORY_DIR,
-                Project.MSG_DEBUG);
-        final String CACHENAME = "build-scoped-cache";
-        // Get the project ivy instance
-        Ivy ivy = projectSettings.getConfiguredIvyInstance(this);
-        IvySettings settings = ivy.getSettings();
-
-        // Search the default resolver after the build-scoped repo
-        DependencyResolver dr = settings.getDefaultResolver();
-        if (dr == null) {
-            throw new BuildException("Unable to find a default resolver");
-        }
-        resetDefaultResolver(settings);
-
-        // Create a cache for build scoped repository
-        File cacheDir = new File(DEFAULT_CACHE_BUILD_SCOPED_REPO);
-        DefaultRepositoryCacheManager rcm = new DefaultRepositoryCacheManager(
-                CACHENAME, settings, cacheDir);
-        rcm.setUseOrigin(true); // no need to copy temporary build artifacts
-        // into temporary cache.
-        // Register the repository cache
-        settings.addConfigured(rcm);
-
-        // Create the build scoped repository
-        FileSystemResolver buildRepository = new FileSystemResolver();
-        buildRepository.setName("build." + dr.getName());
-        buildRepository
-                .addArtifactPattern(DEFAULT_BUILD_SCOPED_REPOSITORY_DIR
-                        + "/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]");
-        buildRepository.addIvyPattern(DEFAULT_BUILD_SCOPED_REPOSITORY_DIR
-                + "/[organisation]/[module]/[revision]/[module].ivy");
-        // bind to the repocache
-        buildRepository.setCache(CACHENAME);
-
-        getProject().setProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY,
-                buildRepository.getName());
-
-        // replace the default resolver with a chain resolver, which first
-        // searches
-        // in the build repository, then in the old default.
-        ChainResolver resolver = new ChainResolver();
-        resolver.setName(dr.getName()); // same name as old default
-        resolver.setReturnFirst(true);
-        resolver.add(buildRepository);
-        resolver.add(dr);
-        dr.setName("delegate." + dr.getName()); // give old default a new name
-
-        settings.addResolver(buildRepository);
-        settings.addResolver(dr);
-        settings.addResolver(resolver);
+        initTask(new ConfigureBuildScopedRepository()).execute();
     }
 
-    /**
-     * Clear the default resolver on the given IvySettings. This is a workaround
-     * for <a href="http://issues.apache.org/jira/browse/IVY-1163">Ivy issue
-     * 1163</a>. This code should be removed when the issue is resolved.
-     */
-    private void resetDefaultResolver(IvySettings settings)
-            throws BuildException {
-        try {
-            Field cachedResolver = IvySettings.class
-                    .getDeclaredField("defaultResolver");
-            cachedResolver.setAccessible(true);
-            cachedResolver.set(settings, null);
-        } catch (Exception e) {
-            throw new BuildException(
-                    "Unable to reset default resolver on IvySettings", e);
-        }
-    }
 }
