@@ -33,7 +33,6 @@ import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.ExtensionPointReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
-import org.apache.easyant.core.report.PhaseReport;
 import org.apache.easyant.core.report.TargetReport;
 import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
 import org.apache.ivy.Ivy;
