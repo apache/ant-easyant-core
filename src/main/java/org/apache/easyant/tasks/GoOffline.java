@@ -41,6 +41,17 @@ public class GoOffline extends AbstractEasyAntTask {
         if (moduleIvy == null) {
             moduleIvy = new File(getProject().getProperty(EasyAntMagicNames.EASYANT_FILE));
         }
+        if (moduleIvy == null || !moduleIvy.exists()) {
+            throw new BuildException("Couldn't locate module ivy did you specified moduleivy attribute ?");
+        }
+        
+        if (projectResolverName== null) {
+            throw new BuildException("projectResolverName is mandatory !");
+        }
+        
+        if (easyantResolverName== null) {
+            throw new BuildException("easyantResolverName is mandatory !");
+        }
 
         // 1 ask plugin service about current project
         PluginService pluginService = (PluginService) getProject().getReference(
