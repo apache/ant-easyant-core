@@ -43,6 +43,7 @@
 
     <taskdef name="checkresolver" classname="org.apache.easyant.tasks.CheckResolver"/>
     <taskdef name="easyant" classname="org.apache.easyant.tasks.EasyAntRunner"/>
+    <taskdef name="go-offline"  classname="org.apache.easyant.tasks.GoOffline"/>
     
     <presetdef name="include">
         <current:import mode="include" />
