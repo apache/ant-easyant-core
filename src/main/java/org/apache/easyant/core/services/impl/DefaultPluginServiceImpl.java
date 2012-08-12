@@ -74,8 +74,7 @@ public class DefaultPluginServiceImpl implements PluginService {
     private final Ivy ivyInstance;
 
     /**
-     * This is the default constructor, the IvyContext should be the IvyContext
-     * configured to the easyant ivy instance
+     * This is the default constructor, the IvyContext should be the IvyContext configured to the easyant ivy instance
      * 
      * @param ivyInstance
      *            the easyant ivy instance
@@ -85,28 +84,24 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     /**
-     * A custom constructor if you want to specify your own parser /
-     * configuration service, you should use this constructor the IvyContext
-     * should be the IvyContext configured to the easyant ivy instance
+     * A custom constructor if you want to specify your own parser / configuration service, you should use this
+     * constructor the IvyContext should be the IvyContext configured to the easyant ivy instance
      * 
      * @param ivyInstance
      *            the easyant ivy instance
      * @param parser
      *            a valid easyantModuleDescriptor
      */
-    public DefaultPluginServiceImpl(final Ivy ivyInstance,
-            EasyAntModuleDescriptorParser parser) {
+    public DefaultPluginServiceImpl(final Ivy ivyInstance, EasyAntModuleDescriptorParser parser) {
         this.ivyInstance = ivyInstance;
         if (parser == null) {
-            throw new IllegalArgumentException(
-                    "You must set a valid easyant module descriptor parser");
+            throw new IllegalArgumentException("You must set a valid easyant module descriptor parser");
         }
         this.parser = parser;
         ModuleDescriptorParserRegistry.getInstance().addParser(parser);
     }
 
-    public EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId,
-            String conf) throws Exception {
+    public EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId, String conf) throws Exception {
 
         IvyContext.pushNewContext().setIvy(ivyInstance);
         EasyAntReport eaReport = null;
@@ -115,21 +110,17 @@ public class DefaultPluginServiceImpl implements PluginService {
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
             resolveOptions.setConfs(conf.split(","));
-            ResolveReport report = IvyContext.getContext().getIvy()
-                    .getResolveEngine()
+            ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
                     .resolve(moduleRevisionId, resolveOptions, true);
             eaReport = new EasyAntReport();
-            eaReport.setResolveReport(report);
+            eaReport.setModuleDescriptor(report.getModuleDescriptor());
             Map<String, String> properties = new HashMap<String, String>();
             File antFile = null;
 
-            for (int j = 0; j < report.getConfigurationReport(conf)
-                    .getAllArtifactsReports().length; j++) {
-                ArtifactDownloadReport artifact = report
-                        .getConfigurationReport(conf).getAllArtifactsReports()[j];
+            for (int j = 0; j < report.getConfigurationReport(conf).getAllArtifactsReports().length; j++) {
+                ArtifactDownloadReport artifact = report.getConfigurationReport(conf).getAllArtifactsReports()[j];
 
-                if ("ant".equals(artifact.getType())
-                        && "ant".equals(artifact.getExt())) {
+                if ("ant".equals(artifact.getType()) && "ant".equals(artifact.getExt())) {
                     antFile = artifact.getLocalFile();
                 } else {
                     StringBuilder sb = new StringBuilder();
@@ -143,8 +134,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                     }
                     sb.append(artifact.getExt());
                     sb.append(".file");
-                    properties.put(sb.toString(), artifact.getLocalFile()
-                            .getAbsolutePath());
+                    properties.put(sb.toString(), artifact.getLocalFile().getAbsolutePath());
                 }
             }
 
@@ -152,9 +142,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                 scanAntFile(conf, eaReport, properties, antFile);
             }
         } catch (Exception e) {
-            throw new Exception(
-                    "An error occured while fetching plugin informations : "
-                            + e.getMessage(), e);
+            throw new Exception("An error occured while fetching plugin informations : " + e.getMessage(), e);
         } finally {
             IvyContext.popContext();
         }
@@ -162,14 +150,12 @@ public class DefaultPluginServiceImpl implements PluginService {
 
     }
 
-    private void scanAntFile(String conf, EasyAntReport eaReport,
-            Map<String, String> properties, File antFile) throws IOException,
-            Exception {
+    private void scanAntFile(String conf, EasyAntReport eaReport, Map<String, String> properties, File antFile)
+            throws IOException, Exception {
         Project project = new Project();
         // FIXME: temporary to support phases report
         project.setNewProperty("audit.mode", "true");
-        project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER,
-                "true");
+        project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
         EasyAntEngine eagAntEngine = new EasyAntEngine();
         eagAntEngine.configureEasyAntIvyInstance(project);
         if (properties != null) {
@@ -180,14 +166,12 @@ public class DefaultPluginServiceImpl implements PluginService {
         project.init();
         ProjectHelper.configureProject(project, antFile);
 
-        for (Iterator iterator = project.getTargets().values().iterator(); iterator
-                .hasNext();) {
+        for (Iterator iterator = project.getTargets().values().iterator(); iterator.hasNext();) {
             Target target = (Target) iterator.next();
             handleTarget(eaReport, target);
             for (int i = 0; i < target.getTasks().length; i++) {
                 Task task = target.getTasks()[i];
-                Class taskClass = ComponentHelper.getComponentHelper(project)
-                        .getComponentClass(task.getTaskType());
+                Class taskClass = ComponentHelper.getComponentHelper(project).getComponentClass(task.getTaskType());
                 if (taskClass == null) {
                     continue;
                 }
@@ -205,27 +189,23 @@ public class DefaultPluginServiceImpl implements PluginService {
         }
     }
 
-    private void handleImport(String conf, EasyAntReport eaReport, Task task)
-            throws Exception {
-        Map<String, String> attributes = task.getRuntimeConfigurableWrapper()
-                .getAttributeMap();
+    private void handleImport(String conf, EasyAntReport eaReport, Task task) throws Exception {
+        Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
         ImportedModuleReport importedModuleReport = new ImportedModuleReport();
-        importedModuleReport.setModuleMrid(attributes.get("mrid"));
-        importedModuleReport.setModule(attributes.get("module"));
+        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(task.getProject());
 
-        String org = attributes.get("org") != null ? attributes.get("org")
-                : attributes.get("organisation");
-        importedModuleReport.setOrganisation(org);
+        importedModuleReport.setModuleMrid(propertyHelper.replaceProperties(attributes.get("mrid")));
+        importedModuleReport.setModule(propertyHelper.replaceProperties(attributes.get("module")));
+        String org = attributes.get("org") != null ? attributes.get("org") : attributes.get("organisation");
+        importedModuleReport.setOrganisation(propertyHelper.replaceProperties(org));
 
-        String rev = attributes.get("rev") != null ? attributes.get("rev")
-                : attributes.get("revision");
-        importedModuleReport.setRevision(rev);
+        String rev = attributes.get("rev") != null ? attributes.get("rev") : attributes.get("revision");
+        importedModuleReport.setRevision(propertyHelper.replaceProperties(rev));
 
-        importedModuleReport.setType(attributes.get("type"));
-        importedModuleReport.setAs(attributes.get("as"));
+        importedModuleReport.setType(propertyHelper.replaceProperties(attributes.get("type")));
+        importedModuleReport.setAs(propertyHelper.replaceProperties(attributes.get("as")));
         if (attributes.get("mandatory") != null) {
-            importedModuleReport.setMandatory(Boolean.parseBoolean(attributes
-                    .get("mandatory")));
+            importedModuleReport.setMandatory(Boolean.parseBoolean(propertyHelper.replaceProperties(attributes.get("mandatory"))));
         }
         // importedModuleReport.setEasyantReport(getPluginInfo(
         // ModuleRevisionId.parse(PropertyHelper.getPropertyHelper(
@@ -233,8 +213,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         // importedModuleReport.getModuleMrid())), conf));
 
         eaReport.addImportedModuleReport(importedModuleReport);
-        Message.debug("Ant file import another module called : "
-                + importedModuleReport.getModuleMrid() + " with mode "
+        Message.debug("Ant file import another module called : " + importedModuleReport.getModuleMrid() + " with mode "
                 + importedModuleReport.getType());
     }
 
@@ -243,33 +222,24 @@ public class DefaultPluginServiceImpl implements PluginService {
      * @param task
      * @throws IOException
      */
-    private void handleProperty(EasyAntReport eaReport, Task task)
-            throws IOException {
-        Map<String, String> attributes = task.getRuntimeConfigurableWrapper()
-                .getAttributeMap();
+    private void handleProperty(EasyAntReport eaReport, Task task) throws IOException {
+        Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
         if (attributes.get("file") != null) {
             Properties propToLoad = new Properties();
-            File f = new File(PropertyHelper.getPropertyHelper(
-                    task.getProject())
-                    .replaceProperties(attributes.get("file")));
+            File f = new File(PropertyHelper.getPropertyHelper(task.getProject()).replaceProperties(
+                    attributes.get("file")));
             if (f.exists()) {
                 try {
                     propToLoad.load(new FileInputStream(f));
-                    for (Iterator iter = propToLoad.keySet().iterator(); iter
-                            .hasNext();) {
+                    for (Iterator iter = propToLoad.keySet().iterator(); iter.hasNext();) {
                         String key = (String) iter.next();
-                        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(
-                                key);
-                        propertyDescriptor
-                                .setValue(propToLoad.getProperty(key));
-                        eaReport.addPropertyDescriptor(
-                                propertyDescriptor.getName(),
-                                propertyDescriptor);
+                        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(key);
+                        propertyDescriptor.setValue(propToLoad.getProperty(key));
+                        eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor);
                     }
 
                 } catch (IOException e) {
-                    IOException ioe = new IOException("Unable to parse the property file :"
-                            + attributes.get("file"));
+                    IOException ioe = new IOException("Unable to parse the property file :" + attributes.get("file"));
                     ioe.initCause(e);
                     throw ioe;
                 }
@@ -282,42 +252,32 @@ public class DefaultPluginServiceImpl implements PluginService {
      * @param task
      */
     private void handleParameterTask(EasyAntReport eaReport, Task task) {
-        Map<String, String> attributes = task.getRuntimeConfigurableWrapper()
-                .getAttributeMap();
+        Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
         PropertyDescriptor propertyDescriptor = null;
 
         if (attributes.get("property") != null) {
-            propertyDescriptor = new PropertyDescriptor(
-                    attributes.get("property"));
+            propertyDescriptor = new PropertyDescriptor(attributes.get("property"));
             propertyDescriptor.setDefaultValue(attributes.get("default"));
             if (attributes.get("required") == null)
                 propertyDescriptor.setRequired(false);
             else
-                propertyDescriptor.setRequired(new Boolean(attributes
-                        .get("required")));
+                propertyDescriptor.setRequired(new Boolean(attributes.get("required")));
             if (attributes.get("description") != null) {
-                propertyDescriptor
-                        .setDescription(attributes.get("description"));
+                propertyDescriptor.setDescription(attributes.get("description"));
             }
             if (task.getRuntimeConfigurableWrapper().getText() != null
                     && task.getRuntimeConfigurableWrapper().getText().length() > 0) {
-                propertyDescriptor.setDescription(task
-                        .getRuntimeConfigurableWrapper().getText().toString());
+                propertyDescriptor.setDescription(task.getRuntimeConfigurableWrapper().getText().toString());
             }
-            Message.debug("Ant file has a property called : "
-                    + propertyDescriptor.getName());
-            eaReport.addPropertyDescriptor(propertyDescriptor.getName(),
-                    propertyDescriptor);
+            Message.debug("Ant file has a property called : " + propertyDescriptor.getName());
+            eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor);
         } else if (attributes.get("path") != null) {
-            ParameterReport parameterReport = new ParameterReport(
-                    ParameterType.PATH);
+            ParameterReport parameterReport = new ParameterReport(ParameterType.PATH);
             parameterReport.setName(attributes.get("path"));
             parameterReport.setDefaultValue(attributes.get("default"));
-            parameterReport
-                    .setRequired(new Boolean(attributes.get("required")));
+            parameterReport.setRequired(new Boolean(attributes.get("required")));
             eaReport.addParameterReport(parameterReport);
-            Message.debug("Ant file has a path called : "
-                    + parameterReport.getName());
+            Message.debug("Ant file has a path called : " + parameterReport.getName());
         }
     }
 
@@ -344,12 +304,10 @@ public class DefaultPluginServiceImpl implements PluginService {
                 targetReport.setDescription(target.getDescription());
                 targetReport.setIfCase(target.getIf());
                 targetReport.setUnlessCase(target.getUnless());
-                for (Iterator iterator = target.getProject().getTargets()
-                        .values().iterator(); iterator.hasNext();) {
+                for (Iterator iterator = target.getProject().getTargets().values().iterator(); iterator.hasNext();) {
                     Target currentTarget = (Target) iterator.next();
                     if (currentTarget instanceof ExtensionPoint) {
-                        Enumeration dependencies = currentTarget
-                                .getDependencies();
+                        Enumeration dependencies = currentTarget.getDependencies();
                         while (dependencies.hasMoreElements()) {
                             String dep = (String) dependencies.nextElement();
                             if (dep.equals(target.getName())) {
@@ -362,8 +320,7 @@ public class DefaultPluginServiceImpl implements PluginService {
 
                 eaReport.addTargetReport(targetReport);
 
-                Message.debug("Ant file has a target called : "
-                        + targetReport.getName());
+                Message.debug("Ant file has a target called : " + targetReport.getName());
             } else {
                 ExtensionPointReport extensionPoint = new ExtensionPointReport(target.getName());
                 StringBuilder sb = new StringBuilder();
@@ -378,53 +335,44 @@ public class DefaultPluginServiceImpl implements PluginService {
                 extensionPoint.setDepends(sb.toString());
                 extensionPoint.setDescription(target.getDescription());
                 eaReport.addExtensionPointReport(extensionPoint);
-                Message.debug("Ant file has an extensionPoint called : "
-                        + extensionPoint.getName());
+                Message.debug("Ant file has an extensionPoint called : " + extensionPoint.getName());
             }
         }
     }
 
-    public EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId)
-            throws Exception {
+    public EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId) throws Exception {
         return getPluginInfo(moduleRevisionId, "default");
     }
 
-    public EasyAntReport getPluginInfo(String moduleRevisionId)
-            throws Exception {
-        ModuleRevisionId module = buildModuleRevisionId(moduleRevisionId,
-                PluginType.PLUGIN);
+    public EasyAntReport getPluginInfo(String moduleRevisionId) throws Exception {
+        ModuleRevisionId module = buildModuleRevisionId(moduleRevisionId, PluginType.PLUGIN);
         return getPluginInfo(module);
     }
 
-    public EasyAntReport getBuildTypeInfo(String moduleRevisionId)
-            throws Exception {
-        ModuleRevisionId module = buildModuleRevisionId(moduleRevisionId,
-                PluginType.BUILDTYPE);
+    public EasyAntReport getBuildTypeInfo(String moduleRevisionId) throws Exception {
+        ModuleRevisionId module = buildModuleRevisionId(moduleRevisionId, PluginType.BUILDTYPE);
         return getPluginInfo(module);
     }
 
-    public EasyAntModuleDescriptor getEasyAntModuleDescriptor(
-            File moduleDescriptor) throws Exception {
+    public EasyAntModuleDescriptor getEasyAntModuleDescriptor(File moduleDescriptor) throws Exception {
         if (moduleDescriptor == null)
             throw new Exception("moduleDescriptor cannot be null");
         if (!moduleDescriptor.exists()) {
-            throw new Exception(
-                    "imposible to find the specified module descriptor"
-                            + moduleDescriptor.getAbsolutePath());
+            throw new Exception("imposible to find the specified module descriptor"
+                    + moduleDescriptor.getAbsolutePath());
         }
         IvyContext.pushNewContext().setIvy(ivyInstance);
         // First we need to parse the specified file to retrieve all the easyant
         // stuff
-        parser.parseDescriptor(ivyInstance.getSettings(),
-                moduleDescriptor.toURL(),
+        parser.parseDescriptor(ivyInstance.getSettings(), moduleDescriptor.toURL(),
                 new URLResource(moduleDescriptor.toURL()), true);
         EasyAntModuleDescriptor md = parser.getEasyAntModuleDescriptor();
         IvyContext.popContext();
         return md;
     }
 
-    public EasyAntReport generateEasyAntReport(File moduleDescriptor,
-            File optionalAntModule, File overrideAntModule) throws Exception {
+    public EasyAntReport generateEasyAntReport(File moduleDescriptor, File optionalAntModule, File overrideAntModule)
+            throws Exception {
         EasyAntReport eaReport = new EasyAntReport();
 
         if (overrideAntModule != null && overrideAntModule.exists()) {
@@ -432,8 +380,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         }
         try {
             EasyAntModuleDescriptor md = getEasyAntModuleDescriptor(moduleDescriptor);
-            for (Iterator<PropertyDescriptor> iterator = md.getProperties()
-                    .values().iterator(); iterator.hasNext();) {
+            eaReport.setModuleDescriptor(md.getIvyModuleDescriptor());
+            for (Iterator<PropertyDescriptor> iterator = md.getProperties().values().iterator(); iterator.hasNext();) {
                 PropertyDescriptor property = iterator.next();
                 eaReport.addPropertyDescriptor(property.getName(), property);
             }
@@ -442,17 +390,13 @@ public class DefaultPluginServiceImpl implements PluginService {
             if (md.getBuildType() != null) {
                 ImportedModuleReport buildType = new ImportedModuleReport();
                 buildType.setModuleMrid(md.getBuildType());
-                buildType.setEasyantReport(getPluginInfo(ModuleRevisionId
-                        .parse(md.getBuildType())));
+                buildType.setEasyantReport(getPluginInfo(ModuleRevisionId.parse(md.getBuildType())));
                 eaReport.addImportedModuleReport(buildType);
                 // Store infos on plugins
-                for (Iterator iterator = md.getPlugins().iterator(); iterator
-                        .hasNext();) {
-                    PluginDescriptor plugin = (PluginDescriptor) iterator
-                            .next();
+                for (Iterator iterator = md.getPlugins().iterator(); iterator.hasNext();) {
+                    PluginDescriptor plugin = (PluginDescriptor) iterator.next();
                     ImportedModuleReport pluginReport = new ImportedModuleReport();
-                    ModuleRevisionId mrid = ModuleRevisionId.parse(plugin
-                            .getMrid());
+                    ModuleRevisionId mrid = ModuleRevisionId.parse(plugin.getMrid());
                     pluginReport.setModuleMrid(plugin.getMrid());
                     if (plugin.getAs() == null) {
                         pluginReport.setAs(mrid.getName());
@@ -460,16 +404,13 @@ public class DefaultPluginServiceImpl implements PluginService {
                         pluginReport.setAs(plugin.getAs());
                     }
                     pluginReport.setType(plugin.getMode());
-                    pluginReport
-                            .setEasyantReport(getPluginInfo(ModuleRevisionId
-                                    .parse(plugin.getMrid())));
+                    pluginReport.setEasyantReport(getPluginInfo(ModuleRevisionId.parse(plugin.getMrid())));
                     eaReport.addImportedModuleReport(pluginReport);
                 }
             }
 
         } catch (Exception e) {
-            throw new Exception("problem while parsing Ivy module file: "
-                    + e.getMessage(), e);
+            throw new Exception("problem while parsing Ivy module file: " + e.getMessage(), e);
         }
 
         if (optionalAntModule != null && optionalAntModule.exists()) {
@@ -479,30 +420,25 @@ public class DefaultPluginServiceImpl implements PluginService {
         return eaReport;
     }
 
-    public ModuleRevisionId[] search(String organisation, String moduleName,
-            String revision, String branch, String matcher, String resolver)
-            throws Exception {
+    public ModuleRevisionId[] search(String organisation, String moduleName, String revision, String branch,
+            String matcher, String resolver) throws Exception {
         IvySettings settings = ivyInstance.getSettings();
 
         if (moduleName == null && PatternMatcher.EXACT.equals(matcher)) {
-            throw new Exception(
-                    "no module name provided for ivy repository graph task: "
-                            + "It can either be set explicitely via the attribute 'module' or "
-                            + "via 'ivy.module' property or a prior call to <resolve/>");
+            throw new Exception("no module name provided for ivy repository graph task: "
+                    + "It can either be set explicitely via the attribute 'module' or "
+                    + "via 'ivy.module' property or a prior call to <resolve/>");
         } else if (moduleName == null && !PatternMatcher.EXACT.equals(matcher)) {
             moduleName = PatternMatcher.ANY_EXPRESSION;
         }
-        ModuleRevisionId mrid = ModuleRevisionId.newInstance(organisation,
-                moduleName, revision);
+        ModuleRevisionId mrid = ModuleRevisionId.newInstance(organisation, moduleName, revision);
 
         ModuleRevisionId criteria = null;
 
         if ((revision == null) || settings.getVersionMatcher().isDynamic(mrid)) {
-            criteria = new ModuleRevisionId(new ModuleId(organisation,
-                    moduleName), branch, "*");
+            criteria = new ModuleRevisionId(new ModuleId(organisation, moduleName), branch, "*");
         } else {
-            criteria = new ModuleRevisionId(new ModuleId(organisation,
-                    moduleName), branch, revision);
+            criteria = new ModuleRevisionId(new ModuleId(organisation, moduleName), branch, revision);
         }
 
         PatternMatcher patternMatcher = settings.getMatcher(matcher);
@@ -514,31 +450,26 @@ public class DefaultPluginServiceImpl implements PluginService {
             return ivyInstance.listModules(criteria, patternMatcher);
         } else {
             // limit search to the specified resolver.
-            DependencyResolver dependencyResolver = resolver == null ? settings
-                    .getDefaultResolver() : settings.getResolver(resolver);
+            DependencyResolver dependencyResolver = resolver == null ? settings.getDefaultResolver() : settings
+                    .getResolver(resolver);
             if (dependencyResolver == null) {
-                throw new IllegalArgumentException(
-                        "Unknown dependency resolver for search: " + resolver);
+                throw new IllegalArgumentException("Unknown dependency resolver for search: " + resolver);
             }
 
             ivyInstance.pushContext();
             try {
-                return ivyInstance.getSearchEngine().listModules(
-                        dependencyResolver, criteria, patternMatcher);
+                return ivyInstance.getSearchEngine().listModules(dependencyResolver, criteria, patternMatcher);
             } finally {
                 ivyInstance.popContext();
             }
         }
     }
 
-    public ModuleRevisionId[] search(String organisation, String moduleName)
-            throws Exception {
-        return search(organisation, moduleName, null, null,
-                PatternMatcher.EXACT_OR_REGEXP, null);
+    public ModuleRevisionId[] search(String organisation, String moduleName) throws Exception {
+        return search(organisation, moduleName, null, null, PatternMatcher.EXACT_OR_REGEXP, null);
     }
 
-    public String[] searchModule(String organisation, String moduleName)
-            throws Exception {
+    public String[] searchModule(String organisation, String moduleName) throws Exception {
         ModuleRevisionId[] mrids = search(organisation, moduleName);
         String[] result = new String[mrids.length];
         for (int i = 0; i < mrids.length; i++) {
@@ -553,43 +484,35 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     public String getPluginDescription(String moduleRevisionId) {
-        ModuleRevisionId module = buildModuleRevisionId(moduleRevisionId,
-                PluginType.PLUGIN);
+        ModuleRevisionId module = buildModuleRevisionId(moduleRevisionId, PluginType.PLUGIN);
         return getDescription(module);
     }
 
     public String getBuildTypeDescription(String moduleRevisionId) {
-        ModuleRevisionId module = buildModuleRevisionId(moduleRevisionId,
-                PluginType.BUILDTYPE);
+        ModuleRevisionId module = buildModuleRevisionId(moduleRevisionId, PluginType.BUILDTYPE);
 
         return getDescription(module);
     }
 
-    private ModuleRevisionId buildModuleRevisionId(String moduleRevisionId,
-            PluginType pluginType) {
+    private ModuleRevisionId buildModuleRevisionId(String moduleRevisionId, PluginType pluginType) {
         String mrid = moduleRevisionId;
         if (!mrid.matches(".*#.*")) {
             if (pluginType.equals(PluginType.BUILDTYPE)) {
-                Message.debug("No organisation specified for buildtype " + mrid
-                        + " using the default one");
+                Message.debug("No organisation specified for buildtype " + mrid + " using the default one");
 
-                mrid = EasyAntConstants.EASYANT_BUILDTYPES_ORGANISATION + "#"
-                        + mrid;
+                mrid = EasyAntConstants.EASYANT_BUILDTYPES_ORGANISATION + "#" + mrid;
 
             } else {
-                Message.debug("No organisation specified for plugin " + mrid
-                        + " using the default one");
+                Message.debug("No organisation specified for plugin " + mrid + " using the default one");
 
-                mrid = EasyAntConstants.EASYANT_PLUGIN_ORGANISATION + "#"
-                        + mrid;
+                mrid = EasyAntConstants.EASYANT_PLUGIN_ORGANISATION + "#" + mrid;
             }
         }
         ModuleRevisionId module = ModuleRevisionId.parse(mrid);
         return module;
     }
 
-    public EasyAntReport generateEasyAntReport(File moduleDescriptor)
-            throws Exception {
+    public EasyAntReport generateEasyAntReport(File moduleDescriptor) throws Exception {
         return generateEasyAntReport(moduleDescriptor, null, null);
     }
 

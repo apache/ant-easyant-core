@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
+import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 import org.apache.ivy.core.report.ResolveReport;
 
 /**
@@ -39,6 +40,7 @@ public class EasyAntReport {
     private List<ImportedModuleReport> importedModuleReports;
     private Map<String, PropertyDescriptor> propertyReports;
     private ResolveReport resolveReport;
+    private ModuleDescriptor moduleDescriptor;
 
     /**
      * Default Constructor
@@ -242,25 +244,6 @@ public class EasyAntReport {
     }
 
     /**
-     * Get the related ivyReport
-     * 
-     * @return the resolveReport
-     */
-    public ResolveReport getResolveReport() {
-        return resolveReport;
-    }
-
-    /**
-     * Set the related ivyReport
-     * 
-     * @param resolveReport
-     *            a resolveReport
-     */
-    public void setResolveReport(ResolveReport resolveReport) {
-        this.resolveReport = resolveReport;
-    }
-
-    /**
      * Add a property
      * 
      * @param propertyName
@@ -434,6 +417,23 @@ public class EasyAntReport {
         }
 
         return extensionPoints;
+    }
+
+    /**
+     * Get attached module descriptor
+     * @return attached module descriptor
+     */
+    public ModuleDescriptor getModuleDescriptor() {
+        return moduleDescriptor;
+    }
+
+    /**
+     * Set attached module descriptor
+     * @param moduleDescriptor attached module descriptor
+     */
+    public void setModuleDescriptor(ModuleDescriptor moduleDescriptor) {
+        this.moduleDescriptor = moduleDescriptor;
+        
     }
 
 }
