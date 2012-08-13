@@ -30,6 +30,12 @@ import org.apache.ivy.core.module.descriptor.DependencyDescriptor;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.tools.ant.BuildException;
 
+/**
+ * Provide go offline feature. It retrieves all easyant modules used by the project (plugins, buildtype) and all project
+ * dependencies. You can then define target resolver name where all artifacts will get installed. You can combine
+ * GoOffline task with ConfigureBuildScopeRepository, to have everything embedded in your project directory
+ * 
+ */
 public class GoOffline extends AbstractEasyAntTask {
 
     private String projectResolverName;
@@ -44,19 +50,18 @@ public class GoOffline extends AbstractEasyAntTask {
         if (moduleIvy == null || !moduleIvy.exists()) {
             throw new BuildException("Couldn't locate module ivy did you specified moduleivy attribute ?");
         }
-        
-        if (projectResolverName== null) {
+
+        if (projectResolverName == null) {
             throw new BuildException("projectResolverName is mandatory !");
         }
-        
-        if (easyantResolverName== null) {
+
+        if (easyantResolverName == null) {
             throw new BuildException("easyantResolverName is mandatory !");
         }
 
-        // 1 ask plugin service about current project
         PluginService pluginService = (PluginService) getProject().getReference(
                 EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
-        EasyAntReport easyAntReport =null;
+        EasyAntReport easyAntReport = null;
         try {
             easyAntReport = pluginService.generateEasyAntReport(moduleIvy);
             installBuildTypeAndPlugins(easyAntReport);
@@ -67,13 +72,19 @@ public class GoOffline extends AbstractEasyAntTask {
 
     }
 
+    /***
+     * Install project dependencies
+     * 
+     * @param easyAntReport
+     *            {@link EasyAntReport} where project dependencies are described
+     */
     private void installProjectDependencies(EasyAntReport easyAntReport) {
         for (DependencyDescriptor dependencyDescriptor : easyAntReport.getModuleDescriptor().getDependencies()) {
 
             IvyInstall install = new IvyInstall();
             install.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));
             ModuleRevisionId mrid = dependencyDescriptor.getDependencyRevisionId();
-            // locate resolver
+            // locate source resolver
             IvyAntSettings ivyAntSettings = IvyInstanceHelper.getProjectIvyAntSettings(getProject());
             String from = ivyAntSettings.getConfiguredIvyInstance(this).getSettings().getResolverName(mrid);
             install.setFrom(from);
@@ -87,13 +98,16 @@ public class GoOffline extends AbstractEasyAntTask {
         }
     }
 
+    /**
+     * Install easyant plugins and buildtypes used by a project
+     * @param easyAntReport {@link EasyAntReport} where plugin / buildtypes is described
+     */
     private void installBuildTypeAndPlugins(EasyAntReport easyAntReport) {
         for (ImportedModuleReport importedModule : easyAntReport.getImportedModuleReports()) {
-            // make this recursive
             IvyInstall install = new IvyInstall();
             install.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(getProject()));
             ModuleRevisionId mrid = ModuleRevisionId.parse(importedModule.getModuleMrid());
-            // locate resolver
+            // locate source resolver
             IvyAntSettings ivyAntSettings = IvyInstanceHelper.getEasyAntIvyAntSettings(getProject());
             String from = ivyAntSettings.getConfiguredIvyInstance(this).getSettings().getResolverName(mrid);
             install.setFrom(from);
@@ -105,6 +119,7 @@ public class GoOffline extends AbstractEasyAntTask {
             install.setOverwrite(true);
             install.setHaltonfailure(false);
             initTask(install).execute();
+
             // install plugins declared inside current module
             if (importedModule.getEasyantReport() != null) {
                 installBuildTypeAndPlugins(importedModule.getEasyantReport());
