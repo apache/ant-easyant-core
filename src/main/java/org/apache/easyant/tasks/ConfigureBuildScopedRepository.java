@@ -20,7 +20,7 @@ package org.apache.easyant.tasks;
 import java.io.File;
 
 import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.ivy.Ivy;
+import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyTask;
 import org.apache.ivy.core.cache.DefaultRepositoryCacheManager;
 import org.apache.ivy.core.settings.IvySettings;
@@ -37,27 +37,65 @@ import org.apache.tools.ant.Project;
  */
 public class ConfigureBuildScopedRepository extends IvyTask {
 
-    private String buildScopedRepositoryPrefix = "build";
+    private String name;
 
     private String target;
+    private boolean dictator = false;
+    private String ivyPattern = "/[organisation]/[module]/[revision]/[module].ivy";
+    private String artifactPattern = "/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]";
 
     /**
-     * Get the build scoped repository prefix
+     * Specify if this repository should be used in place of any specified resolver in {@link IvySettings}
      * 
-     * @return a build scoped repository prefix
+     * @return true if acts as dictator resolver
      */
-    public String getBuildScopedRepositoryPrefix() {
-        return buildScopedRepositoryPrefix;
+    public boolean isDictator() {
+        return dictator;
     }
 
     /**
-     * Set the build scoped repository prefix
+     * Specify if this repository should be used in place of any specified resolver in {@link IvySettings}
      * 
-     * @param buildScopedRepositoryPrefix
-     *            a build scoped repository prefix
+     * @param dictator
+     *            true if acts as dictator resolver
      */
-    public void setBuildScopedRepositoryPrefix(String buildScopedRepositoryPrefix) {
-        this.buildScopedRepositoryPrefix = buildScopedRepositoryPrefix;
+    public void setDictator(boolean dictator) {
+        this.dictator = dictator;
+    }
+
+    public String getIvyPattern() {
+        return ivyPattern;
+    }
+
+    public void setIvyPattern(String ivyPattern) {
+        this.ivyPattern = ivyPattern;
+    }
+
+    public String getArtifactPattern() {
+        return artifactPattern;
+    }
+
+    public void setArtifactPattern(String artifactPattern) {
+        this.artifactPattern = artifactPattern;
+    }
+
+    /**
+     * Get repository name. By default equals to "build." + ivyInstanceName
+     * 
+     * @return repository name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Set repository name
+     * 
+     * @param name
+     *            repository name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -92,23 +130,23 @@ public class ConfigureBuildScopedRepository extends IvyTask {
     @Override
     public void doExecute() throws BuildException {
         String target = getTarget();
+        if (getName() == null) {
+            buildRepositoryName();
+        }
+
         // be sure that we have an absolute path
         File targetDir = new File(target);
         target = targetDir.getAbsolutePath();
 
-        final String DEFAULT_BUILD_SCOPED_REPOSITORY_DIR = target + "/repository";
-        final String DEFAULT_CACHE_BUILD_SCOPED_REPO = target + "/cache";
+        String buildScopeRepositoryName = getName();
+
+        final String DEFAULT_BUILD_SCOPED_REPOSITORY_DIR = target + "/repository/" + buildScopeRepositoryName;
+        final String DEFAULT_CACHE_BUILD_SCOPED_REPO = target + "/cache/" + buildScopeRepositoryName;
         getProject().log("Registering build scoped repository in " + DEFAULT_BUILD_SCOPED_REPOSITORY_DIR,
                 Project.MSG_DEBUG);
-        final String CACHENAME = "build-scoped-cache";
+        final String CACHENAME = "build-scoped-cache-" + buildScopeRepositoryName;
         // Get the project ivy instance
         IvySettings settings = getSettings();
-
-        // Search the default resolver after the build-scoped repo
-        DependencyResolver dr = settings.getDefaultResolver();
-        if (dr == null) {
-            throw new BuildException("Unable to find a default resolver");
-        }
 
         // Create a cache for build scoped repository
         File cacheDir = new File(DEFAULT_CACHE_BUILD_SCOPED_REPO);
@@ -120,30 +158,60 @@ public class ConfigureBuildScopedRepository extends IvyTask {
 
         // Create the build scoped repository
         FileSystemResolver buildRepository = new FileSystemResolver();
-        buildRepository.setName(buildScopedRepositoryPrefix + dr.getName());
-        buildRepository.addArtifactPattern(DEFAULT_BUILD_SCOPED_REPOSITORY_DIR
-                + "/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]");
-        buildRepository.addIvyPattern(DEFAULT_BUILD_SCOPED_REPOSITORY_DIR
-                + "/[organisation]/[module]/[revision]/[module].ivy");
+        buildRepository.addArtifactPattern(DEFAULT_BUILD_SCOPED_REPOSITORY_DIR + getArtifactPattern());
+        buildRepository.addIvyPattern(DEFAULT_BUILD_SCOPED_REPOSITORY_DIR + getIvyPattern());
+
         // bind to the repocache
         buildRepository.setCache(CACHENAME);
+        buildRepository.setName(buildScopeRepositoryName);
+        if (isDictator()) {
+            settings.setDictatorResolver(buildRepository);
+        } else {
 
-        getProject().setProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY, buildRepository.getName());
+            // Search the default resolver after the build-scoped repo
+            DependencyResolver dr = settings.getDefaultResolver();
+            if (dr == null) {
+                throw new BuildException("Unable to find a default resolver");
+            }
 
-        // replace the default resolver with a chain resolver, which first
-        // searches
-        // in the build repository, then in the old default.
-        ChainResolver resolver = new ChainResolver();
-        resolver.setName(dr.getName()); // same name as old default
-        resolver.setReturnFirst(true);
-        resolver.add(buildRepository);
-        resolver.add(dr);
-        dr.setName("delegate." + dr.getName()); // give old default a new name
+            // replace the default resolver with a chain resolver, which first
+            // searches
+            // in the build repository, then in the old default.
+            ChainResolver resolver = new ChainResolver();
+            resolver.setName(dr.getName()); // same name as old default
+            resolver.setReturnFirst(true);
+            resolver.add(buildRepository);
+            resolver.add(dr);
+            dr.setName("delegate." + dr.getName()); // give old default a new name
 
-        settings.addResolver(buildRepository);
-        settings.addResolver(dr);
-        settings.addResolver(resolver);
+            settings.addResolver(buildRepository);
+            settings.addResolver(dr);
+            settings.addResolver(resolver);
+        }
+        getProject().setProperty(getProjectBuildScopeRepositoryName(getProject()), buildRepository.getName());
 
+    }
+
+    /**
+     * Build default repository name
+     * @return repository name
+     */
+    private String buildRepositoryName() {
+        return "build." + IvyInstanceHelper.getProjectIvyInstanceName(getProject());
+    }
+
+    /**
+     * Get project build scope repository name
+     * @param project {@link Project} where build scope is registered
+     * @return repository name
+     */
+    public static String getProjectBuildScopeRepositoryName(Project project) {
+        String repoName = project.getProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY);
+        if (repoName == null) {
+            repoName = EasyAntMagicNames.EASYANT_BUILD_REPOSITORY + "."
+                    + IvyInstanceHelper.getProjectIvyInstanceName(project);
+        }
+        return repoName;
     }
 
 }
