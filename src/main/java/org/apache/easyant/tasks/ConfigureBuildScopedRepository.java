@@ -190,7 +190,7 @@ public class ConfigureBuildScopedRepository extends IvyTask {
             settings.addResolver(resolver);
         }
         settings.addResolver(buildRepository);
-        log(getName() + " registration succeed", Project.MSG_DEBUG);
+        log(getName() + " registration succeeded", Project.MSG_DEBUG);
     }
 
     /**
