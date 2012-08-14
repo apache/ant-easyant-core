@@ -80,21 +80,8 @@ public class GoOffline extends AbstractEasyAntTask {
      */
     private void installProjectDependencies(EasyAntReport easyAntReport) {
         for (DependencyDescriptor dependencyDescriptor : easyAntReport.getModuleDescriptor().getDependencies()) {
-
-            IvyInstall install = new IvyInstall();
-            install.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));
-            ModuleRevisionId mrid = dependencyDescriptor.getDependencyRevisionId();
-            // locate source resolver
-            IvyAntSettings ivyAntSettings = IvyInstanceHelper.getProjectIvyAntSettings(getProject());
-            String from = ivyAntSettings.getConfiguredIvyInstance(this).getSettings().getResolverName(mrid);
-            install.setFrom(from);
-            install.setTo(getProjectResolverName());
-            install.setOrganisation(mrid.getOrganisation());
-            install.setModule(mrid.getName());
-            install.setRevision(mrid.getRevision());
-            install.setOverwrite(true);
-            install.setHaltonfailure(false);
-            initTask(install).execute();
+            install(dependencyDescriptor.getDependencyRevisionId(), getProjectResolverName(),
+                    IvyInstanceHelper.getProjectIvyInstanceName(getProject()));
         }
     }
 
@@ -106,28 +93,38 @@ public class GoOffline extends AbstractEasyAntTask {
      */
     private void installBuildTypeAndPlugins(EasyAntReport easyAntReport) {
         for (ImportedModuleReport importedModule : easyAntReport.getImportedModuleReports()) {
-            IvyInstall install = new IvyInstall();
-            install.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(getProject()));
-            ModuleRevisionId mrid = ModuleRevisionId.parse(importedModule.getModuleMrid());
-            // locate source resolver
-            IvyAntSettings ivyAntSettings = IvyInstanceHelper.getEasyAntIvyAntSettings(getProject());
-            String from = ivyAntSettings.getConfiguredIvyInstance(this).getSettings().getResolverName(mrid);
-            install.setFrom(from);
-
-            install.setTo(getEasyantResolverName());
-            install.setOrganisation(mrid.getOrganisation());
-            install.setModule(mrid.getName());
-            install.setRevision(mrid.getRevision());
-            install.setOverwrite(true);
-            install.setHaltonfailure(false);
-            initTask(install).execute();
-
-            // install plugins declared inside current module
+            install(ModuleRevisionId.parse(importedModule.getModuleMrid()),getEasyantResolverName(),EasyAntMagicNames.EASYANT_IVY_INSTANCE);
             if (importedModule.getEasyantReport() != null) {
+                //install module dependencies
+                for (DependencyDescriptor dependencyDescriptor : importedModule.getEasyantReport().getModuleDescriptor().getDependencies()) {
+                    install(dependencyDescriptor.getDependencyRevisionId(), getEasyantResolverName(),
+                            EasyAntMagicNames.EASYANT_IVY_INSTANCE);
+                }
+                // install plugins declared inside current module
+                
                 installBuildTypeAndPlugins(importedModule.getEasyantReport());
             }
 
         }
+    }
+
+    private void install(ModuleRevisionId moduleRevisionId, String targetResolver, String ivyInstanceRef) {
+        IvyInstall install = new IvyInstall();
+        install.setSettingsRef(IvyInstanceHelper.buildIvyReference(getProject(), ivyInstanceRef));
+
+        // locate source resolver
+        IvyAntSettings ivyAntSettings = IvyInstanceHelper.getIvyAntSettings(getProject(), ivyInstanceRef);
+        String from = ivyAntSettings.getConfiguredIvyInstance(this).getSettings().getResolverName(moduleRevisionId);
+        install.setFrom(from);
+
+        install.setTo(targetResolver);
+        install.setOrganisation(moduleRevisionId.getOrganisation());
+        install.setModule(moduleRevisionId.getName());
+        install.setRevision(moduleRevisionId.getRevision());
+        install.setOverwrite(true);
+        install.setHaltonfailure(false);
+        initTask(install).execute();
+
     }
 
     public String getProjectResolverName() {
