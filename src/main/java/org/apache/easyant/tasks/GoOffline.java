@@ -44,7 +44,7 @@ public class GoOffline extends AbstractEasyAntTask {
 
     @Override
     public void execute() throws BuildException {
-        if (moduleIvy == null) {
+        if (moduleIvy == null && getProject().getProperty(EasyAntMagicNames.EASYANT_FILE) != null) {
             moduleIvy = new File(getProject().getProperty(EasyAntMagicNames.EASYANT_FILE));
         }
         if (moduleIvy == null || !moduleIvy.exists()) {
@@ -100,7 +100,9 @@ public class GoOffline extends AbstractEasyAntTask {
 
     /**
      * Install easyant plugins and buildtypes used by a project
-     * @param easyAntReport {@link EasyAntReport} where plugin / buildtypes is described
+     * 
+     * @param easyAntReport
+     *            {@link EasyAntReport} where plugin / buildtypes is described
      */
     private void installBuildTypeAndPlugins(EasyAntReport easyAntReport) {
         for (ImportedModuleReport importedModule : easyAntReport.getImportedModuleReports()) {
