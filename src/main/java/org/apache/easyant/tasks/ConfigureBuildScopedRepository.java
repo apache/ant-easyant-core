@@ -145,6 +145,8 @@ public class ConfigureBuildScopedRepository extends IvyTask {
         getProject().log("Registering build scoped repository in " + DEFAULT_BUILD_SCOPED_REPOSITORY_DIR,
                 Project.MSG_DEBUG);
         final String CACHENAME = "build-scoped-cache-" + buildScopeRepositoryName;
+        log("Registering build scope repository : " + getName() + " in " + DEFAULT_BUILD_SCOPED_REPOSITORY_DIR,
+                Project.MSG_DEBUG);
         // Get the project ivy instance
         IvySettings settings = getSettings();
 
@@ -188,31 +190,16 @@ public class ConfigureBuildScopedRepository extends IvyTask {
             settings.addResolver(resolver);
         }
         settings.addResolver(buildRepository);
-        
-        getProject().setProperty(getProjectBuildScopeRepositoryName(getProject()), buildRepository.getName());
-
+        log(getName() + " registration succeed", Project.MSG_DEBUG);
     }
 
     /**
      * Build default repository name
+     * 
      * @return repository name
      */
     private String buildRepositoryName() {
         return "build." + IvyInstanceHelper.getProjectIvyInstanceName(getProject());
-    }
-
-    /**
-     * Get project build scope repository name
-     * @param project {@link Project} where build scope is registered
-     * @return repository name
-     */
-    public static String getProjectBuildScopeRepositoryName(Project project) {
-        String repoName = project.getProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY);
-        if (repoName == null) {
-            repoName = EasyAntMagicNames.EASYANT_BUILD_REPOSITORY + "."
-                    + IvyInstanceHelper.getProjectIvyInstanceName(project);
-        }
-        return repoName;
     }
 
 }

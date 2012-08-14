@@ -443,7 +443,9 @@ public class LoadModule extends AbstractEasyAntTask {
      */
     private void configureBuildRepository(IvyAntSettings projectSettings)
             throws BuildException {
-        initTask(new ConfigureBuildScopedRepository()).execute();
+        ConfigureBuildScopedRepository configureBuildScopedRepository = new ConfigureBuildScopedRepository();
+        configureBuildScopedRepository.setName(EasyAntConstants.BUILD_SCOPE_REPOSITORY);
+        initTask(configureBuildScopedRepository).execute();
     }
 
 }

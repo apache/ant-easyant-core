@@ -17,24 +17,23 @@
  */
 package org.apache.easyant.core;
 
-
 public interface EasyAntConstants {
-    
+
     /**
      * Name of the task name used for internal easyant jobs
      */
     public static final String EASYANT_TASK_NAME = "easyant";
-    
+
     /**
      * Name of the default build module
      */
     public static final String DEFAULT_BUILD_MODULE = "module.ivy";
-    
+
     /**
      * Name of the default build file
      */
     public static final String DEFAULT_BUILD_FILE = "module.ant";
-    
+
     /**
      * Name of the default override build file
      */
@@ -54,12 +53,12 @@ public interface EasyAntConstants {
      * Name of the default easyant plugins organisation
      */
     public static final String EASYANT_PLUGIN_ORGANISATION = "org.apache.easyant.plugins";
-    
+
     /**
      * Name of the default easyant build types organisation
      */
     public static final String EASYANT_BUILDTYPES_ORGANISATION = "org.apache.easyant.buildtypes";
-    
+
     /**
      * Name of the default easyant skeletons organisation
      */
@@ -79,6 +78,10 @@ public interface EasyAntConstants {
      * Default value for pre module targets
      */
     public static final String DEFAULT_PRE_MODULE_TARGETS = "clean";
-    
+
+    /**
+     * Default build scope repository name
+     */
+    public static final String BUILD_SCOPE_REPOSITORY = "project-build";
 
 }

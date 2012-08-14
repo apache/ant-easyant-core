@@ -29,7 +29,6 @@ import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
 import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
 import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
-import org.apache.easyant.tasks.ConfigureBuildScopedRepository;
 import org.apache.easyant.tasks.SubModule;
 import org.apache.easyant.tasks.SubModule.TargetList;
 import org.apache.ivy.ant.IvyAntSettings;
@@ -64,7 +63,7 @@ public class MetaBuildExecutor extends DefaultExecutor {
         // repository, so that it can
         // be used by submodules if needed
         File moduleFile = new File(project.getBaseDir(), "module.ivy");
-        String buildRepo = ConfigureBuildScopedRepository.getProjectBuildScopeRepositoryName(project);
+        String buildRepo = EasyAntConstants.BUILD_SCOPE_REPOSITORY;
         if (moduleFile.isFile() && buildRepo != null) {
 
             project.log("Publishing module descriptor " + moduleFile.getPath()
