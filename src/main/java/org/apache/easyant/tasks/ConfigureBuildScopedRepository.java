@@ -41,6 +41,7 @@ public class ConfigureBuildScopedRepository extends IvyTask {
 
     private String target;
     private boolean dictator = false;
+    private boolean generateWrapperResoler = true;
     private String ivyPattern = "/[organisation]/[module]/[revision]/[module].ivy";
     private String artifactPattern = "/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]";
 
@@ -127,6 +128,27 @@ public class ConfigureBuildScopedRepository extends IvyTask {
         this.target = target;
     }
 
+    /**
+     * Specify if we need to generate wrapper resolver. This is not evaluated when using as dictator. When false,
+     * repository will be generated but not plugged in current {@link ChainResolver}
+     * 
+     * @return true if we need to generate wrapper resolver
+     */
+    public boolean isGenerateWrapperResoler() {
+        return generateWrapperResoler;
+    }
+
+    /**
+     * Specify if we need to generate wrapper resolver. This is not evaluated when using as dictator. When false,
+     * repository will be generated but not plugged in current {@link ChainResolver}
+     * 
+     * @param generateWrapperResoler
+     *            true if we need to generate wrapper resolver
+     */
+    public void setGenerateWrapperResoler(boolean generateWrapperResoler) {
+        this.generateWrapperResoler = generateWrapperResoler;
+    }
+
     @Override
     public void doExecute() throws BuildException {
         String target = getTarget();
@@ -168,7 +190,7 @@ public class ConfigureBuildScopedRepository extends IvyTask {
         buildRepository.setName(buildScopeRepositoryName);
         if (isDictator()) {
             settings.setDictatorResolver(buildRepository);
-        } else {
+        } else if (isGenerateWrapperResoler()){
 
             // Search the default resolver after the build-scoped repo
             DependencyResolver dr = settings.getDefaultResolver();
