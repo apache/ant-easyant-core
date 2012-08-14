@@ -113,6 +113,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
                     .resolve(moduleRevisionId, resolveOptions, true);
             eaReport = new EasyAntReport();
+            eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
             Map<String, String> properties = new HashMap<String, String>();
             File antFile = null;

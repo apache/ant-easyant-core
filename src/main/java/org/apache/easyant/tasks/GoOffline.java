@@ -18,6 +18,7 @@
 package org.apache.easyant.tasks;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
@@ -28,6 +29,8 @@ import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyInstall;
 import org.apache.ivy.core.module.descriptor.DependencyDescriptor;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
+import org.apache.ivy.core.report.ResolveReport;
+import org.apache.ivy.core.resolve.IvyNode;
 import org.apache.tools.ant.BuildException;
 
 /**
@@ -96,8 +99,10 @@ public class GoOffline extends AbstractEasyAntTask {
             install(ModuleRevisionId.parse(importedModule.getModuleMrid()),getEasyantResolverName(),EasyAntMagicNames.EASYANT_IVY_INSTANCE);
             if (importedModule.getEasyantReport() != null) {
                 //install module dependencies
-                for (DependencyDescriptor dependencyDescriptor : importedModule.getEasyantReport().getModuleDescriptor().getDependencies()) {
-                    install(dependencyDescriptor.getDependencyRevisionId(), getEasyantResolverName(),
+                ResolveReport resolveReport=importedModule.getEasyantReport().getResolveReport();
+                for (Iterator iterator = resolveReport.getDependencies().iterator(); iterator.hasNext();) {
+                    IvyNode dependency = (IvyNode) iterator.next();
+                    install(dependency.getResolvedId(), getEasyantResolverName(),
                             EasyAntMagicNames.EASYANT_IVY_INSTANCE);
                 }
                 // install plugins declared inside current module

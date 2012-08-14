@@ -418,6 +418,14 @@ public class EasyAntReport {
 
         return extensionPoints;
     }
+    
+    public ResolveReport getResolveReport() {
+        return resolveReport;
+    }
+
+    public void setResolveReport(ResolveReport resolveReport) {
+        this.resolveReport = resolveReport;
+    }
 
     /**
      * Get attached module descriptor
