@@ -184,10 +184,11 @@ public class ConfigureBuildScopedRepository extends IvyTask {
             resolver.add(dr);
             dr.setName("delegate." + dr.getName()); // give old default a new name
 
-            settings.addResolver(buildRepository);
             settings.addResolver(dr);
             settings.addResolver(resolver);
         }
+        settings.addResolver(buildRepository);
+        
         getProject().setProperty(getProjectBuildScopeRepositoryName(getProject()), buildRepository.getName());
 
     }
