@@ -263,7 +263,7 @@ public class EasyAntEngine {
         return path;
     }
 
-    protected void configurePluginService(Project project,
+    public void configurePluginService(Project project,
             Ivy easyantIvyInstance) {
         pluginService = new DefaultPluginServiceImpl(easyantIvyInstance);
         project.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE,
