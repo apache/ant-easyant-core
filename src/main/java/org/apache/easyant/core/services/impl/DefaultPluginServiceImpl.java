@@ -392,23 +392,22 @@ public class DefaultPluginServiceImpl implements PluginService {
                 buildType.setModuleMrid(md.getBuildType());
                 buildType.setEasyantReport(getPluginInfo(ModuleRevisionId.parse(md.getBuildType())));
                 eaReport.addImportedModuleReport(buildType);
-                // Store infos on plugins
-                for (Iterator iterator = md.getPlugins().iterator(); iterator.hasNext();) {
-                    PluginDescriptor plugin = (PluginDescriptor) iterator.next();
-                    ImportedModuleReport pluginReport = new ImportedModuleReport();
-                    ModuleRevisionId mrid = ModuleRevisionId.parse(plugin.getMrid());
-                    pluginReport.setModuleMrid(plugin.getMrid());
-                    if (plugin.getAs() == null) {
-                        pluginReport.setAs(mrid.getName());
-                    } else {
-                        pluginReport.setAs(plugin.getAs());
-                    }
-                    pluginReport.setType(plugin.getMode());
-                    pluginReport.setEasyantReport(getPluginInfo(ModuleRevisionId.parse(plugin.getMrid())));
-                    eaReport.addImportedModuleReport(pluginReport);
-                }
             }
-
+            // Store infos on plugins
+            for (Iterator iterator = md.getPlugins().iterator(); iterator.hasNext();) {
+                PluginDescriptor plugin = (PluginDescriptor) iterator.next();
+                ImportedModuleReport pluginReport = new ImportedModuleReport();
+                ModuleRevisionId mrid = ModuleRevisionId.parse(plugin.getMrid());
+                pluginReport.setModuleMrid(plugin.getMrid());
+                if (plugin.getAs() == null) {
+                    pluginReport.setAs(mrid.getName());
+                } else {
+                    pluginReport.setAs(plugin.getAs());
+                }
+                pluginReport.setType(plugin.getMode());
+                pluginReport.setEasyantReport(getPluginInfo(ModuleRevisionId.parse(plugin.getMrid())));
+                eaReport.addImportedModuleReport(pluginReport);
+            }
         } catch (Exception e) {
             throw new Exception("problem while parsing Ivy module file: " + e.getMessage(), e);
         }
