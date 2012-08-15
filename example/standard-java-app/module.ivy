@@ -31,10 +31,9 @@
                 <ea:include organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run" />
             </project>              
           -->
-        <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
-            <ea:property name="default.build.number" value="10"/>
+        <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.9">
             <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-            <ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
+            <ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.9" />
         </ea:build>
     </info>
     <configurations>
