@@ -155,7 +155,7 @@ public class LoadModule extends AbstractEasyAntTask {
         if (!EasyAntMagicNames.EASYANT_IVY_INSTANCE
                 .equals(projectIvyInstanceProp)) {
             configureProjectIvyinstance(projectIvyInstanceProp);
-
+            configureProjectOfflineResolver();
         }
 
         if (shouldUseBuildRepository()) {
@@ -168,6 +168,22 @@ public class LoadModule extends AbstractEasyAntTask {
                         EasyAntConstants.DEFAULT_TARGET)) {
             getProject().setDefault(EasyAntConstants.DEFAULT_TARGET);
         }
+    }
+
+    /**
+     * Configure project offline repository 
+     * If offline mode is enabled, it will acts as dictator resolver
+     * @param project {@link Project} where repository will be configured
+     */
+    private void configureProjectOfflineResolver() {
+        getProject().setProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER, EasyAntConstants.DEFAULT_OFFLINE_PROJECT_RESOLVER);
+        ConfigureBuildScopedRepository projectOfflineRepository = new ConfigureBuildScopedRepository();
+        projectOfflineRepository.setGenerateWrapperResoler(false);
+        projectOfflineRepository.setName(getProject().getProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER));
+        projectOfflineRepository.setDictator(Project.toBoolean(getProject().getProperty(EasyAntMagicNames.EASYANT_OFFLINE)));
+        projectOfflineRepository.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));
+        projectOfflineRepository.setTarget(getProject().getProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY));
+        initTask(projectOfflineRepository).execute();
     }
 
     /**

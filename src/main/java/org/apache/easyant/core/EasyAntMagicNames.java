@@ -177,4 +177,21 @@ public interface EasyAntMagicNames {
      */
     public static final String IGNORE_USER_IVYSETTINGS = "ignore.user.ivysettings";
 
+    /***
+     * Property specifying offline project resolver name
+     * Value: {@value}
+     */
+    public static final String OFFLINE_PROJECT_RESOLVER = "project.buildscope.resolver";
+
+    /***
+     * Property specifying offline easyant resolver name
+     * Value: {@value}
+     */
+    public static final String OFFLINE_EASYANT_RESOLVER = "easyant.buildscope.resolver";
+
+    /**
+     * Property specifying offline base directory
+     * Value: {@value}
+     */
+    public static final String OFFLINE_BASE_DIRECTORY = "offline.base.directory";
 }

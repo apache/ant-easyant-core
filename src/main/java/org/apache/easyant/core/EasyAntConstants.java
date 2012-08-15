@@ -84,4 +84,15 @@ public interface EasyAntConstants {
      */
     public static final String BUILD_SCOPE_REPOSITORY = "project-build";
 
+    /**
+     * Default offline project repository name
+     */
+    public static final String DEFAULT_OFFLINE_PROJECT_RESOLVER = "project.buildscope.repository";
+
+    /**
+     * Default offline easyant repository name
+     */
+    public static final String DEFAULT_OFFLINE_EASYANT_RESOLVER = "easyant.buildscope.repository";
+
+    
 }
