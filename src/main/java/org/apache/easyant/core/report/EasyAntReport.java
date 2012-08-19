@@ -201,7 +201,7 @@ public class EasyAntReport {
     /**
      * Returns the imported module indicated by the passed parameter.
      * 
-     * The method attempts to match either the complete module id
+     * The method attempts to match either the complete module id, module name
      * or the module alias as specified in the build module.
      * 
      * @param module
@@ -218,6 +218,9 @@ public class EasyAntReport {
         ImportedModuleReport retVal = null;
         for(ImportedModuleReport moduleRep : importedModuleReports) {
             if(moduleRep.moduleMrid.startsWith(module)) {
+                retVal = moduleRep;
+                break;
+            } else if (module.equals(moduleRep.getModule())) {
                 retVal = moduleRep;
                 break;
             } else if(moduleRep.as != null && moduleRep.as.equals(module)) {
