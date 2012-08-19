@@ -28,8 +28,8 @@
             <artifact pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
         </filesystem>
         <url name="apache-easyant-plugins">
-            <ivy pattern="${apache.easyant.public.url}/[organization]/[module]/[revision]/[type]s/ivy-[revision].xml" />
-            <artifact pattern="${apache.easyant.public.url}/[organization]/[module]/[revision]/[type]s/[module](-[classifier])-[revision].[ext]" />
+            <ivy pattern="${apache.easyant.public.url}/[organisation]/[module]/[revision]/[type]s/ivy-[revision].xml" />
+            <artifact pattern="${apache.easyant.public.url}/[organisation]/[module]/[revision]/[type]s/[module](-[classifier])-[revision].[ext]" />
         </url>
         
         <ibiblio name="public-maven" m2compatible="true"/> 
