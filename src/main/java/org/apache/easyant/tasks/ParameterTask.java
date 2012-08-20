@@ -17,8 +17,10 @@
  */
 package org.apache.easyant.tasks;
 
+import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.Phase;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Property;
@@ -27,12 +29,11 @@ import org.apache.tools.ant.types.Path;
 /**
  * parameter tasks is used to :
  * 
- *          document properties / paths / phases 
- *          check if properties /paths / phases are required 
- *          set default values if properties are not set
+ * document properties / paths / phases check if properties /paths / phases are required set default values if
+ * properties are not set
  * 
- * This could be usefull in precondition of each modules, to check if
- * property/phase/path are set. And much more usefull to document our modules.
+ * This could be usefull in precondition of each modules, to check if property/phase/path are set. And much more usefull
+ * to document our modules.
  * 
  */
 public class ParameterTask extends Task {
@@ -46,6 +47,7 @@ public class ParameterTask extends Task {
 
     /**
      * Get a description to the property / path / phase
+     * 
      * @return the description
      */
     public String getDescription() {
@@ -54,14 +56,17 @@ public class ParameterTask extends Task {
 
     /**
      * set a description to the property / path / phase
-     * @param description the description
+     * 
+     * @param description
+     *            the description
      */
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      * Appends CDATA text inside the Ant task to description
+     * 
      * @see #setDescription(String)
      */
     public void addText(String descriptionText) {
@@ -70,13 +75,14 @@ public class ParameterTask extends Task {
             if (getDescription() == null) {
                 setDescription(descriptionText);
             } else {
-                setDescription(getDescription()+descriptionText);
+                setDescription(getDescription() + descriptionText);
             }
         }
     }
 
     /**
      * Get the property name to check
+     * 
      * @return a property name
      */
     public String getProperty() {
@@ -85,7 +91,9 @@ public class ParameterTask extends Task {
 
     /**
      * Set the property name to check
-     * @param property a property name
+     * 
+     * @param property
+     *            a property name
      */
     public void setProperty(String property) {
         this.property = property;
@@ -93,7 +101,8 @@ public class ParameterTask extends Task {
 
     /**
      * Get the path to check
-     * @return a pathId 
+     * 
+     * @return a pathId
      */
     public String getPath() {
         return path;
@@ -101,6 +110,7 @@ public class ParameterTask extends Task {
 
     /**
      * Set the path to check
+     * 
      * @param path
      */
     public void setPath(String path) {
@@ -109,6 +119,7 @@ public class ParameterTask extends Task {
 
     /**
      * Get a phase to check
+     * 
      * @return a phase name
      */
     public String getPhase() {
@@ -117,7 +128,9 @@ public class ParameterTask extends Task {
 
     /**
      * Set the path to check
-     * @param phase a phase name 
+     * 
+     * @param phase
+     *            a phase name
      */
     public void setPhase(String phase) {
         this.phase = phase;
@@ -125,6 +138,7 @@ public class ParameterTask extends Task {
 
     /**
      * Get the default value (only available for property)
+     * 
      * @return a string that represents the default value
      */
     public String getDefault() {
@@ -132,8 +146,10 @@ public class ParameterTask extends Task {
     }
 
     /**
-     * Set the default value (only  available for property)
-     * @param defaultValue a string that represents the default value
+     * Set the default value (only available for property)
+     * 
+     * @param defaultValue
+     *            a string that represents the default value
      */
     public void setDefault(String defaultValue) {
         this.defaultValue = defaultValue;
@@ -141,14 +157,21 @@ public class ParameterTask extends Task {
 
     /**
      * Is the refererenced property / path required?
+     * 
      * @return
      */
     public boolean isRequired() {
-        return required;
+        // don't break the build in audit mode
+        if (Project.toBoolean(getProject().getProperty(EasyAntMagicNames.AUDIT_MODE))) {
+            return false;
+        } else {
+            return required;
+        }
     }
 
     /**
      * specify if the property / path is mandatory
+     * 
      * @param required
      */
     public void setRequired(boolean required) {
@@ -157,12 +180,10 @@ public class ParameterTask extends Task {
 
     public void execute() throws BuildException {
         if (property != null) {
-            if (required && getProject().getProperty(property) == null) {
-                throw new BuildException("expected property '" + property
-                        + "': " + description);
+            if (isRequired() && getProject().getProperty(property) == null) {
+                throw new BuildException("expected property '" + property + "': " + description);
             }
-            if (defaultValue != null
-                    && getProject().getProperty(property) == null) {
+            if (defaultValue != null && getProject().getProperty(property) == null) {
                 Property propTask = new Property();
                 propTask.setProject(getProject());
                 propTask.setTaskName(getTaskName());
@@ -173,24 +194,19 @@ public class ParameterTask extends Task {
         } else if (phase != null) {
             Target p = (Target) getProject().getTargets().get(phase);
             if (p == null) {
-                throw new BuildException("expected phase '" + phase + "': "
-                        + description);
+                throw new BuildException("expected phase '" + phase + "': " + description);
             } else if (!(p instanceof Phase)) {
-                throw new BuildException("target '" + phase
-                        + "' must be a phase rather than a target");
+                throw new BuildException("target '" + phase + "' must be a phase rather than a target");
             }
         } else if (path != null) {
             Object p = getProject().getReference(path);
-            if (required && p == null) {
-                throw new BuildException("expected path '" + path + "': "
-                        + description);
+            if (isRequired() && p == null) {
+                throw new BuildException("expected path '" + path + "': " + description);
             } else if (!(p instanceof Path)) {
-                throw new BuildException("reference '" + path
-                        + "' must be a path");
+                throw new BuildException("reference '" + path + "' must be a path");
             }
         } else {
-            throw new BuildException(
-                    "at least one of these attributes is required: property, path, phase");
+            throw new BuildException("at least one of these attributes is required: property, path, phase");
         }
     }
 }
