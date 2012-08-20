@@ -58,6 +58,10 @@ public class ImportedModuleReport {
         return moduleMrid != null ? moduleMrid : ModuleRevisionId.newInstance(
                 organisation, module, revision).toString();
     }
+    
+    public ModuleRevisionId getModuleRevisionId() {
+        return ModuleRevisionId.parse(getModuleMrid());
+    }
 
     public void setModuleMrid(String moduleMrid) {
         this.moduleMrid = moduleMrid;

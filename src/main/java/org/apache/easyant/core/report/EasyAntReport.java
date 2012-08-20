@@ -217,15 +217,21 @@ public class EasyAntReport {
         }
         ImportedModuleReport retVal = null;
         for(ImportedModuleReport moduleRep : importedModuleReports) {
-            if(moduleRep.moduleMrid.startsWith(module)) {
+            if(moduleRep.moduleMrid != null && moduleRep.moduleMrid.startsWith(module)) {
                 retVal = moduleRep;
                 break;
-            } else if (module.equals(moduleRep.getModule())) {
+            } else if (module.equals(moduleRep.getModuleRevisionId().getName())) {
                 retVal = moduleRep;
                 break;
             } else if(moduleRep.as != null && moduleRep.as.equals(module)) {
                 retVal = moduleRep;
                 break;
+            }
+            if (moduleRep.getEasyantReport() != null) {
+                retVal = moduleRep.getEasyantReport().getImportedModuleReport(module);
+                if (retVal != null) {
+                    break;
+                }
             }
         }
         return retVal;
