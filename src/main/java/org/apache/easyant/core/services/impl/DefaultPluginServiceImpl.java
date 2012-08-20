@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,6 +41,7 @@ import org.apache.easyant.core.report.ParameterReport;
 import org.apache.easyant.core.report.ParameterType;
 import org.apache.easyant.core.report.TargetReport;
 import org.apache.easyant.core.services.PluginService;
+import org.apache.easyant.tasks.AbstractImport;
 import org.apache.easyant.tasks.Import;
 import org.apache.easyant.tasks.ParameterTask;
 import org.apache.ivy.Ivy;
@@ -58,6 +58,7 @@ import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
 import org.apache.ivy.plugins.repository.url.URLResource;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.util.Message;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.ComponentHelper;
 import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Project;
@@ -66,6 +67,7 @@ import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Property;
+import org.apache.tools.ant.types.Path;
 
 public class DefaultPluginServiceImpl implements PluginService {
 
@@ -101,7 +103,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         ModuleDescriptorParserRegistry.getInstance().addParser(parser);
     }
 
-    public EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId, String conf) throws Exception {
+    public EasyAntReport getPluginInfo(final ModuleRevisionId moduleRevisionId, String conf) throws Exception {
 
         IvyContext.pushNewContext().setIvy(ivyInstance);
         EasyAntReport eaReport = null;
@@ -110,37 +112,67 @@ public class DefaultPluginServiceImpl implements PluginService {
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
             resolveOptions.setConfs(conf.split(","));
-            ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
+            final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
                     .resolve(moduleRevisionId, resolveOptions, true);
             eaReport = new EasyAntReport();
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
-            Map<String, String> properties = new HashMap<String, String>();
-            File antFile = null;
 
-            for (int j = 0; j < report.getConfigurationReport(conf).getAllArtifactsReports().length; j++) {
-                ArtifactDownloadReport artifact = report.getConfigurationReport(conf).getAllArtifactsReports()[j];
+            Project project = new Project();
+            project.setNewProperty(EasyAntMagicNames.AUDIT_MODE, "true");
+            project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
+            EasyAntEngine eagAntEngine = new EasyAntEngine();
+            eagAntEngine.configureEasyAntIvyInstance(project);
+            project.init();
 
-                if ("ant".equals(artifact.getType()) && "ant".equals(artifact.getExt())) {
-                    antFile = artifact.getLocalFile();
-                } else {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(moduleRevisionId.getOrganisation());
-                    sb.append("#");
-                    sb.append(moduleRevisionId.getName());
-                    sb.append(".");
-                    if (!moduleRevisionId.getName().equals(artifact.getName())) {
-                        sb.append(artifact.getName());
-                        sb.append(".");
+            AbstractImport abstractImport = new AbstractImport() {
+                @Override
+                public void execute() throws BuildException {
+                    Path path = createModulePath(moduleRevisionId);
+                    File antFile = null;
+                    for (int j = 0; j < report.getConfigurationReport(getMainConf()).getAllArtifactsReports().length; j++) {
+                        ArtifactDownloadReport artifact = report.getConfigurationReport(getMainConf())
+                                .getAllArtifactsReports()[j];
+
+                        if ("ant".equals(artifact.getType())) {
+                            antFile = artifact.getLocalFile();
+                        } else if ("jar".equals(artifact.getType())) {
+                            path.createPathElement().setLocation(artifact.getLocalFile());
+                        } else {
+                            handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(),
+                                    artifact.getLocalFile());
+                        }
                     }
-                    sb.append(artifact.getExt());
-                    sb.append(".file");
-                    properties.put(sb.toString(), artifact.getLocalFile().getAbsolutePath());
+                    if (antFile != null && antFile.exists()) {
+                        ProjectHelper.configureProject(getProject(), antFile);
+                    }
                 }
-            }
+            };
 
-            if (antFile != null) {
-                scanAntFile(conf, eaReport, properties, antFile);
+            abstractImport.setProject(project);
+            // location ?
+            abstractImport.execute();
+
+            for (Iterator iterator = project.getTargets().values().iterator(); iterator.hasNext();) {
+                Target target = (Target) iterator.next();
+                handleTarget(eaReport, target);
+                for (int i = 0; i < target.getTasks().length; i++) {
+                    Task task = target.getTasks()[i];
+                    Class taskClass = ComponentHelper.getComponentHelper(project).getComponentClass(task.getTaskType());
+                    if (taskClass == null) {
+                        continue;
+                    }
+                    if (ParameterTask.class.getName().equals(taskClass.getName())) {
+                        handleParameterTask(eaReport, task);
+                    }
+                    if (Property.class.getName().equals(taskClass.getName())) {
+                        handleProperty(eaReport, task);
+                    }
+                    if (Import.class.getName().equals(taskClass.getName())) {
+                        handleImport(conf, eaReport, task);
+                    }
+
+                }
             }
         } catch (Exception e) {
             throw new Exception("An error occured while fetching plugin informations : " + e.getMessage(), e);
@@ -154,8 +186,7 @@ public class DefaultPluginServiceImpl implements PluginService {
     private void scanAntFile(String conf, EasyAntReport eaReport, Map<String, String> properties, File antFile)
             throws IOException, Exception {
         Project project = new Project();
-        // FIXME: temporary to support phases report
-        project.setNewProperty("audit.mode", "true");
+        project.setNewProperty(EasyAntMagicNames.AUDIT_MODE, "true");
         project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
         EasyAntEngine eagAntEngine = new EasyAntEngine();
         eagAntEngine.configureEasyAntIvyInstance(project);
@@ -206,12 +237,11 @@ public class DefaultPluginServiceImpl implements PluginService {
         importedModuleReport.setType(propertyHelper.replaceProperties(attributes.get("type")));
         importedModuleReport.setAs(propertyHelper.replaceProperties(attributes.get("as")));
         if (attributes.get("mandatory") != null) {
-            importedModuleReport.setMandatory(Boolean.parseBoolean(propertyHelper.replaceProperties(attributes.get("mandatory"))));
+            importedModuleReport.setMandatory(Boolean.parseBoolean(propertyHelper.replaceProperties(attributes
+                    .get("mandatory"))));
         }
-        // importedModuleReport.setEasyantReport(getPluginInfo(
-        // ModuleRevisionId.parse(PropertyHelper.getPropertyHelper(
-        // task.getProject()).replaceProperties(
-        // importedModuleReport.getModuleMrid())), conf));
+        importedModuleReport
+                .setEasyantReport(getPluginInfo(ModuleRevisionId.parse(importedModuleReport.getModuleMrid())));
 
         eaReport.addImportedModuleReport(importedModuleReport);
         Message.debug("Ant file import another module called : " + importedModuleReport.getModuleMrid() + " with mode "
