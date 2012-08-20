@@ -37,7 +37,7 @@ public class ListTargets extends EasyantOption {
     
     
     public ListTargets() {
-        super("listTargets", false, "List all targets available or associated with a given phase or plugin as argument");
+        super("listTargets", true, "List all targets available or associated with a given phase or plugin as argument");
         setOptionalArg(true);
         setStopBuild(true);
     }

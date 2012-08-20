@@ -30,7 +30,7 @@ import org.apache.easyant.core.report.ImportedModuleReport;
 public class ListProps extends EasyantOption {
 
     public ListProps() throws IllegalArgumentException {
-        super("listProps", false, "List all properties available or specified in a given plugin as argument");
+        super("listProps", true, "List all properties available or specified in a given plugin as argument");
         setOptionalArg(true);
         setStopBuild(true);
     }

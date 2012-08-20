@@ -32,7 +32,6 @@ public class ListExtensionPoints extends EasyantOption{
     public ListExtensionPoints()
             throws IllegalArgumentException {
         super("listExtensionPoints", false, "List all phases available");
-        setOptionalArg(true);
         setStopBuild(true);
     }
 

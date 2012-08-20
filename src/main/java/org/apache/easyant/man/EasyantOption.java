@@ -24,6 +24,7 @@ import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.services.PluginService;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
 /**
@@ -88,7 +89,7 @@ public abstract class EasyantOption extends Option {
                 PluginService pluginService = (PluginService)project.getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
                 setEareport(pluginService.generateEasyAntReport(moduleDescriptor,optionalAntModule,overrideAntModule));
             } catch (Exception e) {
-                project.log("EasyAntMan could not be initialized. Details: " + e.getMessage(),Project.MSG_ERR);
+                throw new BuildException("EasyAntMan could not be initialized. Details: " + e.getMessage(),e);
             }
         }
         return eareport;
