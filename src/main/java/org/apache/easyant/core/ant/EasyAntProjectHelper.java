@@ -28,6 +28,7 @@ import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.helper.AntXMLContext;
 import org.apache.tools.ant.helper.ProjectHelper2;
+import org.apache.tools.ant.types.Resource;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXParseException;
 
@@ -43,6 +44,14 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
         setProjectHandler(new EasyAntProjectHandler());
         setTargetHandler(new EasyAntTargetHandler());
     }
+    
+
+    @Override
+    public boolean canParseBuildFile(Resource buildFile) {
+        return buildFile.getName().endsWith(".ant") || buildFile.getName().endsWith(".xml");
+    }
+
+
 
     /**
      * Handler for the top level "project" element.
