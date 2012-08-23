@@ -55,6 +55,7 @@ import org.apache.tools.ant.Main;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.ProjectHelper.OnMissingExtensionPoint;
+import org.apache.tools.ant.ProjectHelperRepository;
 import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
@@ -416,9 +417,7 @@ public class EasyAntEngine {
         project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
 
         ProjectHelper helper = ProjectHelper.getProjectHelper();
-        File mainscript = ProjectUtils.emulateMainScript(project);
-        Location mainscriptLocation = new Location(mainscript.getAbsolutePath());
-        helper.getImportStack().addElement(mainscript);
+        helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
         project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
 
         Ivy easyantIvyInstance = configureEasyAntIvyInstance(project);
@@ -454,6 +453,21 @@ public class EasyAntEngine {
             importTask.setMandatory(systemPlugin.isMandatory());
             executeTask(importTask, "configure-system-plugins", project);
         }
+        
+        locateBuildModuleAndBuildFile(project);
+
+        if (configuration.getBuildModule() != null || configuration.getBuildFile() != null) {
+            LoadModule lm = new LoadModule();
+            lm.setBuildModule(configuration.getBuildModule());
+            lm.setBuildFile(configuration.getBuildFile());
+            executeTask(lm, "load-module", project);
+        }
+
+        // FIXME:resolve extensionOf attributes this should be exposed by Apache Ant
+        injectTargetIntoExtensionPoint(project, helper);
+    }
+
+    private void locateBuildModuleAndBuildFile(Project project) {
         File buildModule = configuration.getBuildModule();
         File buildFile = configuration.getBuildFile();
 
@@ -493,28 +507,21 @@ public class EasyAntEngine {
 
         configuration.setBuildFile(buildFile);
         configuration.setBuildModule(buildModule);
-
-        if (configuration.getBuildModule() != null || configuration.getBuildFile() != null) {
-            LoadModule lm = new LoadModule();
-            lm.setBuildModule(configuration.getBuildModule());
-            lm.setBuildFile(configuration.getBuildFile());
-            executeTask(lm, "load-module", project);
-        }
-
-        // FIXME:resolve extensionOf attributes this should be exposed by Apache Ant
-        injectTargetIntoExtensionPoint(project, helper);
     }
 
     /**
-     * Configure easyant offline repository 
-     * If offline mode is enabled, it will acts as dictator resolver
-     * @param project {@link Project} where repositories will be configured
+     * Configure easyant offline repository If offline mode is enabled, it will acts as dictator resolver
+     * 
+     * @param project
+     *            {@link Project} where repositories will be configured
      */
     private void configureEasyAntOfflineRepository(Project project) {
-        //assign default value if not already set
-        project.setProperty(EasyAntMagicNames.OFFLINE_EASYANT_RESOLVER, EasyAntConstants.DEFAULT_OFFLINE_EASYANT_RESOLVER);
-        project.setProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY, project.getBaseDir().getAbsolutePath() + "/offline/");
-      
+        // assign default value if not already set
+        project.setProperty(EasyAntMagicNames.OFFLINE_EASYANT_RESOLVER,
+                EasyAntConstants.DEFAULT_OFFLINE_EASYANT_RESOLVER);
+        project.setProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY, project.getBaseDir().getAbsolutePath()
+                + "/offline/");
+
         ConfigureBuildScopedRepository easyantOfflineRepository = new ConfigureBuildScopedRepository();
         easyantOfflineRepository.setGenerateWrapperResoler(false);
         easyantOfflineRepository.setName(project.getProperty(EasyAntMagicNames.OFFLINE_EASYANT_RESOLVER));
