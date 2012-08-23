@@ -63,6 +63,9 @@ public interface EasyAntConstants {
      * Name of the default easyant skeletons organisation
      */
     public static final String EASYANT_SKELETONS_ORGANISATION = "org.apache.easyant.skeletons";
+    
+
+    public static final String DEFAULT_USER_PROJECT_IVYSETTINGS = "${user.home}/.easyant/project-ivysettings.xml";
 
     /**
      * Default location of user's easyant ivysettings file
@@ -93,6 +96,7 @@ public interface EasyAntConstants {
      * Default offline easyant repository name
      */
     public static final String DEFAULT_OFFLINE_EASYANT_RESOLVER = "easyant.buildscope.repository";
+
 
     
 }

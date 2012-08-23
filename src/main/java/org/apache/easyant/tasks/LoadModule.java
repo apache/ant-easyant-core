@@ -49,8 +49,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ImportTask;
 
 /**
- * This task is the main class, used to parse module.ivy and execute the all the
- * statement behind the easyant tag.
+ * This task is the main class, used to parse module.ivy and execute the all the statement behind the easyant tag.
  */
 public class LoadModule extends AbstractEasyAntTask {
 
@@ -104,8 +103,7 @@ public class LoadModule extends AbstractEasyAntTask {
             IvyInfo info = new IvyInfo();
             info.setFile(buildModule);
             // Not sure we should bound IvyInfo to easyantIvyInstance
-            info.setSettingsRef(IvyInstanceHelper
-                    .buildEasyAntIvyReference(getProject()));
+            info.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(getProject()));
             initTask(info).execute();
             getProject().setName(getProject().getProperty("ivy.module"));
         }
@@ -114,17 +112,14 @@ public class LoadModule extends AbstractEasyAntTask {
             // paranoid lets check everything category
 
             if (buildModule.isDirectory()) {
-                System.out.println("What? buildModule: " + buildModule
-                        + " is a dir!");
+                System.out.println("What? buildModule: " + buildModule + " is a dir!");
                 throw new BuildException("Build failed");
             }
             // load override buildFile before buildModule to allow target/phase
             // override
-            File f = new File(buildModule.getParent(),
-                    EasyAntConstants.DEFAULT_OVERRIDE_BUILD_FILE);
+            File f = new File(buildModule.getParent(), EasyAntConstants.DEFAULT_OVERRIDE_BUILD_FILE);
             if (f.exists()) {
-                log("Loading override build file : "
-                        + buildFile.getAbsolutePath());
+                log("Loading override build file : " + buildFile.getAbsolutePath());
                 loadBuildFile(f);
             }
 
@@ -138,8 +133,7 @@ public class LoadModule extends AbstractEasyAntTask {
             // paranoid lets check everything category
 
             if (buildFile.isDirectory()) {
-                System.out.println("What? buildFile: " + buildFile
-                        + " is a dir!");
+                System.out.println("What? buildFile: " + buildFile + " is a dir!");
                 throw new BuildException("Build failed");
             }
 
@@ -147,40 +141,39 @@ public class LoadModule extends AbstractEasyAntTask {
             loadBuildFile(buildFile);
         }
 
-        String projectIvyInstanceProp = IvyInstanceHelper
-                .getProjectIvyInstanceName(getProject());
+        String projectIvyInstanceProp = IvyInstanceHelper.getProjectIvyInstanceName(getProject());
 
         // create project ivy instance except if project ivy instance is linked
         // to easyant ivy instance
-        if (!EasyAntMagicNames.EASYANT_IVY_INSTANCE
-                .equals(projectIvyInstanceProp)) {
+        if (!EasyAntMagicNames.EASYANT_IVY_INSTANCE.equals(projectIvyInstanceProp)) {
             configureProjectIvyinstance(projectIvyInstanceProp);
             configureProjectOfflineResolver();
         }
 
         if (shouldUseBuildRepository()) {
-            configureBuildRepository(IvyInstanceHelper
-                    .getProjectIvyAntSettings(getProject()));
+            configureBuildRepository(IvyInstanceHelper.getProjectIvyAntSettings(getProject()));
         }
 
         if (getProject().getDefaultTarget() == null
-                && getProject().getTargets().containsKey(
-                        EasyAntConstants.DEFAULT_TARGET)) {
+                && getProject().getTargets().containsKey(EasyAntConstants.DEFAULT_TARGET)) {
             getProject().setDefault(EasyAntConstants.DEFAULT_TARGET);
         }
     }
 
     /**
-     * Configure project offline repository 
-     * If offline mode is enabled, it will acts as dictator resolver
-     * @param project {@link Project} where repository will be configured
+     * Configure project offline repository If offline mode is enabled, it will acts as dictator resolver
+     * 
+     * @param project
+     *            {@link Project} where repository will be configured
      */
     private void configureProjectOfflineResolver() {
-        getProject().setProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER, EasyAntConstants.DEFAULT_OFFLINE_PROJECT_RESOLVER);
+        getProject().setProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER,
+                EasyAntConstants.DEFAULT_OFFLINE_PROJECT_RESOLVER);
         ConfigureBuildScopedRepository projectOfflineRepository = new ConfigureBuildScopedRepository();
         projectOfflineRepository.setGenerateWrapperResoler(false);
         projectOfflineRepository.setName(getProject().getProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER));
-        projectOfflineRepository.setDictator(Project.toBoolean(getProject().getProperty(EasyAntMagicNames.EASYANT_OFFLINE)));
+        projectOfflineRepository.setDictator(Project.toBoolean(getProject().getProperty(
+                EasyAntMagicNames.EASYANT_OFFLINE)));
         projectOfflineRepository.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));
         projectOfflineRepository.setTarget(getProject().getProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY));
         initTask(projectOfflineRepository).execute();
@@ -192,54 +185,57 @@ public class LoadModule extends AbstractEasyAntTask {
     private void configureProjectIvyinstance(String projectIvyInstanceName) {
         IvyConfigure projectIvyInstance = new IvyConfigure();
         projectIvyInstance.setSettingsId(projectIvyInstanceName);
-        if (getProject()
-                .getProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_FILE) != null) {
-            File projectIvyFile = new File(getProject().getProperty(
-                    EasyAntMagicNames.PROJECT_IVY_SETTING_FILE));
-            projectIvyInstance.setFile(projectIvyFile);
+        boolean ivysettingsConfigured = false;
+        // project ivy settings can be specified by properties
+        if (getProject().getProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_FILE) != null) {
+            File projectIvyFile = new File(getProject().getProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_FILE));
+
+            if (projectIvyFile.exists()) {
+                projectIvyInstance.setFile(projectIvyFile);
+                ivysettingsConfigured = true;
+            }
+
         }
         if (getProject().getProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_URL) != null) {
-            String url = getProject().getProperty(
-                    EasyAntMagicNames.PROJECT_IVY_SETTING_URL);
+            String url = getProject().getProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_URL);
             try {
                 projectIvyInstance.setUrl(url);
+                ivysettingsConfigured = true;
             } catch (MalformedURLException malformedUrl) {
-                throw new BuildException(
-                        "Unable to parse project ivysettings from the following url : "
-                                + url, malformedUrl);
+                throw new BuildException("Unable to parse project ivysettings from the following url : " + url,
+                        malformedUrl);
             }
         }
-        String defaultUrl = this.getClass().getResource(
-                "/org/apache/easyant/core/default-project-ivysettings.xml")
+        // if no property is set check the default user location
+        if (null == null) {
+            File userProjectIvyFile = new File(getProject().replaceProperties(
+                    EasyAntConstants.DEFAULT_USER_PROJECT_IVYSETTINGS));
+            if (userProjectIvyFile.exists()) {
+                projectIvyInstance.setFile(userProjectIvyFile);
+                ivysettingsConfigured = true;
+            }
+        }
+        // set default project ivy settings location accessible through properties,
+        // then users can import it if they don't want to use it directly
+        String defaultUrl = this.getClass().getResource("/org/apache/easyant/core/default-project-ivysettings.xml")
                 .toExternalForm();
-        getProject().setNewProperty(
-                EasyAntMagicNames.PROJECT_DEFAULT_IVYSETTINGS, defaultUrl);
-        if (getProject()
-                .getProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_FILE) == null
-                && getProject().getProperty(
-                        EasyAntMagicNames.PROJECT_IVY_SETTING_URL) == null) {
-            File localSettings = new File(buildModule.getParent(),
-                    "ivysettings.xml");
+        getProject().setNewProperty(EasyAntMagicNames.PROJECT_DEFAULT_IVYSETTINGS, defaultUrl);
+        if (!ivysettingsConfigured) {
+            File localSettings = new File(buildModule.getParent(), "ivysettings.xml");
             if (localSettings.exists()) {
-                getProject().log("loading local project settings file...",
-                        Project.MSG_VERBOSE);
+                getProject().log("loading local project settings file...", Project.MSG_VERBOSE);
                 projectIvyInstance.setFile(localSettings);
-                getProject().setNewProperty(
-                        EasyAntMagicNames.PROJECT_IVY_SETTING_FILE,
-                        localSettings.getAbsolutePath());
+                getProject()
+                        .setNewProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_FILE, localSettings.getAbsolutePath());
 
             } else {
-                getProject().log("no settings file found, using default...",
-                        Project.MSG_VERBOSE);
-                getProject().setNewProperty(
-                        EasyAntMagicNames.PROJECT_IVY_SETTING_URL,
-                        defaultUrl.toString());
+                getProject().log("no settings file found, using default...", Project.MSG_VERBOSE);
+                getProject().setNewProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_URL, defaultUrl.toString());
                 try {
                     projectIvyInstance.setUrl(defaultUrl);
                 } catch (MalformedURLException e) {
-                    throw new BuildException(
-                            "Unable to parse project ivysettings from the following url : "
-                                    + defaultUrl, e);
+                    throw new BuildException("Unable to parse project ivysettings from the following url : "
+                            + defaultUrl, e);
                 }
             }
         }
@@ -255,19 +251,14 @@ public class LoadModule extends AbstractEasyAntTask {
 
     protected void loadBuildModule(File buildModule) {
         EasyAntModuleDescriptorParser parser = getEasyAntModuleDescriptorParser(buildModule);
-        log(
-                "Loading EasyAnt module descriptor :"
-                        + parser.getClass().getName(), Project.MSG_DEBUG);
+        log("Loading EasyAnt module descriptor :" + parser.getClass().getName(), Project.MSG_DEBUG);
 
         try {
-            parser.setActiveBuildConfigurations(getProject().getProperty(
-                    EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS));
-            parser.parseDescriptor(getEasyAntIvyInstance().getSettings(),
-                    buildModule.toURL(), new URLResource(buildModule.toURL()),
-                    true);
+            parser.setActiveBuildConfigurations(getProject().getProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS));
+            parser.parseDescriptor(getEasyAntIvyInstance().getSettings(), buildModule.toURL(), new URLResource(
+                    buildModule.toURL()), true);
             EasyAntModuleDescriptor md = parser.getEasyAntModuleDescriptor();
-            ModuleRevisionId currentModule = md.getIvyModuleDescriptor()
-                    .getModuleRevisionId();
+            ModuleRevisionId currentModule = md.getIvyModuleDescriptor().getModuleRevisionId();
 
             String buildConfigurations = null;
             for (String conf : md.getBuildConfigurations()) {
@@ -277,20 +268,16 @@ public class LoadModule extends AbstractEasyAntTask {
                     buildConfigurations = buildConfigurations + "," + conf;
                 }
             }
-            getProject().setProperty(
-                    EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS,
-                    buildConfigurations);
+            getProject().setProperty(EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS, buildConfigurations);
             updateMainConfs();
 
-            for (Iterator<PropertyDescriptor> iterator = md.getProperties()
-                    .values().iterator(); iterator.hasNext();) {
+            for (Iterator<PropertyDescriptor> iterator = md.getProperties().values().iterator(); iterator.hasNext();) {
                 PropertyDescriptor property = iterator.next();
                 if (canInherit(property, currentModule)) {
                     PropertyTask propTask = new PropertyTask();
                     propTask.setName(property.getName());
                     propTask.setValue(property.getValue());
-                    propTask.setBuildConfigurations(property
-                            .getBuildConfigurations());
+                    propTask.setBuildConfigurations(property.getBuildConfigurations());
                     initTask(propTask).execute();
                 }
             }
@@ -299,8 +286,7 @@ public class LoadModule extends AbstractEasyAntTask {
                 importTask.setMrid(md.getBuildType());
                 initTask(importTask).execute();
             }
-            for (Iterator<?> iterator = md.getPlugins().iterator(); iterator
-                    .hasNext();) {
+            for (Iterator<?> iterator = md.getPlugins().iterator(); iterator.hasNext();) {
                 PluginDescriptor plugin = (PluginDescriptor) iterator.next();
 
                 if (canInherit(plugin, currentModule)) {
@@ -309,8 +295,7 @@ public class LoadModule extends AbstractEasyAntTask {
                     importTask.setMode(plugin.getMode());
                     importTask.setAs(plugin.getAs());
                     importTask.setMandatory(plugin.isMandatory());
-                    importTask.setBuildConfigurations(plugin
-                            .getBuildConfigurations());
+                    importTask.setBuildConfigurations(plugin.getBuildConfigurations());
                     initTask(importTask).execute();
                 }
             }
@@ -319,19 +304,16 @@ public class LoadModule extends AbstractEasyAntTask {
                 BindTarget bindTarget = new BindTarget();
                 bindTarget.setTarget(epMapping.getTarget());
                 bindTarget.setExtensionOf(epMapping.getExtensionPoint());
-                bindTarget.setBuildConfigurations(epMapping
-                        .getBuildConfigurations());
+                bindTarget.setBuildConfigurations(epMapping.getBuildConfigurations());
                 initTask(bindTarget).execute();
             }
         } catch (Exception e) {
-            throw new BuildException("problem while parsing Ivy module file: "
-                    + e.getMessage(), e);
+            throw new BuildException("problem while parsing Ivy module file: " + e.getMessage(), e);
         }
     }
 
     /**
-     * Check if an inheritable item can be inherited by verifying
-     * {@link InheritableScope}
+     * Check if an inheritable item can be inherited by verifying {@link InheritableScope}
      * 
      * @param inheritableItem
      *            a given {@link AdvancedInheritableItem}
@@ -339,37 +321,30 @@ public class LoadModule extends AbstractEasyAntTask {
      *            current module
      * @return true if item can be inherited
      */
-    private boolean canInherit(AdvancedInheritableItem inheritableItem,
-            ModuleRevisionId currentModule) {
+    private boolean canInherit(AdvancedInheritableItem inheritableItem, ModuleRevisionId currentModule) {
         if (currentModule.equals(inheritableItem.getSourceModule())) {
-            return !InheritableScope.CHILD.equals(inheritableItem
-                    .getInheritScope()); 
+            return !InheritableScope.CHILD.equals(inheritableItem.getInheritScope());
         } else {
             return true;
         }
-    
+
     }
 
     /**
-     * This method is in charge to update the main.confs property with all the
-     * active build configuration for the current project.
+     * This method is in charge to update the main.confs property with all the active build configuration for the
+     * current project.
      */
     private void updateMainConfs() {
-        if (getProject().getProperty(
-                EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS) == null
-                || getProject().getProperty(
-                        EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS) == null) {
+        if (getProject().getProperty(EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS) == null
+                || getProject().getProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS) == null) {
             return;
         }
 
-        List<String> availableBuildConfigurations = Arrays.asList(getProject()
-                .getProperty(EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS)
-                .split(","));
+        List<String> availableBuildConfigurations = Arrays.asList(getProject().getProperty(
+                EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS).split(","));
         // remove spaces in active confs
-        String activeConfs = getProject().getProperty(
-                EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS);
-        List<String> activeBuildConfigurations = BuildConfigurationHelper
-                .buildList(activeConfs);
+        String activeConfs = getProject().getProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS);
+        List<String> activeBuildConfigurations = BuildConfigurationHelper.buildList(activeConfs);
         List<String> mainConfsList = new ArrayList<String>();
         for (String conf : activeBuildConfigurations) {
             if (availableBuildConfigurations.contains(conf)) {
@@ -379,55 +354,42 @@ public class LoadModule extends AbstractEasyAntTask {
             }
         }
         if (mainConfsList.size() > 0) {
-            String mainConfs = StringUtils.join(mainConfsList
-                    .toArray(new String[0]), ",");
-            log("updating main.confs with active profile for current project :"
-                    + mainConfs, Project.MSG_DEBUG);
+            String mainConfs = StringUtils.join(mainConfsList.toArray(new String[0]), ",");
+            log("updating main.confs with active profile for current project :" + mainConfs, Project.MSG_DEBUG);
             getProject().setProperty(EasyAntMagicNames.MAIN_CONFS, mainConfs);
         }
 
     }
 
-    protected EasyAntModuleDescriptorParser getEasyAntModuleDescriptorParser(
-            File file) throws BuildException {
+    protected EasyAntModuleDescriptorParser getEasyAntModuleDescriptorParser(File file) throws BuildException {
         ModuleDescriptorParser mdp = null;
         EasyAntModuleDescriptorParser parser = null;
         try {
-            mdp = ModuleDescriptorParserRegistry.getInstance().getParser(
-                    new URLResource(file.toURL()));
+            mdp = ModuleDescriptorParserRegistry.getInstance().getParser(new URLResource(file.toURL()));
         } catch (MalformedURLException e) {
-            throw new BuildException("Impossible to find a parser for "
-                    + file.getName());
+            throw new BuildException("Impossible to find a parser for " + file.getName());
         }
         // If valid easyant parser is defined use it
-        if (mdp != null
-                && mdp.getClass().isInstance(
-                        EasyAntModuleDescriptorParser.class)) {
+        if (mdp != null && mdp.getClass().isInstance(EasyAntModuleDescriptorParser.class)) {
             return (EasyAntModuleDescriptorParser) mdp;
         } else {
             // if the user has customized the loadmodule task
             if (easyAntMDParserClassName != null) {
 
                 try {
-                    Class<? extends EasyAntModuleDescriptorParser> c = Class
-                            .forName(easyAntMDParserClassName).asSubclass(
-                                    EasyAntModuleDescriptorParser.class);
-                    log("Creating instance of " + easyAntMDParserClassName,
-                            Project.MSG_DEBUG);
+                    Class<? extends EasyAntModuleDescriptorParser> c = Class.forName(easyAntMDParserClassName)
+                            .asSubclass(EasyAntModuleDescriptorParser.class);
+                    log("Creating instance of " + easyAntMDParserClassName, Project.MSG_DEBUG);
                     parser = c.newInstance();
-                    ModuleDescriptorParserRegistry.getInstance().addParser(
-                            parser);
+                    ModuleDescriptorParserRegistry.getInstance().addParser(parser);
                     return parser;
                 } catch (Exception e) {
-                    throw new BuildException("Unable to load "
-                            + easyAntMDParserClassName, e);
+                    throw new BuildException("Unable to load " + easyAntMDParserClassName, e);
                 }
 
             }
             // the default one
-            log("Creating instance of "
-                    + DefaultEasyAntXmlModuleDescriptorParser.class.getName(),
-                    Project.MSG_DEBUG);
+            log("Creating instance of " + DefaultEasyAntXmlModuleDescriptorParser.class.getName(), Project.MSG_DEBUG);
             parser = new DefaultEasyAntXmlModuleDescriptorParser();
 
             ModuleDescriptorParserRegistry.getInstance().addParser(parser);
@@ -437,9 +399,8 @@ public class LoadModule extends AbstractEasyAntTask {
     }
 
     /**
-     * @return true if this module should use a build-scoped repository and
-     *         cache to find artifacts generated by other modules in the same
-     *         build.
+     * @return true if this module should use a build-scoped repository and cache to find artifacts generated by other
+     *         modules in the same build.
      */
     private boolean shouldUseBuildRepository() {
         // if a value has been provided by task attribute, return it
@@ -448,17 +409,14 @@ public class LoadModule extends AbstractEasyAntTask {
         }
         // otherwise, look for a value in property configuration, defaulting to
         // false if no value.
-        return Project.toBoolean(getProject().getProperty(
-                EasyAntMagicNames.USE_BUILD_REPOSITORY));
+        return Project.toBoolean(getProject().getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY));
     }
 
     /**
-     * Change the given Ivy settings to use a local build-scoped repository and
-     * cache by default. This allows submodules to access each others' artifacts
-     * before they have been published to a shared repository.
+     * Change the given Ivy settings to use a local build-scoped repository and cache by default. This allows submodules
+     * to access each others' artifacts before they have been published to a shared repository.
      */
-    private void configureBuildRepository(IvyAntSettings projectSettings)
-            throws BuildException {
+    private void configureBuildRepository(IvyAntSettings projectSettings) throws BuildException {
         ConfigureBuildScopedRepository configureBuildScopedRepository = new ConfigureBuildScopedRepository();
         configureBuildScopedRepository.setName(EasyAntConstants.BUILD_SCOPE_REPOSITORY);
         initTask(configureBuildScopedRepository).execute();
