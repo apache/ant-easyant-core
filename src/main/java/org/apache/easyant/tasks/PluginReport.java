@@ -64,18 +64,18 @@ public class PluginReport extends AbstractEasyAntTask {
 
     private List<XSLTProcess.Param> params = new ArrayList<XSLTProcess.Param>();
 
-    private File moduleIvyFile;
+    private File moduleIvy;
 
     private File sourceDirectory;
 
     private String outputpattern;
 
-    public File getModuleIvyFile() {
-        return moduleIvyFile;
+    public File getModuleIvy() {
+        return moduleIvy;
     }
 
-    public void setModuleIvyFile(File moduleIvyFile) {
-        this.moduleIvyFile = moduleIvyFile;
+    public void setModuleIvy(File moduleIvy) {
+        this.moduleIvy = moduleIvy;
     }
 
     public File getSourceDirectory() {
@@ -128,7 +128,12 @@ public class PluginReport extends AbstractEasyAntTask {
 
     public void execute() throws BuildException {
         IvySettings settings = getEasyAntIvyInstance().getSettings();
-
+        if (moduleIvy == null || ! moduleIvy.exists()) {
+            throw new BuildException("moduleIvy attribute is not set or is not a file");
+        }
+        if (sourceDirectory == null || !  sourceDirectory.exists()) {
+            throw new BuildException("sourceDirectory attribute is not set or doesn't exists");
+        }
         conf = getProperty(conf, settings, "ivy.resolved.configurations");
         if ("*".equals(conf)) {
             conf = getProperty(settings, "ivy.resolved.configurations");
@@ -162,7 +167,7 @@ public class PluginReport extends AbstractEasyAntTask {
                 EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
 
         try {
-            EasyAntReport easyantReport = pluginService.getPluginInfo(moduleIvyFile, sourceDirectory, conf);
+            EasyAntReport easyantReport = pluginService.getPluginInfo(moduleIvy, sourceDirectory, conf);
             ModuleRevisionId moduleRevisionId = easyantReport.getModuleDescriptor().getModuleRevisionId();
             File reportFile = new File(todir, getOutputPattern(moduleRevisionId, conf, "xml"));
             todir.mkdirs();
