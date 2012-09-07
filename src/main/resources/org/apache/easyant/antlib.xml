@@ -44,6 +44,9 @@
     <taskdef name="checkresolver" classname="org.apache.easyant.tasks.CheckResolver"/>
     <taskdef name="easyant" classname="org.apache.easyant.tasks.EasyAntRunner"/>
     <taskdef name="go-offline"  classname="org.apache.easyant.tasks.GoOffline"/>
+
+    <taskdef name="plugin-report" classname="org.apache.easyant.tasks.PluginReport"/>
+
     
     <presetdef name="include">
         <current:import mode="include" />

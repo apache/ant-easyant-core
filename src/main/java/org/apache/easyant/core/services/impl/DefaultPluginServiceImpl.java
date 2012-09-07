@@ -29,6 +29,7 @@ import java.util.Properties;
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
@@ -43,6 +44,7 @@ import org.apache.easyant.core.report.TargetReport;
 import org.apache.easyant.core.services.PluginService;
 import org.apache.easyant.tasks.AbstractImport;
 import org.apache.easyant.tasks.Import;
+import org.apache.easyant.tasks.ImportTestModule;
 import org.apache.easyant.tasks.ParameterTask;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.core.IvyContext;
@@ -61,6 +63,7 @@ import org.apache.ivy.util.Message;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.ComponentHelper;
 import org.apache.tools.ant.ExtensionPoint;
+import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.PropertyHelper;
@@ -103,6 +106,45 @@ public class DefaultPluginServiceImpl implements PluginService {
         ModuleDescriptorParserRegistry.getInstance().addParser(parser);
     }
 
+    public EasyAntReport getPluginInfo(File pluginIvyFile, File sourceDirectory, String conf) throws Exception {
+        IvyContext.pushNewContext().setIvy(ivyInstance);
+        EasyAntReport eaReport = null;
+        try {
+
+            ResolveOptions resolveOptions = new ResolveOptions();
+            resolveOptions.setLog(ResolveOptions.LOG_QUIET);
+            resolveOptions.setConfs(conf.split(","));
+            ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
+                    .resolve(pluginIvyFile.toURI().toURL(), resolveOptions);
+            eaReport = new EasyAntReport();
+            eaReport.setResolveReport(report);
+            eaReport.setModuleDescriptor(report.getModuleDescriptor());
+
+            Project project = buildProject(null);
+            
+            // emulate top level project
+            ProjectHelper helper = ProjectHelper.getProjectHelper();
+            helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
+            project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
+
+            ImportTestModule importTestModule = new ImportTestModule();
+            importTestModule.setModuleIvy(pluginIvyFile);
+            importTestModule.setSourceDirectory(sourceDirectory);
+            importTestModule.setOwningTarget(ProjectUtils.createTopLevelTarget());
+            importTestModule.setLocation(new Location(ProjectUtils.emulateMainScript(project).getAbsolutePath()));
+            importTestModule.setProject(project);
+            importTestModule.execute();
+
+            analyseProject(project, eaReport, conf);
+        } catch (Exception e) {
+            throw new Exception("An error occured while fetching plugin informations : " + e.getMessage(), e);
+        } finally {
+            IvyContext.popContext();
+        }
+        return eaReport;
+
+    }
+
     public EasyAntReport getPluginInfo(final ModuleRevisionId moduleRevisionId, String conf) throws Exception {
 
         IvyContext.pushNewContext().setIvy(ivyInstance);
@@ -118,12 +160,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
 
-            Project project = new Project();
-            project.setNewProperty(EasyAntMagicNames.AUDIT_MODE, "true");
-            project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
-            EasyAntEngine eagAntEngine = new EasyAntEngine();
-            eagAntEngine.configureEasyAntIvyInstance(project);
-            project.init();
+            Project project = buildProject(null);
 
             AbstractImport abstractImport = new AbstractImport() {
                 @Override
@@ -153,27 +190,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             // location ?
             abstractImport.execute();
 
-            for (Iterator iterator = project.getTargets().values().iterator(); iterator.hasNext();) {
-                Target target = (Target) iterator.next();
-                handleTarget(eaReport, target);
-                for (int i = 0; i < target.getTasks().length; i++) {
-                    Task task = target.getTasks()[i];
-                    Class taskClass = ComponentHelper.getComponentHelper(project).getComponentClass(task.getTaskType());
-                    if (taskClass == null) {
-                        continue;
-                    }
-                    if (ParameterTask.class.getName().equals(taskClass.getName())) {
-                        handleParameterTask(eaReport, task);
-                    }
-                    if (Property.class.getName().equals(taskClass.getName())) {
-                        handleProperty(eaReport, task);
-                    }
-                    if (Import.class.getName().equals(taskClass.getName())) {
-                        handleImport(conf, eaReport, task);
-                    }
-
-                }
-            }
+            analyseProject(project, eaReport, conf);
         } catch (Exception e) {
             throw new Exception("An error occured while fetching plugin informations : " + e.getMessage(), e);
         } finally {
@@ -183,8 +200,7 @@ public class DefaultPluginServiceImpl implements PluginService {
 
     }
 
-    private void scanAntFile(String conf, EasyAntReport eaReport, Map<String, String> properties, File antFile)
-            throws IOException, Exception {
+    private Project buildProject(Map<String, String> properties) {
         Project project = new Project();
         project.setNewProperty(EasyAntMagicNames.AUDIT_MODE, "true");
         project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
@@ -196,11 +212,13 @@ public class DefaultPluginServiceImpl implements PluginService {
             }
         }
         project.init();
-        ProjectHelper.configureProject(project, antFile);
+        return project;
+    }
 
+    private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws IOException, Exception {
         for (Iterator iterator = project.getTargets().values().iterator(); iterator.hasNext();) {
             Target target = (Target) iterator.next();
-            handleTarget(eaReport, target);
+            handleTarget(target, eaReport);
             for (int i = 0; i < target.getTasks().length; i++) {
                 Task task = target.getTasks()[i];
                 Class taskClass = ComponentHelper.getComponentHelper(project).getComponentClass(task.getTaskType());
@@ -208,20 +226,28 @@ public class DefaultPluginServiceImpl implements PluginService {
                     continue;
                 }
                 if (ParameterTask.class.getName().equals(taskClass.getName())) {
-                    handleParameterTask(eaReport, task);
+                    handleParameterTask(task, eaReport);
                 }
                 if (Property.class.getName().equals(taskClass.getName())) {
-                    handleProperty(eaReport, task);
+                    handleProperty(task, eaReport);
                 }
                 if (Import.class.getName().equals(taskClass.getName())) {
-                    handleImport(conf, eaReport, task);
+                    handleImport(task, eaReport, conf);
                 }
 
             }
         }
     }
 
-    private void handleImport(String conf, EasyAntReport eaReport, Task task) throws Exception {
+    private void scanAntFile(File antFile, Map<String, String> properties, EasyAntReport eaReport, String conf)
+            throws IOException, Exception {
+        Project project = buildProject(properties);
+        ProjectHelper.configureProject(project, antFile);
+
+        analyseProject(project, eaReport, conf);
+    }
+
+    private void handleImport(Task task, EasyAntReport eaReport, String conf) throws Exception {
         Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
         ImportedModuleReport importedModuleReport = new ImportedModuleReport();
         PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(task.getProject());
@@ -249,11 +275,11 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     /**
-     * @param eaReport
      * @param task
+     * @param eaReport
      * @throws IOException
      */
-    private void handleProperty(EasyAntReport eaReport, Task task) throws IOException {
+    private void handleProperty(Task task, EasyAntReport eaReport) throws IOException {
         Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
         if (attributes.get("file") != null) {
             Properties propToLoad = new Properties();
@@ -279,10 +305,10 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     /**
-     * @param eaReport
      * @param task
+     * @param eaReport
      */
-    private void handleParameterTask(EasyAntReport eaReport, Task task) {
+    private void handleParameterTask(Task task, EasyAntReport eaReport) {
         Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
         PropertyDescriptor propertyDescriptor = null;
 
@@ -313,10 +339,10 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     /**
-     * @param eaReport
      * @param target
+     * @param eaReport
      */
-    private void handleTarget(EasyAntReport eaReport, Target target) {
+    private void handleTarget(Target target, EasyAntReport eaReport) {
         if (!"".equals(target.getName())) {
             boolean isExtensionPoint = target instanceof ExtensionPoint;
             if (!isExtensionPoint) {
@@ -407,7 +433,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         EasyAntReport eaReport = new EasyAntReport();
 
         if (overrideAntModule != null && overrideAntModule.exists()) {
-            scanAntFile("default", eaReport, null, overrideAntModule);
+            scanAntFile(overrideAntModule, null, eaReport, "default");
         }
         try {
             EasyAntModuleDescriptor md = getEasyAntModuleDescriptor(moduleDescriptor);
@@ -444,7 +470,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         }
 
         if (optionalAntModule != null && optionalAntModule.exists()) {
-            scanAntFile("default", eaReport, null, optionalAntModule);
+            scanAntFile(optionalAntModule, null, eaReport, "default");
         }
 
         return eaReport;

@@ -71,11 +71,22 @@ public interface PluginService {
      *            a given moduleRevisionID
      * @param conf
      *            a configuration name
-     * @return an easyantReport an easyantReport
+     * @return an easyantReport 
      * @throws Exception
      */
     EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId, String conf)
             throws Exception;
+    
+    /**
+     * Generate an {@link EasyAntReport} for a given pluginIvyFile
+     * @param pluginIvyFile plugin ivy file
+     * @param sourceDirectory source directory 
+     * @param conf a configuration name
+     * @return an {@link EasyAntReport}
+     * @throws Exception
+     */
+    EasyAntReport getPluginInfo(File pluginIvyFile, File sourceDirectory, String conf) throws Exception;
+
 
     /**
      * Return an array of moduleRevisionId that match with given criteria.
