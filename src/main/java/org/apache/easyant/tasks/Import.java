@@ -97,7 +97,7 @@ public class Import extends AbstractImport implements DynamicAttribute {
         } else {
             try {
                 ResolveReport report = getEasyAntIvyInstance().getResolveEngine().resolve(moduleRevisionId,
-                        configureResolveOptions(), true);
+                        configureResolveOptions(), isChanging());
                 importModule(moduleRevisionId,report);
             } catch (ParseException e) {
                 throw new BuildException("Can't parse module descriptor", e);
@@ -203,4 +203,5 @@ public class Import extends AbstractImport implements DynamicAttribute {
     public void setMrid(String mrid) {
         this.mrid = mrid;
     }
+    
 }

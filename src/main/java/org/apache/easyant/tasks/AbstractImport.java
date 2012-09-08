@@ -14,7 +14,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.ImportTask;
 import org.apache.tools.ant.types.Path;
 
-
 /**
  * This abstract task is used to include / import modules.
  * 
@@ -37,6 +36,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
     private String buildConfigurations;
     private String mainConf = "default";
     private String providedConf = "provided";
+    private boolean changing = false;
 
     public AbstractImport() {
         super();
@@ -45,11 +45,12 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
     /**
      * Import a module
      * 
-     * @param moduleRevisionId {@link ModuleRevisionId} of main artifact
+     * @param moduleRevisionId
+     *            {@link ModuleRevisionId} of main artifact
      * @param report
      *            a resolved report of the module to import
      */
-    protected void importModule(ModuleRevisionId moduleRevisionId,ResolveReport report) {
+    protected void importModule(ModuleRevisionId moduleRevisionId, ResolveReport report) {
         // Check dependency on core
         checkCoreCompliance(report, providedConf);
 
@@ -63,7 +64,8 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
             } else if ("jar".equals(artifact.getType())) {
                 path.createPathElement().setLocation(artifact.getLocalFile());
             } else {
-                handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(), artifact.getLocalFile());
+                handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(),
+                        artifact.getLocalFile());
             }
         }
         if (antFile != null && antFile.exists()) {
@@ -105,12 +107,16 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
      * The '.artifact' is optional when module name and artifact name are the same. [organisation].[module].[type].file
      * </p>
      * 
-     * @param moduleRevisionId a {@link ModuleRevisionId} of the main artifact
-     * @param artifactName artifact name
-     * @param artifactExtension artifact extension name
+     * @param moduleRevisionId
+     *            a {@link ModuleRevisionId} of the main artifact
+     * @param artifactName
+     *            artifact name
+     * @param artifactExtension
+     *            artifact extension name
      * @param localResourceFile
      */
-    protected void handleOtherResourceFile(ModuleRevisionId moduleRevisionId, String artifactName, String artifactExtension, File localResourceFile) {
+    protected void handleOtherResourceFile(ModuleRevisionId moduleRevisionId, String artifactName,
+            String artifactExtension, File localResourceFile) {
         StringBuilder sb = new StringBuilder();
         sb.append(moduleRevisionId.getOrganisation());
         sb.append("#");
@@ -123,7 +129,9 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
         sb.append(artifactExtension);
         sb.append(".file");
 
-        getProject().log("registering location of artifact " + artifactName + " ext" + artifactExtension + " on " +sb.toString(),Project.MSG_DEBUG);
+        getProject().log(
+                "registering location of artifact " + artifactName + " ext" + artifactExtension + " on "
+                        + sb.toString(), Project.MSG_DEBUG);
 
         getProject().setNewProperty(sb.toString(), localResourceFile.getAbsolutePath());
     }
@@ -318,6 +326,14 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
 
+    }
+
+    public boolean isChanging() {
+        return changing;
+    }
+
+    public void setChanging(boolean changing) {
+        this.changing = changing;
     }
 
 }
