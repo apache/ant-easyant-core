@@ -84,10 +84,10 @@ If no target attribute is supplied, the default target of the new project is use
 </table>
 
 <h2>Example</h2>
-Run package phase in a separated context (forked)
+Run package phase in current context
 <code type="xml">
-  <ea:easyant targets="package" />
-<code>
+    <ea:easyant fork="false" targets="package"/>
+</code>
 
 Run default targets in a separated context (forked)
 <code type="xml">
@@ -106,7 +106,7 @@ Import easyant build types and plugins in current ant context without executing 
 
 Suppose you have the following build.xml
 <code type="xml">
-<project name="myAntProject"
+<project name="myAntProject">
   <ea:easyant fork="false"/>
 </project>
 </code>

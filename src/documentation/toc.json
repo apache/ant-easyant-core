@@ -195,13 +195,6 @@
                             ]
                         },
                         {
-                          "id":"ref/anttasks/menugenerator",
-                          "title":"menugenerator",
-                          "children": [
-
-                            ]
-                        },
-                        {
                           "id":"ref/anttasks/LoadModuletask",
                           "title":"loadmodule",
                           "children": [

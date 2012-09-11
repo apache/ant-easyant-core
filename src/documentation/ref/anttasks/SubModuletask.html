@@ -37,13 +37,9 @@ This task is used to manage orchestration of submodules.
   </thead>
   <tbody>
     <tr id="mandatory">
-      <td>buildpath</td>
-      <td>the buildpath to be used to find sub-projects.</td>
-      <td rowspan="2">one of these</td>
-    </tr>
-    <tr id="mandatory">
       <td>buildpathRef</td>
       <td>Buildpath to use, by reference</td>
+      <td>true if no nested buildpath element</td>
     </tr>
     <tr>
       <td>useBuildRepository</td>
@@ -53,7 +49,7 @@ This task is used to manage orchestration of submodules.
 
     <tr>
       <td>overwrite</td>
-      <td>Specify if publication in build repository should overwrite existing artifacts (default value : true)</td>
+      <td>Specify if publication in build repository should overwrite existing artifacts<br/><i>Default : true</i></td>
       <td> </td>
     </tr>
     <tr>
@@ -63,17 +59,58 @@ This task is used to manage orchestration of submodules.
     </tr>
     <tr>
       <td>verbose</td>
-      <td>Enable/ disable verbose log messages showing when each sub-build path is entered/ exited (default value : false)</td>
+      <td>Enable/ disable verbose log messages showing when each sub-build path is entered/ exited<br/><i>Default : false</i></td>
       <td> </td>
     </tr>
     <tr>
       <td>failOnError</td>
-      <td>Sets whether to fail with a build exception on error, or go on (default value : true)</td>
+      <td>Sets whether to fail with a build exception on error, or go on<br/><i>Default : true</i></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>inheritRefs</td>
+      <td>If true, pass all references to the new Ant project<br/><i>Default : false</i></td>
       <td> </td>
     </tr>
   </tbody>
 </table>
 
+<h2>Nested Elements</h2>
+<h3>buildpath</h3>
+<p>
+Buildpath to be used to find sub-projects.
+Mandatory if no buildpathref argument is specified.
+</p>
+
+<h3>reference</h3>
+
+<p>
+Used to choose references that shall be copied into the new project, optionally changing their id.
+</p>
+<table class="sortable">
+  <thead>
+    <tr>
+      <th>Attribute</th>
+      <th class="unsortable">Description</th>
+      <th>Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>refid</td>
+      <td>The id of the reference in the calling project.</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>torefid</td>
+      <td>The id of the reference in the new project.<br/><i>Default to the value of refid</i></td>
+      <td>false</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>propertyset</h3>
+<p>You can specify a set of properties to be copied into the new project with propertysets.</p>
 
 <h2>Example</h2>
 <code type="xml">
