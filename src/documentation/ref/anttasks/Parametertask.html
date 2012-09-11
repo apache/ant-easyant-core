@@ -29,8 +29,8 @@
 <p>
 parameter tasks is used to :
 <ul>
-<li>document properties / paths / phases</li>
-<li>check if properties /paths / phases are required</li>
+<li>document properties / paths</li>
+<li>check if properties / paths</li>
 <li>set default values if properties are not set</li>
 </ul>
 This could be useful in precondition of each modules, to check if property/phase/path are set. And much more useful to document our modules.
@@ -45,11 +45,7 @@ This could be useful in precondition of each modules, to check if property/phase
     <tr id="mandatory">
       <td>path</td>
       <td>specify the path id to check</td>
-      <td rowspan="3">One of these</td>
-    </tr>
-    <tr id="mandatory">
-      <td>phase</td>
-      <td>specify the phase id to check</td>
+      <td rowspan="2">One of these</td>
     </tr>
     <tr id="mandatory">
       <td>property</td>
@@ -105,16 +101,6 @@ Here mypath is mandatory and will make a build failed if this path is not set di
 <code type="xml">
 BUILD FAILED
 expected path 'mypath': my path is used to ...
-</code>
-
-<h3>Phase</h3>
-<code type="xml">
-<ea:parameter phase="myphase" description="my phase is used to ..." />
-</code>
-Here we say that our build script should know the phase named "myphase" if not it will make a build failed with the following message :
-<code type="xml">
-BUILD FAILED
-expected phase 'myphase': my phase is used to ...
 </code>
 
 
