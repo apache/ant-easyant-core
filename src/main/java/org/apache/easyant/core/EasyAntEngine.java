@@ -55,7 +55,6 @@ import org.apache.tools.ant.Main;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.ProjectHelper.OnMissingExtensionPoint;
-import org.apache.tools.ant.ProjectHelperRepository;
 import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
@@ -70,8 +69,6 @@ import org.apache.tools.ant.util.ProxySetup;
  * example
  */
 public class EasyAntEngine {
-
-    private static final long MEGABYTE = 1024 * 1024;;
 
     private final EasyAntConfiguration configuration;
 
@@ -648,7 +645,7 @@ public class EasyAntEngine {
             }
         }
         if (configuration.isShowMemoryDetails() || configuration.getMsgOutputLevel() >= Project.MSG_VERBOSE) {
-            printMemoryDetails(project);
+            ProjectUtils.printMemoryDetails(project);
         }
     }
 
@@ -680,21 +677,6 @@ public class EasyAntEngine {
         eaEngine.configureProject(project);
         eaEngine.initProject(project);
         return project;
-    }
-
-    /**
-     * Print memory details
-     * 
-     * @param project
-     *            a given project
-     */
-    public static void printMemoryDetails(Project project) {
-        project.log("---- Memory Details ----");
-        project.log("  Used Memory  = "
-                + (Runtime.getRuntime().totalMemory() / MEGABYTE - Runtime.getRuntime().freeMemory() / MEGABYTE) + "MB");
-        project.log("  Free Memory  = " + (Runtime.getRuntime().freeMemory() / MEGABYTE) + "MB");
-        project.log("  Total Memory = " + (Runtime.getRuntime().totalMemory() / MEGABYTE) + "MB");
-        project.log("-----------------------");
     }
 
     /**

@@ -18,12 +18,10 @@
 package org.apache.easyant.core.ant;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 
-import org.apache.easyant.core.EasyAntConstants;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.BuildLogger;
@@ -37,6 +35,9 @@ import org.apache.tools.ant.Target;
  * 
  */
 public class ProjectUtils {
+    
+    private static final long MEGABYTE = 1024 * 1024;
+
 
     /**
      * emulates a top level target
@@ -118,6 +119,21 @@ public class ProjectUtils {
         project.setProjectReference(logger);
         project.addBuildListener(logger);
 
+    }
+    
+    /**
+     * Print memory details
+     * 
+     * @param project
+     *            a given project
+     */
+    public static void printMemoryDetails(Project project) {
+        project.log("---- Memory Details ----");
+        project.log("  Used Memory  = "
+                + (Runtime.getRuntime().totalMemory() / MEGABYTE - Runtime.getRuntime().freeMemory() / MEGABYTE) + "MB");
+        project.log("  Free Memory  = " + (Runtime.getRuntime().freeMemory() / MEGABYTE) + "MB");
+        project.log("  Total Memory = " + (Runtime.getRuntime().totalMemory() / MEGABYTE) + "MB");
+        project.log("-----------------------");
     }
 
 }
