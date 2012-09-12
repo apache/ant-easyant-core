@@ -18,15 +18,15 @@
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ea="antlib:org.apache.easyant">
 
-    <xsl:param name="confs" select="/ivy-report/info/@confs" />
+    <xsl:param name="confs" select="/easyant-report/info/@confs" />
     <xsl:param name="extension" select="'xml'" />
 
 
-    <xsl:variable name="myorg" select="/ivy-report/info/@organisation" />
-    <xsl:variable name="mymod" select="/ivy-report/info/@module" />
-    <xsl:variable name="myconf" select="/ivy-report/info/@conf" />
+    <xsl:variable name="myorg" select="/easyant-report/info/@organisation" />
+    <xsl:variable name="mymod" select="/easyant-report/info/@module" />
+    <xsl:variable name="myconf" select="/easyant-report/info/@conf" />
 
-    <xsl:variable name="modules" select="/ivy-report/dependencies/module" />
+    <xsl:variable name="modules" select="/easyant-report/dependencies/module" />
     <xsl:variable name="conflicts" select="$modules[count(revision) > 1]" />
 
     <xsl:variable name="revisions" select="$modules/revision" />
@@ -41,7 +41,7 @@
     <xsl:variable name="faileds" select="$artifacts[@status='failed']" />
     <xsl:variable name="artifactsok" select="$artifacts[@status!='failed']" />
 
-    <xsl:variable name="easyant" select="$revisions/easyant" />
+    <xsl:variable name="easyant" select="/easyant-report/easyant" />
     <xsl:variable name="targets" select="$easyant/targets" />
     <xsl:variable name="extensionPoints" select="$easyant/extension-points" />
     <xsl:variable name="imports" select="$easyant/imports" />
@@ -292,7 +292,7 @@
     </xsl:template>
 
 
-    <xsl:template match="/ivy-report">
+    <xsl:template match="/easyant-report">
 
         <html>
             <head>
@@ -341,6 +341,8 @@
                 </ul>
 
                 <div id="content">
+                    <xsl:apply-templates select="easyant" />
+
                     <h2>Dependencies Stats</h2>
                     <table class="header">
                         <tr>
