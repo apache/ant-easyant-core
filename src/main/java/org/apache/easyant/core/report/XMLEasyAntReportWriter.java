@@ -89,6 +89,9 @@ public class XMLEasyAntReportWriter {
         }
         out.println("\t\tconf=\"" + XMLHelper.escape(report.getConfiguration()) + "\"");
         out.println("\t\tdate=\"" + Ivy.DATE_FORMAT.format(report.getDate()) + "\"/>");
+        out.println("\t<description>");
+        out.println(report.getModuleDescriptor().getDescription());
+        out.println("\t</description>");
         out.println("\t<configurations>");
         StringBuffer sb = new StringBuffer();
         for (Configuration configuration : easyAntReport.getModuleDescriptor().getConfigurations()) {

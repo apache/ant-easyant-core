@@ -128,10 +128,10 @@ public class PluginReport extends AbstractEasyAntTask {
 
     public void execute() throws BuildException {
         IvySettings settings = getEasyAntIvyInstance().getSettings();
-        if (moduleIvy == null || ! moduleIvy.exists()) {
+        if (moduleIvy == null || !moduleIvy.exists()) {
             throw new BuildException("moduleIvy attribute is not set or is not a file");
         }
-        if (sourceDirectory == null || !  sourceDirectory.exists()) {
+        if (sourceDirectory == null || !sourceDirectory.exists()) {
             throw new BuildException("sourceDirectory attribute is not set or doesn't exists");
         }
         conf = getProperty(conf, settings, "ivy.resolved.configurations");
@@ -175,7 +175,7 @@ public class PluginReport extends AbstractEasyAntTask {
             XMLEasyAntReportWriter writer = new XMLEasyAntReportWriter();
             writer.output(easyantReport, stream);
             stream.close();
-            genStyled(reportFile, getReportStylePath(),easyantReport);
+            genStyled(reportFile, getReportStylePath(), easyantReport);
         } catch (Exception e) {
             throw new BuildException("impossible to generate report: " + e, e);
         }
@@ -192,17 +192,18 @@ public class PluginReport extends AbstractEasyAntTask {
         // style should be a file (and not an url)
         // so we have to copy it from classpath to cache
         ResolutionCacheManager cacheMgr = getEasyAntIvyInstance().getResolutionCacheManager();
-        File style = new File(cacheMgr.getResolutionCacheRoot(), "ivy-report.xsl");
+        File style = new File(cacheMgr.getResolutionCacheRoot(), "easyant-report.xsl");
         if (!style.exists()) {
-            Message.debug("copying ivy-report.xsl to " + style.getAbsolutePath());
-            FileUtil.copy(XMLEasyAntReportWriter.class.getResourceAsStream("ivy-report.xsl"), style, null);
+            Message.debug("copying easyant-report.xsl to " + style.getAbsolutePath());
+            FileUtil.copy(XMLEasyAntReportWriter.class.getResourceAsStream("easyant-report.xsl"), style, null);
         }
         return style;
     }
 
     private String getOutputPattern(ModuleRevisionId moduleRevisionId, String conf, String ext) {
-        return IvyPatternHelper.substitute(outputpattern, moduleRevisionId.getOrganisation(), moduleRevisionId.getName(),
-                moduleRevisionId.getRevision(), "", "", ext, conf, moduleRevisionId.getQualifiedExtraAttributes(), null);
+        return IvyPatternHelper.substitute(outputpattern, moduleRevisionId.getOrganisation(),
+                moduleRevisionId.getName(), moduleRevisionId.getRevision(), "", "", ext, conf,
+                moduleRevisionId.getQualifiedExtraAttributes(), null);
     }
 
     private void genStyled(File reportFile, File style, EasyAntReport easyantReport) throws IOException {
