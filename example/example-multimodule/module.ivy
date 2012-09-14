@@ -25,9 +25,9 @@
             <project name="org.apache.easyant#example-hello-world"
                 xmlns:ea="antlib:org.apache.easyant">
                 
-                <ea:import organisation="org.apache.easyant.buildtypes" module="meta-build" revision="0.2"/>
+                <ea:build module="meta-build" revision="0.9"/>
             </project>              
           -->
-        <ea:build module="meta-build" revision="0.2"/>
+        <ea:build module="meta-build" revision="0.9"/>
     </info>
 </ivy-module>

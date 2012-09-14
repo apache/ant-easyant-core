@@ -27,13 +27,13 @@
                 
                 <property name="run.main.classname" value="org.apache.easyant.example.Example" buildConfigurations="custom"/>
             
-                <ea:import organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
-                <ea:include organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run" conf="custom"/>
+                <ea:build module="build-std-java" revision="0.9"/>
+                <ea:plugin module="run-java" revision="0.9" conf="custom"/>
             </project>              
           -->
-        <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
+        <ea:build module="build-std-java" revision="0.9">
             <ea:property name="run.main.classname" value="org.apache.easyant.example.Example" conf="custom"/>
-            <ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run" conf="custom"/>          
+            <ea:plugin module="run-java" revision="0.9" conf="custom"/>          
         </ea:build>
     </info>
     <configurations>

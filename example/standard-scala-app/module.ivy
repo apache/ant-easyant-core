@@ -28,18 +28,18 @@
                 <property name="scala.home" value="path to scala home dir"/>    
                 <property name="run.main.classname" value="org.apache.easyant.example.Example"/>
             
-                <ea:import organisation="org.apache.easyant.buildtypes" module="build-std-scala" revision="0.1"/>
-                <ea:include organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
+                <ea:build module="build-std-scala" revision="0.9"/>
+                <ea:plugin module="run-java" revision="0.9"/>
             </project>              
           -->
-        <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-scala" revision="0.1">
+        <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-scala" revision="0.9">
             <!--            
             Scala environnement could be set by using scala.home property like that :
             <property name="scala.home" value="path to scala home dir"/>
             or using SCALA_HOME system environnement variable
             -->
             <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-            <ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
+            <ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.9"/>
         </ea:build>
     </info>
     <configurations>

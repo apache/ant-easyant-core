@@ -27,14 +27,14 @@
                 
                 <property name="test.framework" value="testng"/>
             
-                <ea:import organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1"/>
-                <ea:include organisation="org.apache.easyant.plugins" module="jetty-deploy" revision="0.1" as="jetty"/>
+                <ea:build module="build-webapp-java" revision="0.9"/>
+                <ea:plugin module="jetty-deploy" revision="0.9"/>
             </project>  
             This is a fake webapp application, it uses testng framework         
           -->
-        <ea:build organisation="org.apache.easyant.buildtypes" module="build-webapp-java" revision="0.1">
+        <ea:build module="build-webapp-java" revision="0.9">
             <ea:property name="test.framework" value="testng"/>
-            <ea:plugin organisation="org.apache.easyant.plugins" module="jetty-deploy" revision="0.1" as="jetty"/>
+            <ea:plugin module="jetty-deploy" revision="0.9"/>
         </ea:build>
     </info>
     <configurations>

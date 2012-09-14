@@ -22,15 +22,10 @@
             <project name="org.apache.easyant#example-hello-world"
                 xmlns:ea="antlib:org.apache.easyant">
                 
-                <property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-            
-                <ea:import organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+                <ea:build module="build-std-java" revision="0.9"/>
             </project>              
           -->
-        <ea:build module="build-std-java" revision="0.2">
-            <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-        </ea:build>
-
+        <ea:build module="build-std-java" revision="0.9"/>
     </info>
     <configurations>
         <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>

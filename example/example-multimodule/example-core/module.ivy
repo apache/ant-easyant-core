@@ -23,9 +23,9 @@
                 
             <project name="org.apache.easyant#standard-java-app"
                 xmlns:ea="antlib:org.apache.easyant">
-                <ea:import organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
+                <ea:build module="build-std-java" revision="0.9"/>
             </project>              
           -->
-        <ea:build module="build-std-java" revision="0.2"/>
+        <ea:build module="build-std-java" revision="0.9"/>
     </info>
 </ivy-module>

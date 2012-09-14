@@ -25,17 +25,12 @@
             <project name="org.apache.easyant#std-java-with-documentation"
                 xmlns:ea="antlib:org.apache.easyant">
                 
-                <property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-                                    
-                <ea:import organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2" />
-                <ea:include organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
-                <ea:include organisation="org.apache.easyant.plugins" module="documentation" revision="0.1" as="doc"/>
+                <ea:build module="build-std-java" revision="0.9" />
+                <ea:plugin module="documentation" revision="0.9"/>
             </project>  
           -->
-        <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
-            <ea:property name="run.main.classname" value="org.apache.easyant.example.Example" confs="plop"/>
-            <ea:plugin organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run"/>
-            <ea:plugin organisation="org.apache.easyant.plugins" module="documentation" revision="0.1" as="doc"/>
+        <ea:build module="build-std-java" revision="0.9">
+            <ea:plugin module="documentation" revision="0.9"/>
         </ea:build>
     </info>
     <configurations>

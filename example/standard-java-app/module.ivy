@@ -27,8 +27,8 @@
                 
                 <property name="run.main.classname" value="org.apache.easyant.example.Example"/>
             
-                <ea:import organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2"/>
-                <ea:include organisation="org.apache.easyant.plugins" module="run-java" revision="0.1" as="run" />
+                <ea:build module="build-std-java" revision="0.9"/>
+                <ea:plugin module="run-java" revision="0.9"/>
             </project>              
           -->
         <ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.9">
