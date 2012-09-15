@@ -79,7 +79,6 @@
 			<include name="lib/*.jar" />
 
 			<include name="repository/**" />
-			<exclude name="repository/extra-modules/**" />
 			<exclude name="repository/bootstrap-cache/**" />
 
 			<include name="example/**" />
@@ -178,7 +177,7 @@
 			<!-- ship the documentation -->
 			<zipfileset dir="${target.documentation.dir}" prefix="${full.root.dir}/doc" />
 			<!-- easyant sources -->
-			<zipfileset dir="${basedir}" includes="src/**,module.ant, module.ivy,repository/extra-modules/**" prefix="${full.root.dir}" />
+			<zipfileset dir="${basedir}" includes="src/**,module.ant, module.ivy" prefix="${full.root.dir}" />
 		</bundle>
 	</target>
 
