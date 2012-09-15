@@ -17,8 +17,8 @@
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
     <info organisation="org.apache.easyant" module="myapp-parent" revision="0.2" status="integration" >
         <ea:property name="test" value="zz"/>
-        <ea:plugin module="source-jar" revision="0.1" inherit-scope="child" />
-        <ea:plugin module="eadoc" revision="0.1" inheritable="false" my.property="myvalue"/>
+        <ea:plugin module="source-jar" revision="0.9" inherit-scope="child" />
+        <ea:plugin module="documentation" revision="0.9" inheritable="false" my.property="myvalue"/>
     </info>
     <configurations>
         <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>

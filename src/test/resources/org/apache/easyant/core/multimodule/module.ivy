@@ -16,6 +16,6 @@
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
     <info organisation="org.apache.easyant" module="myapp-orchestrator" revision="0.2" status="integration" >
-        <ea:build module="meta-build" revision="0.2"/>
+        <ea:build module="meta-build" revision="0.9"/>
     </info>
 </ivy-module>

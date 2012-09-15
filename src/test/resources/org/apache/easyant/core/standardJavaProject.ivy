@@ -16,11 +16,11 @@
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
     <info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
-        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.2">
+        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.9">
             <ea:property name="default.build.number" value="10"/>
         </ea:build>
-        <ea:plugin module="javadoc" revision="0.1"/>
-        <ea:plugin module="javadoc" revision="0.1" as="foobar"/>
+        <ea:plugin module="javadoc" revision="0.9"/>
+        <ea:plugin module="javadoc" revision="0.9" as="foobar"/>
     </info>
     <configurations>
         <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>

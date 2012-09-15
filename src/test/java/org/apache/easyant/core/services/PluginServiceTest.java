@@ -50,26 +50,22 @@ public class PluginServiceTest {
     public static void setUp() throws ParseException, IOException {
         // configure the ivyinstance
         Ivy ivy = IvyContext.pushNewContext().getIvy();
-        ivy.setVariable(
-                EasyAntMagicNames.EASYANT_CORE_JAR_URL, EasyAntEngine.guessEasyantCoreJarUrl().toExternalForm());
-        ivy.configure(PluginServiceTest.class
-                .getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
+        ivy.setVariable(EasyAntMagicNames.EASYANT_CORE_JAR_URL, EasyAntEngine.guessEasyantCoreJarUrl().toExternalForm());
+        ivy.configure(PluginServiceTest.class.getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
         pluginService = new DefaultPluginServiceImpl(ivy);
 
     }
 
     @Test
     public void testDefaultResolverSearch() throws Exception {
-        ModuleRevisionId[] mrids = pluginService.search(
-                "org.apache.easyant.buildtypes", "build-std-java");
+        ModuleRevisionId[] mrids = pluginService.search("org.apache.easyant.buildtypes", "build-std-java");
         // the module should be found once in easyant repo default resolver
         Assert.assertEquals(1, mrids.length);
     }
 
     @Test
     public void testSearchAllResolvers() throws Exception {
-        ModuleRevisionId[] mrids = pluginService.search(
-                "org.apache.easyant.buildtypes", "build-std-java", null, null,
+        ModuleRevisionId[] mrids = pluginService.search("org.apache.easyant.buildtypes", "build-std-java", null, null,
                 PatternMatcher.EXACT, "*");
         // the module should be found once each in easyant repo and in chained
         // resolver
@@ -79,17 +75,14 @@ public class PluginServiceTest {
 
     @Test
     public void testSearchModule() throws Exception {
-        String[] mrids = pluginService.searchModule(
-                "org.apache.easyant.buildtypes", "build-std-java");
+        String[] mrids = pluginService.searchModule("org.apache.easyant.buildtypes", "build-std-java");
         // the module should be found once in easyant repo default resolver
         Assert.assertEquals(1, mrids.length);
     }
 
     private EasyAntReport generateReport() throws Exception {
-        File module = new File(this.getClass().getResource("module.ivy")
-                .toURI());
-        File moduleAnt = new File(this.getClass().getResource("module.ant")
-                .toURI());
+        File module = new File(this.getClass().getResource("module.ivy").toURI());
+        File moduleAnt = new File(this.getClass().getResource("module.ant").toURI());
         return pluginService.generateEasyAntReport(module, moduleAnt, null);
     }
 
@@ -101,15 +94,11 @@ public class PluginServiceTest {
         // the report should contain the run-java plugin
         boolean containsBuildType = false;
         boolean containsPlugin = true;
-        for (ImportedModuleReport importedModule : eaReport
-                .getImportedModuleReports()) {
-            if (importedModule.getModuleMrid().equals(
-                    "org.apache.easyant.buildtypes#build-std-java;0.2")) {
+        for (ImportedModuleReport importedModule : eaReport.getImportedModuleReports()) {
+            if (importedModule.getModuleMrid().equals("org.apache.easyant.buildtypes#build-std-java;0.9")) {
                 containsBuildType = true;
             }
-            if (importedModule.getModuleMrid().equals(
-                    "org.apache.easyant.plugins#run;0.1")
-                    && importedModule.getAs().equals("run")) {
+            if (importedModule.getModuleMrid().equals("org.apache.easyant.plugins#run;0.9")) {
                 containsPlugin = true;
             }
         }
@@ -117,16 +106,13 @@ public class PluginServiceTest {
         Assert.assertTrue(containsPlugin);
 
         // be sure that the property exist
-        PropertyDescriptor property = eaReport.getPropertyDescriptors().get(
-                "run.main.classname");
+        PropertyDescriptor property = eaReport.getPropertyDescriptors().get("run.main.classname");
         Assert.assertNotNull(property);
         // check the value of the property
-        Assert.assertEquals("org.apache.easyant.example.Example",
-                property.getValue());
+        Assert.assertEquals("org.apache.easyant.example.Example", property.getValue());
 
         // be sure that the property exist
-        PropertyDescriptor srcMainJava = eaReport.getAvailableProperties().get(
-                "src.main.java");
+        PropertyDescriptor srcMainJava = eaReport.getAvailableProperties().get("src.main.java");
         Assert.assertNotNull(srcMainJava);
         // check the value of the property
         Assert.assertEquals("${basedir}/src/main/java", srcMainJava.getValue());
@@ -137,8 +123,7 @@ public class PluginServiceTest {
         property = eaReport.getAvailableProperties().get("run.main.classname");
         Assert.assertNotNull(property);
         // check the value of the property
-        Assert.assertEquals("org.apache.easyant.example.Example",
-                property.getValue());
+        Assert.assertEquals("org.apache.easyant.example.Example", property.getValue());
 
         // check that package ExtensionPoint exists and that jar:jar target is bound to
         // this phase
@@ -152,14 +137,11 @@ public class PluginServiceTest {
 
         Assert.assertNotNull(packageEP);
         List<TargetReport> targets = packageEP.getTargetReports();
-        Set<String> expectedTargets = new HashSet<String>(Arrays.asList(
-                "jar:jar", "test-jar:jar"));
-        Assert.assertEquals("test and main jars included in package phase",
-                expectedTargets.size(), targets.size());
+        Set<String> expectedTargets = new HashSet<String>(Arrays.asList("jar:jar", "test-jar:jar"));
+        Assert.assertEquals("test and main jars included in package phase", expectedTargets.size(), targets.size());
 
         for (TargetReport target : packageEP.getTargetReports()) {
-            Assert.assertTrue("expected to find " + target.getName(),
-                    expectedTargets.remove(target.getName()));
+            Assert.assertTrue("expected to find " + target.getName(), expectedTargets.remove(target.getName()));
         }
 
     }
@@ -170,8 +152,7 @@ public class PluginServiceTest {
         boolean hasHelloWorldTarget = false;
         for (TargetReport targetReport : eaReport.getAvailableTargets()) {
             if ("hello-world".equals(targetReport.getName())) {
-                Assert.assertTrue("process-sources".equals(targetReport
-                        .getExtensionPoint()));
+                Assert.assertTrue("process-sources".equals(targetReport.getExtensionPoint()));
                 hasHelloWorldTarget = true;
                 break;
             }
@@ -181,10 +162,7 @@ public class PluginServiceTest {
 
     @Test
     public void testGetDescription() throws Exception {
-        String description = pluginService
-                .getPluginDescription("org.apache.easyant.plugins#run-java;0.1");
-        Assert.assertEquals(
-                "This module provides java bytecode execution feature.",
-                description);
+        String description = pluginService.getPluginDescription("org.apache.easyant.plugins#run-java;0.9");
+        Assert.assertEquals("This module provides java bytecode execution feature.", description);
     }
 }

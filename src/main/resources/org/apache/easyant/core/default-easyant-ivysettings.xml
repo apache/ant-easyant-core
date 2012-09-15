@@ -20,8 +20,8 @@
     <caches defaultCacheDir="${user.home}/.easyant/easyant-cache" useOrigin="true" />
     <resolvers>
         <jar name="easyant-core-modules" url="${easyant.core.jar.url}" descriptor="required">
-            <ivy pattern="org/apache/easyant/core/repository/modules/[organisation]/[module]/[revision]/[module].ivy"/>
-            <artifact pattern="org/apache/easyant/core/repository/modules/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
+            <ivy pattern="repository/core/[organisation]/[module]/[revision]/[module].ivy"/>
+            <artifact pattern="repository/core/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]"/>
         </jar>
         <filesystem name="easyant-shared-modules" descriptor="required">
             <ivy pattern="${user.home}/.easyant/repository/easyant-shared-modules/[organisation]/[module]/[revision]/[module].ivy"/>

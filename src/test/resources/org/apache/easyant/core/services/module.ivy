@@ -16,9 +16,9 @@
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
     <info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
-        <ea:build module="build-std-java" revision="0.2">
+        <ea:build module="build-std-java" revision="0.9">
             <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
-            <ea:plugin module="run-java" revision="0.1"/>
+            <ea:plugin module="run-java" revision="0.9"/>
         </ea:build>
     </info>
     <configurations>

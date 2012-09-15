@@ -16,7 +16,7 @@
 -->
 <ivysettings>
     <include file="${ivy.settings.dir}/repository/third-party-lib/third-party-ivysettings.xml"/>
-    <include url="${easyant.extra.ivysettings.url}"/>
+    <include url="${easyant.default.ivysettings.url}"/>
     <settings defaultResolver="main"/>
     <resolvers>
         <!--define your own easyant modules repository here 
@@ -31,8 +31,6 @@
             <resolver ref="easyant-shared-modules"/>
             <!-- easyant public repository -->
             <resolver ref="apache-easyant-plugins"/>
-            <!-- extra modules provided by easyant full distribution -->
-            <resolver ref="easyant-extra-modules" />
             <resolver ref="third-party-lib" />
             <resolver ref="public-maven" />
         </chain>

@@ -98,12 +98,6 @@ public interface EasyAntMagicNames {
     public static final String EASYANT_DEFAULT_IVYSETTINGS = "easyant.default.ivysettings.url";
 
     /**
-     * Name of the property containing the default location of ivysettings file used by easyant ivy instance with extra
-     * modules Value: {@value}
-     */
-    public static final String EASYANT_EXTRA_IVYSETTINGS = "easyant.extra.ivysettings.url";
-
-    /**
      * Name of the property containing the default location of ivysettings file used by project ivy instance Value:
      * {@value}
      */

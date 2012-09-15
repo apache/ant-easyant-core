@@ -22,57 +22,58 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class PropertiesAsAttributesTest extends EasyAntBaseTest {
-    
+
     @Before
     public void setUp() throws Exception {
-        
-        configureProject(this.getResource("propertiesAsAttributes.ivy"),Project.MSG_INFO);
-        
-        //Configure easyant ivy instance
-        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
 
-        //init project with easyant configuration
+        configureProject(this.getResource("propertiesAsAttributes.ivy"), Project.MSG_INFO);
+
+        // Configure easyant ivy instance
+        conf.setEasyantIvySettingsUrl(this.getClass().getResource(
+                "/org/apache/easyant/core/default-easyant-ivysettings.xml"));
+
+        // init project with easyant configuration
         initProject();
     }
-    
+
     @Test
     public void testClean() throws Exception {
         executeTarget("clean:clean");
     }
-    
+
     @Test
     public void testPropertiesInBuildType() throws Exception {
-        expectPropertySet("validate", "my.property.inbuildtype","true");
+        expectPropertySet("validate", "my.property.inbuildtype", "true");
 
-        //properties loaded by build configuration 
+        // properties loaded by build configuration
         expectPropertyUnset("validate", "my.property.inconf");
     }
-    
+
     @Test
     public void testPropertiesInPlugin() throws Exception {
-        expectPropertySet("validate", "my.property.inplugin","true");
-    
-        //properties loaded by build configuration 
+        expectPropertySet("validate", "my.property.inplugin", "true");
+
+        // properties loaded by build configuration
         expectPropertyUnset("validate", "my.property.inconf");
     }
-    
+
     @Test
     public void testPropertiesInBuildConfiguration() throws Exception {
         conf.getActiveBuildConfigurations().add("myBuild");
 
-        //re-init project with easyant configuration including build types
+        // re-init project with easyant configuration including build types
         initProject();
 
-        expectPropertySet("validate", "my.property.inplugin","true");
-        
-        //properties loaded by build configuration 
-        expectPropertySet("validate", "my.property.inconf","true");
+        expectPropertySet("validate", "my.property.inplugin", "true");
+
+        // properties loaded by build configuration
+        expectPropertySet("validate", "my.property.inconf", "true");
     }
-    
+
     @Test
     public void testVerify() throws Exception {
         testClean();
         executeTarget("verify");
     }
-    
+
 }

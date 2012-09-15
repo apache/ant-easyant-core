@@ -104,8 +104,6 @@ public class EasyAntEngine {
         project.setNewProperty(EasyAntMagicNames.EASYANT_DEFAULT_IVYSETTINGS,
                 this.getClass().getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml")
                         .toExternalForm());
-        project.setNewProperty(EasyAntMagicNames.EASYANT_EXTRA_IVYSETTINGS,
-                this.getClass().getResource("/org/apache/easyant/core/extra-easyant-ivysettings.xml").toExternalForm());
 
         project.setNewProperty(EasyAntMagicNames.EASYANT_CORE_JAR_URL, guessEasyantCoreJarUrl().toExternalForm());
 
@@ -450,7 +448,7 @@ public class EasyAntEngine {
             importTask.setMandatory(systemPlugin.isMandatory());
             executeTask(importTask, "configure-system-plugins", project);
         }
-        
+
         locateBuildModuleAndBuildFile(project);
 
         if (configuration.getBuildModule() != null || configuration.getBuildFile() != null) {
