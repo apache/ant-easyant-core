@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -121,7 +122,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
 
             Project project = buildProject(null);
-            
+
             // emulate top level project
             ProjectHelper helper = ProjectHelper.getProjectHelper();
             helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
@@ -216,7 +217,8 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws IOException, Exception {
-        for (Iterator iterator = project.getTargets().values().iterator(); iterator.hasNext();) {
+        Map targets = removeDuplicateTargets(project.getTargets());
+        for (Iterator iterator = targets.values().iterator(); iterator.hasNext();) {
             Target target = (Target) iterator.next();
             handleTarget(target, eaReport);
             for (int i = 0; i < target.getTasks().length; i++) {
@@ -395,6 +397,38 @@ public class DefaultPluginServiceImpl implements PluginService {
                 Message.debug("Ant file has an extensionPoint called : " + extensionPoint.getName());
             }
         }
+    }
+
+    /**
+     * Targets in imported files with a project name and not overloaded by the main build file will be in the target map
+     * twice. This method removes the duplicate target.
+     * 
+     * @param targets
+     *            the targets to filter.
+     * @return the filtered targets.
+     */
+    private static Map removeDuplicateTargets(Map targets) {
+        Map locationMap = new HashMap();
+        for (Iterator i = targets.entrySet().iterator(); i.hasNext();) {
+            Map.Entry entry = (Map.Entry) i.next();
+            String name = (String) entry.getKey();
+            Target target = (Target) entry.getValue();
+            Target otherTarget = (Target) locationMap.get(target.getLocation());
+            // Place this entry in the location map if
+            // a) location is not in the map
+            // b) location is in map, but it's name is longer
+            // (an imported target will have a name. prefix)
+            if (otherTarget == null || otherTarget.getName().length() > name.length()) {
+                locationMap.put(target.getLocation(), target); // Smallest name
+                // wins
+            }
+        }
+        Map ret = new HashMap();
+        for (Iterator i = locationMap.values().iterator(); i.hasNext();) {
+            Target target = (Target) i.next();
+            ret.put(target.getName(), target);
+        }
+        return ret;
     }
 
     public EasyAntReport getPluginInfo(ModuleRevisionId moduleRevisionId) throws Exception {
