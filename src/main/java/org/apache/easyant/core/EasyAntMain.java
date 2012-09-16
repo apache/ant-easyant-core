@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -40,6 +39,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.factory.EasyantConfigurationFactory;
 import org.apache.easyant.man.Describe;
 import org.apache.easyant.man.EasyantOption;
@@ -58,18 +58,16 @@ import org.apache.tools.ant.launch.AntMain;
 import org.apache.tools.ant.util.FileUtils;
 
 /**
- * Command line entry point into EasyAnt. This class is entered via the
- * canonical `public static void main` entry point and reads the command line
- * arguments. It then assembles and executes an Ant project.
+ * Command line entry point into EasyAnt. This class is entered via the canonical `public static void main` entry point
+ * and reads the command line arguments. It then assembles and executes an Ant project.
  * <p>
- * If you integrating EasyAnt into some other tool, this is not the class to use
- * as an entry point. Instead you should have a look at {@link EasyAntEngine}.
+ * If you integrating EasyAnt into some other tool, this is not the class to use as an entry point. Instead you should
+ * have a look at {@link EasyAntEngine}.
  * </p>
  */
 public class EasyAntMain implements AntMain {
     /**
-     * A Set of args are are handled by the launcher and should not be seen by
-     * Main.
+     * A Set of args are are handled by the launcher and should not be seen by Main.
      */
     private static final Set LAUNCH_COMMANDS = new HashSet();
     private boolean isLogFileUsed;
@@ -87,19 +85,16 @@ public class EasyAntMain implements AntMain {
     private Options options = new Options();
 
     /**
-     * Whether or not this instance has successfully been constructed and is
-     * ready to run.
+     * Whether or not this instance has successfully been constructed and is ready to run.
      */
     private boolean readyToRun;
     private Vector propertyFiles = new Vector(1);
 
     /**
-     * Prints the message of the Throwable if it (the message) is not
-     * <code>null</code>.
+     * Prints the message of the Throwable if it (the message) is not <code>null</code>.
      * 
      * @param t
-     *            Throwable to print the message of. Must not be
-     *            <code>null</code>.
+     *            Throwable to print the message of. Must not be <code>null</code>.
      */
     private static void printMessage(Throwable t) {
         String message = t.getMessage();
@@ -109,22 +104,19 @@ public class EasyAntMain implements AntMain {
     }
 
     /**
-     * Creates a new instance of this class using the arguments specified, gives
-     * it any extra user properties which have been specified, and then runs the
-     * build using the classloader provided.
+     * Creates a new instance of this class using the arguments specified, gives it any extra user properties which have
+     * been specified, and then runs the build using the classloader provided.
      * 
      * @param args
      *            Command line arguments. Must not be <code>null</code>.
      * @param additionalUserProperties
-     *            Any extra properties to use in this build. May be
-     *            <code>null</code>, which is the equivalent to passing in an
-     *            empty set of properties.
+     *            Any extra properties to use in this build. May be <code>null</code>, which is the equivalent to
+     *            passing in an empty set of properties.
      * @param coreLoader
-     *            Classloader used for core classes. May be <code>null</code> in
-     *            which case the system classloader is used.
+     *            Classloader used for core classes. May be <code>null</code> in which case the system classloader is
+     *            used.
      */
-    public static void start(String[] args,
-            Properties additionalUserProperties, ClassLoader coreLoader) {
+    public static void start(String[] args, Properties additionalUserProperties, ClassLoader coreLoader) {
         EasyAntMain m = new EasyAntMain();
         m.startAnt(args, additionalUserProperties, coreLoader);
     }
@@ -135,15 +127,13 @@ public class EasyAntMain implements AntMain {
      * @param args
      *            command line args
      * @param additionalUserProperties
-     *            properties to set beyond those that may be specified on the
-     *            args list
+     *            properties to set beyond those that may be specified on the args list
      * @param coreLoader
      *            - not used
      * 
      * @since Ant 1.6
      */
-    public void startAnt(String[] args, Properties additionalUserProperties,
-            ClassLoader coreLoader) {
+    public void startAnt(String[] args, Properties additionalUserProperties, ClassLoader coreLoader) {
         easyAntConfiguration.setCoreLoader(coreLoader);
         configureOptions();
         CommandLineParser parser = new GnuParser();
@@ -162,8 +152,7 @@ public class EasyAntMain implements AntMain {
         }
 
         if (additionalUserProperties != null) {
-            for (Enumeration e = additionalUserProperties.keys(); e
-                    .hasMoreElements();) {
+            for (Enumeration e = additionalUserProperties.keys(); e.hasMoreElements();) {
                 String key = (String) e.nextElement();
                 String property = additionalUserProperties.getProperty(key);
                 easyAntConfiguration.getDefinedProps().put(key, property);
@@ -194,8 +183,8 @@ public class EasyAntMain implements AntMain {
     }
 
     /**
-     * This operation is expected to call {@link System#exit(int)}, which is
-     * what the base version does. However, it is possible to do something else.
+     * This operation is expected to call {@link System#exit(int)}, which is what the base version does. However, it is
+     * possible to do something else.
      * 
      * @param exitCode
      *            code to exit with
@@ -217,9 +206,8 @@ public class EasyAntMain implements AntMain {
     }
 
     /**
-     * Command line entry point. This method kicks off the building of a project
-     * object and executes a build using either a given target or the default
-     * target.
+     * Command line entry point. This method kicks off the building of a project object and executes a build using
+     * either a given target or the default target.
      * 
      * @param args
      *            Command line arguments. Must not be <code>null</code>.
@@ -232,13 +220,12 @@ public class EasyAntMain implements AntMain {
      * Constructor used when creating Main for later arg processing and startup
      */
     public EasyAntMain() {
-        easyAntConfiguration = EasyantConfigurationFactory.getInstance()
-                .createDefaultConfiguration();
+        easyAntConfiguration = EasyantConfigurationFactory.getInstance().createDefaultConfiguration();
     }
 
     /**
-     * Process command line arguments. When ant is started from Launcher,
-     * launcher-only arguments do not get passed through to this routine.
+     * Process command line arguments. When ant is started from Launcher, launcher-only arguments do not get passed
+     * through to this routine.
      * 
      * @param args
      *            the command line arguments.
@@ -253,8 +240,7 @@ public class EasyAntMain implements AntMain {
             printUsage();
             return;
         }
-        if (easyAntConfiguration.getMsgOutputLevel() >= Project.MSG_VERBOSE
-                || line.hasOption("version")) {
+        if (easyAntConfiguration.getMsgOutputLevel() >= Project.MSG_VERBOSE || line.hasOption("version")) {
             printVersion(easyAntConfiguration.getMsgOutputLevel());
             if (line.hasOption("version")) {
                 return;
@@ -264,8 +250,7 @@ public class EasyAntMain implements AntMain {
             easyAntConfiguration.setShowMemoryDetails(true);
         }
         if (line.hasOption("diagnostics")) {
-            Diagnostics.doReport(System.out,
-                    easyAntConfiguration.getMsgOutputLevel());
+            Diagnostics.doReport(System.out, easyAntConfiguration.getMsgOutputLevel());
             return;
         }
         if (line.hasOption("quiet")) {
@@ -287,63 +272,50 @@ public class EasyAntMain implements AntMain {
                 isLogFileUsed = true;
             } catch (IOException ioe) {
                 String msg = "Cannot write on the specified log file. "
-                        + "Make sure the path exists and you have write "
-                        + "permissions.";
+                        + "Make sure the path exists and you have write " + "permissions.";
                 throw new BuildException(msg);
             } catch (ArrayIndexOutOfBoundsException aioobe) {
-                String msg = "You must specify a log file when "
-                        + "using the -log argument";
+                String msg = "You must specify a log file when " + "using the -log argument";
                 throw new BuildException(msg);
             }
         }
         if (line.hasOption("buildmodule")) {
-            File buildModule = new File(line.getOptionValue("buildmodule")
-                    .replace('/', File.separatorChar));
+            File buildModule = new File(line.getOptionValue("buildmodule").replace('/', File.separatorChar));
             easyAntConfiguration.setBuildModule(buildModule);
         }
         if (line.hasOption("buildfile")) {
-            File buildFile = new File(line.getOptionValue("buildfile").replace(
-                    '/', File.separatorChar));
+            File buildFile = new File(line.getOptionValue("buildfile").replace('/', File.separatorChar));
             easyAntConfiguration.setBuildFile(buildFile);
         }
         if (line.hasOption("buildconf")) {
-            easyAntConfiguration.getActiveBuildConfigurations().add(
-                    line.getOptionValue("buildconf"));
+            easyAntConfiguration.getActiveBuildConfigurations().add(line.getOptionValue("buildconf"));
         }
         if (line.hasOption("configfile")) {
             try {
-                File easyantConfFile = new File(line.getOptionValue(
-                        "configfile").replace('/', File.separatorChar));
-                easyAntConfiguration = EasyantConfigurationFactory
-                        .getInstance().createConfigurationFromFile(
-                                easyAntConfiguration, easyantConfFile.toURL());
+                File easyantConfFile = new File(line.getOptionValue("configfile").replace('/', File.separatorChar));
+                easyAntConfiguration = EasyantConfigurationFactory.getInstance().createConfigurationFromFile(
+                        easyAntConfiguration, easyantConfFile.toURL());
             } catch (Exception e) {
                 throw new BuildException(e);
             }
         }
         if (line.hasOption("listener")) {
-            easyAntConfiguration.getListeners().addElement(
-                    line.getOptionValue("listener"));
+            easyAntConfiguration.getListeners().addElement(line.getOptionValue("listener"));
         }
         if (line.hasOption("D")) {
-            easyAntConfiguration.getDefinedProps().putAll(
-                    line.getOptionProperties("D"));
+            easyAntConfiguration.getDefinedProps().putAll(line.getOptionProperties("D"));
         }
         if (line.hasOption("logger")) {
             if (easyAntConfiguration.getLoggerClassname() != null) {
-                throw new BuildException(
-                        "Only one logger class may be specified.");
+                throw new BuildException("Only one logger class may be specified.");
             }
-            easyAntConfiguration.setLoggerClassname(line
-                    .getOptionValue("logger"));
+            easyAntConfiguration.setLoggerClassname(line.getOptionValue("logger"));
         }
         if (line.hasOption("inputhandler")) {
             if (easyAntConfiguration.getInputHandlerClassname() != null) {
-                throw new BuildException("Only one input handler class may "
-                        + "be specified.");
+                throw new BuildException("Only one input handler class may " + "be specified.");
             }
-            easyAntConfiguration.setInputHandlerClassname(line
-                    .getOptionValue("inputhandler"));
+            easyAntConfiguration.setInputHandlerClassname(line.getOptionValue("inputhandler"));
         }
         if (line.hasOption("emacs")) {
             easyAntConfiguration.setEmacsMode(true);
@@ -373,21 +345,18 @@ public class EasyAntMain implements AntMain {
             easyAntConfiguration.setOffline(true);
         }
         if (line.hasOption("nice")) {
-            easyAntConfiguration.setThreadPriority(Integer.decode(line
-                    .getOptionValue("nice")));
+            easyAntConfiguration.setThreadPriority(Integer.decode(line.getOptionValue("nice")));
 
             if (easyAntConfiguration.getThreadPriority().intValue() < Thread.MIN_PRIORITY
                     || easyAntConfiguration.getThreadPriority().intValue() > Thread.MAX_PRIORITY) {
-                throw new BuildException(
-                        "Niceness value is out of the range 1-10");
+                throw new BuildException("Niceness value is out of the range 1-10");
             }
         }
         if (line.hasOption("autoproxy")) {
             easyAntConfiguration.setProxy(true);
         }
         if (line.getArgList().size() > 0) {
-            for (Iterator iterator = line.getArgList().iterator(); iterator
-                    .hasNext();) {
+            for (Iterator iterator = line.getArgList().iterator(); iterator.hasNext();) {
                 String target = (String) iterator.next();
                 easyAntConfiguration.getTargets().addElement(target);
             }
@@ -411,18 +380,15 @@ public class EasyAntMain implements AntMain {
 
     /** Load the property files specified by -propertyfile */
     private void loadPropertyFiles() {
-        for (int propertyFileIndex = 0; propertyFileIndex < propertyFiles
-                .size(); propertyFileIndex++) {
-            String filename = (String) propertyFiles
-                    .elementAt(propertyFileIndex);
+        for (int propertyFileIndex = 0; propertyFileIndex < propertyFiles.size(); propertyFileIndex++) {
+            String filename = (String) propertyFiles.elementAt(propertyFileIndex);
             Properties props = new Properties();
             FileInputStream fis = null;
             try {
                 fis = new FileInputStream(filename);
                 props.load(fis);
             } catch (IOException e) {
-                System.out.println("Could not load property file " + filename
-                        + ": " + e.getMessage());
+                System.out.println("Could not load property file " + filename + ": " + e.getMessage());
             } finally {
                 FileUtils.close(fis);
             }
@@ -432,27 +398,24 @@ public class EasyAntMain implements AntMain {
             while (propertyNames.hasMoreElements()) {
                 String name = (String) propertyNames.nextElement();
                 if (easyAntConfiguration.getDefinedProps().getProperty(name) == null) {
-                    easyAntConfiguration.getDefinedProps().put(name,
-                            props.getProperty(name));
+                    easyAntConfiguration.getDefinedProps().put(name, props.getProperty(name));
                 }
             }
         }
     }
 
     /**
-     * Executes the build. If the constructor for this instance failed (e.g.
-     * returned after issuing a warning), this method returns immediately.
+     * Executes the build. If the constructor for this instance failed (e.g. returned after issuing a warning), this
+     * method returns immediately.
      * 
      * @param coreLoader
-     *            The classloader to use to find core classes. May be
-     *            <code>null</code>, in which case the system classloader is
-     *            used.
+     *            The classloader to use to find core classes. May be <code>null</code>, in which case the system
+     *            classloader is used.
      * 
      * @exception BuildException
      *                if the build fails
      */
-    private void runBuild(CommandLine line, ClassLoader coreLoader)
-            throws BuildException {
+    private void runBuild(CommandLine line, ClassLoader coreLoader) throws BuildException {
         if (!readyToRun) {
             return;
         }
@@ -480,12 +443,10 @@ public class EasyAntMain implements AntMain {
     }
 
     /**
-     * Prints the description of a project (if there is one) to
-     * <code>System.out</code>.
+     * Prints the description of a project (if there is one) to <code>System.out</code>.
      * 
      * @param project
-     *            The project to display a description of. Must not be
-     *            <code>null</code>.
+     *            The project to display a description of. Must not be <code>null</code>.
      */
     protected void printDescription(Project project) {
         if (project.getDescription() != null) {
@@ -494,42 +455,7 @@ public class EasyAntMain implements AntMain {
     }
 
     /**
-     * Targets in imported files with a project name and not overloaded by the
-     * main build file will be in the target map twice. This method removes the
-     * duplicate target.
-     * 
-     * @param targets
-     *            the targets to filter.
-     * @return the filtered targets.
-     */
-    private static Map removeDuplicateTargets(Map targets) {
-        Map locationMap = new HashMap();
-        for (Iterator i = targets.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            String name = (String) entry.getKey();
-            Target target = (Target) entry.getValue();
-            Target otherTarget = (Target) locationMap.get(target.getLocation());
-            // Place this entry in the location map if
-            // a) location is not in the map
-            // b) location is in map, but it's name is longer
-            // (an imported target will have a name. prefix)
-            if (otherTarget == null
-                    || otherTarget.getName().length() > name.length()) {
-                locationMap.put(target.getLocation(), target); // Smallest name
-                // wins
-            }
-        }
-        Map ret = new HashMap();
-        for (Iterator i = locationMap.values().iterator(); i.hasNext();) {
-            Target target = (Target) i.next();
-            ret.put(target.getName(), target);
-        }
-        return ret;
-    }
-
-    /**
-     * Searches for the correct place to insert a name into a list so as to keep
-     * the list sorted alphabetically.
+     * Searches for the correct place to insert a name into a list so as to keep the list sorted alphabetically.
      * 
      * @param names
      *            The current list of names. Must not be <code>null</code>.
@@ -549,8 +475,7 @@ public class EasyAntMain implements AntMain {
     }
 
     /**
-     * Writes a formatted list of target names to <code>System.out</code> with
-     * an optional description.
+     * Writes a formatted list of target names to <code>System.out</code> with an optional description.
      * 
      * 
      * @param project
@@ -558,20 +483,15 @@ public class EasyAntMain implements AntMain {
      * @param names
      *            The names to be printed. Must not be <code>null</code>.
      * @param descriptions
-     *            The associated target descriptions. May be <code>null</code>,
-     *            in which case no descriptions are displayed. If non-
-     *            <code>null</code>, this should have as many elements as
-     *            <code>names</code>.
+     *            The associated target descriptions. May be <code>null</code>, in which case no descriptions are
+     *            displayed. If non- <code>null</code>, this should have as many elements as <code>names</code>.
      * @param heading
      *            The heading to display. Should not be <code>null</code>.
      * @param maxlen
-     *            The maximum length of the names of the targets. If
-     *            descriptions are given, they are padded to this position so
-     *            they line up (so long as the names really <i>are</i> shorter
-     *            than this).
+     *            The maximum length of the names of the targets. If descriptions are given, they are padded to this
+     *            position so they line up (so long as the names really <i>are</i> shorter than this).
      */
-    private static void printTargets(Project project, Vector names,
-            Vector descriptions, String heading, int maxlen) {
+    private static void printTargets(Project project, Vector names, Vector descriptions, String heading, int maxlen) {
         // now, start printing the targets and their descriptions
         String lSep = System.getProperty("line.separator");
         // got a bit annoyed that I couldn't find a pad function
@@ -585,8 +505,7 @@ public class EasyAntMain implements AntMain {
             msg.append(" ");
             msg.append(names.elementAt(i));
             if (descriptions != null) {
-                msg.append(spaces.substring(0,
-                        maxlen - ((String) names.elementAt(i)).length() + 2));
+                msg.append(spaces.substring(0, maxlen - ((String) names.elementAt(i)).length() + 2));
                 msg.append(descriptions.elementAt(i));
             }
             msg.append(lSep);
@@ -595,19 +514,18 @@ public class EasyAntMain implements AntMain {
     }
 
     /**
-     * Prints a list of all targets in the specified project to
-     * <code>System.out</code>, optionally including subtargets.
+     * Prints a list of all targets in the specified project to <code>System.out</code>, optionally including
+     * subtargets.
      * 
      * @param project
-     *            The project to display a description of. Must not be
-     *            <code>null</code>.
+     *            The project to display a description of. Must not be <code>null</code>.
      * @param printSubTargets
      *            Whether or not subtarget names should also be printed.
      */
     protected static void printTargets(Project project, boolean printSubTargets) {
         // find the target with the longest name
         int maxLength = 0;
-        Map ptargets = removeDuplicateTargets(project.getTargets());
+        Map ptargets = ProjectUtils.removeDuplicateTargets(project.getTargets());
         String targetName;
         String targetDescription;
         Target currentTarget;
@@ -648,10 +566,8 @@ public class EasyAntMain implements AntMain {
             }
         }
 
-        printTargets(project, phases, phasesDescriptions, "Main phases:",
-                maxLength);
-        printTargets(project, topNames, topDescriptions, "Main targets:",
-                maxLength);
+        printTargets(project, phases, phasesDescriptions, "Main phases:", maxLength);
+        printTargets(project, topNames, topDescriptions, "Main targets:", maxLength);
         // if there were no main targets, we list all subtargets
         // as it means nothing has a description
         if (topNames.size() == 0) {
@@ -674,11 +590,9 @@ public class EasyAntMain implements AntMain {
 
         try {
 
-            EasyAntEngine
-                    .configureAndInitProject(project, easyAntConfiguration);
+            EasyAntEngine.configureAndInitProject(project, easyAntConfiguration);
             printDescription(project);
-            printTargets(project,
-                    easyAntConfiguration.getMsgOutputLevel() > Project.MSG_INFO);
+            printTargets(project, easyAntConfiguration.getMsgOutputLevel() > Project.MSG_INFO);
 
         } catch (RuntimeException exc) {
             error = exc;
@@ -696,101 +610,67 @@ public class EasyAntMain implements AntMain {
     public void configureOptions() {
         options.addOption("h", "help", false, "print this message");
 
-        options.addOption("p", "projecthelp", false,
-                "print project help information");
-        options.addOption("version", false,
-                "print the version information and exit");
+        options.addOption("p", "projecthelp", false, "print project help information");
+        options.addOption("version", false, "print the version information and exit");
         options.addOption("diagnostics", false,
                 "print information that might be helpful to diagnose or report problems");
-        options.addOption("showMemoryDetails", false,
-                "print memory details (used/free/total)");
+        options.addOption("showMemoryDetails", false, "print memory details (used/free/total)");
         options.addOption("q", "quiet", false, "be extra quiet");
         options.addOption("v", "verbose", false, "be extra verbose");
         options.addOption("d", "debug", false, "print debugging information");
-        options.addOption("e", "emacs", false,
-                "produce logging information without adornments");
-        Option lib = OptionBuilder
-                .withArgName("path")
-                .hasArg()
-                .withDescription(
-                        "specifies a path to search for jars and classes")
-                .create("lib");
+        options.addOption("e", "emacs", false, "produce logging information without adornments");
+        Option lib = OptionBuilder.withArgName("path").hasArg()
+                .withDescription("specifies a path to search for jars and classes").create("lib");
         options.addOption(lib);
-        Option logfile = OptionBuilder.withArgName("file").hasArg()
-                .withDescription("use given file for log").create("logfile");
+        Option logfile = OptionBuilder.withArgName("file").hasArg().withDescription("use given file for log")
+                .create("logfile");
         options.addOption(logfile);
         Option logger = OptionBuilder.withArgName("classname").hasArg()
-                .withDescription("the class which it to perform " + "logging")
-                .create("logger");
+                .withDescription("the class which it to perform " + "logging").create("logger");
         options.addOption(logger);
-        Option listener = OptionBuilder
-                .withArgName("classname")
-                .hasArg()
-                .withDescription(
-                        "add an instance of class as " + "a project listener")
-                .create("listener");
+        Option listener = OptionBuilder.withArgName("classname").hasArg()
+                .withDescription("add an instance of class as " + "a project listener").create("listener");
         options.addOption(listener);
-        Option buildfile = OptionBuilder.withArgName("file").hasArg()
-                .withDescription("use given buildfile").create("buildfile");
+        Option buildfile = OptionBuilder.withArgName("file").hasArg().withDescription("use given buildfile")
+                .create("buildfile");
         options.addOption(buildfile);
-        Option find = OptionBuilder
-                .withArgName("file")
-                .hasOptionalArg()
-                .withDescription(
-                        "search for buildfile towards the "
-                                + "root of the filesystem and use it")
+        Option find = OptionBuilder.withArgName("file").hasOptionalArg()
+                .withDescription("search for buildfile towards the " + "root of the filesystem and use it")
                 .withLongOpt("find").create("s");
         options.addOption(find);
         options.addOption("noinput", false, "do not allow interactive input");
-        Option buildmodule = OptionBuilder.withArgName("file").hasArg()
-                .withDescription("use given buildmodule")
+        Option buildmodule = OptionBuilder.withArgName("file").hasArg().withDescription("use given buildmodule")
                 .withLongOpt("buildmodule").create("f");
         options.addOption(buildmodule);
 
         Option buildconf = OptionBuilder.withArgName("confs").hasArg()
-                .withDescription("specify build configurations (profiles)")
-                .withLongOpt("buildconf").create("C");
+                .withDescription("specify build configurations (profiles)").withLongOpt("buildconf").create("C");
         options.addOption(buildconf);
         Option configFile = OptionBuilder.withArgName("file").hasArg()
-                .withDescription("use given easyant configuration")
-                .create("configfile");
+                .withDescription("use given easyant configuration").create("configfile");
         options.addOption(configFile);
-        Option property = OptionBuilder.withArgName("property=value")
-                .hasArgs(2).withValueSeparator()
+        Option property = OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator()
                 .withDescription("use value for given property").create("D");
         options.addOption(property);
-        options.addOption("k", "keep-going", false,
-                "execute all targets that do not depend on failed target(s)");
-        Option propertiesfile = OptionBuilder
-                .withArgName("file")
-                .hasArg()
-                .withDescription(
-                        "load all properties from file with -D properties taking precedence")
+        options.addOption("k", "keep-going", false, "execute all targets that do not depend on failed target(s)");
+        Option propertiesfile = OptionBuilder.withArgName("file").hasArg()
+                .withDescription("load all properties from file with -D properties taking precedence")
                 .create("propertyfile");
         options.addOption(buildfile);
         Option inputhandler = OptionBuilder.withArgName("classname").hasArg()
-                .withDescription("the class which will handle input requests")
-                .create("inputhandler");
+                .withDescription("the class which will handle input requests").create("inputhandler");
         options.addOption(listener);
-        Option nice = OptionBuilder
-                .withArgName("number")
-                .hasArg()
-                .withDescription(
-                        "A niceness value for the main thread: 1 (lowest) to 10 (highest); 5 is the default")
+        Option nice = OptionBuilder.withArgName("number").hasArg()
+                .withDescription("A niceness value for the main thread: 1 (lowest) to 10 (highest); 5 is the default")
                 .create("nice");
         options.addOption(nice);
-        options.addOption("nouserlib", false,
-                "Run ant without using the jar files from ${user.home}/.ant/lib");
-        options.addOption("noclasspath", false,
-                "Run ant without using CLASSPATH");
-        options.addOption("autoproxy", false,
-                "Java1.5+: use the OS proxy settings");
+        options.addOption("nouserlib", false, "Run ant without using the jar files from ${user.home}/.ant/lib");
+        options.addOption("noclasspath", false, "Run ant without using CLASSPATH");
+        options.addOption("autoproxy", false, "Java1.5+: use the OS proxy settings");
         Option main = OptionBuilder.withArgName("classname").hasArg()
-                .withDescription("override EasyAnt's normal entry point")
-                .create("main");
+                .withDescription("override EasyAnt's normal entry point").create("main");
         options.addOption(main);
-        options.addOption("o", "offline", false,
-                "turns EasyAnt in offline mode");
+        options.addOption("o", "offline", false, "turns EasyAnt in offline mode");
         options.addOption(new Describe());
         options.addOption(new ListExtensionPoints());
         options.addOption(new ListTargets());
@@ -804,8 +684,7 @@ public class EasyAntMain implements AntMain {
     private void printUsage() {
 
         HelpFormatter help = new HelpFormatter();
-        help.printHelp("easyant [options] [target [target2 [target3] ...]]",
-                options);
+        help.printHelp("easyant [options] [target [target2 [target3] ...]]", options);
 
     }
 
@@ -826,12 +705,10 @@ public class EasyAntMain implements AntMain {
     private static String antVersion = null;
 
     /**
-     * Returns the Ant version information, if available. Once the information
-     * has been loaded once, it's cached and returned from the cache on future
-     * calls.
+     * Returns the Ant version information, if available. Once the information has been loaded once, it's cached and
+     * returned from the cache on future calls.
      * 
-     * @return the Ant version information as a String (always non-
-     *         <code>null</code>)
+     * @return the Ant version information as a String (always non- <code>null</code>)
      * 
      * @exception BuildException
      *                if the version information is unavailable
@@ -840,8 +717,7 @@ public class EasyAntMain implements AntMain {
         if (antVersion == null) {
             try {
                 Properties props = new Properties();
-                InputStream in = Main.class
-                        .getResourceAsStream("/org/apache/tools/ant/version.txt");
+                InputStream in = Main.class.getResourceAsStream("/org/apache/tools/ant/version.txt");
                 props.load(in);
                 in.close();
 
@@ -852,12 +728,9 @@ public class EasyAntMain implements AntMain {
                 msg.append(props.getProperty("DATE"));
                 antVersion = msg.toString();
             } catch (IOException ioe) {
-                throw new BuildException(
-                        "Could not load the version information:"
-                                + ioe.getMessage());
+                throw new BuildException("Could not load the version information:" + ioe.getMessage());
             } catch (NullPointerException npe) {
-                throw new BuildException(
-                        "Could not load the version information.");
+                throw new BuildException("Could not load the version information.");
             }
         }
         return antVersion;
