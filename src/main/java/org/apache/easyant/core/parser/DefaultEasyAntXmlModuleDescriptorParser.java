@@ -135,22 +135,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             if (name.equals(easyantPrefix + ":bindtarget") && State.EXTRA_INFO == getState()) {
                 bindTargetStarted(attributes);
             }
-
-            if ("easyant".equals(name)) {
-                // TODO: add a reference to the documentation
-                Message.warn("<easyant> tag is deprecated since easyant 0.6, we strongly recommend you to use <ea:build> instead");
-                eaBuildStarted(attributes);
-            }
-            if (easyAntState == EasyAntState.EASYANT && "property".equals(name)) {
-                // TODO: add a reference to the documentation
-                Message.warn("<property> tag is deprecated since easyant 0.6, we strongly recommend you to use <ea:property> instead");
-                easyantPropertyStarted(attributes);
-            }
-            if (easyAntState == EasyAntState.EASYANT && "plugin".equals(name)) {
-                // TODO: add a reference to the documentation
-                Message.warn("<plugin> tag is deprecated since easyant 0.6, we strongly recommend you to use <ea:plugin> instead");
-                pluginStarted(attributes);
-            }
+            
         }
 
         @Override
