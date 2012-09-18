@@ -135,7 +135,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             if (name.equals(easyantPrefix + ":bindtarget") && State.EXTRA_INFO == getState()) {
                 bindTargetStarted(attributes);
             }
-            
+
         }
 
         @Override
@@ -465,8 +465,9 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
          *            a string that represents what we should extends
          * @param parent
          *            an other module descriptor
+         * @throws ParseException
          */
-        protected void mergeWithOtherModuleDescriptor(List extendTypes, ModuleDescriptor parent) {
+        protected void mergeWithOtherModuleDescriptor(List extendTypes, ModuleDescriptor parent) throws ParseException {
             super.mergeWithOtherModuleDescriptor(extendTypes, parent);
             if (parent.getParser() instanceof DefaultEasyAntXmlModuleDescriptorParser) {
                 DefaultEasyAntXmlModuleDescriptorParser parser = (DefaultEasyAntXmlModuleDescriptorParser) parent
