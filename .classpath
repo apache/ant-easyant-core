@@ -10,6 +10,6 @@
 	<classpathentry kind="lib" path="lib/main/ant-contrib.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit-4.4.jar"/>
 	<classpathentry kind="lib" path="lib/main/commons-cli.jar"/>
-	<classpathentry kind="lib" path="repository/third-party-lib/org.apache.ivy/ivy/2.3.0-r1165119/ivy.jar"/>
+	<classpathentry kind="lib" path="lib/main/ivy.jar"/>
 	<classpathentry kind="output" path="target/main/classes"/>
 </classpath>
