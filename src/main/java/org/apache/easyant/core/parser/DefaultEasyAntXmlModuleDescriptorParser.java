@@ -41,7 +41,6 @@ import org.apache.ivy.ant.IvyConflict;
 import org.apache.ivy.ant.IvyDependency;
 import org.apache.ivy.ant.IvyDependencyArtifact;
 import org.apache.ivy.ant.IvyDependencyConf;
-import org.apache.ivy.ant.IvyDependencyConf.IvyDependencyConfMapped;
 import org.apache.ivy.ant.IvyDependencyExclude;
 import org.apache.ivy.ant.IvyDependencyInclude;
 import org.apache.ivy.ant.IvyExclude;
@@ -148,19 +147,19 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             if (name.equals(easyantPrefix + ":dependency") && easyAntState == EasyAntState.PLUGIN) {
                 pluginDependencyStarted(attributes);
             }
-            if (name.equals(easyantPrefix + ":exclude") &&easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
+            if (name.equals(easyantPrefix + ":exclude") && easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
                 pluginDependencyExcludeStarted(attributes);
             }
-            if (name.equals(easyantPrefix + ":include") &&easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
+            if (name.equals(easyantPrefix + ":include") && easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
                 pluginDependencyIncludeStarted(attributes);
             }
-            if (name.equals(easyantPrefix + ":artifact") &&easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
+            if (name.equals(easyantPrefix + ":artifact") && easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
                 pluginDependencyIncludeStarted(attributes);
             }
-            if (name.equals(easyantPrefix + ":conf") &&easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
+            if (name.equals(easyantPrefix + ":conf") && easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
                 pluginDependencyConfStarted(attributes);
             }
-            
+
             if (name.equals(easyantPrefix + ":exclude") && easyAntState == EasyAntState.PLUGIN) {
                 pluginExcludeStarted(attributes);
             }
@@ -175,8 +174,8 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             if (name.equals(easyantPrefix + ":plugin") && easyAntState == EasyAntState.PLUGIN) {
                 endPlugin();
             }
-            
-            if  (name.equals(easyantPrefix + ":dependency") && easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
+
+            if (name.equals(easyantPrefix + ":dependency") && easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
                 endPluginDependency();
             }
         }
@@ -185,13 +184,12 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             currentPluginDescriptor = null;
             easyAntState = EasyAntState.NONE;
         }
-        
-        public void endPluginDependency() {
-            currentPluginDependency =null;
-            easyAntState = EasyAntState.PLUGIN;
-            
-        }
 
+        public void endPluginDependency() {
+            currentPluginDependency = null;
+            easyAntState = EasyAntState.PLUGIN;
+
+        }
 
         @Override
         protected void ivyModuleStarted(Attributes attributes) throws SAXException {
@@ -283,6 +281,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
         }
 
         public void pluginDependencyStarted(Attributes attributes) {
+            easyAntState = EasyAntState.PLUGIN_DEPENDENCY;
             IvyDependency ivyDependency = new IvyDependency();
             ivyDependency.setOrg(getSettings().substitute(attributes.getValue("org")));
             ivyDependency.setForce(Boolean.valueOf(getSettings().substitute(attributes.getValue("force")))
@@ -301,7 +300,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             currentPluginDescriptor.addDependency(ivyDependency);
             currentPluginDependency = ivyDependency;
         }
-        
+
         public void pluginDependencyExcludeStarted(Attributes attributes) {
             IvyDependencyExclude ivyDependencyExclude = currentPluginDependency.createExclude();
             ivyDependencyExclude.setOrg(getSettings().substitute(attributes.getValue("org")));
@@ -310,9 +309,9 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             ivyDependencyExclude.setExt(getSettings().substitute(attributes.getValue("ext")));
             ivyDependencyExclude.setType(getSettings().substitute(attributes.getValue("type")));
             ivyDependencyExclude.setMatcher(getSettings().substitute(attributes.getValue("matcher")));
-            
+
         }
-        
+
         public void pluginDependencyIncludeStarted(Attributes attributes) {
             IvyDependencyInclude ivyDependencyInclude = currentPluginDependency.createInclude();
             ivyDependencyInclude.setName(getSettings().substitute(attributes.getValue("name")));
@@ -320,7 +319,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             ivyDependencyInclude.setType(getSettings().substitute(attributes.getValue("type")));
             ivyDependencyInclude.setMatcher(getSettings().substitute(attributes.getValue("matcher")));
         }
-        
+
         public void pluginDependencyArtifactStarted(Attributes attributes) {
             IvyDependencyArtifact ivyDependencyArtifact = currentPluginDependency.createArtifact();
             ivyDependencyArtifact.setName(getSettings().substitute(attributes.getValue("name")));
@@ -328,12 +327,12 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             ivyDependencyArtifact.setType(getSettings().substitute(attributes.getValue("type")));
             ivyDependencyArtifact.setUrl(getSettings().substitute(attributes.getValue("url")));
         }
-        
+
         public void pluginDependencyConfStarted(Attributes attributes) {
             IvyDependencyConf ivyDependencyConf = currentPluginDependency.createConf();
             ivyDependencyConf.setMapped(getSettings().substitute(attributes.getValue("mapped")));
         }
-        
+
         public void pluginConflictStarted(Attributes attributes) {
             IvyConflict ivyConflict = new IvyConflict();
             ivyConflict.setOrg(getSettings().substitute(attributes.getValue("org")));
