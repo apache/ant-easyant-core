@@ -19,10 +19,18 @@ package org.apache.easyant.tasks;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.easyant.core.BuildConfigurationHelper;
+import org.apache.ivy.ant.EasyAntPluginBridge;
+import org.apache.ivy.ant.IvyConflict;
+import org.apache.ivy.ant.IvyDependency;
+import org.apache.ivy.ant.IvyExclude;
+import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.core.report.ResolveReport;
+import org.apache.ivy.core.settings.IvySettings;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DynamicAttribute;
 import org.apache.tools.ant.Project;
@@ -53,6 +61,12 @@ public class Import extends AbstractImport implements DynamicAttribute {
     private String revision;
 
     private String mrid;
+
+    private List<IvyDependency> dependencies = new ArrayList<IvyDependency>();
+
+    private List<IvyExclude> excludes = new ArrayList<IvyExclude>();
+
+    private List<IvyConflict> conflicts = new ArrayList<IvyConflict>();
 
     public void execute() {
         ModuleRevisionId moduleRevisionId = null;
@@ -96,9 +110,17 @@ public class Import extends AbstractImport implements DynamicAttribute {
             log(moduleName + " skipped !");
         } else {
             try {
-                ResolveReport report = getEasyAntIvyInstance().getResolveEngine().resolve(moduleRevisionId,
-                        configureResolveOptions(), isChanging());
-                importModule(moduleRevisionId,report);
+                DefaultModuleDescriptor md = DefaultModuleDescriptor.newCallerInstance(moduleRevisionId, getMainConf()
+                        .split(","), true, isChanging());
+
+                IvySettings settings = getEasyAntIvyInstance().getSettings();
+                // FIXME: If additionnal dependency are loaded or a superior version of a dependency is defined it works
+                // as expected
+                // But it doesn't work if you specify a revision lower to original one
+                md = EasyAntPluginBridge.computeModuleDescriptor(md, settings, dependencies, conflicts, excludes);
+                ResolveReport report = getEasyAntIvyInstance().getResolveEngine()
+                        .resolve(md, configureResolveOptions());
+                importModule(moduleRevisionId, report);
             } catch (ParseException e) {
                 throw new BuildException("Can't parse module descriptor", e);
             } catch (IOException e) {
@@ -203,5 +225,47 @@ public class Import extends AbstractImport implements DynamicAttribute {
     public void setMrid(String mrid) {
         this.mrid = mrid;
     }
-    
+
+    public IvyDependency createDependency() {
+        IvyDependency dep = new IvyDependency();
+        dependencies.add(dep);
+        return dep;
+    }
+
+    public IvyExclude createExclude() {
+        IvyExclude ex = new IvyExclude();
+        excludes.add(ex);
+        return ex;
+    }
+
+    public IvyConflict createConflict() {
+        IvyConflict c = new IvyConflict();
+        conflicts.add(c);
+        return c;
+    }
+
+    public List<IvyDependency> getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(List<IvyDependency> dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    public List<IvyExclude> getExcludes() {
+        return excludes;
+    }
+
+    public void setExcludes(List<IvyExclude> excludes) {
+        this.excludes = excludes;
+    }
+
+    public List<IvyConflict> getConflicts() {
+        return conflicts;
+    }
+
+    public void setConflicts(List<IvyConflict> conflicts) {
+        this.conflicts = conflicts;
+    }
+
 }

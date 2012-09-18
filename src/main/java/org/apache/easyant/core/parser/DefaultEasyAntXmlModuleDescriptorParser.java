@@ -37,6 +37,9 @@ import org.apache.easyant.core.descriptor.ExtensionPointMappingDescriptor;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.ivy.InheritableScope;
+import org.apache.ivy.ant.IvyConflict;
+import org.apache.ivy.ant.IvyDependency;
+import org.apache.ivy.ant.IvyExclude;
 import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.module.descriptor.Configuration;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
@@ -136,6 +139,15 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 bindTargetStarted(attributes);
             }
 
+            if (name.equals(easyantPrefix + ":dependency") && easyAntState == EasyAntState.PLUGIN) {
+                pluginDependencyStarted(attributes);
+            }
+            if (name.equals(easyantPrefix + ":exclude") && easyAntState == EasyAntState.PLUGIN) {
+                pluginExcludeStarted(attributes);
+            }
+            if (name.equals(easyantPrefix + ":conflict") && easyAntState == EasyAntState.PLUGIN) {
+                pluginConflictStarted(attributes);
+            }
         }
 
         @Override
@@ -238,6 +250,58 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             }
 
             handlePropertyAsAttribute(attributes, conf);
+        }
+
+        public void pluginDependencyStarted(Attributes attributes) {
+            IvyDependency ivyDependency = new IvyDependency();
+            String org = getSettings().substitute(attributes.getValue("org"));
+            if (org == null) {
+                org = currentPluginDescriptor.getOrganisation();
+            }
+            ivyDependency.setOrg(org);
+            ivyDependency.setForce(Boolean.valueOf(getSettings().substitute(attributes.getValue("force")))
+                    .booleanValue());
+            ivyDependency.setChanging(Boolean.valueOf(getSettings().substitute(attributes.getValue("changing")))
+                    .booleanValue());
+            String transitiveValue = getSettings().substitute(attributes.getValue("transitive"));
+            boolean transitive = (transitiveValue == null) ? true : Boolean.valueOf(attributes.getValue("transitive"))
+                    .booleanValue();
+            ivyDependency.setTransitive(transitive);
+
+            ivyDependency.setName(getSettings().substitute(attributes.getValue("name")));
+            ivyDependency.setBranch(getSettings().substitute(attributes.getValue("branch")));
+
+            ivyDependency.setRev(getSettings().substitute(attributes.getValue("rev")));
+            currentPluginDescriptor.addDependency(ivyDependency);
+        }
+
+        public void pluginConflictStarted(Attributes attributes) {
+            IvyConflict ivyConflict = new IvyConflict();
+            String org = getSettings().substitute(attributes.getValue("org"));
+            if (org == null) {
+                org = currentPluginDescriptor.getOrganisation();
+            }
+            ivyConflict.setOrg(org);
+            ivyConflict.setModule(getSettings().substitute(attributes.getValue("module")));
+            ivyConflict.setRev(getSettings().substitute(attributes.getValue("rev")));
+            ivyConflict.setManager(getSettings().substitute(attributes.getValue("manager")));
+            ivyConflict.setMatcher(getSettings().substitute(attributes.getValue("matcher")));
+            currentPluginDescriptor.addConflict(ivyConflict);
+        }
+
+        public void pluginExcludeStarted(Attributes attributes) {
+            IvyExclude ivyExclude = new IvyExclude();
+            String org = getSettings().substitute(attributes.getValue("org"));
+            if (org == null) {
+                org = currentPluginDescriptor.getOrganisation();
+            }
+            ivyExclude.setOrg(org);
+            ivyExclude.setModule(getSettings().substitute(attributes.getValue("module")));
+            ivyExclude.setArtifact(getSettings().substitute(attributes.getValue("artifact")));
+            ivyExclude.setType(getSettings().substitute(attributes.getValue("type")));
+            ivyExclude.setExt(getSettings().substitute(attributes.getValue("ext")));
+            ivyExclude.setMatcher(getSettings().substitute(attributes.getValue("matcher")));
+            currentPluginDescriptor.addExcludes(ivyExclude);
         }
 
         /**

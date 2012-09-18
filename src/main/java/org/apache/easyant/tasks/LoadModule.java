@@ -296,6 +296,9 @@ public class LoadModule extends AbstractEasyAntTask {
                     importTask.setAs(plugin.getAs());
                     importTask.setMandatory(plugin.isMandatory());
                     importTask.setBuildConfigurations(plugin.getBuildConfigurations());
+                    importTask.setDependencies(plugin.getDependencies());
+                    importTask.setConflicts(plugin.getConflicts());
+                    importTask.setExcludes(plugin.getExcludes());
                     initTask(importTask).execute();
                 }
             }

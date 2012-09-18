@@ -17,7 +17,13 @@
  */
 package org.apache.easyant.core.descriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.easyant.core.ivy.InheritableScope;
+import org.apache.ivy.ant.IvyConflict;
+import org.apache.ivy.ant.IvyDependency;
+import org.apache.ivy.ant.IvyExclude;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 
 /**
@@ -28,32 +34,40 @@ public class PluginDescriptor implements AdvancedInheritableItem {
     private String organisation;
     private String module;
     private String revision;
-    
+
     private String mrid;
-    
+
     private String mode;
     private String as;
-    
+
     private boolean mandatory;
     private String buildConfigurations;
     private InheritableScope inheritScope = InheritableScope.BOTH;
 
     private final ModuleRevisionId sourceModule;
-    private boolean inheritable=true;
-    
+    private boolean inheritable = true;
+
+    private List<IvyDependency> dependencies = new ArrayList<IvyDependency>();
+
+    private List<IvyExclude> excludes = new ArrayList<IvyExclude>();
+
+    private List<IvyConflict> conflicts = new ArrayList<IvyConflict>();
+
     /**
      * Default constructor
      */
     public PluginDescriptor() {
-        sourceModule=null;
+        sourceModule = null;
     }
-    
+
     /**
      * Constructor specifying the source module which was defining the plugin
-     * @param sourceModule a source module
+     * 
+     * @param sourceModule
+     *            a source module
      */
     public PluginDescriptor(ModuleRevisionId sourceModule) {
-        this.sourceModule=sourceModule;
+        this.sourceModule = sourceModule;
     }
 
     /**
@@ -74,8 +88,7 @@ public class PluginDescriptor implements AdvancedInheritableItem {
     public void setModule(String module) {
         this.module = module;
     }
-    
-    
+
     /**
      * Get the organisation of the module to import
      * 
@@ -133,11 +146,10 @@ public class PluginDescriptor implements AdvancedInheritableItem {
         this.mrid = mrid;
     }
 
-
     /**
-     * Get the import mode of a plugin 
+     * Get the import mode of a plugin
      * 
-     * @return a string that represent the import mode (import / include) 
+     * @return a string that represent the import mode (import / include)
      */
     public String getMode() {
         return mode;
@@ -145,7 +157,9 @@ public class PluginDescriptor implements AdvancedInheritableItem {
 
     /**
      * Set the import mode of a plugin
-     * @param mode a string that represent the import mode (import / include)
+     * 
+     * @param mode
+     *            a string that represent the import mode (import / include)
      */
     public void setMode(String mode) {
         this.mode = mode;
@@ -153,6 +167,7 @@ public class PluginDescriptor implements AdvancedInheritableItem {
 
     /**
      * Get the alias name
+     * 
      * @return the alias name
      */
     public String getAs() {
@@ -161,14 +176,17 @@ public class PluginDescriptor implements AdvancedInheritableItem {
 
     /**
      * Set the alias name
-     * @param as the alias name
+     * 
+     * @param as
+     *            the alias name
      */
     public void setAs(String as) {
         this.as = as;
     }
 
     /**
-     * is this plugin mandatory?  
+     * is this plugin mandatory?
+     * 
      * @return true if the plugin is mandatory, false if the plugin can be skipped
      */
     public boolean isMandatory() {
@@ -177,7 +195,9 @@ public class PluginDescriptor implements AdvancedInheritableItem {
 
     /**
      * is this plugin mandatory?
-     * @param mandatory true if the plugin is mandatory, false if the plugin can be skipped
+     * 
+     * @param mandatory
+     *            true if the plugin is mandatory, false if the plugin can be skipped
      */
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
@@ -185,7 +205,9 @@ public class PluginDescriptor implements AdvancedInheritableItem {
 
     /**
      * set a build configuration name bound to this plugin
-     * @param buildConfigurationName a build configuration name
+     * 
+     * @param buildConfigurationName
+     *            a build configuration name
      */
     public void setBuildConfigurations(String buildConfigurationName) {
         this.buildConfigurations = buildConfigurationName;
@@ -193,6 +215,7 @@ public class PluginDescriptor implements AdvancedInheritableItem {
 
     /**
      * Return a build configuration name bound to this plugin
+     * 
      * @return a build configuration name
      */
     public String getBuildConfigurations() {
@@ -200,7 +223,7 @@ public class PluginDescriptor implements AdvancedInheritableItem {
     }
 
     /**
-     * {@inheritDoc} 
+     * {@inheritDoc}
      */
     public ModuleRevisionId getSourceModule() {
         return sourceModule;
@@ -219,9 +242,32 @@ public class PluginDescriptor implements AdvancedInheritableItem {
     }
 
     public void setInheritable(boolean isIneritable) {
-        this.inheritable=isIneritable;
-        
+        this.inheritable = isIneritable;
+
     }
 
-    
+    public List<IvyDependency> getDependencies() {
+        return dependencies;
+    }
+
+    public List<IvyExclude> getExcludes() {
+        return excludes;
+    }
+
+    public List<IvyConflict> getConflicts() {
+        return conflicts;
+    }
+
+    public boolean addDependency(IvyDependency dependency) {
+        return dependencies.add(dependency);
+    }
+
+    public boolean addExcludes(IvyExclude exclude) {
+        return excludes.add(exclude);
+    }
+
+    public boolean addConflict(IvyConflict conflict) {
+        return conflicts.add(conflict);
+    }
+
 }
