@@ -24,7 +24,6 @@
     </configurations>
     <publications>
         <artifact name="easyant-core" type="jar" conf="default"/>
-        <artifact name="easyant-extra-modules" type="jar" conf="extra"/>
     </publications>
     <dependencies>
         <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
