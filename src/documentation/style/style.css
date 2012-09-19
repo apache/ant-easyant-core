@@ -20,19 +20,18 @@ Design by Free CSS Templates
 http://www.freecsstemplates.org
 Released for free under a Creative Commons Attribution 2.5 License
 */
-*, html {
-	margin:0;
-	padding:0;
-}
-
 body {
     background:#f5f5f5 !important;
     font: normal small Arial, Helvetica, sans-serif;
     color: #6c6c6c;
+    padding: 0;
+    margin: 0;
+
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
     color: #11A6D4;
+    margin:5px 0;
 }
 
 pre {
@@ -92,6 +91,8 @@ table, sortable {
 }
 /* Header > Menu */
 ul.menu{
+padding: 0;
+margin: 0;
 background:#000;
 width:100%;
 position:absolute;
@@ -153,6 +154,7 @@ color:#000;
 .boxed .title {
     height: 29px;
     padding: 11px 0 0 27px;
+    margin:0;
     background: url(../images/img08.gif) no-repeat 10px 50%;
     font-size: 1.2em;
     color: #FFFFFF;
@@ -161,14 +163,15 @@ color:#000;
 /* Posts */
 
 #posts {
-    float:left;
-    margin-left: 10px;
+    float:right;
+    width:75%;
 }
 
 /* Content > Sidebar */
 
 #sidebar {
     float: left;
+    width:24%;
 }
 
 /* Links */
@@ -176,6 +179,11 @@ color:#000;
 #links {
     padding-left: 10px;
     padding-right:10px;
+}
+
+#links ul {
+    padding: 0;
+    margin:0;
 }
 
 #links li a {

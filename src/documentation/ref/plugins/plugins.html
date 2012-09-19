@@ -31,6 +31,66 @@
 <p>A typical plugin consists of an Ivy descriptor and a short Ant script, and is stored in the EasyAnt Ivy repository.  The Ivy descriptor indicates which libraries are required by your plugin; for example, the junit jar is needed by the test-junit plugin.  The Ant script contributes logic to one or more <a href="../phases.html">build phases</a>.  Most plugins can be fine-tuned with Ant property settings.</p>
 
 <p>If you want to add support for a new build tool to EasyAnt, you should probably start by writing a plugin for it.  See the <a href="../../howto/writePlugins.html">Plugins Tutorial</a> to get started.  Before writing your own plugin, be sure to check here to see if a plugin doesn't already exist.</p>
+
+
+<ul>
+  <li>Java plugins
+    <ul>
+      <li>Java compilation</li>
+      <li>Javadoc generation</li>
+      <li>Run java application</li>
+    </ul>
+  </li>
+  <li>Scala plugins
+    <ul>
+      <li>Scala compilation</li>
+      <li>Scaladoc</li>
+    </ul>
+  </li>
+  <li>Packaging plugins
+    <ul>
+      <li>Manifest plugins</li>
+      <li>Packaging jar application</li>
+      <li>Packaging war application</li>
+      <li>Source packaging</li>
+    </ul>
+  </li>
+  <li>Test plugins
+    <ul>
+      <li>abstract tests (used by all *tests plugins)</li>
+      <li>Junit tests</li>
+      <li>TestNG tests</li>
+    </ul>
+  </li>
+  <li>Dependency / Publication
+    <ul>
+      <li>Common ivy tasks (Reports, clean-cache, etc...)</li>
+      <li>Dependency management (using Apache Ivy)</li>
+      <li>Publication (using Apache Ivy)</li>
+    </ul>
+  </li>
+  <li>Source Code Management Plugins
+    <ul>
+      <li>SVN</li>
+    </ul>
+  </li>
+  <li>Documentation Plugins
+    <ul>
+      <li>Documentation generation</li>
+      <li>Xooki</li>
+    </ul>
+  </li>
+  <li>Others Plugins
+    <ul>
+      <li>Clean</li>
+      <li>Resource standard</li>
+      <li>Emma coverage</li>
+      <li>Checkstyle</li>
+      <li>Jetty deployment</li>
+      <li>Skeleton plugins (manages skeleton of projects)</li>
+     </ul>
+  </li>
+</ul>
 </textarea>
 <script type="text/javascript">xooki.postProcess();</script>
 </body>

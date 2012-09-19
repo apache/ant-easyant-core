@@ -39,6 +39,10 @@ Those conventions can be configured through properties such as :
 In this document will try to explain you the directory structure of standard EasyAnt project.
 
 <h2>Standard directory structure</h2>
+
+Standard directory structure looks like this :
+<img src="../images/java-webapp-src-structure.gif" />
+
 <h3>Separating project main code and test code</h3>
 In a ideal world application may have some tests (functionnal / unit test / integration test, etc...).
 This tests doesn't make sense at all to be shipped during the packaging phase of your application.
@@ -47,6 +51,7 @@ To avoid this, by default EasyAnt makes a separation between
   <li>project code</li>
   <li>test code</li>
 </ul>
+
 
 By convention, project code is stored in <i>src/main</i> directory</i>, whereas your test code is in <i>src/test</i> directory.
 
@@ -59,27 +64,26 @@ The directory structure of project source code looks like :
   <li><i>src/main/resources</i> for resource files (note that this can be configured through the property <i>src.main.resources</i>)</li>
 </ul>
 
-
 The directory structure of test source code:
 <ul>
   <li><i>src/test/java</i> for test source code (note that this can be configured through the property <i>src.test.java</i>)</li>
   <li><i>src/test/resources</i> for test resource files (note that this can be configured through the property <i>src.test.resources</i>)</li>
 </ul>
 
-<div id="note>
+<div id="note">
 Note: this also apply with non-java project (like groovy / scala project). 
-Groovy project : 
+<h4>Groovy project</h4>
 <ul>
   <li><i>src/main/groovy</i> for main source code (note that this can be configured through the property <i>src.main.groovy</i>)</li>
   <li><i>src/test/groovy</i> for test source code (note that this can be configured through the property <i>src.test.groovy</i>)</li>
 </ul>
 
-Scala project : 
+<h4>Scala project</h4>
 <ul>
   <li><i>src/main/scala</i> for main source code (note that this can be configured through the property <i>src.main.scala</i>)</li>
   <li><i>src/test/scala</i> for test source code (note that this can be configured through the property <i>src.test.scala</i>)</li>
 </ul>
-</note>
+</div>
 
 <h2>WebApp ressources</h2>
 By convention, WebApp ressources are stored in <i>src/main/webapp</i>.

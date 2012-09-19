@@ -24,9 +24,9 @@
 <body>
     <textarea id="xooki-source">
 <h1>Project Ivy Instance</h2>
-The project ivy instance is in charge to configure the ivy instance used by your project (configure the repositories used to retrieve your projects dependencies for example).
+The project ivy instance is in charge to configure ivy for your project (configure repositories used to retrieve your projects dependencies for example).
 
-In order to work as you want, EasyAnt sometimes need some settings. Actually, EasyAnt can work with no specific settings at all, see the default settings documentation for details about that. But ivy is able to work in very different contexts. You just have to configure it properly.
+In order to work as you want, EasyAnt sometimes need some settings. Actually, EasyAnt can work with no specific settings at all, see the default settings documentation for details about that. Ivy is able to work in very different contexts. You just have to configure it properly.
 
 Settings are specified through an xml file, usually called ivysettings.xml. 
 Here is an example of settings file :
@@ -48,7 +48,7 @@ Here is an example of settings file :
 </code>
 
 Mainly, the settings enable to configure the default cache directory used by ivy and the dependency resolvers that it will use to resolve dependencies.
-<i>Note: To work, this settings file needs a property file named ivysettings-file.properties in the same directory as the settings file, with ivy variables you want in it.</i>
+<div id="note">Note: To work, this settings file needs a property file named ivysettings-file.properties in the same directory as the settings file, with ivy variables you want in it.</div>
 If you want to have more details on this settings file we strongly recommend you to read the <a href="http://ant.apache.org/ivy/history/2.1.0-rc1/settings.html">reference documentation of settings file</a>
 
 <h2>How to configure a custom project ivy settings ?</h2>
@@ -75,7 +75,7 @@ This default settings mainly consist of 3 kind of repositories:
   <li>public: a repository on which most modules, and especially third party modules, can be found</li>
 </ul>
 
-<i>Note that if you work alone, the distinction between local and shared repository is not very important, but there are some things to know to distinguish them.</i>
+<div id="note">Note that if you work alone, the distinction between local and shared repository is not very important, but there are some things to know to distinguish them.</div>
 
 Now let's describe each of these repositories concept in more details. We will describe how they are setup physically later.
 <h3>Local</h3>
