@@ -65,9 +65,6 @@ This is <i>nearly</i> a regular IVY specification file.
     <publications>
         <artifact type="war"/>
     </publications>
-    <dependencies>
-        <dependency org="org.junit" name="junit" rev="4.7" conf="test->default"/>
-    </dependencies>
 </ivy-module>
 
 </code>
@@ -135,6 +132,19 @@ Example:
 > easyant -p
 </code>
 
+<h2>Adding dependencies</h2>
+Dependencies are defined in the module.ivy files.
+There is a section dedicated to <b>dependencies</b>
+Let's consider that our project needs an artifact named foo provided by acme in revision 2.0
+The dependencies section will look like this :
+<code type="xml">
+<dependencies>
+  <dependency org="acme" name="foo" rev="2.0" conf="default"/>
+</dependencies>
+</code>
+If you want to have more informations on dependencies please refer to the <a href="http://ant.apache.org/ivy/history/latest-milestone/ivyfile/dependency.html">official ivy documentation</a>
+
+
 <h2>Adapt it to your need</h2>
 
 Almost everything is configurable through properties in easyant.
@@ -184,8 +194,9 @@ Our module.ivy is the repository of all plugins that our project uses. So, we go
         <artifact type="war"/>
     </publications>
     <dependencies>
-        <dependency org="org.junit" name="junit rev="4.7" conf="test->default"/>
+        <dependency org="acme" name="foo" rev="2.0" conf="default"/>
     </dependencies>
+
 </ivy-module>
 </code>
 
