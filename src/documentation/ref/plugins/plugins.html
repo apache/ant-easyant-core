@@ -26,11 +26,11 @@
     <textarea id="xooki-source">
 <h1>Plugins</h1>
 
-<p>An EasyAnt plugin defines a single small "task" performed by EasyAnt, for example: run unit tests, generate a build report, or package a jar.  Plugins can then be included into buildtypes or other plugins to define more complicated tasks (like "build a complete web application").  You can also include a plugin directly into your project's Ivy file to customize the way your project is built.</p>
+An EasyAnt plugin defines a single small reusable portion of the build system performed by EasyAnt, for example: run unit tests, generate a build report, or package a jar.  Plugins can then be included into buildtypes or other plugins to define more complicated tasks (like "build a complete web application").  You can also include a plugin directly into your project's Ivy file to customize the way your project is built.
 
-<p>A typical plugin consists of an Ivy descriptor and a short Ant script, and is stored in the EasyAnt Ivy repository.  The Ivy descriptor indicates which libraries are required by your plugin; for example, the junit jar is needed by the test-junit plugin.  The Ant script contributes logic to one or more <a href="../phases.html">build phases</a>.  Most plugins can be fine-tuned with Ant property settings.</p>
+A typical plugin consists of an Ivy descriptor and a short Ant script, and is stored in the EasyAnt Ivy repository.  The Ivy descriptor indicates which libraries are required by your plugin; for example, the junit jar is needed by the test-junit plugin.  The Ant script can expose or contribute logic to one or more extension points.  Most plugins can be fine-tuned with Ant property settings.
 
-<p>If you want to add support for a new build tool to EasyAnt, you should probably start by writing a plugin for it.  See the <a href="../../howto/writePlugins.html">Plugins Tutorial</a> to get started.  Before writing your own plugin, be sure to check here to see if a plugin doesn't already exist.</p>
+If you want to add support for a new build tool to EasyAnt, you should probably start by writing a plugin for it.  See the <a href="../../howto/writePlugins.html">Plugins Tutorial</a> to get started.  Before writing your own plugin, be sure to check here to see if a plugin doesn't already exist.
 
 
 <ul>

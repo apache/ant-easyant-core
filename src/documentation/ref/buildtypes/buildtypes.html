@@ -26,9 +26,13 @@
     <textarea id="xooki-source">
 <h1>Build Types</h1>
 
-<p>A "Build Type" identifies at a high level how you want a single module in your project to be built.  Building a module typically includes many steps like compilation, source generation, unit testing, packaging, and build reporting.  For example, the build type <a href="build-webapp-java.html">build-webapp-java</a> compiles, tests, and packages a Java WAR file.</p>
+A "Build Type" identifies at a high level how you want a single module in your project to be built.  Building a module typically includes many steps like compilation, source generation, unit testing, packaging, and build reporting.  For example, the build type <a href="build-webapp-java.html">build-webapp-java</a> compiles, tests, and packages a Java WAR file.
 
-<p>A BuildType is typically implemented as an Ant script, an Ivy descriptor, and a properties file.  The Ivy descriptor is used by EasyAnt to load the Build Type as runtime.  The Ant Script is executed whenever you build a module using that Build Type.  Most Build Type scripts simply import a set of <a href="../plugins/plugins.html">EasyAnt Plugins</a>, each plugin contributing one step to the build process.  For example, the <a href="build-std-java.html">build-std-java</a> Build Type imports the <a href="../plugins/compile-java.html">compile-java</a> plugin to compile Java sources and the <a href="../plugins/package-jar.html">package-jar</a> plugin to bundle the results as a JAR file.  A Build Type's properties file then contains default parameter settings used by the plugins; for example, the expected location of Java source and test files in a project directory.</p>
+A BuildType is typically implemented as an Ant script, an Ivy descriptor, and a properties file.  The Ivy descriptor is used by EasyAnt to load the Build Type as runtime.  The Ant Script is executed whenever you build a module using that Build Type.  Most Build Type scripts simply import a set of <a href="../plugins/plugins.html">EasyAnt Plugins</a>, each plugin contributing one step to the build process.
+
+For example, the <a href="build-std-java.html">build-std-java</a> Build Type imports the <a href="../plugins/compile-java.html">compile-java</a> plugin to compile Java sources and the <a href="../plugins/package-jar.html">package-jar</a> plugin to bundle the results as a JAR file.  
+
+A Build Type's properties file then contains default parameter settings used by the plugins; for example, the expected location of Java source and test files in a project directory.
     
 
 <table>
@@ -41,15 +45,23 @@
   <tbody>
     <tr>
       <td>build-std-java</td>
-      <td>a standard build for simple java modules, relying on standard phases, and providing compilation, execution and unit tests</td>
+      <td>a standard build for simple java modules, relying on standard lifecycle, and providing compilation, packaging and unit tests</td>
     </tr>
     <tr>
       <td>build-webapp-java</td>
-      <td>a standard build for webapp java modules, relying on standard phases, and providing compilation, execution and unit tests</td>
+      <td>a standard build for webapp java modules, relying on standard lifecycle, and providing compilation, packaging and unit tests</td>
     </tr>
     <tr>
       <td>build-std-scala</td>
-      <td>a standard build for simple scala modules, relying on standard phases, and providing compilation, execution and unit tests</td>
+      <td>a standard build for simple scala modules, relying on standard lifecycle, and providing compilation, packaging and unit tests</td>
+    </tr>
+    <tr>
+      <td>build-std-groovy</td>
+      <td>a standard build for simple groovy modules, relying on standard lifecycle, and providing compilation, packaging and unit tests</td>
+    </tr>
+    <tr>
+      <td>build-std-ant-plugin</td>
+      <td>a standard build for easyant plugin written in ant (xml), relying on standard lifecycle, packaging and unit tests</td>
     </tr>
   </tbody>
 </table></textarea>

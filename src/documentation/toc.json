@@ -78,15 +78,15 @@
                       ]
                   },
                   {
-                    "id":"ref/ProjectMancommand",
-                    "title":"ProjectMan commands",
+                    "id":"ref/ExtensionPoint",
+                    "title":"Extension Point",
                     "children": [
 
                       ]
                   },
                   {
-                    "id":"ref/phases",
-                    "title":"Understanding phases",
+                    "id":"ref/ProjectMancommand",
+                    "title":"ProjectMan commands",
                     "children": [
 
                       ]
