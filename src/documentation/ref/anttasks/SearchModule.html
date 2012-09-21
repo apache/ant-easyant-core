@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>searchmodule task</h1>
+
+<h2>Description</h2>
+<p>
+This is an interactive task designed to search ivy modules, ask user to select a result and store user selected item in properties.
+Properties needs to be prefixed like :
+<ul>
+  <li>MYPREFIX.org</li>
+  <li>MYPREFIX.module</li>
+  <li>MYPREFIX.rev</li>
+</ul>
+</p>
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr>
+      <th>Parameter name</th>
+      <th class="unsortable">Description</th>
+      <th>Mandatory</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>organisation</td>
+      <td>organisation name to search</td>
+      <td>true</td>
+    </tr>
+
+    <tr id="mandatory">
+      <td>module</td>
+      <td>module name to search</td>
+      <td>true</td>
+    </tr>
+
+    <tr id="mandatory">
+      <td>revision</td>
+      <td>revision to search</td>
+      <td>true</td>
+    </tr>
+
+    <tr id="mandatory">
+      <td>propertyPrefix</td>
+      <td>property prefix used to store results</td>
+      <td>true</td>
+    </tr>
+
+    <tr>
+      <td>branch</td>
+      <td>branch name to search <i>Default: *</i></td>
+      <td> </td>
+    </tr>
+
+    <tr>
+      <td>matcher</td>
+      <td>matcher name user for search <i>Default: exactOrRegexp</i></td>
+      <td> </td>
+    </tr>
+
+    <tr>
+      <td>resolver</td>
+      <td>restrict search on the specified resolver name<i>Default: default resolver configured in ivy instance</i></td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Example</h2>
+Select all skeletons and all their versions. 
+<code type="xml">
+  <ea:searchmodule organisation="org.apache.easyant.skeletons" module="*" revision="*" propertyPrefix="MYPREFIX" />
+</code>
+
+<div id="note">
+This is for example performed in skeleton plugin.
+</div>
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

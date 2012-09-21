@@ -110,6 +110,20 @@
                             ]
                         },
                         {
+                          "id":"ref/anttasks/ConfigureBuildScopedRepository",
+                          "title":"configure-build-scoped-repository",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/configureEasyantIvyInstance",
+                          "title":"configure-easyant-ivy-instance",
+                          "children": [
+
+                            ]
+                        },
+                        {
                           "id":"ref/anttasks/CoreVersiontask",
                           "title":"core-version",
                           "children": [
@@ -151,6 +165,20 @@
                             ]
                         },
                         {
+                          "id":"ref/anttasks/FindParentDir",
+                          "title":"findparentdir",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/GoOffline",
+                          "title":"go-offline",
+                          "children": [
+
+                            ]
+                        },
+                        {
                           "id":"ref/anttasks/Importtask",
                           "title":"import",
                           "children": [
@@ -164,6 +192,13 @@
                               {
                                 "id":"ref/anttasks/buildtypetask",
                                 "title":"buildtype task",
+                                "children": [
+
+                                  ]
+                              },
+                              {
+                                "id":"ref/anttasks/import-test-module",
+                                "title":"import-test-module",
                                 "children": [
 
                                   ]
@@ -192,6 +227,13 @@
                             ]
                         },
                         {
+                          "id":"ref/anttasks/plugin-report",
+                          "title":"plugin-report",
+                          "children": [
+
+                            ]
+                        },
+                        {
                           "id":"ref/anttasks/Property",
                           "title":"property",
                           "children": [
@@ -201,6 +243,13 @@
                         {
                           "id":"ref/anttasks/registerartifact",
                           "title":"registerartifact",
+                          "children": [
+
+                            ]
+                        },
+                        {
+                          "id":"ref/anttasks/SearchModule",
+                          "title":"searchmodule",
                           "children": [
 
                             ]

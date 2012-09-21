@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 2};</script>	
+	<script type="text/javascript" src="../../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>import-test-module</h1>
+
+<h2>Description</h2>
+
+Alternative <a href="Importtask.html">Import</a> module implementation. 
+This implementation is designed for plugin's test purpose. It doesn't take in consideration : skipping module or buildConfiguration features.
+
+<h2>Arguments</h2>
+<table class="sortable" id="arguments">
+  <thead>
+    <tr>
+      <th>Parameter name</th>
+      <th class="unsortable">Description</th>
+      <th>Mandatory</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id="mandatory">
+      <td>moduleIvy</td>
+      <td>moduleIvy file name</td>
+      <td>true</td>
+    </tr>
+    <tr id="mandatory">
+      <td>sourceDirectory</td>
+      <td>directory containing ant files</td>
+      <td>true</td>
+    </tr>
+    <tr>
+      <td>as</td>
+      <td>an alias for imported/included targets</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>mode</td>
+      <td>specify if we want to import or include</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>modulesDir</td>
+      <td>specify a directory where modules will be retrieved</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>buildConfigurations</td>
+      <td>specify one a many build configurations separated by a comma</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>mainConf</td>
+      <td>list of main ivy configurations used for artifact resolution serated by commas<br/><i>Default: default</i></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>providedConf</td>
+      <td>list of provided ivy configurations used for artifact resolution serated by commas<br/><i>Default: provided</i></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>changing</td>
+      <td>specify if easyant should check changing artifacts on each call<br/><i>Default: false</i></td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Examples</h2>
+<code type="xml">
+<ea:import-test-module moduleIvy="/path/to/module.ivy" sourceDirectory="/path/to/sourcedirectory"/>
+</code></textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>
