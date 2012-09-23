@@ -423,6 +423,8 @@ public class LoadModule extends AbstractEasyAntTask {
         ConfigureBuildScopedRepository configureBuildScopedRepository = new ConfigureBuildScopedRepository();
         configureBuildScopedRepository.setName(EasyAntConstants.BUILD_SCOPE_REPOSITORY);
         configureBuildScopedRepository.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));
+        configureBuildScopedRepository.setGenerateWrapperResoler(true);
+        getProject().setProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY, EasyAntConstants.BUILD_SCOPE_REPOSITORY);
         initTask(configureBuildScopedRepository).execute();
     }
 
