@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,8 +29,11 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.ProjectHelper.OnMissingExtensionPoint;
 import org.apache.tools.ant.Target;
 
 /**
@@ -75,44 +79,31 @@ public class ProjectUtils {
         PrintStream err = System.err;
         int currentLogLevel = Project.MSG_INFO;
         project.log("removing current logger", Project.MSG_DEBUG);
-        // since BuildLogger doesn't offer any way to get the out / err print
+        // since DefaultLogger doesn't offer any way to get the out / err print
         // streams we should use reflection
         // TODO: we should find a better way to do this
         for (Iterator<?> i = project.getBuildListeners().iterator(); i.hasNext();) {
             BuildListener l = (BuildListener) i.next();
-            if (l instanceof BuildLogger) {
-                Field fields[];
-                // case of classes extending DefaultLogger
-                if (l.getClass().getSuperclass() == DefaultLogger.class) {
-                    fields = l.getClass().getSuperclass().getDeclaredFields();
-                } else {
-                    fields = l.getClass().getDeclaredFields();
+            if (l instanceof DefaultLogger) {
+                try {
+                    Field fieldOut = DefaultLogger.class.getDeclaredField("out");
+                    fieldOut.setAccessible(true);
+                    out = (PrintStream) fieldOut.get(l);
+                    Field fieldErr = DefaultLogger.class.getDeclaredField("err");
+                    fieldErr.setAccessible(true);
+                    err = (PrintStream) fieldErr.get(l);
+                    Field fieldMsgLevel = DefaultLogger.class.getDeclaredField("msgOutputLevel");
+                    fieldMsgLevel.setAccessible(true);
+                    currentLogLevel = (Integer) fieldMsgLevel.get(l);
+                } catch (IllegalAccessException ex) {
+                    throw new BuildException(ex);
+                } catch (SecurityException e) {
+                    throw new BuildException(e);
+                } catch (NoSuchFieldException e) {
+                    throw new BuildException(e);
                 }
-
-                for (int j = 0; j < fields.length; j++) {
-                    try {
-                        if (fields[j].getType().equals(PrintStream.class) && fields[j].getName().equals("out")) {
-                            fields[j].setAccessible(true);
-                            out = (PrintStream) fields[j].get(l);
-                            fields[j].setAccessible(false);
-                        }
-                        if (fields[j].getType().equals(PrintStream.class) && fields[j].getName().equals("err")) {
-                            fields[j].setAccessible(true);
-                            err = (PrintStream) fields[j].get(l);
-                            fields[j].setAccessible(false);
-                        }
-                        if (fields[j].getName().equals("msgOutputLevel")) {
-                            fields[j].setAccessible(true);
-                            currentLogLevel = (Integer) fields[j].get(l);
-                            fields[j].setAccessible(false);
-                        }
-                    } catch (IllegalAccessException ex) {
-                        throw new BuildException(ex);
-                    }
-                }
+                project.removeBuildListener(l);
             }
-            project.removeBuildListener(l);
-
         }
         project.log("Initializing new logger " + logger.getClass().getName(), Project.MSG_DEBUG);
         logger.setOutputPrintStream(out);
@@ -167,6 +158,32 @@ public class ProjectUtils {
             ret.put(target.getName(), target);
         }
         return ret;
+    }
+
+    public static void injectTargetIntoExtensionPoint(Project project, ProjectHelper helper) {
+        for (Object extensionInfos : helper.getExtensionStack()) {
+            String[] extensionInfo = (String[]) extensionInfos;
+            String tgName = extensionInfo[0];
+            String name = extensionInfo[1];
+            OnMissingExtensionPoint missingBehaviour = OnMissingExtensionPoint.FAIL;
+            Hashtable<?, ?> projectTargets = project.getTargets();
+            if (!projectTargets.containsKey(tgName)) {
+                String message = "can't add target " + name + " to extension-point " + tgName
+                        + " because the extension-point is unknown.";
+                if (missingBehaviour == OnMissingExtensionPoint.FAIL) {
+                    throw new BuildException(message);
+                } else if (missingBehaviour == OnMissingExtensionPoint.WARN) {
+                    Target target = (Target) projectTargets.get(name);
+                    project.log(target, "Warning: " + message, Project.MSG_WARN);
+                }
+            } else {
+                Target t = (Target) projectTargets.get(tgName);
+                if (!(t instanceof ExtensionPoint)) {
+                    throw new BuildException("referenced target " + tgName + " is not an extension-point");
+                }
+                t.addDependency(name);
+            }
+        }
     }
 
 }

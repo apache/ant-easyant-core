@@ -191,9 +191,11 @@ public class SubModule extends Task {
             lm.setTaskName(EasyAntConstants.EASYANT_TASK_NAME);
             lm.setProject(subModule);
             lm.setOwningTarget(ProjectUtils.createTopLevelTarget());
-            lm.setLocation(new Location(mainscript.toString()));
+            lm.setLocation(new Location(mainscript.getAbsolutePath()));
             lm.setUseBuildRepository(useBuildRepository);
             lm.execute();
+
+            ProjectUtils.injectTargetIntoExtensionPoint(subModule, helper);
 
             filterTargets(subModule);
             printExecutingTargetMsg(subModule);
@@ -250,6 +252,8 @@ public class SubModule extends Task {
 
     private Project configureSubModule(File file, File directory) {
         Project subModule = getProject().createSubProject();
+
+        subModule.setJavaVersionProperty();
         for (int i = 0; i < getProject().getBuildListeners().size(); i++) {
             BuildListener buildListener = (BuildListener) getProject().getBuildListeners().elementAt(i);
             subModule.addBuildListener(buildListener);
@@ -555,8 +559,8 @@ public class SubModule extends Task {
      *             if a reference does not have a refid.
      */
     private void addReferences(Project subproject) throws BuildException {
-        Hashtable<String, Object> thisReferences = (Hashtable<String, Object>) getProject().getReferences().clone();
-        Hashtable<String, Object> newReferences = (Hashtable<String, Object>) subproject.getReferences();
+        Hashtable<?, ?> thisReferences = (Hashtable<?, ?>) getProject().getReferences().clone();
+        Hashtable<?, ?> newReferences = subproject.getReferences();
         Enumeration<?> e;
         for (Ant.Reference ref : references) {
             String refid = ref.getRefId();
