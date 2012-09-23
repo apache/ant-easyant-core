@@ -9,7 +9,7 @@
 	<classpathentry kind="lib" path="lib/main/ant.jar"/>
 	<classpathentry kind="lib" path="lib/main/ant-contrib.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit-4.4.jar"/>
-	<classpathentry kind="lib" path="lib/main/commons-cli.jar"/>
+	<classpathentry kind="lib" path="lib/main/commons-cli.jar" sourcepath="/home/neoverflow/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/main/ivy.jar"/>
 	<classpathentry kind="output" path="target/main/classes"/>
 </classpath>

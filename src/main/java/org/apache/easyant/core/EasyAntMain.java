@@ -23,9 +23,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -69,7 +71,7 @@ public class EasyAntMain implements AntMain {
     /**
      * A Set of args are are handled by the launcher and should not be seen by Main.
      */
-    private static final Set LAUNCH_COMMANDS = new HashSet();
+    private static final Set<String> LAUNCH_COMMANDS = new HashSet<String>();
     private boolean isLogFileUsed;
     static {
         LAUNCH_COMMANDS.add("-lib");
@@ -88,7 +90,7 @@ public class EasyAntMain implements AntMain {
      * Whether or not this instance has successfully been constructed and is ready to run.
      */
     private boolean readyToRun;
-    private Vector propertyFiles = new Vector(1);
+    private List<String> propertyFiles = new ArrayList<String>(1);
 
     /**
      * Prints the message of the Throwable if it (the message) is not <code>null</code>.
@@ -152,8 +154,7 @@ public class EasyAntMain implements AntMain {
         }
 
         if (additionalUserProperties != null) {
-            for (Enumeration e = additionalUserProperties.keys(); e.hasMoreElements();) {
-                String key = (String) e.nextElement();
+            for (String key : additionalUserProperties.stringPropertyNames()) {
                 String property = additionalUserProperties.getProperty(key);
                 easyAntConfiguration.getDefinedProps().put(key, property);
             }
@@ -294,7 +295,7 @@ public class EasyAntMain implements AntMain {
             try {
                 File easyantConfFile = new File(line.getOptionValue("configfile").replace('/', File.separatorChar));
                 easyAntConfiguration = EasyantConfigurationFactory.getInstance().createConfigurationFromFile(
-                        easyAntConfiguration, easyantConfFile.toURL());
+                        easyAntConfiguration, easyantConfFile.toURI().toURL());
             } catch (Exception e) {
                 throw new BuildException(e);
             }
@@ -336,7 +337,7 @@ public class EasyAntMain implements AntMain {
             easyAntConfiguration.setBuildModuleLookupEnabled(true);
         }
         if (line.hasOption("propertyfile")) {
-            propertyFiles.addElement(line.getOptionValue("propertyfile"));
+            propertyFiles.add(line.getOptionValue("propertyfile"));
         }
         if (line.hasOption("keep-going")) {
             easyAntConfiguration.setKeepGoingMode(true);
@@ -356,7 +357,7 @@ public class EasyAntMain implements AntMain {
             easyAntConfiguration.setProxy(true);
         }
         if (line.getArgList().size() > 0) {
-            for (Iterator iterator = line.getArgList().iterator(); iterator.hasNext();) {
+            for (Iterator<?> iterator = line.getArgList().iterator(); iterator.hasNext();) {
                 String target = (String) iterator.next();
                 easyAntConfiguration.getTargets().addElement(target);
             }
@@ -381,7 +382,7 @@ public class EasyAntMain implements AntMain {
     /** Load the property files specified by -propertyfile */
     private void loadPropertyFiles() {
         for (int propertyFileIndex = 0; propertyFileIndex < propertyFiles.size(); propertyFileIndex++) {
-            String filename = (String) propertyFiles.elementAt(propertyFileIndex);
+            String filename = propertyFiles.get(propertyFileIndex);
             Properties props = new Properties();
             FileInputStream fis = null;
             try {
@@ -394,9 +395,7 @@ public class EasyAntMain implements AntMain {
             }
 
             // ensure that -D properties take precedence
-            Enumeration propertyNames = props.propertyNames();
-            while (propertyNames.hasMoreElements()) {
-                String name = (String) propertyNames.nextElement();
+            for (String name : props.stringPropertyNames()) {
                 if (easyAntConfiguration.getDefinedProps().getProperty(name) == null) {
                     easyAntConfiguration.getDefinedProps().put(name, props.getProperty(name));
                 }
@@ -609,6 +608,7 @@ public class EasyAntMain implements AntMain {
     /**
      * Configure command line options
      */
+    @SuppressWarnings("static-access")
     public void configureOptions() {
         options.addOption("h", "help", false, "print this message");
 
@@ -658,10 +658,10 @@ public class EasyAntMain implements AntMain {
         Option propertiesfile = OptionBuilder.withArgName("file").hasArg()
                 .withDescription("load all properties from file with -D properties taking precedence")
                 .create("propertyfile");
-        options.addOption(buildfile);
+        options.addOption(propertiesfile);
         Option inputhandler = OptionBuilder.withArgName("classname").hasArg()
                 .withDescription("the class which will handle input requests").create("inputhandler");
-        options.addOption(listener);
+        options.addOption(inputhandler);
         Option nice = OptionBuilder.withArgName("number").hasArg()
                 .withDescription("A niceness value for the main thread: 1 (lowest) to 10 (highest); 5 is the default")
                 .create("nice");
