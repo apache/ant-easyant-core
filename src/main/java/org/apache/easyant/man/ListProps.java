@@ -29,6 +29,8 @@ import org.apache.easyant.core.report.ImportedModuleReport;
  */
 public class ListProps extends EasyantOption {
 
+    private static final long serialVersionUID = 1L;
+    
     public ListProps() throws IllegalArgumentException {
         super("listProps", true, "List all properties available or specified in a given plugin as argument");
         setOptionalArg(true);

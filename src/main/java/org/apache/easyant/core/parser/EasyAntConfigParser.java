@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -201,18 +200,15 @@ public class EasyAntConfigParser {
                             properties.load(is);
                             is.close();
                         }
-                        for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext();) {
-                            String key = (String) iterator.next();
+                        for (String key : properties.stringPropertyNames()) {
                             easyAntConfiguration.getDefinedProps().put(key, properties.get(key));
                         }
-
                     } catch (Exception e) {
                         if (attributes.getValue("file") != null) {
                             throw new SAXException("can't read property file at : " + attributes.getValue("file"));
                         } else if (attributes.getValue("url") != null) {
                             throw new SAXException("can't read property file at : " + attributes.getValue("url"));
                         }
-
                     }
                 } else if (attributes.getValue("name") != null) {
                     easyAntConfiguration.getDefinedProps().put(attributes.getValue("name"),
@@ -220,8 +216,6 @@ public class EasyAntConfigParser {
                 }
 
             }
-
         }
     }
-
 }

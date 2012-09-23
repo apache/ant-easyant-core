@@ -65,7 +65,7 @@ public class EasyAntRunner extends Task {
         try {
             EasyantConfigurationFactory.getInstance()
                     .createConfigurationFromFile(getEasyantConfiguration(),
-                            f.toURL());
+                            f.toURI().toURL());
         } catch (Exception e) {
             throw new BuildException(
                     "Can't create easyantConfiguration from File "

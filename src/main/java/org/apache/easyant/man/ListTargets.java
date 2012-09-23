@@ -35,6 +35,7 @@ import org.apache.tools.ant.Project;
  */
 public class ListTargets extends EasyantOption {
     
+    private static final long serialVersionUID = 1L;
     
     public ListTargets() {
         super("listTargets", true, "List all targets available or associated with a given phase or plugin as argument");

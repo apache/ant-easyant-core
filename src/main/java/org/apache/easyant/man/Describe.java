@@ -29,6 +29,8 @@ import org.apache.easyant.core.report.TargetReport;
  */
 public class Describe extends EasyantOption {
     
+    private static final long serialVersionUID = 1L;
+    
     public Describe()
             throws IllegalArgumentException {
         super("describe", true, "Describes extension points / target / property specified by the argument");

@@ -29,6 +29,9 @@ import org.apache.easyant.core.report.ExtensionPointReport;
  */
 public class ListExtensionPoints extends EasyantOption{
     
+    private static final long serialVersionUID = 1L;
+    
+    
     public ListExtensionPoints()
             throws IllegalArgumentException {
         super("listExtensionPoints", false, "List all phases available");

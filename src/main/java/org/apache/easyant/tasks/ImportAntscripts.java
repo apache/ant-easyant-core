@@ -218,7 +218,7 @@ public class ImportAntscripts extends Task {
             log(nbPaths + " paths resolved in " + (System.currentTimeMillis() - startTime) + "ms.", Project.MSG_VERBOSE);
 
             log("Importing " + antScriptsPath.size() + " ant scripts", Project.MSG_VERBOSE);
-            Iterator itScripts = antScriptsPath.iterator();
+            Iterator<?> itScripts = antScriptsPath.iterator();
             while (itScripts.hasNext()) {
                 log("\t" + itScripts.next(), Project.MSG_VERBOSE);
             }

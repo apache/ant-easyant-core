@@ -24,14 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -463,10 +461,10 @@ public class EasyAntMain implements AntMain {
      * 
      * @return the correct place in the list for the given name
      */
-    private static int findTargetPosition(Vector names, String name) {
+    private static int findTargetPosition(List<String> names, String name) {
         int res = names.size();
         for (int i = 0; i < names.size() && res == names.size(); i++) {
-            if (name.compareTo((String) names.elementAt(i)) < 0) {
+            if (name.compareTo((String) names.get(i)) < 0) {
                 res = i;
             }
         }
@@ -490,7 +488,7 @@ public class EasyAntMain implements AntMain {
      *            The maximum length of the names of the targets. If descriptions are given, they are padded to this
      *            position so they line up (so long as the names really <i>are</i> shorter than this).
      */
-    private static void printTargets(Project project, Vector names, Vector descriptions, String heading, int maxlen) {
+    private static void printTargets(Project project, List<String> names, List<String> descriptions, String heading, int maxlen) {
         if (names.size() > 0) {
             // now, start printing the targets and their descriptions
             String lSep = System.getProperty("line.separator");
@@ -503,10 +501,10 @@ public class EasyAntMain implements AntMain {
             msg.append(lSep + heading + lSep + lSep);
             for (int i = 0; i < names.size(); i++) {
                 msg.append(" ");
-                msg.append(names.elementAt(i));
+                msg.append(names.get(i));
                 if (descriptions != null) {
-                    msg.append(spaces.substring(0, maxlen - ((String) names.elementAt(i)).length() + 2));
-                    msg.append(descriptions.elementAt(i));
+                    msg.append(spaces.substring(0, maxlen - (names.get(i)).length() + 2));
+                    msg.append(descriptions.get(i));
                 }
                 msg.append(lSep);
             }
@@ -526,21 +524,18 @@ public class EasyAntMain implements AntMain {
     protected static void printTargets(Project project, boolean printSubTargets) {
         // find the target with the longest name
         int maxLength = 0;
-        Map ptargets = ProjectUtils.removeDuplicateTargets(project.getTargets());
+        Map<String, Target> ptargets = ProjectUtils.removeDuplicateTargets(project.getTargets());
         String targetName;
         String targetDescription;
-        Target currentTarget;
         // split the targets in top-level and sub-targets depending
         // on the presence of a description
-        Vector topNames = new Vector();
-        Vector topDescriptions = new Vector();
-        Vector subNames = new Vector();
+        List<String> topNames = new ArrayList<String>();
+        List<String> topDescriptions = new ArrayList<String>();
+        List<String> subNames = new ArrayList<String>();
 
-        Vector highLevelTargets = new Vector();
-        Vector highLevelTargetsDescriptions = new Vector();
-
-        for (Iterator i = ptargets.values().iterator(); i.hasNext();) {
-            currentTarget = (Target) i.next();
+        List<String> highLevelTargets = new ArrayList<String>();
+        List<String> highLevelTargetsDescriptions = new ArrayList<String>();
+        for (Target currentTarget : ptargets.values()) {
             targetName = currentTarget.getName();
             if (targetName.equals("")) {
                 continue;
@@ -549,15 +544,15 @@ public class EasyAntMain implements AntMain {
             // maintain a sorted list of targets
             if (currentTarget instanceof ExtensionPoint && !currentTarget.getName().contains(":")) {
                 int pos = findTargetPosition(highLevelTargets, targetName);
-                highLevelTargets.insertElementAt(targetName, pos);
-                highLevelTargetsDescriptions.insertElementAt(targetDescription, pos);
+                highLevelTargets.add(pos,targetName);
+                highLevelTargetsDescriptions.add(pos,targetDescription);
             } else if (targetDescription != null) {
                 int pos = findTargetPosition(topNames, targetName);
-                topNames.insertElementAt(targetName, pos);
-                topDescriptions.insertElementAt(targetDescription, pos);
+                topNames.add(pos,targetName);
+                topDescriptions.add(pos,targetDescription);
             } else {
                 int pos = findTargetPosition(subNames, targetName);
-                subNames.insertElementAt(targetName, pos);
+                subNames.add(pos,targetName);
             }
             if (targetName.length() > maxLength) {
                 maxLength = targetName.length();

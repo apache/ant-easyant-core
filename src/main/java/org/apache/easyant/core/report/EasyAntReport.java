@@ -20,7 +20,6 @@ package org.apache.easyant.core.report;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -29,8 +28,8 @@ import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 import org.apache.ivy.core.report.ResolveReport;
 
 /**
- * This class represent a report of an easyant module It contains all
- * informations about properties / parameters / plugins / etc..
+ * This class represent a report of an easyant module It contains all informations about properties / parameters /
+ * plugins / etc..
  */
 public class EasyAntReport {
 
@@ -74,12 +73,12 @@ public class EasyAntReport {
         }
         return null;
     }
-    
+
     public TargetReport getTargetReport(String name, boolean includeImports) {
         TargetReport retVal = getTargetReport(name);
-        if(retVal == null && includeImports) {
+        if (retVal == null && includeImports) {
             List<TargetReport> targets = getAvailableTargets();
-            for(TargetReport target : targets) {
+            for (TargetReport target : targets) {
                 if (target.getName().equals(name)) {
                     retVal = target;
                 }
@@ -87,7 +86,7 @@ public class EasyAntReport {
         }
         return retVal;
     }
-    
+
     /**
      * Add a given targetReport to the list of know target
      * 
@@ -102,8 +101,7 @@ public class EasyAntReport {
     }
 
     /**
-     * Get an extension point by its name Return null if no extensionPointReport where found with
-     * this name
+     * Get an extension point by its name Return null if no extensionPointReport where found with this name
      * 
      * @param name
      *            represent the extension point name
@@ -122,9 +120,8 @@ public class EasyAntReport {
     }
 
     /**
-     * Get an extension point by its name Return null if no extensionPointReport where found with
-     * this name. The includeImports parameters can be additionally used to
-     * extend the search to include imports by the current module.
+     * Get an extension point by its name Return null if no extensionPointReport where found with this name. The
+     * includeImports parameters can be additionally used to extend the search to include imports by the current module.
      * 
      * @param name
      *            represent the extensionPoint name
@@ -134,9 +131,9 @@ public class EasyAntReport {
      */
     public ExtensionPointReport getExtensionPointReport(String name, boolean includeImports) {
         ExtensionPointReport retVal = getExtensionPointReport(name);
-        if(includeImports && retVal == null) {
+        if (includeImports && retVal == null) {
             List<ExtensionPointReport> extensionPoints = getAvailableExtensionPoints();
-            for(ExtensionPointReport extensionPoint : extensionPoints) {
+            for (ExtensionPointReport extensionPoint : extensionPoints) {
                 if (extensionPoint.getName().equals(name)) {
                     retVal = extensionPoint;
                 }
@@ -144,7 +141,7 @@ public class EasyAntReport {
         }
         return retVal;
     }
-    
+
     /**
      * Get a list of extension points available in this module
      * 
@@ -201,29 +198,27 @@ public class EasyAntReport {
     /**
      * Returns the imported module indicated by the passed parameter.
      * 
-     * The method attempts to match either the complete module id, module name
-     * or the module alias as specified in the build module.
+     * The method attempts to match either the complete module id, module name or the module alias as specified in the
+     * build module.
      * 
      * @param module
-     *      name of the module - either module id or the module alias.
+     *            name of the module - either module id or the module alias.
      * 
-     * @return
-     *      instance of the exact module report queried for, if such a 
-     *      module exists. it returns null otherwise.
+     * @return instance of the exact module report queried for, if such a module exists. it returns null otherwise.
      */
     public ImportedModuleReport getImportedModuleReport(String module) {
-        if(module.indexOf(';') > 0) {
+        if (module.indexOf(';') > 0) {
             module = module.substring(0, module.indexOf(';'));
         }
         ImportedModuleReport retVal = null;
-        for(ImportedModuleReport moduleRep : importedModuleReports) {
-            if(moduleRep.moduleMrid != null && moduleRep.moduleMrid.startsWith(module)) {
+        for (ImportedModuleReport moduleRep : importedModuleReports) {
+            if (moduleRep.moduleMrid != null && moduleRep.moduleMrid.startsWith(module)) {
                 retVal = moduleRep;
                 break;
             } else if (module.equals(moduleRep.getModuleRevisionId().getName())) {
                 retVal = moduleRep;
                 break;
-            } else if(moduleRep.as != null && moduleRep.as.equals(module)) {
+            } else if (moduleRep.as != null && moduleRep.as.equals(module)) {
                 retVal = moduleRep;
                 break;
             }
@@ -236,18 +231,16 @@ public class EasyAntReport {
         }
         return retVal;
     }
-    
+
     /**
      * Add an imported module
      * 
      * @param importedModuleReport
      *            a report that represent the importedModule
      */
-    public void addImportedModuleReport(
-            ImportedModuleReport importedModuleReport) {
+    public void addImportedModuleReport(ImportedModuleReport importedModuleReport) {
         if (importedModuleReport == null) {
-            throw new IllegalArgumentException(
-                    "importedModuleReport cannot be null");
+            throw new IllegalArgumentException("importedModuleReport cannot be null");
         }
         importedModuleReports.add(importedModuleReport);
     }
@@ -258,14 +251,11 @@ public class EasyAntReport {
      * @param propertyName
      *            the property name
      * @param propertyDescriptor
-     *            a property descriptor that contains several info on the
-     *            propery (description / required or not etc...)
+     *            a property descriptor that contains several info on the propery (description / required or not etc...)
      */
-    public void addPropertyDescriptor(String propertyName,
-            PropertyDescriptor propertyDescriptor) {
+    public void addPropertyDescriptor(String propertyName, PropertyDescriptor propertyDescriptor) {
         if (propertyName == null || propertyDescriptor == null) {
-            throw new IllegalArgumentException(
-                    "propertyName and propertyDescriptor cannot be null");
+            throw new IllegalArgumentException("propertyName and propertyDescriptor cannot be null");
         }
         this.propertyReports.put(propertyName, propertyDescriptor);
     }
@@ -276,8 +266,7 @@ public class EasyAntReport {
      * @param properties
      *            a map of propertyDescriptor to inject
      */
-    public void addAllPropertyDescriptor(
-            Map<String, PropertyDescriptor> properties) {
+    public void addAllPropertyDescriptor(Map<String, PropertyDescriptor> properties) {
         if (properties == null) {
             throw new IllegalArgumentException("properties cannot be null");
         }
@@ -295,6 +284,7 @@ public class EasyAntReport {
 
     /**
      * Get a list of all the properties available in this module or in all imported modules
+     * 
      * @return a list of all the properties available in this module or in all imported modules
      */
     public Map<String, PropertyDescriptor> getAvailableProperties() {
@@ -306,36 +296,25 @@ public class EasyAntReport {
         if (importedModuleReports != null) {
             for (ImportedModuleReport importedModuleReport : importedModuleReports) {
                 if (importedModuleReport.getEasyantReport() != null) {
-                    Map<String, PropertyDescriptor> subproperties = importedModuleReport
-                            .getEasyantReport().getAvailableProperties();
-                    for (Iterator iterator = subproperties.keySet().iterator(); iterator
-                            .hasNext();) {
-                        String propName = (String) iterator.next();
-                        PropertyDescriptor propertyToInsert = (PropertyDescriptor) subproperties
-                                .get(propName);
+                    Map<String, PropertyDescriptor> subproperties = importedModuleReport.getEasyantReport()
+                            .getAvailableProperties();
+                    for (String propName : subproperties.keySet()) {
+                        PropertyDescriptor propertyToInsert = subproperties.get(propName);
                         if (availableProperties.containsKey(propName)) {
                             PropertyDescriptor propertyDescriptor = (PropertyDescriptor) availableProperties
                                     .get(propName);
 
                             if (propertyDescriptor.getDescription() == null
                                     && propertyToInsert.getDescription() != null) {
-                                propertyDescriptor
-                                        .setDescription(propertyToInsert
-                                                .getDescription());
-                                propertyDescriptor.setRequired(propertyToInsert
-                                        .isRequired());
-                                propertyDescriptor
-                                        .setDefaultValue(propertyToInsert
-                                                .getDefaultValue());
-                                availableProperties.put(propName,
-                                        propertyDescriptor);
+                                propertyDescriptor.setDescription(propertyToInsert.getDescription());
+                                propertyDescriptor.setRequired(propertyToInsert.isRequired());
+                                propertyDescriptor.setDefaultValue(propertyToInsert.getDefaultValue());
+                                availableProperties.put(propName, propertyDescriptor);
                             }
 
                         } else
                             availableProperties.put(propName, propertyToInsert);
-
                     }
-
                 }
             }
         }
@@ -343,25 +322,22 @@ public class EasyAntReport {
     }
 
     /**
-     * This utilitary function allow us to retrieve a list of all targetReport
-     * available in this module and in all imported subModules
+     * This utilitary function allow us to retrieve a list of all targetReport available in this module and in all
+     * imported subModules
      * 
-     * @return a list of all TargetReport available in the module or in its
-     *         submodules
+     * @return a list of all TargetReport available in the module or in its submodules
      */
     public List<TargetReport> getAvailableTargets() {
         List<TargetReport> targets = new ArrayList<TargetReport>();
         targets.addAll(targetReports);
         for (ImportedModuleReport importedModuleReport : importedModuleReports) {
             if (importedModuleReport.getEasyantReport() != null)
-                for (TargetReport targetReport : importedModuleReport
-                        .getEasyantReport().getAvailableTargets()) {
+                for (TargetReport targetReport : importedModuleReport.getEasyantReport().getAvailableTargets()) {
                     TargetReport target = new TargetReport();
                     if (importedModuleReport.getAs() == null)
                         targets.add(targetReport);
                     else {
-                        target.setName(importedModuleReport.getAs()
-                                + targetReport.getName());
+                        target.setName(importedModuleReport.getAs() + targetReport.getName());
                         target.setDepends(targetReport.getDepends());
                         target.setIfCase(targetReport.getIfCase());
                         target.setUnlessCase(targetReport.getUnlessCase());
@@ -375,7 +351,7 @@ public class EasyAntReport {
         return targets;
 
     }
-    
+
     /**
      * Return a list of target that are not bound to any phases
      */
@@ -401,13 +377,12 @@ public class EasyAntReport {
         }
         return extensionPoints;
     }
-    
+
     /**
-     * This utilitary function allow us to retrieve a list of all ExtensionPointReport
-     * available in this module and in all imported subModules
+     * This utilitary function allow us to retrieve a list of all ExtensionPointReport available in this module and in
+     * all imported subModules
      * 
-     * @return a list of all ExtensionPointReport available in the module or in its
-     *         submodules
+     * @return a list of all ExtensionPointReport available in the module or in its submodules
      */
     public List<ExtensionPointReport> getAvailableExtensionPoints() {
         List<ExtensionPointReport> extensionPoints = getAvailableExtensionPointsWithoutTarget();
@@ -417,8 +392,7 @@ public class EasyAntReport {
         for (int i = 0; i < extensionPoints.size(); i++) {
             ExtensionPointReport extensionPoint = extensionPoints.get(i);
             for (TargetReport target : targets) {
-                if (target.getExtensionPoint() != null
-                        && target.getExtensionPoint().equals(extensionPoint.getName())) {
+                if (target.getExtensionPoint() != null && target.getExtensionPoint().equals(extensionPoint.getName())) {
                     extensionPoint.addTargetReport(target);
                     extensionPoints.set(i, extensionPoint);
                 }
@@ -427,7 +401,7 @@ public class EasyAntReport {
 
         return extensionPoints;
     }
-    
+
     public ResolveReport getResolveReport() {
         return resolveReport;
     }
@@ -438,6 +412,7 @@ public class EasyAntReport {
 
     /**
      * Get attached module descriptor
+     * 
      * @return attached module descriptor
      */
     public ModuleDescriptor getModuleDescriptor() {
@@ -446,11 +421,13 @@ public class EasyAntReport {
 
     /**
      * Set attached module descriptor
-     * @param moduleDescriptor attached module descriptor
+     * 
+     * @param moduleDescriptor
+     *            attached module descriptor
      */
     public void setModuleDescriptor(ModuleDescriptor moduleDescriptor) {
         this.moduleDescriptor = moduleDescriptor;
-        
+
     }
 
 }

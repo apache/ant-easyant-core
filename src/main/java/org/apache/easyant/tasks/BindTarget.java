@@ -31,7 +31,7 @@ import org.apache.tools.ant.Task;
 public class BindTarget extends Task {
 
     private String target;
-    private String toPhase;
+    private String extensionOf;
 
     private String buildConfigurations;
 
@@ -52,11 +52,11 @@ public class BindTarget extends Task {
         }
 
         // unbind current mapping
-        for (Iterator iterator = getProject().getTargets().values().iterator(); iterator
+        for (Iterator<?> iterator = getProject().getTargets().values().iterator(); iterator
                 .hasNext();) {
             Target current = (Target) iterator.next();
             if (current instanceof ExtensionPoint) {
-                Enumeration dependencies = current.getDependencies();
+                Enumeration<?> dependencies = current.getDependencies();
                 StringBuilder dependsOn = new StringBuilder();
                 boolean requiresUpdates = false;
                 while (dependencies.hasMoreElements()) {
@@ -92,16 +92,16 @@ public class BindTarget extends Task {
             }
         }
 
-        if (getToPhase() != null && !getToPhase().equals("")) {
-            if (!getProject().getTargets().containsKey(getToPhase())) {
+        if (getExtensionOf() != null && !getExtensionOf().equals("")) {
+            if (!getProject().getTargets().containsKey(getExtensionOf())) {
                 throw new BuildException("can't add target " + getTarget()
-                        + " to phase " + getToPhase() + " because the phase"
+                        + " to phase " + getExtensionOf() + " because the phase"
                         + " is unknown.");
             }
-            Target p = (Target) getProject().getTargets().get(getToPhase());
+            Target p = (Target) getProject().getTargets().get(getExtensionOf());
 
             if (!(p instanceof Phase)) {
-                throw new BuildException("referenced target " + getToPhase()
+                throw new BuildException("referenced target " + getExtensionOf()
                         + " is not a phase");
             }
             p.addDependency(getTarget());
@@ -109,12 +109,12 @@ public class BindTarget extends Task {
 
     }
 
-    public String getToPhase() {
-        return toPhase;
+    public String getExtensionOf() {
+        return extensionOf;
     }
 
     public void setExtensionOf(String toPhase) {
-        this.toPhase = toPhase;
+        this.extensionOf = toPhase;
     }
 
     public String getTarget() {

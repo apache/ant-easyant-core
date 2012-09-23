@@ -46,6 +46,9 @@ import org.apache.tools.ant.Project;
  * 
  */
 public abstract class EasyantOption extends Option {
+    
+    private static final long serialVersionUID = 1L;
+    
     public static final String LINE_SEP = System.getProperty("line.separator");
     private Project project;
     private EasyAntReport eareport;

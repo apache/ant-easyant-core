@@ -46,7 +46,7 @@ public class ConfigureEasyAntIvyInstance extends Task {
     public void setConfigurationFile(String configurationFile) {
         File f = new File(configurationFile);
         try {
-            EasyantConfigurationFactory.getInstance().createConfigurationFromFile(getEasyantConfiguration(), f.toURL());
+            EasyantConfigurationFactory.getInstance().createConfigurationFromFile(getEasyantConfiguration(), f.toURI().toURL());
         } catch (Exception e) {
             throw new BuildException("Can't create easyantConfiguration from File " + configurationFile, e);
         }

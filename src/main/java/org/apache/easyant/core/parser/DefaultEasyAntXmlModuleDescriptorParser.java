@@ -195,8 +195,9 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
         protected void ivyModuleStarted(Attributes attributes) throws SAXException {
             super.ivyModuleStarted(attributes);
             // lookup easyant namespace
-            for (Iterator iterator = getMd().getExtraAttributesNamespaces().entrySet().iterator(); iterator.hasNext();) {
-                Entry namespace = (Entry) iterator.next();
+            for (Iterator<?> iterator = getMd().getExtraAttributesNamespaces().entrySet().iterator(); iterator
+                    .hasNext();) {
+                Entry<?, ?> namespace = (Entry<?, ?>) iterator.next();
                 if (EasyAntConstants.EASYANT_MD_NAMESPACE.equals(namespace.getValue())) {
                     easyantPrefix = (String) namespace.getKey();
                 }
@@ -499,7 +500,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                     throw new SAXException(fileName + " doesn't exists !");
                 }
                 PropertiesFile props = new PropertiesFile(file, "project properties");
-                Enumeration enumeration = props.propertyNames();
+                Enumeration<?> enumeration = props.propertyNames();
                 while (enumeration.hasMoreElements()) {
                     String key = (String) enumeration.nextElement();
                     String value = getSettings().substitute(props.getProperty(key));

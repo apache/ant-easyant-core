@@ -188,7 +188,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
     protected void checkCoreCompliance(ResolveReport report, String confToCheck) {
         if (report.getConfigurationReport(confToCheck) != null) {
             log("checking module's provided dependencies ...", Project.MSG_DEBUG);
-            for (Iterator iterator = report.getConfigurationReport(confToCheck).getModuleRevisionIds().iterator(); iterator
+            for (Iterator<?> iterator = report.getConfigurationReport(confToCheck).getModuleRevisionIds().iterator(); iterator
                     .hasNext();) {
                 ModuleRevisionId currentmrid = (ModuleRevisionId) iterator.next();
                 log("checking " + currentmrid.toString(), Project.MSG_DEBUG);

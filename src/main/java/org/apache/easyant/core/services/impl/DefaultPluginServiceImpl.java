@@ -216,13 +216,12 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws IOException, Exception {
-        Map targets = ProjectUtils.removeDuplicateTargets(project.getTargets());
-        for (Iterator iterator = targets.values().iterator(); iterator.hasNext();) {
-            Target target = (Target) iterator.next();
+        Map<String, Target> targets = ProjectUtils.removeDuplicateTargets(project.getTargets());
+        for (Target target : targets.values()) {
             handleTarget(target, eaReport);
             for (int i = 0; i < target.getTasks().length; i++) {
                 Task task = target.getTasks()[i];
-                Class taskClass = ComponentHelper.getComponentHelper(project).getComponentClass(task.getTaskType());
+                Class<?> taskClass = ComponentHelper.getComponentHelper(project).getComponentClass(task.getTaskType());
                 if (taskClass == null) {
                     continue;
                 }
@@ -339,10 +338,6 @@ public class DefaultPluginServiceImpl implements PluginService {
         }
     }
 
-    /**
-     * @param target
-     * @param eaReport
-     */
     private void handleTarget(Target target, EasyAntReport eaReport) {
         if (!"".equals(target.getName())) {
             boolean isExtensionPoint = target instanceof ExtensionPoint;
@@ -350,7 +345,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                 TargetReport targetReport = new TargetReport();
                 targetReport.setName(target.getName());
                 StringBuilder sb = new StringBuilder();
-                Enumeration targetDeps = target.getDependencies();
+                Enumeration<?> targetDeps = target.getDependencies();
                 while (targetDeps.hasMoreElements()) {
                     String t = (String) targetDeps.nextElement();
                     sb.append(t);
@@ -362,10 +357,10 @@ public class DefaultPluginServiceImpl implements PluginService {
                 targetReport.setDescription(target.getDescription());
                 targetReport.setIfCase(target.getIf());
                 targetReport.setUnlessCase(target.getUnless());
-                for (Iterator iterator = target.getProject().getTargets().values().iterator(); iterator.hasNext();) {
+                for (Iterator<?> iterator = target.getProject().getTargets().values().iterator(); iterator.hasNext();) {
                     Target currentTarget = (Target) iterator.next();
                     if (currentTarget instanceof ExtensionPoint) {
-                        Enumeration dependencies = currentTarget.getDependencies();
+                        Enumeration<?> dependencies = currentTarget.getDependencies();
                         while (dependencies.hasMoreElements()) {
                             String dep = (String) dependencies.nextElement();
                             if (dep.equals(target.getName())) {
@@ -382,7 +377,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             } else {
                 ExtensionPointReport extensionPoint = new ExtensionPointReport(target.getName());
                 StringBuilder sb = new StringBuilder();
-                Enumeration targetDeps = target.getDependencies();
+                Enumeration<?> targetDeps = target.getDependencies();
                 while (targetDeps.hasMoreElements()) {
                     String t = (String) targetDeps.nextElement();
                     sb.append(t);
@@ -422,8 +417,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         IvyContext.pushNewContext().setIvy(ivyInstance);
         // First we need to parse the specified file to retrieve all the easyant
         // stuff
-        parser.parseDescriptor(ivyInstance.getSettings(), moduleDescriptor.toURL(),
-                new URLResource(moduleDescriptor.toURL()), true);
+        parser.parseDescriptor(ivyInstance.getSettings(), moduleDescriptor.toURI().toURL(),
+                new URLResource(moduleDescriptor.toURI().toURL()), true);
         EasyAntModuleDescriptor md = parser.getEasyAntModuleDescriptor();
         IvyContext.popContext();
         return md;
@@ -452,8 +447,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                 eaReport.addImportedModuleReport(buildType);
             }
             // Store infos on plugins
-            for (Iterator iterator = md.getPlugins().iterator(); iterator.hasNext();) {
-                PluginDescriptor plugin = (PluginDescriptor) iterator.next();
+            for (PluginDescriptor plugin : md.getPlugins()) {
                 ImportedModuleReport pluginReport = new ImportedModuleReport();
                 ModuleRevisionId mrid = ModuleRevisionId.parse(plugin.getMrid());
                 pluginReport.setModuleMrid(plugin.getMrid());

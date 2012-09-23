@@ -255,8 +255,8 @@ public class LoadModule extends AbstractEasyAntTask {
 
         try {
             parser.setActiveBuildConfigurations(getProject().getProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS));
-            parser.parseDescriptor(getEasyAntIvyInstance().getSettings(), buildModule.toURL(), new URLResource(
-                    buildModule.toURL()), true);
+            parser.parseDescriptor(getEasyAntIvyInstance().getSettings(), buildModule.toURI().toURL(), new URLResource(
+                    buildModule.toURI().toURL()), true);
             EasyAntModuleDescriptor md = parser.getEasyAntModuleDescriptor();
             ModuleRevisionId currentModule = md.getIvyModuleDescriptor().getModuleRevisionId();
 

@@ -156,11 +156,11 @@ public class EasyAntEngine {
                     if (getLocalURL == null
                             && "org.eclipse.osgi.framework.internal.core.BundleURLConnection".equals(conn.getClass()
                                     .getName())) {
-                        EasyAntEngine.getLocalURL = conn.getClass().getMethod("getLocalURL", null);
+                        EasyAntEngine.getLocalURL = conn.getClass().getMethod("getLocalURL", (Class<?>) null);
                         getLocalURL.setAccessible(true);
                     }
                     if (getLocalURL != null && conn != null) {
-                        URL localJarUrl = (URL) getLocalURL.invoke(conn, null);
+                        URL localJarUrl = (URL) getLocalURL.invoke(conn, (Class<?>) null);
                         return getJarUrl(localJarUrl);
                     }
                 } catch (Throwable throwable) {
@@ -230,7 +230,7 @@ public class EasyAntEngine {
                 return null;
             }
             try {
-                path = defaultGlboalEasyAntIvySettings.toURL().toExternalForm();
+                path = defaultGlboalEasyAntIvySettings.toURI().toURL().toExternalForm();
             } catch (MalformedURLException e) {
                 throw new BuildException("Can't load easyant ivysettings file from "
                         + defaultGlboalEasyAntIvySettings.getAbsolutePath(), e);
@@ -402,9 +402,7 @@ public class EasyAntEngine {
     public void initProject(Project project) {
         project.init();
         // set user-define properties
-        Enumeration e = configuration.getDefinedProps().keys();
-        while (e.hasMoreElements()) {
-            String arg = (String) e.nextElement();
+        for (String arg : configuration.getDefinedProps().stringPropertyNames()) {
             String value = (String) configuration.getDefinedProps().get(arg);
             project.setUserProperty(arg, value);
         }
@@ -542,7 +540,7 @@ public class EasyAntEngine {
             String tgName = extensionInfo[0];
             String name = extensionInfo[1];
             OnMissingExtensionPoint missingBehaviour = OnMissingExtensionPoint.FAIL;
-            Hashtable projectTargets = project.getTargets();
+            Hashtable<?, ?> projectTargets = project.getTargets();
             if (!projectTargets.containsKey(tgName)) {
                 String message = "can't add target " + name + " to extension-point " + tgName
                         + " because the extension-point is unknown.";

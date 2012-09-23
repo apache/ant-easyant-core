@@ -28,6 +28,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 
@@ -145,10 +146,10 @@ public class ProjectUtils {
      *            the targets to filter.
      * @return the filtered targets.
      */
-    public static Map removeDuplicateTargets(Map targets) {
-        Map locationMap = new HashMap();
-        for (Iterator i = targets.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
+    public static Map<String, Target> removeDuplicateTargets(Map<?, ?> targets) {
+        Map<Location, Target> locationMap = new HashMap<Location, Target>();
+        for (Iterator<?> i = targets.entrySet().iterator(); i.hasNext();) {
+            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) i.next();
             String name = (String) entry.getKey();
             Target target = (Target) entry.getValue();
             Target otherTarget = (Target) locationMap.get(target.getLocation());
@@ -161,9 +162,8 @@ public class ProjectUtils {
                 // wins
             }
         }
-        Map ret = new HashMap();
-        for (Iterator i = locationMap.values().iterator(); i.hasNext();) {
-            Target target = (Target) i.next();
+        Map<String, Target> ret = new HashMap<String, Target>();
+        for (Target target : locationMap.values()) {
             ret.put(target.getName(), target);
         }
         return ret;

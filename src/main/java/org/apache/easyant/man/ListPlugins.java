@@ -26,7 +26,8 @@ import org.apache.easyant.core.report.ImportedModuleReport;
  * build module.
  */
 public class ListPlugins extends EasyantOption {
-
+    private static final long serialVersionUID = 1L;
+    
     
     public ListPlugins()
             throws IllegalArgumentException {

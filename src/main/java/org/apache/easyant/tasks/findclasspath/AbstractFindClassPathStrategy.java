@@ -17,7 +17,6 @@
  */
 package org.apache.easyant.tasks.findclasspath;
 
-import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyCachePath;
 import org.apache.ivy.core.LogOptions;
@@ -31,25 +30,24 @@ public abstract class AbstractFindClassPathStrategy extends DataType {
     public String pathid;
     protected Path path;
     private AbstractFindClassPathStrategy nextStrategy;
-    
-    
+
     public boolean check() {
-        boolean result=doCheck();
+        boolean result = doCheck();
         if (!result) {
-            if (getNextStrategy()== null) {
+            if (getNextStrategy() == null) {
                 return false;
             } else {
-                return getNextStrategy().check();   
+                return getNextStrategy().check();
             }
-            
+
         } else {
             return true;
         }
-        
+
     }
-    
+
     protected abstract boolean doCheck();
-    
+
     /**
      * Utilitary method to load cachepath
      * 
@@ -64,13 +62,11 @@ public abstract class AbstractFindClassPathStrategy extends DataType {
      * @param ivyRef
      *            ivy instance reference
      */
-    protected void loadCachePath(String organisation, String module,
-            String revision, String conf, Reference ivyRef) {
+    protected void loadCachePath(String organisation, String module, String revision, String conf, Reference ivyRef) {
         StringBuilder sb = new StringBuilder();
         sb.append("Building classpath (").append(getPathid()).append(")");
         sb.append(" with ");
-        sb.append(organisation).append("#").append(module).append(";").append(
-                revision);
+        sb.append(organisation).append("#").append(module).append(";").append(revision);
         sb.append(" conf=").append(conf);
         log(sb.toString(), Project.MSG_DEBUG);
         IvyCachePath pluginCachePath = new IvyCachePath();
@@ -86,7 +82,7 @@ public abstract class AbstractFindClassPathStrategy extends DataType {
         initTask(pluginCachePath).execute();
 
     }
-    
+
     /**
      * Utilitary method to build the classpath
      * 
@@ -97,26 +93,29 @@ public abstract class AbstractFindClassPathStrategy extends DataType {
             path = new Path(getProject());
             path.setPath(getPathid());
             path.setLocation(getLocation());
-            
+
         }
         return path;
     }
-    
+
     /**
      * Utilitary method to configure a task with the current one
-     * @param task task to configure
+     * 
+     * @param task
+     *            task to configure
      * @return the configured task
      */
     protected Task initTask(Task task) {
         task.setLocation(getLocation());
         task.setProject(getProject());
-        //task.setTaskName(getTaskName());
-        //task.setOwningTarget(getOwningTarget());
+        // task.setTaskName(getTaskName());
+        // task.setOwningTarget(getOwningTarget());
         return task;
     }
 
     /**
      * Get a reference of the project ivy instance
+     * 
      * @return a reference of the project ivy instance
      */
     protected Reference getProjectIvyReference() {
@@ -130,7 +129,7 @@ public abstract class AbstractFindClassPathStrategy extends DataType {
     public void setPathid(String pathid) {
         this.pathid = pathid;
     }
-    
+
     public AbstractFindClassPathStrategy getNextStrategy() {
         return nextStrategy;
     }
@@ -138,8 +137,5 @@ public abstract class AbstractFindClassPathStrategy extends DataType {
     public void setNextStrategy(AbstractFindClassPathStrategy nextStrategy) {
         this.nextStrategy = nextStrategy;
     }
-    
-    
-
 
 }
