@@ -402,7 +402,9 @@ public class EasyAntEngine {
     public void initProject(Project project) {
         project.init();
         // set user-define properties
-        for (String arg : configuration.getDefinedProps().stringPropertyNames()) {
+        Enumeration<?> properties = configuration.getDefinedProps().propertyNames();
+        while (properties.hasMoreElements()) {
+            String arg = (String) properties.nextElement();
             String value = (String) configuration.getDefinedProps().get(arg);
             project.setUserProperty(arg, value);
         }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -152,7 +153,9 @@ public class EasyAntMain implements AntMain {
         }
 
         if (additionalUserProperties != null) {
-            for (String key : additionalUserProperties.stringPropertyNames()) {
+            Enumeration<?> properties = additionalUserProperties.propertyNames();
+            while (properties.hasMoreElements()) {
+                String key = (String) properties.nextElement();
                 String property = additionalUserProperties.getProperty(key);
                 easyAntConfiguration.getDefinedProps().put(key, property);
             }
@@ -393,7 +396,9 @@ public class EasyAntMain implements AntMain {
             }
 
             // ensure that -D properties take precedence
-            for (String name : props.stringPropertyNames()) {
+            Enumeration<?> properties = props.propertyNames();
+            while (properties.hasMoreElements()) {
+                String name = (String) properties.nextElement();
                 if (easyAntConfiguration.getDefinedProps().getProperty(name) == null) {
                     easyAntConfiguration.getDefinedProps().put(name, props.getProperty(name));
                 }
@@ -488,7 +493,8 @@ public class EasyAntMain implements AntMain {
      *            The maximum length of the names of the targets. If descriptions are given, they are padded to this
      *            position so they line up (so long as the names really <i>are</i> shorter than this).
      */
-    private static void printTargets(Project project, List<String> names, List<String> descriptions, String heading, int maxlen) {
+    private static void printTargets(Project project, List<String> names, List<String> descriptions, String heading,
+            int maxlen) {
         if (names.size() > 0) {
             // now, start printing the targets and their descriptions
             String lSep = System.getProperty("line.separator");
@@ -544,15 +550,15 @@ public class EasyAntMain implements AntMain {
             // maintain a sorted list of targets
             if (currentTarget instanceof ExtensionPoint && !currentTarget.getName().contains(":")) {
                 int pos = findTargetPosition(highLevelTargets, targetName);
-                highLevelTargets.add(pos,targetName);
-                highLevelTargetsDescriptions.add(pos,targetDescription);
+                highLevelTargets.add(pos, targetName);
+                highLevelTargetsDescriptions.add(pos, targetDescription);
             } else if (targetDescription != null) {
                 int pos = findTargetPosition(topNames, targetName);
-                topNames.add(pos,targetName);
-                topDescriptions.add(pos,targetDescription);
+                topNames.add(pos, targetName);
+                topDescriptions.add(pos, targetDescription);
             } else {
                 int pos = findTargetPosition(subNames, targetName);
-                subNames.add(pos,targetName);
+                subNames.add(pos, targetName);
             }
             if (targetName.length() > maxLength) {
                 maxLength = targetName.length();

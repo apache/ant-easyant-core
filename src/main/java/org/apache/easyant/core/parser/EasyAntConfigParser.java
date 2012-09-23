@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
@@ -200,7 +201,9 @@ public class EasyAntConfigParser {
                             properties.load(is);
                             is.close();
                         }
-                        for (String key : properties.stringPropertyNames()) {
+                        Enumeration<?> propertiesEnum = properties.propertyNames();
+                        while (propertiesEnum.hasMoreElements()) {
+                            String key = (String) propertiesEnum.nextElement();
                             easyAntConfiguration.getDefinedProps().put(key, properties.get(key));
                         }
                     } catch (Exception e) {
