@@ -492,25 +492,27 @@ public class EasyAntMain implements AntMain {
      *            position so they line up (so long as the names really <i>are</i> shorter than this).
      */
     private static void printTargets(Project project, Vector names, Vector descriptions, String heading, int maxlen) {
-        // now, start printing the targets and their descriptions
-        String lSep = System.getProperty("line.separator");
-        // got a bit annoyed that I couldn't find a pad function
-        String spaces = "    ";
-        while (spaces.length() <= maxlen) {
-            spaces += spaces;
-        }
-        StringBuffer msg = new StringBuffer();
-        msg.append(heading + lSep + lSep);
-        for (int i = 0; i < names.size(); i++) {
-            msg.append(" ");
-            msg.append(names.elementAt(i));
-            if (descriptions != null) {
-                msg.append(spaces.substring(0, maxlen - ((String) names.elementAt(i)).length() + 2));
-                msg.append(descriptions.elementAt(i));
+        if (names.size() > 0) {
+            // now, start printing the targets and their descriptions
+            String lSep = System.getProperty("line.separator");
+            // got a bit annoyed that I couldn't find a pad function
+            String spaces = "    ";
+            while (spaces.length() <= maxlen) {
+                spaces += spaces;
             }
-            msg.append(lSep);
+            StringBuffer msg = new StringBuffer();
+            msg.append(lSep + heading + lSep + lSep);
+            for (int i = 0; i < names.size(); i++) {
+                msg.append(" ");
+                msg.append(names.elementAt(i));
+                if (descriptions != null) {
+                    msg.append(spaces.substring(0, maxlen - ((String) names.elementAt(i)).length() + 2));
+                    msg.append(descriptions.elementAt(i));
+                }
+                msg.append(lSep);
+            }
+            project.log(msg.toString(), Project.MSG_WARN);
         }
-        project.log(msg.toString(), Project.MSG_WARN);
     }
 
     /**
@@ -535,8 +537,8 @@ public class EasyAntMain implements AntMain {
         Vector topDescriptions = new Vector();
         Vector subNames = new Vector();
 
-        Vector phases = new Vector();
-        Vector phasesDescriptions = new Vector();
+        Vector highLevelTargets = new Vector();
+        Vector highLevelTargetsDescriptions = new Vector();
 
         for (Iterator i = ptargets.values().iterator(); i.hasNext();) {
             currentTarget = (Target) i.next();
@@ -546,27 +548,25 @@ public class EasyAntMain implements AntMain {
             }
             targetDescription = currentTarget.getDescription();
             // maintain a sorted list of targets
-            if (targetDescription == null) {
+            if (currentTarget instanceof ExtensionPoint && !currentTarget.getName().contains(":")) {
+                int pos = findTargetPosition(highLevelTargets, targetName);
+                highLevelTargets.insertElementAt(targetName, pos);
+                highLevelTargetsDescriptions.insertElementAt(targetDescription, pos);
+            } else if (targetDescription != null) {
+                int pos = findTargetPosition(topNames, targetName);
+                topNames.insertElementAt(targetName, pos);
+                topDescriptions.insertElementAt(targetDescription, pos);
+            } else {
                 int pos = findTargetPosition(subNames, targetName);
                 subNames.insertElementAt(targetName, pos);
-            } else {
-                if (currentTarget instanceof ExtensionPoint) {
-                    int pos = findTargetPosition(phases, targetName);
-                    phases.insertElementAt(targetName, pos);
-                    phasesDescriptions.insertElementAt(targetDescription, pos);
-                } else {
-                    int pos = findTargetPosition(topNames, targetName);
-                    topNames.insertElementAt(targetName, pos);
-                    topDescriptions.insertElementAt(targetDescription, pos);
-
-                }
-                if (targetName.length() > maxLength) {
-                    maxLength = targetName.length();
-                }
             }
+            if (targetName.length() > maxLength) {
+                maxLength = targetName.length();
+            }
+
         }
 
-        printTargets(project, phases, phasesDescriptions, "Main phases:", maxLength);
+        printTargets(project, highLevelTargets, highLevelTargetsDescriptions, "High level targets:", maxLength);
         printTargets(project, topNames, topDescriptions, "Main targets:", maxLength);
         // if there were no main targets, we list all subtargets
         // as it means nothing has a description
@@ -575,6 +575,8 @@ public class EasyAntMain implements AntMain {
         }
         if (printSubTargets) {
             printTargets(project, subNames, null, "Other targets:", 0);
+        } else {
+            project.log("Run easyant with '-v' or '--verbose' option to have the whole list of available targets / extension points");
         }
 
         String defaultTarget = project.getDefaultTarget();
