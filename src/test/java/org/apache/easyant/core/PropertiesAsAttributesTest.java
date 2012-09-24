@@ -29,8 +29,7 @@ public class PropertiesAsAttributesTest extends EasyAntBaseTest {
         configureProject(this.getResource("propertiesAsAttributes.ivy"), Project.MSG_INFO);
 
         // Configure easyant ivy instance
-        conf.setEasyantIvySettingsUrl(this.getClass().getResource(
-                "/org/apache/easyant/core/default-easyant-ivysettings.xml"));
+        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/ivysettings-test.xml"));
 
         // init project with easyant configuration
         initProject();
@@ -38,7 +37,7 @@ public class PropertiesAsAttributesTest extends EasyAntBaseTest {
 
     @Test
     public void testClean() throws Exception {
-        executeTarget("clean:clean");
+        executeTarget("clean");
     }
 
     @Test

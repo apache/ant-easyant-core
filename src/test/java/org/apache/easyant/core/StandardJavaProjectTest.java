@@ -25,15 +25,14 @@ public class StandardJavaProjectTest extends EasyAntBaseTest {
         configureProject(this.getResource("standardJavaProject.ivy"), Project.MSG_INFO);
 
         // Configure easyant ivy instance
-        conf.setEasyantIvySettingsUrl(this.getClass().getResource(
-                "/org/apache/easyant/core/default-easyant-ivysettings.xml"));
+        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/ivysettings-test.xml"));
 
         // init project with easyant configuration
         initProject();
     }
 
     public void testClean() throws Exception {
-        executeTarget("clean:clean");
+        executeTarget("clean");
     }
 
     public void testValidate() throws Exception {
@@ -55,7 +54,7 @@ public class StandardJavaProjectTest extends EasyAntBaseTest {
     public void testImportWithAsAttribute() throws Exception {
         testClean();
         // <ea:plugin module="javadoc" revision="0.1" as="foobar"/>
-        executeTarget("foobar:javadoc");
+        executeTarget("foobarjavadoc:javadoc");
     }
 
     public void testVerify() throws Exception {

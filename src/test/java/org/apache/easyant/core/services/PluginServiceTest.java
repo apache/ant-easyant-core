@@ -51,7 +51,7 @@ public class PluginServiceTest {
         // configure the ivyinstance
         Ivy ivy = IvyContext.pushNewContext().getIvy();
         ivy.setVariable(EasyAntMagicNames.EASYANT_CORE_JAR_URL, EasyAntEngine.guessEasyantCoreJarUrl().toExternalForm());
-        ivy.configure(PluginServiceTest.class.getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml"));
+        ivy.configure(PluginServiceTest.class.getResource("/ivysettings-test.xml"));
         pluginService = new DefaultPluginServiceImpl(ivy);
 
     }

@@ -25,15 +25,14 @@ public class ModuleInheritanceTest extends EasyAntBaseTest {
         configureProject(this.getResource("multimodule/myapp-core/module.ivy"), Project.MSG_INFO);
 
         // Configure easyant ivy instance
-        conf.setEasyantIvySettingsUrl(this.getClass().getResource(
-                "/org/apache/easyant/core/default-easyant-ivysettings.xml"));
+        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/ivysettings-test.xml"));
 
         // init project with easyant configuration
         initProject();
     }
 
     public void clean() throws Exception {
-        executeTarget("clean:clean");
+        executeTarget("clean");
     }
 
     public void testInheritablePluginWithScopeChild() throws Exception {
