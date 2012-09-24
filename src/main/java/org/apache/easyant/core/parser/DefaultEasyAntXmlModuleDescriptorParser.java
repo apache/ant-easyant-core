@@ -606,10 +606,8 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
          * @param plugins
          *            a list of plugins that will be merged with current one
          */
-        protected void mergeEasyantPlugins(List plugins) {
-            for (Iterator iterator = plugins.iterator(); iterator.hasNext();) {
-                PluginDescriptor plugin = (PluginDescriptor) iterator.next();
-
+        protected void mergeEasyantPlugins(List<PluginDescriptor> plugins) {
+            for (PluginDescriptor plugin : plugins) {
                 if (plugin.isInheritable()
                         && BuildConfigurationHelper
                                 .contains(plugin.getBuildConfigurations(), activeBuildConfigurations)) {
