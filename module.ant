@@ -123,7 +123,7 @@
 
 	</target>
 
-	<target name="dist" depends="package-jar:jar, stage-dist, populate-jar-repo" description="update the dist directory (used for development)">
+	<target name="dist" depends="package-jar:jar, stage-dist" description="update the dist directory (used for development)">
 
 		<!-- publish latest easyant artifacts into dist repository -->
 		<ivy:settings id="dist.ivy.settings" file="${target.dist}/repository/third-party-lib/third-party-ivysettings.xml" />
@@ -138,7 +138,7 @@
 	</target>
 
 	<!-- Create a zip for distribution -->
-	<target name="package-distribution" depends="dist" description="package a distribution">
+	<target name="package-distribution" depends="populate-jar-repo, dist" description="package a distribution">
 		<echo message="Packaging standard distribution." />
 		<property name="root.dir" value="${ivy.module}-${ivy.revision}" />
 		<bundle destfile="${target.distributions}/${ivy.module}-${version}">
@@ -163,7 +163,7 @@
 	</target>
 
 	<!-- Create a zip for full distribution  -->
-	<target name="package-full-distribution" depends="distribution:init,dist" description="package a distribution (including includes sources)">
+	<target name="package-full-distribution" depends="distribution:init, populate-jar-repo, dist" description="package a distribution (including includes sources)">
 		<echo message="Packaging full distribution." />
 		<property name="full.root.dir" value="${ivy.module}-${ivy.revision}-full" />
 		<bundle destfile="${target.distributions}/${ivy.module}-${version}-full">
