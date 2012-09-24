@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.easyant.core.BuildConfigurationHelper;
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.descriptor.AdvancedInheritableItem;
 import org.apache.easyant.core.descriptor.DefaultEasyAntDescriptor;
@@ -76,12 +75,6 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
     }
 
     private EasyAntModuleDescriptor easyAntModuleDescriptor;
-
-    private String activeBuildConfigurations;
-
-    public void setActiveBuildConfigurations(String activeBuildConfigurations) {
-        this.activeBuildConfigurations = activeBuildConfigurations;
-    }
 
     public EasyAntModuleDescriptor getEasyAntModuleDescriptor() {
         return easyAntModuleDescriptor;
@@ -274,9 +267,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             handleInheritedScopeAttribute(attributes, plugin);
 
             currentPluginDescriptor = plugin;
-            if (BuildConfigurationHelper.contains(conf, activeBuildConfigurations)) {
-                easyAntModuleDescriptor.addPlugin(plugin);
-            }
+            easyAntModuleDescriptor.addPlugin(plugin);
 
             handlePropertyAsAttribute(attributes, conf);
         }
@@ -450,26 +441,24 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 conf = currentPluginDescriptor.getBuildConfigurations();
             }
 
-            if (BuildConfigurationHelper.contains(conf, activeBuildConfigurations)) {
-                // if bindtarget tag is a subelement and look if an alias was
-                // defined on the plugin
-                if (EasyAntState.PLUGIN == easyAntState && currentPluginDescriptor.getAs() != null) {
-                    // check if the fully qualified name was defined, if not get
-                    // the alias defined on the plugin
-                    if (!target.startsWith(currentPluginDescriptor.getAs())) {
-                        target = currentPluginDescriptor.getAs() + target;
-                    }
-
+            // if bindtarget tag is a subelement and look if an alias was
+            // defined on the plugin
+            if (EasyAntState.PLUGIN == easyAntState && currentPluginDescriptor.getAs() != null) {
+                // check if the fully qualified name was defined, if not get
+                // the alias defined on the plugin
+                if (!target.startsWith(currentPluginDescriptor.getAs())) {
+                    target = currentPluginDescriptor.getAs() + target;
                 }
-                // put this variable on the context
-                ExtensionPointMappingDescriptor extensionPointMappingDescriptor = new ExtensionPointMappingDescriptor();
-                extensionPointMappingDescriptor.setBuildConfigurations(conf);
-                // TODO: add a facility to get plugin alias if this is a
-                // declared as a subelement
-                extensionPointMappingDescriptor.setTarget(target);
-                extensionPointMappingDescriptor.setExtensionPoint(toExtensionPoint);
-                easyAntModuleDescriptor.addExtensionPointMapping(extensionPointMappingDescriptor);
+
             }
+            // put this variable on the context
+            ExtensionPointMappingDescriptor extensionPointMappingDescriptor = new ExtensionPointMappingDescriptor();
+            extensionPointMappingDescriptor.setBuildConfigurations(conf);
+            // TODO: add a facility to get plugin alias if this is a
+            // declared as a subelement
+            extensionPointMappingDescriptor.setTarget(target);
+            extensionPointMappingDescriptor.setExtensionPoint(toExtensionPoint);
+            easyAntModuleDescriptor.addExtensionPointMapping(extensionPointMappingDescriptor);
 
         }
 
@@ -505,20 +494,17 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                     String key = (String) enumeration.nextElement();
                     String value = getSettings().substitute(props.getProperty(key));
 
-                    if (BuildConfigurationHelper.contains(conf, activeBuildConfigurations)) {
-                        // put this variable on the context
-                        IvyContext.getContext().getSettings().getVariableContainer().setVariable(key, value, true);
-                        PropertyDescriptor property = new PropertyDescriptor(key);
-                        property.setValue(value);
-                        property.setBuildConfigurations(conf);
+                    // put this variable on the context
+                    IvyContext.getContext().getSettings().getVariableContainer().setVariable(key, value, true);
+                    PropertyDescriptor property = new PropertyDescriptor(key);
+                    property.setValue(value);
+                    property.setBuildConfigurations(conf);
 
-                        applyInheritableItemAttributesFromPlugin(property);
-                        // override with explicit inherited scope attributes
-                        handleInheritedScopeAttribute(attributes, property);
+                    applyInheritableItemAttributesFromPlugin(property);
+                    // override with explicit inherited scope attributes
+                    handleInheritedScopeAttribute(attributes, property);
 
-                        easyAntModuleDescriptor.getProperties().put(key, property);
-                    }
-
+                    easyAntModuleDescriptor.getProperties().put(key, property);
                 }
             } else {
                 if (attributes.getValue("name") == null) {
@@ -527,21 +513,17 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 String propertyName = getSettings().substitute(attributes.getValue("name"));
                 String value = getSettings().substitute(attributes.getValue("value"));
 
-                if (BuildConfigurationHelper.contains(conf, activeBuildConfigurations)) {
-                    // put this variable on the context
-                    IvyContext.getContext().getSettings().getVariableContainer().setVariable(propertyName, value, true);
-                    PropertyDescriptor property = new PropertyDescriptor(propertyName, getMd().getModuleRevisionId());
-                    property.setValue(value);
-                    property.setBuildConfigurations(conf);
+                // put this variable on the context
+                IvyContext.getContext().getSettings().getVariableContainer().setVariable(propertyName, value, true);
+                PropertyDescriptor property = new PropertyDescriptor(propertyName, getMd().getModuleRevisionId());
+                property.setValue(value);
+                property.setBuildConfigurations(conf);
 
-                    applyInheritableItemAttributesFromPlugin(property);
-                    // override with explicit inherited scope attributes
-                    handleInheritedScopeAttribute(attributes, property);
+                applyInheritableItemAttributesFromPlugin(property);
+                // override with explicit inherited scope attributes
+                handleInheritedScopeAttribute(attributes, property);
 
-                    easyAntModuleDescriptor.getProperties().put(propertyName, property);
-
-                }
-
+                easyAntModuleDescriptor.getProperties().put(propertyName, property);
             }
         }
 
@@ -608,9 +590,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
          */
         protected void mergeEasyantPlugins(List<PluginDescriptor> plugins) {
             for (PluginDescriptor plugin : plugins) {
-                if (plugin.isInheritable()
-                        && BuildConfigurationHelper
-                                .contains(plugin.getBuildConfigurations(), activeBuildConfigurations)) {
+                if (plugin.isInheritable()) {
                     StringBuilder sb = new StringBuilder("Merging plugin : ");
                     sb.append(plugin.toString());
                     if (plugin.getSourceModule() != null) {
@@ -632,8 +612,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
         protected void mergeEasyantProperties(Map<String, PropertyDescriptor> properties) {
             for (Iterator<PropertyDescriptor> iterator = properties.values().iterator(); iterator.hasNext();) {
                 PropertyDescriptor prop = iterator.next();
-                if (prop.isInheritable()
-                        && BuildConfigurationHelper.contains(prop.getBuildConfigurations(), activeBuildConfigurations)) {
+                if (prop.isInheritable()) {
                     IvyContext.getContext().getSettings().getVariableContainer()
                             .setVariable(prop.getName(), prop.getValue(), true);
                     StringBuilder sb = new StringBuilder("Merging property");

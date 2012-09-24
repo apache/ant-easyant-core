@@ -254,7 +254,6 @@ public class LoadModule extends AbstractEasyAntTask {
         log("Loading EasyAnt module descriptor :" + parser.getClass().getName(), Project.MSG_DEBUG);
 
         try {
-            parser.setActiveBuildConfigurations(getProject().getProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS));
             parser.parseDescriptor(getEasyAntIvyInstance().getSettings(), buildModule.toURI().toURL(), new URLResource(
                     buildModule.toURI().toURL()), true);
             EasyAntModuleDescriptor md = parser.getEasyAntModuleDescriptor();
