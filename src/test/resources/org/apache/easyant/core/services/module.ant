@@ -15,7 +15,7 @@
    limitations under the License.
 -->
 <project>
-    <target name="hello-world" phase="process-sources">
+    <target name="hello-world" extensionOf="package">
         <echo>hello world</echo>
     </target>
 </project>
