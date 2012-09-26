@@ -277,12 +277,16 @@ public class LoadModule extends AbstractEasyAntTask {
                     propTask.setName(property.getName());
                     propTask.setValue(property.getValue());
                     propTask.setBuildConfigurations(property.getBuildConfigurations());
+                    propTask.setTaskType("antlib:org.apache.easyant:property");
+                    getOwningTarget().addTask(propTask);
                     initTask(propTask).execute();
                 }
             }
             if (md.getBuildType() != null) {
                 Import importTask = new Import();
                 importTask.setMrid(md.getBuildType());
+                importTask.setTaskType("antlib:org.apache.easyant:import");
+                getOwningTarget().addTask(importTask);
                 initTask(importTask).execute();
             }
             for (Iterator<?> iterator = md.getPlugins().iterator(); iterator.hasNext();) {
@@ -298,6 +302,8 @@ public class LoadModule extends AbstractEasyAntTask {
                     importTask.setDependencies(plugin.getDependencies());
                     importTask.setConflicts(plugin.getConflicts());
                     importTask.setExcludes(plugin.getExcludes());
+                    importTask.setTaskType("antlib:org.apache.easyant:import");
+                    getOwningTarget().addTask(importTask);
                     initTask(importTask).execute();
                 }
             }
