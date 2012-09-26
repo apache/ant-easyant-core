@@ -27,11 +27,9 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.easyant.core.EasyAntConstants;
-import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
-import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
@@ -45,8 +43,10 @@ import org.apache.easyant.core.services.PluginService;
 import org.apache.easyant.tasks.AbstractImport;
 import org.apache.easyant.tasks.Import;
 import org.apache.easyant.tasks.ImportTestModule;
+import org.apache.easyant.tasks.LoadModule;
 import org.apache.easyant.tasks.ParameterTask;
 import org.apache.ivy.Ivy;
+import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.module.id.ModuleId;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
@@ -77,28 +77,30 @@ public class DefaultPluginServiceImpl implements PluginService {
     private final EasyAntModuleDescriptorParser parser;
 
     private final Ivy ivyInstance;
+    private final IvyAntSettings easyantIvySettings;
 
     /**
      * This is the default constructor, the IvyContext should be the IvyContext configured to the easyant ivy instance
      * 
-     * @param ivyInstance
+     * @param easyantIvySettings
      *            the easyant ivy instance
      */
-    public DefaultPluginServiceImpl(final Ivy ivyInstance) {
-        this(ivyInstance, new DefaultEasyAntXmlModuleDescriptorParser());
+    public DefaultPluginServiceImpl(final IvyAntSettings easyantIvySettings) {
+        this(easyantIvySettings, new DefaultEasyAntXmlModuleDescriptorParser());
     }
 
     /**
      * A custom constructor if you want to specify your own parser / configuration service, you should use this
      * constructor the IvyContext should be the IvyContext configured to the easyant ivy instance
      * 
-     * @param ivyInstance
+     * @param easyantIvySetings
      *            the easyant ivy instance
      * @param parser
      *            a valid easyantModuleDescriptor
      */
-    public DefaultPluginServiceImpl(final Ivy ivyInstance, EasyAntModuleDescriptorParser parser) {
-        this.ivyInstance = ivyInstance;
+    public DefaultPluginServiceImpl(final IvyAntSettings easyantIvySetings, EasyAntModuleDescriptorParser parser) {
+        this.easyantIvySettings = easyantIvySetings;
+        this.ivyInstance = easyantIvySetings.getConfiguredIvyInstance(easyantIvySetings);
         if (parser == null) {
             throw new IllegalArgumentException("You must set a valid easyant module descriptor parser");
         }
@@ -123,10 +125,6 @@ public class DefaultPluginServiceImpl implements PluginService {
             Project project = buildProject(null);
 
             // emulate top level project
-            ProjectHelper helper = ProjectHelper.getProjectHelper();
-            helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
-            project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
-
             ImportTestModule importTestModule = new ImportTestModule();
             importTestModule.setModuleIvy(pluginIvyFile);
             importTestModule.setSourceDirectory(sourceDirectory);
@@ -204,14 +202,16 @@ public class DefaultPluginServiceImpl implements PluginService {
         Project project = new Project();
         project.setNewProperty(EasyAntMagicNames.AUDIT_MODE, "true");
         project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
-        EasyAntEngine eagAntEngine = new EasyAntEngine();
-        eagAntEngine.configureEasyAntIvyInstance(project);
+        project.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE, easyantIvySettings);
         if (properties != null) {
             for (Entry<String, String> entry : properties.entrySet()) {
                 project.setNewProperty(entry.getKey(), entry.getValue());
             }
         }
         project.init();
+        ProjectHelper helper = ProjectHelper.getProjectHelper();
+        helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
+        project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
         return project;
     }
 
@@ -234,17 +234,8 @@ public class DefaultPluginServiceImpl implements PluginService {
                 if (Import.class.getName().equals(taskClass.getName())) {
                     handleImport(task, eaReport, conf);
                 }
-
             }
         }
-    }
-
-    private void scanAntFile(File antFile, Map<String, String> properties, EasyAntReport eaReport, String conf)
-            throws IOException, Exception {
-        Project project = buildProject(properties);
-        ProjectHelper.configureProject(project, antFile);
-
-        analyseProject(project, eaReport, conf);
     }
 
     private void handleImport(Task task, EasyAntReport eaReport, String conf) throws Exception {
@@ -288,7 +279,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             if (f.exists()) {
                 try {
                     propToLoad.load(new FileInputStream(f));
-                    for (Iterator iter = propToLoad.keySet().iterator(); iter.hasNext();) {
+                    for (Iterator<?> iter = propToLoad.keySet().iterator(); iter.hasNext();) {
                         String key = (String) iter.next();
                         PropertyDescriptor propertyDescriptor = new PropertyDescriptor(key);
                         propertyDescriptor.setValue(propToLoad.getProperty(key));
@@ -417,8 +408,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         IvyContext.pushNewContext().setIvy(ivyInstance);
         // First we need to parse the specified file to retrieve all the easyant
         // stuff
-        parser.parseDescriptor(ivyInstance.getSettings(), moduleDescriptor.toURI().toURL(),
-                new URLResource(moduleDescriptor.toURI().toURL()), true);
+        parser.parseDescriptor(ivyInstance.getSettings(), moduleDescriptor.toURI().toURL(), new URLResource(
+                moduleDescriptor.toURI().toURL()), true);
         EasyAntModuleDescriptor md = parser.getEasyAntModuleDescriptor();
         IvyContext.popContext();
         return md;
@@ -427,46 +418,20 @@ public class DefaultPluginServiceImpl implements PluginService {
     public EasyAntReport generateEasyAntReport(File moduleDescriptor, File optionalAntModule, File overrideAntModule)
             throws Exception {
         EasyAntReport eaReport = new EasyAntReport();
+        EasyAntModuleDescriptor md = getEasyAntModuleDescriptor(moduleDescriptor);
+        eaReport.setModuleDescriptor(md.getIvyModuleDescriptor());
 
-        if (overrideAntModule != null && overrideAntModule.exists()) {
-            scanAntFile(overrideAntModule, null, eaReport, "default");
-        }
-        try {
-            EasyAntModuleDescriptor md = getEasyAntModuleDescriptor(moduleDescriptor);
-            eaReport.setModuleDescriptor(md.getIvyModuleDescriptor());
-            for (Iterator<PropertyDescriptor> iterator = md.getProperties().values().iterator(); iterator.hasNext();) {
-                PropertyDescriptor property = iterator.next();
-                eaReport.addPropertyDescriptor(property.getName(), property);
-            }
-
-            // Store infos on the buildtype
-            if (md.getBuildType() != null) {
-                ImportedModuleReport buildType = new ImportedModuleReport();
-                buildType.setModuleMrid(md.getBuildType());
-                buildType.setEasyantReport(getPluginInfo(ModuleRevisionId.parse(md.getBuildType())));
-                eaReport.addImportedModuleReport(buildType);
-            }
-            // Store infos on plugins
-            for (PluginDescriptor plugin : md.getPlugins()) {
-                ImportedModuleReport pluginReport = new ImportedModuleReport();
-                ModuleRevisionId mrid = ModuleRevisionId.parse(plugin.getMrid());
-                pluginReport.setModuleMrid(plugin.getMrid());
-                if (plugin.getAs() == null) {
-                    pluginReport.setAs(mrid.getName());
-                } else {
-                    pluginReport.setAs(plugin.getAs());
-                }
-                pluginReport.setType(plugin.getMode());
-                pluginReport.setEasyantReport(getPluginInfo(ModuleRevisionId.parse(plugin.getMrid())));
-                eaReport.addImportedModuleReport(pluginReport);
-            }
-        } catch (Exception e) {
-            throw new Exception("problem while parsing Ivy module file: " + e.getMessage(), e);
-        }
-
-        if (optionalAntModule != null && optionalAntModule.exists()) {
-            scanAntFile(optionalAntModule, null, eaReport, "default");
-        }
+        Project p = buildProject(null);
+        Target implicitTarget = ProjectUtils.createTopLevelTarget();
+        p.addTarget("", implicitTarget);
+        LoadModule loadModule = new LoadModule();
+        loadModule.setBuildModule(moduleDescriptor);
+        loadModule.setBuildFile(optionalAntModule);
+        loadModule.setOwningTarget(implicitTarget);
+        loadModule.setLocation(new Location(ProjectUtils.emulateMainScript(p).getAbsolutePath()));
+        loadModule.setProject(p);
+        loadModule.execute();
+        analyseProject(p, eaReport, "default");
 
         return eaReport;
     }

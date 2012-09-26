@@ -25,7 +25,7 @@ import java.util.Set;
 import org.apache.easyant.core.EasyAntConfiguration;
 import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.factory.EasyantConfigurationFactory;
-import org.apache.ivy.Ivy;
+import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
@@ -39,14 +39,15 @@ public class ConfigureEasyAntIvyInstance extends Task {
     @Override
     public void execute() throws BuildException {
         EasyAntEngine eaEngine = new EasyAntEngine(getEasyantConfiguration());
-        Ivy easyantIvyInstance = eaEngine.configureEasyAntIvyInstance(getProject());
+        IvyAntSettings easyantIvyInstance = eaEngine.configureEasyAntIvyInstance(getProject());
         eaEngine.configurePluginService(getProject(), easyantIvyInstance);
     }
 
     public void setConfigurationFile(String configurationFile) {
         File f = new File(configurationFile);
         try {
-            EasyantConfigurationFactory.getInstance().createConfigurationFromFile(getEasyantConfiguration(), f.toURI().toURL());
+            EasyantConfigurationFactory.getInstance().createConfigurationFromFile(getEasyantConfiguration(),
+                    f.toURI().toURL());
         } catch (Exception e) {
             throw new BuildException("Can't create easyantConfiguration from File " + configurationFile, e);
         }

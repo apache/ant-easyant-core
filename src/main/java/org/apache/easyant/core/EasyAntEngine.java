@@ -39,7 +39,6 @@ import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
 import org.apache.easyant.tasks.ConfigureBuildScopedRepository;
 import org.apache.easyant.tasks.Import;
 import org.apache.easyant.tasks.LoadModule;
-import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.tools.ant.BuildException;
@@ -91,9 +90,9 @@ public class EasyAntEngine {
      * 
      * @param project
      *            project instance
-     * @return a configured {@link Ivy} instance
+     * @return a configured {@link IvyAntSettings} instance
      */
-    public Ivy configureEasyAntIvyInstance(Project project) {
+    public IvyAntSettings configureEasyAntIvyInstance(Project project) {
         IvyConfigure easyantIvyConfigure = new IvyConfigure();
         easyantIvyConfigure.setSettingsId(EasyAntMagicNames.EASYANT_IVY_INSTANCE);
 
@@ -135,8 +134,7 @@ public class EasyAntEngine {
 
         configureEasyAntOfflineRepository(project);
 
-        IvyAntSettings ivyAntSettings = IvyInstanceHelper.getEasyAntIvyAntSettings(project);
-        return ivyAntSettings.getConfiguredIvyInstance(easyantIvyConfigure);
+        return IvyInstanceHelper.getEasyAntIvyAntSettings(project);
     }
 
     private static Method getLocalURL;
@@ -236,7 +234,7 @@ public class EasyAntEngine {
         return path;
     }
 
-    public void configurePluginService(Project project, Ivy easyantIvyInstance) {
+    public void configurePluginService(Project project, IvyAntSettings easyantIvyInstance) {
         pluginService = new DefaultPluginServiceImpl(easyantIvyInstance);
         project.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE, pluginService);
 
@@ -411,8 +409,8 @@ public class EasyAntEngine {
         helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
         project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
 
-        Ivy easyantIvyInstance = configureEasyAntIvyInstance(project);
-        configurePluginService(project, easyantIvyInstance);
+        IvyAntSettings easyantIvySettings = configureEasyAntIvyInstance(project);
+        configurePluginService(project, easyantIvySettings);
 
         // Profile
         if (configuration.getActiveBuildConfigurations().size() != 0) {
@@ -666,8 +664,8 @@ public class EasyAntEngine {
             project.setName("EasyAnt");
             // not sure we need to invoke init here
             project.init();
-            Ivy ivy = configureEasyAntIvyInstance(project);
-            configurePluginService(project, ivy);
+            IvyAntSettings ivyAntSettings = configureEasyAntIvyInstance(project);
+            configurePluginService(project, ivyAntSettings);
         }
         return pluginService;
     }

@@ -27,18 +27,16 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.easyant.core.EasyAntEngine;
-import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.ExtensionPointReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
 import org.apache.easyant.core.report.TargetReport;
 import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
-import org.apache.ivy.Ivy;
-import org.apache.ivy.core.IvyContext;
+import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.matcher.PatternMatcher;
+import org.apache.tools.ant.Project;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -49,10 +47,11 @@ public class PluginServiceTest {
     @BeforeClass
     public static void setUp() throws ParseException, IOException {
         // configure the ivyinstance
-        Ivy ivy = IvyContext.pushNewContext().getIvy();
-        ivy.setVariable(EasyAntMagicNames.EASYANT_CORE_JAR_URL, EasyAntEngine.guessEasyantCoreJarUrl().toExternalForm());
-        ivy.configure(PluginServiceTest.class.getResource("/ivysettings-test.xml"));
-        pluginService = new DefaultPluginServiceImpl(ivy);
+        Project p = new Project();
+        IvyAntSettings ivyAntSettings = new IvyAntSettings();
+        ivyAntSettings.setUrl(PluginServiceTest.class.getResource("/ivysettings-test.xml"));
+        ivyAntSettings.setProject(p);
+        pluginService = new DefaultPluginServiceImpl(ivyAntSettings);
 
     }
 
@@ -152,7 +151,7 @@ public class PluginServiceTest {
         boolean hasHelloWorldTarget = false;
         for (TargetReport targetReport : eaReport.getAvailableTargets()) {
             if ("hello-world".equals(targetReport.getName())) {
-                Assert.assertTrue("process-sources".equals(targetReport.getExtensionPoint()));
+                Assert.assertTrue("package".equals(targetReport.getExtensionPoint()));
                 hasHelloWorldTarget = true;
                 break;
             }
