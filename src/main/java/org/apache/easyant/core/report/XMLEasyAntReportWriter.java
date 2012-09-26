@@ -413,7 +413,7 @@ public class XMLEasyAntReportWriter {
                 ModuleRevisionId mrid = ModuleRevisionId.parse(importedModuleReport.getModuleMrid());
                 importedModule.append("\t\t\t<import organisation=\"").append(mrid.getOrganisation())
                         .append("\" name=\"").append(mrid.getName()).append("\" revision=\"")
-                        .append(mrid.getRevision()).append("\" type=\"").append(importedModuleReport.getType())
+                        .append(mrid.getRevision()).append("\" type=\"").append(importedModuleReport.getMode())
                         .append("\"");
 
             } catch (IllegalArgumentException e) {
@@ -421,7 +421,7 @@ public class XMLEasyAntReportWriter {
                 importedModule.append("                        <import organisation=\"")
                         .append(importedModuleReport.getModuleMrid()).append("\" name=\"").append("null")
                         .append("\" revision=\"").append("null").append("\" type=\"")
-                        .append(importedModuleReport.getType()).append("\"");
+                        .append(importedModuleReport.getMode()).append("\"");
 
             }
             importedModule.append(" mandatory=\"");

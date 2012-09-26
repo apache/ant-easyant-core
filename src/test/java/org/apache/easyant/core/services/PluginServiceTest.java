@@ -97,7 +97,7 @@ public class PluginServiceTest {
             if (importedModule.getModuleMrid().equals("org.apache.easyant.buildtypes#build-std-java;0.9")) {
                 containsBuildType = true;
             }
-            if (importedModule.getModuleMrid().equals("org.apache.easyant.plugins#run;0.9")) {
+            if (importedModule.getModuleMrid().equals("org.apache.easyant.plugins#run-java;0.9")) {
                 containsPlugin = true;
             }
         }
@@ -133,21 +133,17 @@ public class PluginServiceTest {
                 break;
             }
         }
-
         Assert.assertNotNull(packageEP);
+        Assert.assertEquals("compile,abstract-package:package-finished,hello-world", packageEP.getDepends());
+
         List<TargetReport> targets = packageEP.getTargetReports();
-        Set<String> expectedTargets = new HashSet<String>(Arrays.asList("jar:jar", "test-jar:jar"));
-        Assert.assertEquals("test and main jars included in package phase", expectedTargets.size(), targets.size());
+        Set<String> expectedTargets = new HashSet<String>(Arrays.asList("hello-world"));
+        Assert.assertEquals(expectedTargets.size(), targets.size());
 
         for (TargetReport target : packageEP.getTargetReports()) {
             Assert.assertTrue("expected to find " + target.getName(), expectedTargets.remove(target.getName()));
         }
 
-    }
-
-    @Test
-    public void shouldHaveModuleAntFile() throws Exception {
-        EasyAntReport eaReport = generateReport();
         boolean hasHelloWorldTarget = false;
         for (TargetReport targetReport : eaReport.getAvailableTargets()) {
             if ("hello-world".equals(targetReport.getName())) {

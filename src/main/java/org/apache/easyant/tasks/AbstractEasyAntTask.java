@@ -30,25 +30,28 @@ import org.apache.tools.ant.types.Reference;
 public class AbstractEasyAntTask extends Task {
 
     /**
-     * Get the easyant ivy ant settings.
-     * Usefull if you want to bind a subtask to easyant ivy instance
+     * Get the easyant ivy ant settings. Usefull if you want to bind a subtask to easyant ivy instance
+     * 
      * @return an ivyAntSettings
      */
     protected IvyAntSettings getEasyAntIvyAntSettings() {
         return IvyInstanceHelper.getEasyAntIvyAntSettings(getProject());
     }
-    
+
     /**
      * Get the configured ivy instance
+     * 
      * @return a configured ivy instance
      */
     protected Ivy getEasyAntIvyInstance() {
         return getEasyAntIvyAntSettings().getConfiguredIvyInstance(this);
     }
-    
+
     /**
      * Utilitary method to configure a task with the current one
-     * @param task task to configure
+     * 
+     * @param task
+     *            task to configure
      * @return the configured task
      */
     protected Task initTask(Task task) {
@@ -61,6 +64,7 @@ public class AbstractEasyAntTask extends Task {
 
     /**
      * Get a reference of the project ivy instance
+     * 
      * @return a reference of the project ivy instance
      */
     protected Reference getProjectIvyReference() {

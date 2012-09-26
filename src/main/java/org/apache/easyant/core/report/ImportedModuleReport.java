@@ -67,11 +67,11 @@ public class ImportedModuleReport {
         this.moduleMrid = moduleMrid;
     }
 
-    public String getType() {
+    public String getMode() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setMode(String type) {
         this.type = type;
     }
 

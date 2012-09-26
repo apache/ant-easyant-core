@@ -257,7 +257,7 @@ public class EasyAntReport {
         if (propertyName == null || propertyDescriptor == null) {
             throw new IllegalArgumentException("propertyName and propertyDescriptor cannot be null");
         }
-        this.propertyReports.put(propertyName, propertyDescriptor);
+        addProperty(propertyDescriptor, propertyReports);
     }
 
     /**
@@ -298,27 +298,34 @@ public class EasyAntReport {
                 if (importedModuleReport.getEasyantReport() != null) {
                     Map<String, PropertyDescriptor> subproperties = importedModuleReport.getEasyantReport()
                             .getAvailableProperties();
-                    for (String propName : subproperties.keySet()) {
-                        PropertyDescriptor propertyToInsert = subproperties.get(propName);
-                        if (availableProperties.containsKey(propName)) {
-                            PropertyDescriptor propertyDescriptor = (PropertyDescriptor) availableProperties
-                                    .get(propName);
-
-                            if (propertyDescriptor.getDescription() == null
-                                    && propertyToInsert.getDescription() != null) {
-                                propertyDescriptor.setDescription(propertyToInsert.getDescription());
-                                propertyDescriptor.setRequired(propertyToInsert.isRequired());
-                                propertyDescriptor.setDefaultValue(propertyToInsert.getDefaultValue());
-                                availableProperties.put(propName, propertyDescriptor);
-                            }
-
-                        } else
-                            availableProperties.put(propName, propertyToInsert);
+                    for (PropertyDescriptor propertyDescriptor : subproperties.values()) {
+                        addProperty(propertyDescriptor, availableProperties);
                     }
                 }
             }
         }
         return availableProperties;
+    }
+
+    private void addProperty(PropertyDescriptor propertyDescriptor, Map<String, PropertyDescriptor> availableProperties) {
+        if (availableProperties.containsKey(propertyDescriptor.getName())) {
+            PropertyDescriptor existingProperty = availableProperties.get(propertyDescriptor.getName());
+            if (existingProperty.getDescription() == null) {
+                existingProperty.setDescription(propertyDescriptor.getDescription());
+            }
+            if (existingProperty.getBuildConfigurations() == null) {
+                existingProperty.setBuildConfigurations(propertyDescriptor.getBuildConfigurations());
+            }
+            if (existingProperty.getDefaultValue() == null) {
+                existingProperty.setDefaultValue(propertyDescriptor.getDefaultValue());
+            }
+            if (existingProperty.getValue() == null) {
+                existingProperty.setValue(propertyDescriptor.getValue());
+            }
+            availableProperties.put(propertyDescriptor.getName(), existingProperty);
+        } else {
+            availableProperties.put(propertyDescriptor.getName(), propertyDescriptor);
+        }
     }
 
     /**
@@ -392,7 +399,7 @@ public class EasyAntReport {
         for (int i = 0; i < extensionPoints.size(); i++) {
             ExtensionPointReport extensionPoint = extensionPoints.get(i);
             for (TargetReport target : targets) {
-                if (target.getExtensionPoint() != null && target.getExtensionPoint().equals(extensionPoint.getName())) {
+                if (extensionPoint.getName().equals(target.getExtensionPoint())) {
                     extensionPoint.addTargetReport(target);
                     extensionPoints.set(i, extensionPoint);
                 }

@@ -66,9 +66,9 @@ import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.UnknownElement;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Path;
 
@@ -225,57 +225,59 @@ public class DefaultPluginServiceImpl implements PluginService {
                 if (taskClass == null) {
                     continue;
                 }
-                if (ParameterTask.class.getName().equals(taskClass.getName())) {
-                    handleParameterTask(task, eaReport);
+                if (ParameterTask.class.isAssignableFrom(taskClass)) {
+                    ParameterTask parameterTask = (ParameterTask) maybeConfigureTask(task);
+                    handleParameterTask(parameterTask, eaReport);
                 }
-                if (Property.class.getName().equals(taskClass.getName())) {
-                    handleProperty(task, eaReport);
+                if (Property.class.isAssignableFrom(taskClass)) {
+                    Property propertyTask = (Property) maybeConfigureTask(task);
+                    handleProperty(propertyTask, eaReport);
                 }
-                if (Import.class.getName().equals(taskClass.getName())) {
-                    handleImport(task, eaReport, conf);
+                if (Import.class.isAssignableFrom(taskClass)) {
+                    Import importTask = (Import) maybeConfigureTask(task);
+                    handleImport(importTask, eaReport, conf);
                 }
             }
         }
     }
 
-    private void handleImport(Task task, EasyAntReport eaReport, String conf) throws Exception {
-        Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
-        ImportedModuleReport importedModuleReport = new ImportedModuleReport();
-        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(task.getProject());
-
-        importedModuleReport.setModuleMrid(propertyHelper.replaceProperties(attributes.get("mrid")));
-        importedModuleReport.setModule(propertyHelper.replaceProperties(attributes.get("module")));
-        String org = attributes.get("org") != null ? attributes.get("org") : attributes.get("organisation");
-        importedModuleReport.setOrganisation(propertyHelper.replaceProperties(org));
-
-        String rev = attributes.get("rev") != null ? attributes.get("rev") : attributes.get("revision");
-        importedModuleReport.setRevision(propertyHelper.replaceProperties(rev));
-
-        importedModuleReport.setType(propertyHelper.replaceProperties(attributes.get("type")));
-        importedModuleReport.setAs(propertyHelper.replaceProperties(attributes.get("as")));
-        if (attributes.get("mandatory") != null) {
-            importedModuleReport.setMandatory(Boolean.parseBoolean(propertyHelper.replaceProperties(attributes
-                    .get("mandatory"))));
+    private Object maybeConfigureTask(Task task) {
+        if (task.getRuntimeConfigurableWrapper().getProxy() instanceof UnknownElement) {
+            UnknownElement ue = (UnknownElement) task.getRuntimeConfigurableWrapper().getProxy();
+            ue.maybeConfigure();
+            return ue.getRealThing();
+        } else if (task instanceof UnknownElement) {
+            UnknownElement ue = (UnknownElement) task;
+            ue.maybeConfigure();
+            return ue.getRealThing();
+        } else {
+            return task;
         }
-        importedModuleReport
-                .setEasyantReport(getPluginInfo(ModuleRevisionId.parse(importedModuleReport.getModuleMrid())));
-
-        eaReport.addImportedModuleReport(importedModuleReport);
-        Message.debug("Ant file import another module called : " + importedModuleReport.getModuleMrid() + " with mode "
-                + importedModuleReport.getType());
     }
 
-    /**
-     * @param task
-     * @param eaReport
-     * @throws IOException
-     */
-    private void handleProperty(Task task, EasyAntReport eaReport) throws IOException {
-        Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
-        if (attributes.get("file") != null) {
+    private void handleImport(Import importTask, EasyAntReport eaReport, String conf) throws Exception {
+        ImportedModuleReport importedModuleReport = new ImportedModuleReport();
+
+        importedModuleReport.setModuleMrid(importTask.getMrid());
+        importedModuleReport.setOrganisation(importTask.getOrganisation());
+        importedModuleReport.setModule(importTask.getModule());
+        importedModuleReport.setRevision(importTask.getRevision());
+        importedModuleReport.setMandatory(importTask.isMandatory());
+        importedModuleReport.setMode(importTask.getMode());
+        importedModuleReport.setAs(importTask.getAs());
+        importedModuleReport
+                .setEasyantReport(getPluginInfo(ModuleRevisionId.parse(importedModuleReport.getModuleMrid())));
+        eaReport.addImportedModuleReport(importedModuleReport);
+
+        Message.debug("Ant file import another module called : " + importedModuleReport.getModuleMrid() + " with mode "
+                + importedModuleReport.getMode());
+    }
+
+    private void handleProperty(Property property, EasyAntReport eaReport) throws IOException {
+
+        if (property.getFile() != null) {
             Properties propToLoad = new Properties();
-            File f = new File(PropertyHelper.getPropertyHelper(task.getProject()).replaceProperties(
-                    attributes.get("file")));
+            File f = property.getFile();
             if (f.exists()) {
                 try {
                     propToLoad.load(new FileInputStream(f));
@@ -287,43 +289,32 @@ public class DefaultPluginServiceImpl implements PluginService {
                     }
 
                 } catch (IOException e) {
-                    IOException ioe = new IOException("Unable to parse the property file :" + attributes.get("file"));
+                    IOException ioe = new IOException("Unable to parse the property file :" + property.getFile());
                     ioe.initCause(e);
                     throw ioe;
                 }
             }
         }
+        if (property.getName() != null) {
+            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(property.getName());
+            propertyDescriptor.setValue(property.getValue());
+            eaReport.addPropertyDescriptor(property.getName(), propertyDescriptor);
+        }
     }
 
-    /**
-     * @param task
-     * @param eaReport
-     */
-    private void handleParameterTask(Task task, EasyAntReport eaReport) {
-        Map<String, String> attributes = task.getRuntimeConfigurableWrapper().getAttributeMap();
-        PropertyDescriptor propertyDescriptor = null;
-
-        if (attributes.get("property") != null) {
-            propertyDescriptor = new PropertyDescriptor(attributes.get("property"));
-            propertyDescriptor.setDefaultValue(attributes.get("default"));
-            if (attributes.get("required") == null)
-                propertyDescriptor.setRequired(false);
-            else
-                propertyDescriptor.setRequired(new Boolean(attributes.get("required")));
-            if (attributes.get("description") != null) {
-                propertyDescriptor.setDescription(attributes.get("description"));
-            }
-            if (task.getRuntimeConfigurableWrapper().getText() != null
-                    && task.getRuntimeConfigurableWrapper().getText().length() > 0) {
-                propertyDescriptor.setDescription(task.getRuntimeConfigurableWrapper().getText().toString());
-            }
+    private void handleParameterTask(ParameterTask parameterTask, EasyAntReport eaReport) {
+        if (parameterTask.getProperty() != null) {
+            PropertyDescriptor propertyDescriptor = new PropertyDescriptor(parameterTask.getProperty());
+            propertyDescriptor.setDefaultValue(parameterTask.getDefault());
+            propertyDescriptor.setRequired(parameterTask.isRequired());
+            propertyDescriptor.setDescription(parameterTask.getDescription());
             Message.debug("Ant file has a property called : " + propertyDescriptor.getName());
             eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor);
-        } else if (attributes.get("path") != null) {
+        } else if (parameterTask.getPath() != null) {
             ParameterReport parameterReport = new ParameterReport(ParameterType.PATH);
-            parameterReport.setName(attributes.get("path"));
-            parameterReport.setDefaultValue(attributes.get("default"));
-            parameterReport.setRequired(new Boolean(attributes.get("required")));
+            parameterReport.setName(parameterTask.getPath());
+            parameterReport.setRequired(parameterTask.isRequired());
+            parameterReport.setDescription(parameterTask.getDescription());
             eaReport.addParameterReport(parameterReport);
             Message.debug("Ant file has a path called : " + parameterReport.getName());
         }
@@ -431,6 +422,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         loadModule.setLocation(new Location(ProjectUtils.emulateMainScript(p).getAbsolutePath()));
         loadModule.setProject(p);
         loadModule.execute();
+        ProjectHelper projectHelper = (ProjectHelper) p.getReference(ProjectHelper.PROJECTHELPER_REFERENCE);
+        ProjectUtils.injectTargetIntoExtensionPoint(p, projectHelper);
         analyseProject(p, eaReport, "default");
 
         return eaReport;
@@ -534,7 +527,6 @@ public class DefaultPluginServiceImpl implements PluginService {
 
     private enum PluginType {
         BUILDTYPE, PLUGIN
-
     }
 
 }
