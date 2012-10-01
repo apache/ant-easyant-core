@@ -44,8 +44,8 @@ myplugin
 </code>
 That's all !
 We've a ready to use plugin structure.
-<code type="shell">
 <!--replace me by an image -->
+<code type="shell">
 |-- module.ivy
 `-- src
     |-- main
@@ -53,14 +53,11 @@ We've a ready to use plugin structure.
     |       `-- myplugin.ant
     `-- test
         `-- antunit
-            |-- common
-            |   `-- test-utils.ant
             `-- myplugin-test.xml
-
 </code>
 
-<h2>Ant script</h2>
-The skeleton has generated the plugin main script in src/main/resources/[MYPLUGIN].ant
+<h2>Ant file</h2>
+The skeleton has generated the plugin main file in src/main/resources/[MYPLUGIN].ant
 <code type="xml">
 <project name="org.mycompany;myplugin" 
         xmlns:ivy="antlib:org.apache.ivy.ant" 
@@ -70,13 +67,10 @@ The skeleton has generated the plugin main script in src/main/resources/[MYPLUGI
     <!-- <ea:core-version requiredrevision="[0.7,+]" /> -->
 
     <!-- Sample init target -->
-    <target name=":init" phase="validate">
+    <target name="myplugin:init">
         <!-- you should remove this echo message -->
         <echo level="debug">This is the init target of myplugin</echo>
     </target>
-    
-    <!-- define a generic default target for this plugin -->
-    <target name="doit" depends="validate"/>
 </project>
 </code>
 By convention, projectname of the plugin should be formed like 
@@ -88,37 +82,42 @@ Example:
 org.mycompany#myplugin
 </code>
 
-<h3>Understanding Phases</h3>
-Phases are high-level build activities, like "package" or "documentation".  Plugins typically add low-level tasks to one or more phases. For example, a plugin might add a "build jar" task to the "package" phase, or a "generate javadoc" task to the "documentation" phase.  Less typically, a plugin can also define new phases for other plugins to use.
-In standard build types the project-lifecycle is defined by a plugin named <a href="../ref/plugins/phases-std.html">phases-std</a>.
+<h3>Understanding extension-point</h3>
+Extension-points are plugins hooks.  Plugins typically add low-level tasks to one or more extension-points. For example, a plugin can contribute to processing sources before compilation, you will in that case plug your own target to "abstract-compile:compile-ready" extension-point". This plugin hooks is defined in abstract-compile plugin".
 
-<h3>Pre conditions</h3>
-A build module should always check that a set of pre conditions is met in the validate phase (for static pre conditions) or at execution (for dynamic pre conditions).
-By convention, this target should be named ":init" and associated to the "validate" phase.
-
-Pre conditions, including for example - checking the existence of a file or a directory, could be performed inside this target. Additionally, this target is a great place to do global initializations that are needed for the rest of the build. This could include a taskdef initialization.
-Pre conditions can be performed by using <a href="../ref/anttasks/Parametertask.html">parameter task</a>.
-Example :
+So we need to import this plugin and plug our own target on it.
 <code type="xml">
-<target name=":init" phase="validate">
-    <!-- Our plugin need at least the existance of "validate" phase" -->
-    <ea:parameter phase="validate" />
-        <ea:parameter property="username" required="false" description="the username used to display en 'hello Username' by calling :hello target"/>
+<ea:plugin module="abstract-compile" revision="0.9"/>
+<target name="myplugin:mytarget" extensionOf="abstract-compile:compile-ready">
+...//your stuff here
 </target>
 </code>
 
+Less typically, a plugin can also define new extension-points for other plugins to use. We highly recommend in that case to create an "abstract" plugin defining common stuff and extension-points to limit coupling between plugins and make them more flexible.
+
+In standard build types the project-lifecycle is defined by a plugin named phases-std. This plugin loads the default lifecycle containing a set of high level extensionPoints like compile,package.
+It's build types responsability to import this plugin and and do the binding between targets and extension-points from this lifecycle.
+
 <h3>Target Naming Conventions</h3>
+By default, all targets should be prefix by the plugin name. In our example "init" target is prefixed by "myplugin".
+
 There is a conventional difference in the way public and private targets are named in Easyant. A <i>public target</i> is one that makes sense for the end user to be aware of, while a <i>private target</i> should be hidden from the end user.
 
-Conventionally, a public target should always have an associated 'description' attribute. Further, it's name should always begin with a ':'. 
+Conventionally, 
+<ul>
+  <li>a public target should always have an associated 'description' attribute.</li>
+  <li>a private target should begin with a "-"</li>
+</ul>
+
+Those conventions are not mandatory. They just ease understanding.
 
 Example :
 <code type="xml">
-<target name=":helloworld" depends="validate" description="display an hello world">
+<target name="myglugin:helloworld" depends="myplugin:init" description="display an hello world">
     <echo>hello world !</echo>
 </target>
 
-<target name=":hello" depends="validate" depends="-check-username" description="display an hello to current user">
+<target name="myplugin:hello" depends="myplugin:init,-check-username" description="display an hello to current user">
     <echo mess="Hello ${username}"/>
 </target>
 </code>
@@ -128,30 +127,35 @@ Whereas a private target name should begin with '-'.
 Example :
 <code type="xml">
 <!-- this target initialize username property if it's not already set -->
-<target name="-check-username" unless="username">
+<target name="-myplugin:check-username" unless="username">
     <echo>You can also add a "-Dusername=YOU" on the commandline to display a more personal hello message</echo>
     <property name="username" value="${user.name}"/>
 </target>
 </code>
 
-<h3>The 'doit' Target</h3>
-Each module should have a target called <i>doit</i>. This is an important convention. This target should perform the essential purpose of the module when invoked independently.
-Example: 
+<h3>Pre conditions</h3>
+A build module should always check that a set of pre conditions is met.
+This can be done at the root level of your plugin or in a target. We encourage you to use a target for initialisation as you can control when it should be executed. If intialisation is done at the root level it will be executed when the plugin is loaded.
+
+By convention, the initialisation target should be named ":init".
+
+Pre conditions, including for example - checking the existence of a file or a directory, could be performed inside this target. Additionally, this target is a great place to do global initializations that are needed for the rest of the build. This could include a taskdef initialization.
+Pre conditions can be performed by using <a href="../ref/anttasks/Parametertask.html">parameter task</a>.
+Example :
 <code type="xml">
-<target name="doit" depends=":helloworld"/>
+<target name="myplugin:init">
+    <ea:parameter property="username" required="false" description="the username used to display en 'hello Username' by calling :hello target"/>
+</target>
 </code>
 
-<h3>What a build module should document</h3>
+<h3>What should be documented</h3>
+The following elements needs to be documented
 <ul>
-<li>phases on which it relies</li>
-<li>parameters (properties, resource collections, paths).  For each parameter specify name, description, whether it is required, and optionally a default value.</li>
+<li>public targets / extension points descriptions</li>
+<li>parameters (properties, resource collections, paths).  For each parameter specify name, description, whether it is required, and optionally a default value. This should be done with <a href="../ref/anttasks/Parametertask.html">parameter task</a></li>
 <li>expected environment (files in a directory, a server up and running, ...)</li>
 <li>results produced</li>
 </ul>
-
-A build module should always check that the set of pre conditions is met in the validate phase (for static pre conditions) or at execution (for dynamic pre conditions).
-
-If ever what is considered static pre condition by a module is actually generated by another one, it is still possible to assign the build module validate phase to a phase triggered after the execution of the other build module (using phase mapping with the 'use' task).
 
 <h2>Publishing your plugin</h2>
 You can easily publish your plugin to an easyant repository using the standard phases <i>publish-shared (for snapshot)</i> or <i>release</i>
@@ -175,7 +179,7 @@ Considering that you published your plugin in a easyant repository, you could us
     <info organisation="org.mycompany" module="myproject" 
             status="integration" revision="0.1">
         <ea:build module="build-std-java" revision="0.2">
-            <ea:plugin organisation="org.mycompany" module="myplugin" revision="0.1" as="myplugin"/>
+            <ea:plugin organisation="org.mycompany" module="myplugin" revision="0.1"/>
         </ea:build> 
     </info>
     <publications>
@@ -189,8 +193,8 @@ We should see myplugin's target.
 <code type="shell">
 Main targets:
 ...
- mygplugin:hello                   display an hello to current user
- mygplugin:helloworld              display an hello world
+ myplugin:hello                   display an hello to current user
+ myplugin:helloworld              display an hello world
 ...
 </code>
 
@@ -207,12 +211,12 @@ Open the module.ivy at the root level of plugin structure.
     <info organisation="org.mycompany" module="myplugin" 
             status="integration" revision="0.1">
                 <!-- here we use build-std-ant-plugin build type that provide everything we need for plugin development -->
-        <ea:build module="build-std-ant-plugin" revision="0.1"/>
+        <ea:build module="build-std-ant-plugin" revision="0.9"/>
     </info>
     <configurations>
-        <conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
-        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-        <conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
+        <conf name="default" description="runtime dependencies artifact can be used with this conf"/>
+        <conf name="test" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+        <conf name="provided" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
     </configurations>
     <publications>
                 <!--Defines the plugin main script -->
@@ -272,13 +276,13 @@ First we need to declare the dependency in the plugin module.ivy.
         <ea:build module="build-std-ant-plugin" revision="0.1"/>
     </info>
     <configurations>
-        <conf name="default" visibility="public" description="runtime dependencies artifact can be used with this conf"/>
-        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
-        <conf name="provided" visibility="public" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
+        <conf name="default" description="runtime dependencies artifact can be used with this conf"/>
+        <conf name="test" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+        <conf name="provided" description="this is much like compile, but indicates you expect the JDK or a container to provide it. It is only available on the compilation classpath, and is not transitive."/>
     </configurations>
     <publications>
-                <artifact name="myplugin" type="ant"/>
-        </publications>
+        <artifact name="myplugin" type="ant"/>
+    </publications>
 
     <dependencies>
         <!-- your plugin dependencies goes here -->
@@ -301,8 +305,7 @@ org.mycompany#myplugin.classpath
 </code> 
 Since this classpath is auto-created you can use it to reference your taskdef.
 <code type="xml">
-<target name=":init" phase="validate">
-    <ea:parameter phase="validate"/>
+<target name="myplugin:init">
     ...
     <taskdef resource="amazingAntTask.properties" classpathref="org.mycompany#myplugin.classpath" />
     <taskdef resource="anotherAntTask.properties" classpathref="org.mycompany#myplugin.classpath" />
@@ -329,15 +332,10 @@ A task may depend on:
         <ea:core-version requiredrevision="[0.7,+]" />
 
     <!-- Sample init target -->
-    <target name=":init" phase="validate">
+    <target name=":init">
         <!-- you should  remove this echo message -->
         <echo level="debug">This is the init target of myplugin</echo>
     </target>
-
-    ...
-
-    <!-- define a generic default target for this plugin -->
-    <target name="doit" depends="validate"/>
 </project>
 </code>
 
@@ -346,13 +344,17 @@ By default the skeleton has generated a antunit test file in src/test/antunit/[m
 
 So in our case let's open "src/test/antunit/myplugin-test.xml"
 <code type="xml">
-<project name="org.mycompany;myplugin-test" xmlns:au="antlib:org.apache.ant.antunit">
-    
-    <!-- Mocking required phase --> 
-    <phase name="validate"/>
-        
-    <!-- Import your plugin --> 
-    <import file="../../main/resources/myplugin.ant"/>
+<project name="org.mycompany;myplugin-test" 
+    xmlns:au="antlib:org.apache.ant.antunit"
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:ea="antlib:org.apache.easyant">
+
+    <!-- Import your plugin -->
+    <property name="target" value="target/test-antunit"/>
+    <!-- configure easyant in current project -->
+    <ea:configure-easyant-ivy-instance />
+    <!-- import our local plugin -->
+    <ea:import-test-module moduleIvy="../../../module.ivy" sourceDirectory="../../main/resources"/>
     
     <!-- Defines a setUp / tearDown (before each test) that cleans the environment --> 
     <target name="clean" description="remove stale build artifacts before / after each test">
@@ -366,16 +368,15 @@ So in our case let's open "src/test/antunit/myplugin-test.xml"
     <target name="tearDown" depends="clean"/>
     
     <!-- init test case -->         
-    <target name="testInit">
-        <antcall target=":init"/>
+    <target name="test-myplugin:init" depends="myplugin:init">
         <au:assertLogContains level="debug" text="This is the init target of myplugin"/>
     </target>
     
 </project>   
 </code>
-Considering that our plugin relies on an externally defined phase (validate in our example) we must mock it in our test.
-Then we :
+Here we :
 <ul>
+  <li>configure easyant for test</li>
   <li>import the plugin</li>
   <li>define a generic tearDown, setUp method that cleans the target and lib directories.</li>
   <li>define a test case for the init target that check that the output log contains "This is the init target of myplugin"</li>
@@ -383,10 +384,9 @@ Then we :
 
 All targets prefixed by "test" will be executed as a test case (similar to junit 3 behavior).
 
-Now we will write a test case for our ":helloworld" target.
+Now we will write a test case for our "myplugin:helloworld" target.
 <code type="xml">
-<target name="testHelloWorld">
-    <antcall target=":helloworld"/>
+<target name="test-helloworld" depends="myplugin:helloworld">
     <au:assertLogContains text="hello world !"/>
 </target>
 </code>
