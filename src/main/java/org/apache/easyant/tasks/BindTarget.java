@@ -21,7 +21,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.apache.easyant.core.BuildConfigurationHelper;
-import org.apache.easyant.core.ant.Phase;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Project;
@@ -37,12 +36,10 @@ public class BindTarget extends Task {
 
     public void execute() throws BuildException {
         StringBuilder message = new StringBuilder();
-        message.append("Phase mapping for target ").append(getTarget()).append(
-                " ");
-        if (!BuildConfigurationHelper.isBuildConfigurationActive(
-                getBuildConfigurations(), getProject(), message.toString())) {
-            log(
-                    "no matching build configuration for this phase mapping, this mapping will be ignored",
+        message.append("extension-point mapping for target ").append(getTarget()).append(" ");
+        if (!BuildConfigurationHelper.isBuildConfigurationActive(getBuildConfigurations(), getProject(),
+                message.toString())) {
+            log("no matching build configuration for this extension-point mapping, this mapping will be ignored",
                     Project.MSG_DEBUG);
             return;
         }
@@ -52,8 +49,7 @@ public class BindTarget extends Task {
         }
 
         // unbind current mapping
-        for (Iterator<?> iterator = getProject().getTargets().values().iterator(); iterator
-                .hasNext();) {
+        for (Iterator<?> iterator = getProject().getTargets().values().iterator(); iterator.hasNext();) {
             Target current = (Target) iterator.next();
             if (current instanceof ExtensionPoint) {
                 Enumeration<?> dependencies = current.getDependencies();
@@ -62,8 +58,8 @@ public class BindTarget extends Task {
                 while (dependencies.hasMoreElements()) {
                     String dep = (String) dependencies.nextElement();
                     if (dep.equals(getTarget())) {
-                        log("target" + getTarget() + " is registred in extensionPoint"
-                                + current.getName(), Project.MSG_VERBOSE);
+                        log("target" + getTarget() + " is registred in extensionPoint" + current.getName(),
+                                Project.MSG_VERBOSE);
                         requiresUpdates = true;
                     } else {
                         dependsOn.append(dep);
@@ -71,22 +67,22 @@ public class BindTarget extends Task {
                     }
                 }
                 if (requiresUpdates) {
-                    log("removing target" + getTarget() + " from phase"
-                            + current.getName(), Project.MSG_VERBOSE);
+                    log("removing target" + getTarget() + " from extension-point" + current.getName(),
+                            Project.MSG_VERBOSE);
 
-                    Phase p = new Phase();
-                    p.setDescription(current.getDescription());
-                    p.setIf(current.getIf());
-                    p.setLocation(current.getLocation());
-                    p.setName(current.getName());
-                    p.setProject(current.getProject());
-                    p.setUnless(current.getUnless());
+                    ExtensionPoint ep = new ExtensionPoint();
+                    ep.setDescription(current.getDescription());
+                    ep.setIf(current.getIf());
+                    ep.setLocation(current.getLocation());
+                    ep.setName(current.getName());
+                    ep.setProject(current.getProject());
+                    ep.setUnless(current.getUnless());
                     String depends = dependsOn.toString();
                     if (depends.endsWith(",")) {
                         depends = depends.substring(0, depends.length() - 1);
                     }
-                    p.setDepends(depends);
-                    getProject().addOrReplaceTarget(p);
+                    ep.setDepends(depends);
+                    getProject().addOrReplaceTarget(ep);
                 }
 
             }
@@ -94,15 +90,13 @@ public class BindTarget extends Task {
 
         if (getExtensionOf() != null && !getExtensionOf().equals("")) {
             if (!getProject().getTargets().containsKey(getExtensionOf())) {
-                throw new BuildException("can't add target " + getTarget()
-                        + " to phase " + getExtensionOf() + " because the phase"
-                        + " is unknown.");
+                throw new BuildException("can't add target " + getTarget() + " to extension-point " + getExtensionOf()
+                        + " because the extension-point" + " is unknown.");
             }
             Target p = (Target) getProject().getTargets().get(getExtensionOf());
 
-            if (!(p instanceof Phase)) {
-                throw new BuildException("referenced target " + getExtensionOf()
-                        + " is not a phase");
+            if (!(p instanceof ExtensionPoint)) {
+                throw new BuildException("referenced target " + getExtensionOf() + " is not a extension-point");
             }
             p.addDependency(getTarget());
         }
@@ -113,8 +107,8 @@ public class BindTarget extends Task {
         return extensionOf;
     }
 
-    public void setExtensionOf(String toPhase) {
-        this.extensionOf = toPhase;
+    public void setExtensionOf(String toExtensionPoint) {
+        this.extensionOf = toExtensionPoint;
     }
 
     public String getTarget() {

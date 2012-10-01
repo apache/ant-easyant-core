@@ -103,9 +103,9 @@
 
 <h2>Building</h2>
 
-<p>Building a multi-module project is the same as building a single-module project:  type "easyant [target]", where [target] is a build phase or target that you want to execute.  [target] is then executed on all of your sub-modules, ordered so that dependencies are built before the modules that need them.  Type easyant -p from the project root directory to see a full list of available build targets.  The following phases are typical of any easyant build:
+<p>Building a multi-module project is the same as building a single-module project:  type "easyant [target]", where [target] is a highlevel target or target that you want to execute.  [target] is then executed on all of your sub-modules, ordered so that dependencies are built before the modules that need them.  Type easyant -p from the project root directory to see a full list of available build targets.  The following highlevel targets (also named phases) are typical of any easyant build:
 <ul>
-  <li><code>&gt; easyant clean</code> execute the <a href="plugins/phases-std.html">clean phase</a> of the build on each submodule.  This deletes any artifacts produced by prior builds.</li>
+  <li><code>&gt; easyant clean</code> execute the clean phase of the build on each submodule.  This deletes any artifacts produced by prior builds.</li>
   <li><code>&gt; easyant verify</code> compile and test all modules</li>
   <li><code>&gt; easyant package</code> package all modules for distribution</li>
   <li><code>&gt; easyant publish-local</code> publish all project modules to your workstation Ivy repository.</li>

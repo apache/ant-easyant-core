@@ -115,7 +115,7 @@ public class LoadModule extends AbstractEasyAntTask {
                 System.out.println("What? buildModule: " + buildModule + " is a dir!");
                 throw new BuildException("Build failed");
             }
-            // load override buildFile before buildModule to allow target/phase
+            // load override buildFile before buildModule to allow target/extension-point
             // override
             File f = new File(buildModule.getParent(), EasyAntConstants.DEFAULT_OVERRIDE_BUILD_FILE);
             if (f.exists()) {
@@ -127,7 +127,6 @@ public class LoadModule extends AbstractEasyAntTask {
             loadBuildModule(buildModule);
         }
 
-        // load buildFile before buildModule to allow target/phase override
         if (buildFile != null && buildFile.exists()) {
             // make sure it's not a directory (this falls into the ultra
             // paranoid lets check everything category
@@ -307,7 +306,7 @@ public class LoadModule extends AbstractEasyAntTask {
                     initTask(importTask).execute();
                 }
             }
-            // Apply PhaseMapping
+            // Apply ExtensionPointMapping
             for (ExtensionPointMappingDescriptor epMapping : md.getExtensionPointsMappings()) {
                 BindTarget bindTarget = new BindTarget();
                 bindTarget.setTarget(epMapping.getTarget());

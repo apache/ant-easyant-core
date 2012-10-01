@@ -22,32 +22,33 @@ import java.util.List;
 import org.apache.easyant.core.report.ExtensionPointReport;
 
 /**
- * ManCommand implementation to list all extension points associated with specified 
- * build module.
+ * ManCommand implementation to list all extension points associated with specified build module.
  * 
  * Supports the -listExtensionPoints switch.
  */
-public class ListExtensionPoints extends EasyantOption{
-    
+public class ListExtensionPoints extends EasyantOption {
+
     private static final long serialVersionUID = 1L;
-    
-    
-    public ListExtensionPoints()
-            throws IllegalArgumentException {
-        super("listExtensionPoints", false, "List all phases available");
+
+    public ListExtensionPoints() throws IllegalArgumentException {
+        super("listExtensionPoints", false, "List all extension-points available");
         setStopBuild(true);
     }
 
     public void execute() {
-        getProject().log(LINE_SEP+ "--- Available ExtensionPoints for current project: " + getProject().getName() + " ---" + LINE_SEP);
-        
+        getProject().log(
+                LINE_SEP + "--- Available ExtensionPoints for current project: " + getProject().getName() + " ---"
+                        + LINE_SEP);
+
         List<ExtensionPointReport> extensionPoints = getEareport().getAvailableExtensionPoints();
-        for(int i = 0; i<extensionPoints.size(); i++) {
+        for (int i = 0; i < extensionPoints.size(); i++) {
             getProject().log("\t" + extensionPoints.get(i).getName());
         }
-        
-        getProject().log(LINE_SEP+ LINE_SEP+ "For more information on an ExtensionPoint, run:" + LINE_SEP + "\t easyant -describe <EXTENSION POINT>");
-        getProject().log(LINE_SEP+ "--- End Of (ExtensionPoints Listing) ---");
+
+        getProject().log(
+                LINE_SEP + LINE_SEP + "For more information on an ExtensionPoint, run:" + LINE_SEP
+                        + "\t easyant -describe <EXTENSION POINT>");
+        getProject().log(LINE_SEP + "--- End Of (ExtensionPoints Listing) ---");
     }
 
 }

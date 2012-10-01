@@ -22,21 +22,21 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * This task is responsible of checking existance of a resolver in a given ivy instance
- *
+ * 
  */
 public class CheckResolver extends IvyTask {
-    
+
     private String resolver;
-    
+
     private String description;
 
     @Override
     public void doExecute() throws BuildException {
-        if (resolver ==null || resolver.equals("")) {
+        if (resolver == null || resolver.equals("")) {
             throw new BuildException("resolver attribute is mandatory");
         }
         String resolverProperty = getProject().getProperty(resolver);
-        if (resolverProperty==null) {
+        if (resolverProperty == null) {
             throw new BuildException("Can't check resolvers :Unknown property " + resolver);
         }
         if (!getSettings().getResolverNames().contains(resolverProperty)) {
@@ -54,12 +54,13 @@ public class CheckResolver extends IvyTask {
             sb.append(getSettings().getResolverNames().toString());
             throw new BuildException(sb.toString());
         }
-        
+
     }
 
     /**
      * Get property resolver name to check
-     * @return the property name representing the resolver 
+     * 
+     * @return the property name representing the resolver
      */
     public String getResolver() {
         return resolver;
@@ -67,14 +68,17 @@ public class CheckResolver extends IvyTask {
 
     /**
      * Set the property resolver name to check
-     * @param resolver a property name representing the resolver 
+     * 
+     * @param resolver
+     *            a property name representing the resolver
      */
     public void setResolver(String resolver) {
         this.resolver = resolver;
     }
-    
+
     /**
-     * Get a description to the property / path / phase
+     * Get a description to the property / path / extension-point
+     * 
      * @return the description
      */
     public String getDescription() {
@@ -82,15 +86,18 @@ public class CheckResolver extends IvyTask {
     }
 
     /**
-     * set a description to the property / path / phase
-     * @param description the description
+     * set a description to the property / path / extension-point
+     * 
+     * @param description
+     *            the description
      */
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     /**
      * Appends CDATA text inside the Ant task to description
+     * 
      * @see #setDescription(String)
      */
     public void addText(String descriptionText) {
@@ -99,12 +106,9 @@ public class CheckResolver extends IvyTask {
             if (getDescription() == null) {
                 setDescription(descriptionText);
             } else {
-                setDescription(getDescription()+descriptionText);
+                setDescription(getDescription() + descriptionText);
             }
         }
     }
 
-
-    
-    
 }

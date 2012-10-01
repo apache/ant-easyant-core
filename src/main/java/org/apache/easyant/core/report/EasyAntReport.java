@@ -360,7 +360,7 @@ public class EasyAntReport {
     }
 
     /**
-     * Return a list of target that are not bound to any phases
+     * Return a list of target that are not bound to any extension-points
      */
     public List<TargetReport> getUnboundTargets() {
         List<TargetReport> targets = new ArrayList<TargetReport>();
@@ -394,7 +394,7 @@ public class EasyAntReport {
     public List<ExtensionPointReport> getAvailableExtensionPoints() {
         List<ExtensionPointReport> extensionPoints = getAvailableExtensionPointsWithoutTarget();
 
-        // associate target to the phase
+        // associate target to extension-points
         List<TargetReport> targets = getAvailableTargets();
         for (int i = 0; i < extensionPoints.size(); i++) {
             ExtensionPointReport extensionPoint = extensionPoints.get(i);

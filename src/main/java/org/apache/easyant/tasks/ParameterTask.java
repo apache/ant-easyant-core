@@ -18,10 +18,8 @@
 package org.apache.easyant.tasks;
 
 import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.easyant.core.ant.Phase;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Path;
@@ -29,24 +27,22 @@ import org.apache.tools.ant.types.Path;
 /**
  * parameter tasks is used to :
  * 
- * document properties / paths / phases check if properties /paths / phases are required set default values if
- * properties are not set
+ * document properties / paths check if properties /paths are required set default values if properties are not set
  * 
- * This could be usefull in precondition of each modules, to check if property/phase/path are set. And much more usefull
- * to document our modules.
+ * This could be usefull in precondition of each modules, to check if property/path are set. And much more usefull to
+ * document our modules.
  * 
  */
 public class ParameterTask extends Task {
     private String property;
     private String path;
-    private String phase;
 
     private String description;
     private String defaultValue;
     private boolean required;
 
     /**
-     * Get a description to the property / path / phase
+     * Get a description to the property / path
      * 
      * @return the description
      */
@@ -55,7 +51,7 @@ public class ParameterTask extends Task {
     }
 
     /**
-     * set a description to the property / path / phase
+     * set a description to the property / path
      * 
      * @param description
      *            the description
@@ -118,25 +114,6 @@ public class ParameterTask extends Task {
     }
 
     /**
-     * Get a phase to check
-     * 
-     * @return a phase name
-     */
-    public String getPhase() {
-        return phase;
-    }
-
-    /**
-     * Set the path to check
-     * 
-     * @param phase
-     *            a phase name
-     */
-    public void setPhase(String phase) {
-        this.phase = phase;
-    }
-
-    /**
      * Get the default value (only available for property)
      * 
      * @return a string that represents the default value
@@ -191,13 +168,6 @@ public class ParameterTask extends Task {
                 propTask.setValue(defaultValue);
                 propTask.execute();
             }
-        } else if (phase != null) {
-            Target p = (Target) getProject().getTargets().get(phase);
-            if (p == null) {
-                throw new BuildException("expected phase '" + phase + "': " + description);
-            } else if (!(p instanceof Phase)) {
-                throw new BuildException("target '" + phase + "' must be a phase rather than a target");
-            }
         } else if (path != null) {
             Object p = getProject().getReference(path);
             if (isRequired() && p == null) {
@@ -206,7 +176,7 @@ public class ParameterTask extends Task {
                 throw new BuildException("reference '" + path + "' must be a path");
             }
         } else {
-            throw new BuildException("at least one of these attributes is required: property, path, phase");
+            throw new BuildException("at least one of these attributes is required: property, path");
         }
     }
 }

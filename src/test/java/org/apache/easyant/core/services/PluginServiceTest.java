@@ -125,7 +125,7 @@ public class PluginServiceTest {
         Assert.assertEquals("org.apache.easyant.example.Example", property.getValue());
 
         // check that package ExtensionPoint exists and that jar:jar target is bound to
-        // this phase
+        // this extension-point
         ExtensionPointReport packageEP = null;
         for (ExtensionPointReport extensionPoint : eaReport.getAvailableExtensionPoints()) {
             if ("package".equals(extensionPoint.getName())) {

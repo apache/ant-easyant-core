@@ -735,7 +735,7 @@
                 <xsl:value-of select="@description" />
             </td>
             <td>
-                <xsl:value-of select="@phase" />
+                <xsl:value-of select="@extensionOf" />
             </td>
             <td>
                 <xsl:value-of select="@depends" />
