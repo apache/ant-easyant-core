@@ -44,19 +44,20 @@ Should print :
 <code type="shell">
 --- Available Targets for current project: standard-java-app ---
 
-No Phase / Plugin specified. Listing all targets available in the project.
-    Target: doit        Phase: NONE
-        Description: NONE
-        Depends: verify
-        IF: NONE
-        UNLESS: NONE
+No ExtensionPoint / Plugin specified. Listing all targets available in the project.	
+    Target: abstract-test:compute-test-sets
+	Extension-Point: NONE
+	Description: compute the set of test cases to run
+	Depends: abstract-test:test-ready
+	IF: NONE
+	UNLESS: NONE
 ...
-    Target: run:doit
-        Extension-point: NONE
-        Description: NONE
-        Depends: :init, :run
-        IF: NONE
-        UNLESS: NONE
+    Target: test-junit:run-integration
+	Extension-Point: abstract-test:integration-test-run
+	Description: run junit integration tests
+	Depends: -test-junit:integration-test
+	IF: test.mode.run
+	UNLESS: skip.test.integration
 
 --- End Of (Targets Listing) ---
 
@@ -71,92 +72,71 @@ Should print :
 <code type="shell">
 Project Manual
 --------------
-
 --- Available Targets for current project: standard-java-app ---
-Targets for Phase: package
-    Target: package-jar:jar
-        Extension-point: package
-        Description: NONE
-        Depends: validate, compile,prepare-package
-        IF: NONE
-        UNLESS: skip.jar.package
+Targets for ExtensionPoint: package
+	No targets found.
 
 Targets for Module: package
-    Target: package-jar:init
-        Extension-point: NONE
-        Description: NONE
-        Depends: NONE
-        IF: NONE
-        UNLESS: NONE
-    Target: :run
-        Phase: NONE
-        Description: run the application
-        Depends: validate, compile, process-resources
-        IF: NONE
-        UNLESS: NONE
-    Target: :doit
-        Phase: NONE
-        Description: NONE
-        Depends: :init, :run
-        IF: NONE
-        UNLESS: NONE
+	Target: run-java:init
+		Extension-Point: NONE
+		Description: NONE
+		Depends: 
+		IF: NONE
+		UNLESS: NONE
+	Target: abstract-package:compute-metainf
+		Extension-Point: NONE
+		Description: NONE
+		Depends: abstract-package:package-ready
+		IF: NONE
+		UNLESS: NONE
+	Target: abstract-package:register-main-artifact
+		Extension-Point: abstract-package:package-finished
+		Description: NONE
+		Depends: 
+		IF: NONE
+		UNLESS: ${skip.register.main.artifact}
+	Target: run-java:run
+		Extension-Point: NONE
+		Description: run the application
+		Depends: run-java:init,abstract-package:package-ready
+		IF: NONE
+		UNLESS: NONE
+	Target: abstract-package:init
+		Extension-Point: NONE
+		Description: NONE
+		Depends: 
+		IF: NONE
+		UNLESS: NONE
 
 
-For more information on a Phase, run:
-     easyant -describe <PHASE>
+For more information on an ExtensionPoint, run:
+	 easyant -describe <EXTENSION POINT>
 
---- End Of (Phases Listing) ---
+--- End Of (Targets Listing) ---
 </code>
 
 
-<h2>listPhases</h2>
-Lists all phases available:
+<h2>listExtensionPoints</h2>
+Lists all extensio-points available:
 <code type="shell">
-> easyant -listPhases
+> easyant -listExtensionPoints
 </code>
 Should print :
 <code type="shell">
 Project Manual
 --------------
 
---- Available Phases for current project: standard-java-app ---
-    clean
-    validate
-    provision
-    generate-sources
-    process-sources
-    generate-resources
-    process-resources
-    compile
-    process-classes
-    test-provision
-    test-generate-sources
-    test-process-sources
-    test-generate-resources
-    test-process-resources
-    test-compile
-    test
-    prepare-package
-    package
-    pre-integration-test
-    integration-test
-    post-integration-test
-    verify
-    generate-local-version
-    generate-shared-version
-    generate-release-version
-    publish-local
-    publish-shared
-    release
-    report
-    process-documentation-resources
-    documentation
+--- Available ExtensionPoints for current project: standard-java-app ---
+	test
+	verify
+	package
+...
+	report
 
+For more information on an ExtensionPoint, run:
+	 easyant -describe <EXTENSION POINT>
 
-For more information on a Phase, run:
-     easyant -describe <PHASE>
-
---- End Of (Phases Listing) ---
+--- End Of (ExtensionPoints Listing) ---
 </code>
 
 
@@ -203,11 +183,8 @@ For more information on a Property, run:
 --- End Of (Properties Listing) ---
 </code>
 
-
-
-
 <h2>describe [arg]</h2>
-Describes a phase / target / property specified by argument:
+Describes an extension-point / target / property specified by argument:
 <h3>Example with a property</h3>
 <code type="shell">
 > easyant -describe run.main.classname
@@ -218,7 +195,7 @@ Project Manual
 --------------
 
 --- Available references for: run.main.classname in current project: standard-java-app ---
-    No Phase found for name: run.main.classname
+    No Extension-Point found for name: run.main.classname
     No Target found for name: run.main.classname
     Property: run.main.classname
         Description: name of the main class to run
@@ -239,7 +216,7 @@ Project Manual
 --------------
 
 --- Available references for: package in current project: standard-java-app ---
-    Phase: package
+    Extension-Point: package
         Description: take the compiled code and package it in its distributable format, such as a JAR.
         Depends: prepare-package
 
@@ -254,22 +231,22 @@ Project Manual
 
 <h3>Example with a target</h3>
 <code type="shell">
-> easyant -describe run:run
+> easyant -describe run-java:run
 </code>
 Should print :
 <code type="shell">
 Project Manual
 --------------
 
---- Available references for: run:run in current project: standard-java-app ---
-    No Phase found for name: run:run
-    Target: run:run
+--- Available references for: run-java:run in current project: standard-java-app ---
+    No Phase found for name: run-java:run
+    Target: run-java:run
         Phase: NONE
         Description: NONE
         Depends: validate, compile, process-resources
         IF: NONE
         UNLESS: NONE
-    No Property found for name: run:run
+    No Property found for name: run-java:run
 
 --- End Of (Describe) ---
 
