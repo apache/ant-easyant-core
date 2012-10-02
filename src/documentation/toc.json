@@ -264,6 +264,13 @@
                       ]
                   },
                   {
+                    "id":"ref/OfflineMode",
+                    "title":"Offline mode",
+                    "children": [
+
+                      ]
+                  },
+                  {
                     "id":"ref/buildtypes/buildtypes",
                     "title":"Build Types",
                     "children": [

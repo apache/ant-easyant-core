@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>Offline mode</h1>
+
+EasyAnt cames with offline mode support. This feature is designed to bring all resources of your build offline. It includes :
+<ul>
+  <li>project dependencies (including transitive ones)</li>
+  <li>buildtype used by the project</li>
+  <li>plugins used by the project</li>
+</ul>
+
+Before going offline you'll need to tell easyant to fetch everything by invoking  "offline:go-offline" target. All your resources will be fetched in ".offline" directory. You'll need to invoke it again if you add new plugins / dependencies. 
+
+Once your resources are ready to be used offline you can tell easyant you're offline by using --offline switch (or -o in shorter form).
+
+<code type="shell">
+> easyant --offline
+</code>
+Or
+<code type="shell">
+> easyant -o
+</code>
+
+This can also be done by setting "easyant.offline" property to true either on the command line or in your module.ivy.
+
+Example using property on the command line :
+<code type="shell">
+> easyant -Deasyant.offline=true
+</code>
+
+Example using property in your module.ivy file :
+<code type="xml">
+<ea:property name="easyant.offline" value="true"/>
+</code></textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>
