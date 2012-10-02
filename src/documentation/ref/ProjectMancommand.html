@@ -24,15 +24,15 @@
 <body>
     <textarea id="xooki-source">
 <h1>ProjectMan commands</h1>
-EasyAnt 0.7 cames with a few new switches usable from the command line that allow you to obtain several informations on a given project.
+EasyAnt cames with a few new switches usable from the command line that allow you to obtain several informations on a given project.
 
 <ul>
   <li>listTargets : Lists all targets available</li>
-  <li>listTargets [arg] : Lists all targets associated with the specified phase / plugin as argument</li>
-  <li>listPhases : Lists all phases available</li>
+  <li>listTargets [arg] : Lists all targets associated with the specified extension-point / plugin as argument</li>
+  <li>listExtensionPoints : Lists all extension-points available</li>
   <li>listPugins : Lists all plugins imported in the current project</li>
   <li>listProps [plugin] : Lists all properties available in the specified plugin</li>
-  <li>describe [arg] : Describes a phase / target / property specified by argument</li>
+  <li>describe [arg] : Describes an extension-point / target / property specified by argument</li>
 </ul>
 
 <h2>listTargets</h2>
@@ -52,18 +52,18 @@ No Phase / Plugin specified. Listing all targets available in the project.
         UNLESS: NONE
 ...
     Target: run:doit
-        Phase: NONE
+        Extension-point: NONE
         Description: NONE
         Depends: :init, :run
         IF: NONE
         UNLESS: NONE
 
---- End Of (Phases Listing) ---
+--- End Of (Targets Listing) ---
 
 </code>
 
 <h2>listTargets [arg]</h2>
-Lists all targets associated with the specified phase / plugin as argument :
+Lists all targets associated with the specified extension-point / plugin as argument :
 <code type="shell">
 > easyant -listTargets package
 </code>
@@ -74,16 +74,16 @@ Project Manual
 
 --- Available Targets for current project: standard-java-app ---
 Targets for Phase: package
-    Target: jar:jar
-        Phase: package
+    Target: package-jar:jar
+        Extension-point: package
         Description: NONE
         Depends: validate, compile,prepare-package
         IF: NONE
         UNLESS: skip.jar.package
 
 Targets for Module: package
-    Target: :init
-        Phase: validate
+    Target: package-jar:init
+        Extension-point: NONE
         Description: NONE
         Depends: NONE
         IF: NONE

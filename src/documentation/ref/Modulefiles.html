@@ -190,36 +190,41 @@ Running a easyant -p should display our new target helloWorld. This target shoul
 Considering that all the phases provided <b>build-std-java</b> are loaded before the module.ant, you can attach your custom target to any phase.
 This complete the basic needs.
 
-<h2>Going further : overriding target / phases</h2>
-Let's consider the use case were you want to adapt a specific target or phase to your need.
+<h2>Going further : overriding target / extension-point</h2>
+Let's consider the use case were you want to adapt a specific target or extension-point to your need.
 We need to keep in mind that ant-based system works with a useFirst mechanism.
 Which means :
 <ul>
   <li>properties are set only first time we use it</li>
-  <li>target / phase are set first time we use it</li>
+  <li>target / extension-point are set first time we use it</li>
 </ul>
 
 But the choregraphy is to load :
-  * the module.ivy
-  * the module.ant
+<ul>
+  <li>the module.ivy</li>
+  <li>the module.ant</li>
+</ul>
 
-This means that you're not able to override target/phases in the module.ant.
+This means that you're not able to override target/extension-point in the module.ant.
+
 Fortunately EasyAnt provides a way to do it.
 The real choregraphy is to load :
-  * the override.module.ant
-  * the module.ivy
-  * the module.ant
+<ul>
+  <li>the override.module.ant</li>
+  <li>the module.ivy</li>
+  <li>the module.ant</li>
+</ul>
 
-The <b>override.module.ant</b> is a true ant script loaded before the module.ivy. It's the right place if you want to override target/phases provided by things defined later in module.ivy.
+The <b>override.module.ant</b> is a true ant script loaded before the module.ivy. It's the right place if you want to override target/extension-point provided by things defined later in module.ivy.
 
 For example suppose we want to introduce a new phase named my-phase run before the default package phase. 
 <code type="xml">
 <project name="org.apache.easyant.buildtypes#standard-java-app"
     xmlns:ea="antlib:org.apache.easyant">
         <!-- Define a new phase -->
-        <phase name="my-phase" description="foobar"/>
+        <extension-point name="my-phase" description="foobar"/>
         <!-- Override the package phase that depends on my-phase and the default package phase -->
-        <phase name="package" depends="my-phase, org.apache.easyant.plugins#phases-std.package" description="package the application"/>
+        <extension-point name="package" depends="my-phase, org.apache.easyant.plugins#phases-std.package" description="package the application"/>
 </project>
 </code>
 </textarea>

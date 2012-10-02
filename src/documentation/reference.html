@@ -42,20 +42,20 @@ Finally easyant tries to import an optional file called module.ant in the user d
 <h2>EasyAnt instructions in module.ivy</h2>
 EasyAnt intructions in module.ivy files looks like this
 <code type="xml">
-<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.9">
         <ea:property name="run.main.classname" value="org.apache.easyant.example.Example"/>
         <ea:property name="target.artifacts" value="dist"/>
-        <ea:plugin module="emma" revision="0.1"/>
+        <ea:plugin module="run-java" revision="0.9"/>
 </ea:build>
 </code>
 
 The idea is to have a very limited options to customize the build in the Ivy file: settings properties, specify build modules (buildtype / plugins). If you need more, you can use a module.ant file.
 
 Let's try to understand how to use it.
-'ea:build' tag is the main instruction. Type argument in easyant tag references a build type, which tells which build module should be imported (considered as an <a href="ref/anttasks/Importtask.html">import</a>), see below.
+'ea:build' tag is the main instruction, arguments references a build type, which tells which build module should be imported (considered as an <a href="ref/anttasks/Importtask.html">import</a>), see below.
 Example:
 <code type="xml">
-<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.2">
+<ea:build organisation="org.apache.easyant.buildtypes" module="build-std-java" revision="0.9">
 </code>
 You can also have property definition, as you would have in an Ant script
 Example:
@@ -66,27 +66,11 @@ Usually build-type does the basic stuff. But sometimes we need something more (S
 You can load several plugins using the plugin tag.
 Example:
 <code type="xml">
-<ea:plugin module="emma" revision="0.1"/>
+<ea:plugin module="run-java" revision="0.9"/>
 </code>
 
-In this example emma module is loaded as a plugin(considered as an <a href="ref/anttasks/Importtask.html">include</a>). 
-As easyant proceeds with execution, all targets are imported in current project prefixed by the project name.
-This means all targets included in emma module will be prefixed by org.apache.easyant.plugins#emma.
-Example :
-<code type="xml">
-org.apache.easyant.plugins#emma:emma generate emma covera report
-</code>
-
-As the name is not really "user-friendly" you can use an alias for the prefix using "as" attribute.
-Example:
-<code type="xml">
-<ea:plugin module="emma" revision="0.1" as="emma"/>
-</code>
-Doing this, all targets included in emma module will be prefixed by "emma"
-Example :
-<code type="xml">
-emma:emma generate emma coverage report
-</code>
+In this example run-java module is loaded as a plugin(considered as an <a href="ref/anttasks/Importtask.html">include</a>). 
+As easyant proceeds with execution, all targets are imported in current project.
 
 <h2>build modules:</h2>
 There are two types of build modules:
@@ -104,7 +88,7 @@ Each build plugin define the expected "parameters" (i.e. the expected properties
 <ea:parameter property="src.main.java" required="true" description="directory where sources to be compiled are" />
 </code>
 
-This is intended to be used both for validation and documentation, ATM only basic validation is performed.
+This is intended to be used both for validation and documentation.
 
 <h3>build types:</h3>
 A build type is a set of module preconfigured for a particular type of project (simple java jar, war, ...). EasyAnt comes with a set of build types modules relying on a standard lifecycle, but users could extend/replace it as they want. In most cases users will simply define the build type to use (either standard or a custom one ) and add specific plugins.</textarea>

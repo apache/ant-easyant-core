@@ -25,7 +25,7 @@
     <textarea id="xooki-source">
 <h1>Default lifecycle</h1>
 
-EasyAnt cames with a default lifecycle. This default lifecycle is a set of predefined <a href="ExtensionPoint.html">extension points</a> for the common needs. 
+EasyAnt cames with a default lifecycle. This default lifecycle is a set of predefined <a href="ExtensionPoint.html">extension points</a> for the common needs.   
 
 Each phase is considered as an essential step of the build process.
 <div id="note">
@@ -34,7 +34,19 @@ Note : Even if EasyAnt provides you a default lifecycle we never lock you in. So
 
 Here is a graphical representation of the default lifecycle.
 
-<img src="../images/defaultLifecycle.jpg"/></textarea>
+<img src="../images/defaultLifecycle.jpg"/>
+
+<p>
+Standard <a href="buildtypes/buildtypes.html">build types</a> import the default lifecycle. It's buildtype responsability to wire plugins on the default lifecycle.
+
+Users can bind or rebind targets on it. This can be achieved with <a href="anttasks/BindTarget.html">bindtarget ant task</a>.
+</p>
+
+<p>
+Plugins can provides additionnal <a href="ExtensionPoint.html">extension points</a>. Plugins typically add low-level tasks to one or more extension-points. For example, a plugin can contribute to processing sources before compilation, you will in that case plug your own target to "abstract-compile:compile-ready" extension-point". This contributes to have a dynamic lifecycle. 
+
+Default lifecycle is here to bring conventions through high level targets. It ease to memorize common steps. 
+</p></textarea>
 <script type="text/javascript">xooki.postProcess();</script>
 </body>
 </html>
