@@ -127,7 +127,7 @@ public class PluginServiceTest {
         // check that package ExtensionPoint exists and that jar:jar target is bound to
         // this extension-point
         ExtensionPointReport packageEP = null;
-        for (ExtensionPointReport extensionPoint : eaReport.getAvailableExtensionPoints()) {
+        for (ExtensionPointReport extensionPoint : eaReport.getExtensionPointReports()) {
             if ("package".equals(extensionPoint.getName())) {
                 packageEP = extensionPoint;
                 break;
@@ -144,15 +144,9 @@ public class PluginServiceTest {
             Assert.assertTrue("expected to find " + target.getName(), expectedTargets.remove(target.getName()));
         }
 
-        boolean hasHelloWorldTarget = false;
-        for (TargetReport targetReport : eaReport.getAvailableTargets()) {
-            if ("hello-world".equals(targetReport.getName())) {
-                Assert.assertTrue("package".equals(targetReport.getExtensionPoint()));
-                hasHelloWorldTarget = true;
-                break;
-            }
-        }
-        Assert.assertTrue(hasHelloWorldTarget);
+        TargetReport helloWorld = eaReport.getTargetReport("hello-world");
+        Assert.assertNotNull(helloWorld);
+        Assert.assertTrue("package".equals(helloWorld.getExtensionPoint()));
     }
 
     @Test

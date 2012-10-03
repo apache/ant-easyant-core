@@ -74,19 +74,6 @@ public class EasyAntReport {
         return null;
     }
 
-    public TargetReport getTargetReport(String name, boolean includeImports) {
-        TargetReport retVal = getTargetReport(name);
-        if (retVal == null && includeImports) {
-            List<TargetReport> targets = getAvailableTargets();
-            for (TargetReport target : targets) {
-                if (target.getName().equals(name)) {
-                    retVal = target;
-                }
-            }
-        }
-        return retVal;
-    }
-
     /**
      * Add a given targetReport to the list of know target
      * 
@@ -96,6 +83,13 @@ public class EasyAntReport {
     public void addTargetReport(TargetReport targetReport) {
         if (targetReport == null) {
             throw new IllegalArgumentException("targetReport cannot be null");
+        }
+        if (targetReport.getExtensionPoint() != null) {
+            for (ExtensionPointReport extensionPoint : extensionPointReports) {
+                if (extensionPoint.getName().equals(targetReport.getExtensionPoint())) {
+                    extensionPoint.addTargetReport(targetReport);
+                }
+            }
         }
         targetReports.add(targetReport);
     }
@@ -117,29 +111,6 @@ public class EasyAntReport {
             }
         }
         return null;
-    }
-
-    /**
-     * Get an extension point by its name Return null if no extensionPointReport where found with this name. The
-     * includeImports parameters can be additionally used to extend the search to include imports by the current module.
-     * 
-     * @param name
-     *            represent the extensionPoint name
-     * @param includeImports
-     *            should the method search included modules
-     * @return an extension point report
-     */
-    public ExtensionPointReport getExtensionPointReport(String name, boolean includeImports) {
-        ExtensionPointReport retVal = getExtensionPointReport(name);
-        if (includeImports && retVal == null) {
-            List<ExtensionPointReport> extensionPoints = getAvailableExtensionPoints();
-            for (ExtensionPointReport extensionPoint : extensionPoints) {
-                if (extensionPoint.getName().equals(name)) {
-                    retVal = extensionPoint;
-                }
-            }
-        }
-        return retVal;
     }
 
     /**
@@ -329,84 +300,16 @@ public class EasyAntReport {
     }
 
     /**
-     * This utilitary function allow us to retrieve a list of all targetReport available in this module and in all
-     * imported subModules
-     * 
-     * @return a list of all TargetReport available in the module or in its submodules
-     */
-    public List<TargetReport> getAvailableTargets() {
-        List<TargetReport> targets = new ArrayList<TargetReport>();
-        targets.addAll(targetReports);
-        for (ImportedModuleReport importedModuleReport : importedModuleReports) {
-            if (importedModuleReport.getEasyantReport() != null)
-                for (TargetReport targetReport : importedModuleReport.getEasyantReport().getAvailableTargets()) {
-                    TargetReport target = new TargetReport();
-                    if (importedModuleReport.getAs() == null)
-                        targets.add(targetReport);
-                    else {
-                        target.setName(importedModuleReport.getAs() + targetReport.getName());
-                        target.setDepends(targetReport.getDepends());
-                        target.setIfCase(targetReport.getIfCase());
-                        target.setUnlessCase(targetReport.getUnlessCase());
-                        target.setExtensionPoint(targetReport.getExtensionPoint());
-                        targets.add(target);
-                    }
-                }
-
-        }
-
-        return targets;
-
-    }
-
-    /**
      * Return a list of target that are not bound to any extension-points
      */
     public List<TargetReport> getUnboundTargets() {
         List<TargetReport> targets = new ArrayList<TargetReport>();
-        for (TargetReport targetReport : getAvailableTargets()) {
+        for (TargetReport targetReport : targetReports) {
             if (targetReport.getExtensionPoint() == null) {
                 targets.add(targetReport);
             }
         }
         return targets;
-    }
-
-    private List<ExtensionPointReport> getAvailableExtensionPointsWithoutTarget() {
-        List<ExtensionPointReport> extensionPoints = new ArrayList<ExtensionPointReport>();
-
-        extensionPoints.addAll(extensionPointReports);
-        for (ImportedModuleReport importedModuleReport : importedModuleReports) {
-            if (importedModuleReport.getEasyantReport() != null) {
-                extensionPoints.addAll(importedModuleReport.getEasyantReport()
-                        .getAvailableExtensionPointsWithoutTarget());
-            }
-        }
-        return extensionPoints;
-    }
-
-    /**
-     * This utilitary function allow us to retrieve a list of all ExtensionPointReport available in this module and in
-     * all imported subModules
-     * 
-     * @return a list of all ExtensionPointReport available in the module or in its submodules
-     */
-    public List<ExtensionPointReport> getAvailableExtensionPoints() {
-        List<ExtensionPointReport> extensionPoints = getAvailableExtensionPointsWithoutTarget();
-
-        // associate target to extension-points
-        List<TargetReport> targets = getAvailableTargets();
-        for (int i = 0; i < extensionPoints.size(); i++) {
-            ExtensionPointReport extensionPoint = extensionPoints.get(i);
-            for (TargetReport target : targets) {
-                if (extensionPoint.getName().equals(target.getExtensionPoint())) {
-                    extensionPoint.addTargetReport(target);
-                    extensionPoints.set(i, extensionPoint);
-                }
-            }
-        }
-
-        return extensionPoints;
     }
 
     public ResolveReport getResolveReport() {

@@ -64,10 +64,10 @@ public class ListTargets extends EasyantOption {
             getProject().log(
                     LINE_SEP + "No ExtensionPoint / Plugin specified. Listing all targets available in the project.");
 
-            List<TargetReport> targets = getEareport().getAvailableTargets();
+            List<TargetReport> targets = getEareport().getTargetReports();
             printTargets(targets, getProject());
         } else {
-            ExtensionPointReport extensionPointRep = getEareport().getExtensionPointReport(container, true);
+            ExtensionPointReport extensionPointRep = getEareport().getExtensionPointReport(container);
 
             if (extensionPointRep != null) {
                 getProject().log("Targets for ExtensionPoint: " + container);

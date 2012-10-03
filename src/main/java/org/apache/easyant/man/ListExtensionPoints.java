@@ -40,9 +40,9 @@ public class ListExtensionPoints extends EasyantOption {
                 LINE_SEP + "--- Available ExtensionPoints for current project: " + getProject().getName() + " ---"
                         + LINE_SEP);
 
-        List<ExtensionPointReport> extensionPoints = getEareport().getAvailableExtensionPoints();
-        for (int i = 0; i < extensionPoints.size(); i++) {
-            getProject().log("\t" + extensionPoints.get(i).getName());
+        List<ExtensionPointReport> extensionPoints = getEareport().getExtensionPointReports();
+        for (ExtensionPointReport extensionPointReport : extensionPoints) {
+            getProject().log("\t" + extensionPointReport.getName());
         }
 
         getProject().log(

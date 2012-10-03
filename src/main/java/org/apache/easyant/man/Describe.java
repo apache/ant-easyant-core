@@ -49,7 +49,7 @@ public class Describe extends EasyantOption {
                 LINE_SEP + "--- Available references for: " + target + " in current project: " + getProject().getName()
                         + " ---" + LINE_SEP);
 
-        ExtensionPointReport extensionPointRep = getEareport().getExtensionPointReport(target, true);
+        ExtensionPointReport extensionPointRep = getEareport().getExtensionPointReport(target);
         if (extensionPointRep != null) {
             getProject().log("\tExtension Point: " + target);
             getProject().log(
@@ -62,7 +62,7 @@ public class Describe extends EasyantOption {
         } else {
             getProject().log("\tNo extrnsion point found for name: " + target);
         }
-        TargetReport targetRep = getEareport().getTargetReport(target, true);
+        TargetReport targetRep = getEareport().getTargetReport(target);
         if (targetRep != null) {
             getProject().log("\tTarget: " + target);
             getProject().log(
