@@ -40,6 +40,7 @@ public class ParameterTask extends Task {
     private String description;
     private String defaultValue;
     private boolean required;
+    private String phase;
 
     /**
      * Get a description to the property / path
@@ -175,13 +176,15 @@ public class ParameterTask extends Task {
             } else if (!(p instanceof Path)) {
                 throw new BuildException("reference '" + path + "' must be a path");
             }
+        } else if (phase != null) {
+            // to be removed
         } else {
             throw new BuildException("at least one of these attributes is required: property, path");
         }
     }
 
     // FIXME : remove this method after 0.9 release
-    public void setPhase() {
-
+    public void setPhase(String phase) {
+        this.phase = phase;
     }
 }
