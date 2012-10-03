@@ -179,4 +179,9 @@ public class ParameterTask extends Task {
             throw new BuildException("at least one of these attributes is required: property, path");
         }
     }
+
+    // FIXME : remove this method after 0.9 release
+    public void setPhase() {
+
+    }
 }
