@@ -40,6 +40,7 @@ public class EasyAntReport {
     private Map<String, PropertyDescriptor> propertyReports;
     private ResolveReport resolveReport;
     private ModuleDescriptor moduleDescriptor;
+    private boolean extensionPointsConfigured;
 
     /**
      * Default Constructor
@@ -84,13 +85,6 @@ public class EasyAntReport {
         if (targetReport == null) {
             throw new IllegalArgumentException("targetReport cannot be null");
         }
-        if (targetReport.getExtensionPoint() != null) {
-            for (ExtensionPointReport extensionPoint : extensionPointReports) {
-                if (extensionPoint.getName().equals(targetReport.getExtensionPoint())) {
-                    extensionPoint.addTargetReport(targetReport);
-                }
-            }
-        }
         targetReports.add(targetReport);
     }
 
@@ -105,6 +99,7 @@ public class EasyAntReport {
         if (name == null || name.equals("")) {
             throw new IllegalArgumentException("extension point name cannot be null");
         }
+        maybeConfigureExtensionPoints();
         for (ExtensionPointReport extensionPointReport : extensionPointReports) {
             if (extensionPointReport.getName().equals(name)) {
                 return extensionPointReport;
@@ -119,7 +114,23 @@ public class EasyAntReport {
      * @return a list of extension points
      */
     public List<ExtensionPointReport> getExtensionPointReports() {
+        maybeConfigureExtensionPoints();
         return Collections.unmodifiableList(extensionPointReports);
+    }
+
+    private void maybeConfigureExtensionPoints() {
+        if (!extensionPointsConfigured) {
+            for (TargetReport targetReport : targetReports) {
+                if (targetReport.getExtensionPoint() != null) {
+                    for (ExtensionPointReport extensionPointReport : extensionPointReports) {
+                        if (extensionPointReport.getName().equals(targetReport.getExtensionPoint())) {
+                            extensionPointReport.addTargetReport(targetReport);
+                        }
+                    }
+                }
+            }
+            extensionPointsConfigured = true;
+        }
     }
 
     /**
