@@ -187,7 +187,7 @@
 		<attribute name="module" />
 		<attribute name="revision" />
 		<sequential>
-			<ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="${plugin.install.overwrite}" />
+			<ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="${plugin.install.overwrite}" haltOnFailure="false"/>
 		</sequential>
 	</macrodef>
 
