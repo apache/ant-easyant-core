@@ -180,10 +180,7 @@ public class SubModule extends Task {
             }
             subModule.setNewProperty(EasyAntMagicNames.EASYANT_FILE, file.getAbsolutePath());
 
-            ProjectHelper helper = ProjectHelper.getProjectHelper();
-            File mainscript = ProjectUtils.emulateMainScript(getProject());
-            helper.getImportStack().addElement(mainscript);
-            subModule.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
+            ProjectHelper helper = ProjectUtils.configureProjectHelper(subModule);
 
             LoadModule lm = new LoadModule();
             lm.setBuildModule(file);
@@ -191,7 +188,7 @@ public class SubModule extends Task {
             lm.setTaskName(EasyAntConstants.EASYANT_TASK_NAME);
             lm.setProject(subModule);
             lm.setOwningTarget(ProjectUtils.createTopLevelTarget());
-            lm.setLocation(new Location(mainscript.getAbsolutePath()));
+            lm.setLocation(new Location(ProjectUtils.emulateMainScript(getProject()).getAbsolutePath()));
             lm.setUseBuildRepository(useBuildRepository);
             lm.execute();
 

@@ -102,34 +102,30 @@ public class EasyAntEngine {
 
         project.setNewProperty(EasyAntMagicNames.EASYANT_CORE_JAR_URL, guessEasyantCoreJarUrl().toExternalForm());
 
-        File userSettings = getUserEasyAntIvySettings(project);
-        String globalSettings = getGlobalEasyAntIvySettings(project);
-        boolean isIgnoringUserIvysettings = Project.toBoolean(project
-                .getProperty(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS));
+        try {
+            File userSettings = getUserEasyAntIvySettings(project);
+            URL globalSettings = getGlobalEasyAntIvySettings(project);
+            boolean isIgnoringUserIvysettings = Project.toBoolean(project
+                    .getProperty(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS));
 
-        if (userSettings.exists() && !isIgnoringUserIvysettings) {
-            project.log("loading user's easyant ivysettings file from " + userSettings.getAbsolutePath(),
-                    Project.MSG_DEBUG);
-            easyantIvyConfigure.setFile(userSettings);
-        } else if (globalSettings != null) {
-            project.log("loading global easyant ivysettings file from " + globalSettings, Project.MSG_DEBUG);
-            try {
+            if (userSettings.exists() && !isIgnoringUserIvysettings) {
+                project.log("loading user's easyant ivysettings file from " + userSettings.getAbsolutePath(),
+                        Project.MSG_DEBUG);
+                easyantIvyConfigure.setFile(userSettings);
+            } else if (globalSettings != null) {
+                project.log("loading global easyant ivysettings file from " + globalSettings.toExternalForm(),
+                        Project.MSG_DEBUG);
                 easyantIvyConfigure.setUrl(globalSettings);
-            } catch (MalformedURLException malformedUrl) {
-                throw new BuildException("Unable to parse easyant ivysettings from the following url : "
-                        + globalSettings, malformedUrl);
-            }
 
-        } else {
-            project.log("using easyant default ivy settings file", Project.MSG_VERBOSE);
-            String url = project.getProperty(EasyAntMagicNames.EASYANT_DEFAULT_IVYSETTINGS);
-            try {
+            } else {
+                project.log("using easyant default ivy settings file", Project.MSG_VERBOSE);
+                String url = project.getProperty(EasyAntMagicNames.EASYANT_DEFAULT_IVYSETTINGS);
                 easyantIvyConfigure.setUrl(url);
-            } catch (MalformedURLException malformedUrl) {
-                throw new BuildException("Unable to parse easyant ivysettings from the following url : " + url,
-                        malformedUrl);
             }
+        } catch (MalformedURLException malformedUrl) {
+            throw new BuildException("Unable to parse easyant ivysettings from given url", malformedUrl);
         }
+
         executeTask(easyantIvyConfigure, "configure-easyant", project);
 
         configureEasyAntOfflineRepository(project);
@@ -197,24 +193,21 @@ public class EasyAntEngine {
      * 
      * @param project
      * @return the configured global easyant-ivysettings.file
+     * @throws MalformedURLException
      */
-    private String getGlobalEasyAntIvySettings(Project project) {
+    private URL getGlobalEasyAntIvySettings(Project project) throws MalformedURLException {
         PropertyHelper helper = PropertyHelper.getPropertyHelper(project);
-        String path = null;
+        URL path = null;
         if (configuration.getEasyantIvySettingsFile() != null) {
             File f = new File(helper.replaceProperties(configuration.getEasyantIvySettingsFile()));
-            try {
-                path = f.toURI().toURL().toExternalForm();
-            } catch (MalformedURLException e) {
-                throw new BuildException("Can't load easyant ivysettings file from " + f.getAbsolutePath(), e);
-            }
+            path = f.toURI().toURL();
         }
         if (configuration.getEasyantIvySettingsUrl() != null) {
-            path = helper.replaceProperties(configuration.getEasyantIvySettingsUrl());
+            path = new URL(helper.replaceProperties(configuration.getEasyantIvySettingsUrl()));
         }
         // path can be specified through a property
         if (path == null && project.getProperty(EasyAntMagicNames.GLOBAL_EASYANT_IVYSETTINGS) != null) {
-            path = project.getProperty(EasyAntMagicNames.GLOBAL_EASYANT_IVYSETTINGS);
+            path = new URL(project.getProperty(EasyAntMagicNames.GLOBAL_EASYANT_IVYSETTINGS));
         }
         // if no property is set check the default location
         if (path == null) {
@@ -223,14 +216,9 @@ public class EasyAntEngine {
             if (!defaultGlboalEasyAntIvySettings.exists()) {
                 return null;
             }
-            try {
-                path = defaultGlboalEasyAntIvySettings.toURI().toURL().toExternalForm();
-            } catch (MalformedURLException e) {
-                throw new BuildException("Can't load easyant ivysettings file from "
-                        + defaultGlboalEasyAntIvySettings.getAbsolutePath(), e);
-            }
+            path = defaultGlboalEasyAntIvySettings.toURI().toURL();
         }
-        project.log("global easyant-ivysettings file : " + path, Project.MSG_DEBUG);
+        project.log("global easyant-ivysettings file : " + path.toExternalForm(), Project.MSG_DEBUG);
         return path;
     }
 
@@ -405,9 +393,7 @@ public class EasyAntEngine {
 
         project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
 
-        ProjectHelper helper = ProjectHelper.getProjectHelper();
-        helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
-        project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
+        ProjectHelper helper = ProjectUtils.configureProjectHelper(project);
 
         IvyAntSettings easyantIvySettings = configureEasyAntIvyInstance(project);
         configurePluginService(project, easyantIvySettings);

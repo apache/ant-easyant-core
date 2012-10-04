@@ -209,9 +209,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             }
         }
         project.init();
-        ProjectHelper helper = ProjectHelper.getProjectHelper();
-        helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
-        project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
+        ProjectUtils.configureProjectHelper(project);
         return project;
     }
 
@@ -422,8 +420,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         loadModule.setLocation(new Location(ProjectUtils.emulateMainScript(p).getAbsolutePath()));
         loadModule.setProject(p);
         loadModule.execute();
-        ProjectHelper projectHelper = (ProjectHelper) p.getReference(ProjectHelper.PROJECTHELPER_REFERENCE);
-        ProjectUtils.injectTargetIntoExtensionPoint(p, projectHelper);
+        ProjectUtils.injectTargetIntoExtensionPoint(p, ProjectUtils.getConfiguredProjectHelper(p));
         analyseProject(p, eaReport, "default");
 
         return eaReport;

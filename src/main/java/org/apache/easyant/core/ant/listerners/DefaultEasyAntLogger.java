@@ -17,6 +17,7 @@
  */
 package org.apache.easyant.core.ant.listerners;
 
+import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.NoBannerLogger;
@@ -33,10 +34,9 @@ public class DefaultEasyAntLogger extends NoBannerLogger {
 
     private long startTime = System.currentTimeMillis();
 
-    protected static void throwableMessage(StringBuffer m, Throwable error,
-            boolean verbose) {
+    protected static void throwableMessage(StringBuffer m, Throwable error, boolean verbose) {
 
-        while (error !=null) {
+        while (error != null) {
             Throwable cause = error.getCause();
             if (cause == null) {
                 break;
@@ -44,15 +44,13 @@ public class DefaultEasyAntLogger extends NoBannerLogger {
             String msg1 = error.toString();
             String msg2 = cause.toString();
             if (msg1.endsWith(msg2)) {
-                String messageException = msg1.substring(0, msg1.length()
-                        - msg2.length());
+                String messageException = msg1.substring(0, msg1.length() - msg2.length());
                 if (error instanceof BuildException) {
                     BuildException be = (BuildException) error;
 
                     // wipe location information
                     if (be.getLocation() != null) {
-                        messageException = messageException.substring(be
-                                .getLocation().toString().length());
+                        messageException = messageException.substring(be.getLocation().toString().length());
 
                     }
                 }
@@ -92,23 +90,17 @@ public class DefaultEasyAntLogger extends NoBannerLogger {
                 if (be.getLocation().getFileName() != null) {
                     message.append(WHERE_MSG);
                     message.append(lSep).append(lSep);
-                    message.append("File : ").append(
-                            be.getLocation().getFileName()).append(lSep);
-                    message.append("Line : ").append(
-                            be.getLocation().getLineNumber());
-                    message.append(" column : ").append(
-                            be.getLocation().getColumnNumber()).append(lSep);
+                    message.append("File : ").append(be.getLocation().getFileName()).append(lSep);
+                    message.append("Line : ").append(be.getLocation().getLineNumber());
+                    message.append(" column : ").append(be.getLocation().getColumnNumber()).append(lSep);
                 }
                 if (Project.MSG_DEBUG == msgOutputLevel) {
                     message.append(StringUtils.LINE_SEP);
                     message.append("Import stack :");
                     message.append(StringUtils.LINE_SEP);
-                    ProjectHelper helper = (ProjectHelper) event
-                            .getProject()
-                            .getReference(ProjectHelper.PROJECTHELPER_REFERENCE);
+                    ProjectHelper helper = ProjectUtils.getConfiguredProjectHelper(event.getProject());
                     for (int i = 0; i < helper.getImportStack().size(); i++) {
-                        message.append(helper.getImportStack().get(i)
-                                .toString());
+                        message.append(helper.getImportStack().get(i).toString());
                         message.append(StringUtils.LINE_SEP);
 
                     }
@@ -119,8 +111,7 @@ public class DefaultEasyAntLogger extends NoBannerLogger {
             message.append(DIAGNOSTIC_MSG);
             message.append(StringUtils.LINE_SEP);
             message.append(StringUtils.LINE_SEP);
-            throwableMessage(message, error,
-                    Project.MSG_VERBOSE <= msgOutputLevel);
+            throwableMessage(message, error, Project.MSG_VERBOSE <= msgOutputLevel);
             message.append(StringUtils.LINE_SEP);
             if (msgOutputLevel < Project.MSG_VERBOSE) {
                 message.append(StringUtils.LINE_SEP);

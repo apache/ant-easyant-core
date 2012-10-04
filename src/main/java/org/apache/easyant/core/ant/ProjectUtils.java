@@ -185,4 +185,16 @@ public class ProjectUtils {
             }
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public static ProjectHelper configureProjectHelper(Project project) {
+        ProjectHelper helper = ProjectHelper.getProjectHelper();
+        helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));
+        project.addReference(ProjectHelper.PROJECTHELPER_REFERENCE, helper);
+        return helper;
+    }
+
+    public static ProjectHelper getConfiguredProjectHelper(Project project) {
+        return (ProjectHelper) project.getReference(ProjectHelper.PROJECTHELPER_REFERENCE);
+    }
 }
