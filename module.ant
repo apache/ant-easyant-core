@@ -25,8 +25,6 @@
 	<property name="xooki.resources.include.pattern" value="style/**,images/**,sortable.js" />
 	<property name="eadoc.documentation.dir" value="${xooki.temp.dir}" />
 
-	<property name="plugin.install.overwrite" value="false" />
-
 	<property name="project.ivy.instance" value="easyant.ivy.instance" />
 	<property name="release.resolver" value="easyant-shared-modules" />
 	<property name="shared.resolver" value="easyant-shared-modules" />
@@ -187,7 +185,7 @@
 		<attribute name="module" />
 		<attribute name="revision" />
 		<sequential>
-			<ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="${plugin.install.overwrite}" haltOnFailure="false"/>
+			<ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="true" />
 		</sequential>
 	</macrodef>
 
