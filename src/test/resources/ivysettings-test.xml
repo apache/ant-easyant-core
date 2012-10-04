@@ -17,7 +17,7 @@
 <ivysettings>
     <property name="apache.easyant.public.url" value="http://repository.easyant.org/apache-easyant"/>
     <settings defaultResolver="easyant-test-chain"/>
-    <caches defaultCacheDir="${user.home}/.easyant/easyant-cache" />
+    <caches defaultCacheDir="${basedir}/target/easyant-cache-test" useOrigin="true" />
     
     <resolvers>
         <url name="apache-easyant-plugins">
