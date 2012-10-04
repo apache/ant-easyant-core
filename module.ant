@@ -25,6 +25,7 @@
 	<property name="xooki.resources.include.pattern" value="style/**,images/**,sortable.js" />
 	<property name="eadoc.documentation.dir" value="${xooki.temp.dir}" />
 
+	<property name="plugin.install.overwrite" value="false" />
 
 	<property name="project.ivy.instance" value="easyant.ivy.instance" />
 	<property name="release.resolver" value="easyant-shared-modules" />
@@ -181,12 +182,21 @@
 		</bundle>
 	</target>
 
+	<macrodef name="install-module">
+		<attribute name="organisation" />
+		<attribute name="module" />
+		<attribute name="revision" />
+		<sequential>
+			<ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="${plugin.install.overwrite}" />
+		</sequential>
+	</macrodef>
+
 	<macrodef name="install-buildtype">
 		<attribute name="organisation" default="org.apache.easyant.buildtypes" />
 		<attribute name="module" />
 		<attribute name="revision" />
 		<sequential>
-			<ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="true" />
+			<install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
 		</sequential>
 	</macrodef>
 
@@ -195,19 +205,26 @@
 		<attribute name="module" />
 		<attribute name="revision" />
 		<sequential>
-			<ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="true" />
+			<install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="install-skeleton">
+		<attribute name="organisation" default="org.apache.easyant.skeletons" />
+		<attribute name="module" />
+		<attribute name="revision" />
+		<sequential>
+			<install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
 		</sequential>
 	</macrodef>
 
 	<target name="populate-jar-repo" description="fetch plugins and buildtypes from online repository and prepare them to be shipped within easyant">
 		<ea:configure-build-scoped-repository target="${basedir}/target/main/classes/" generateWrapperResoler="false" name="core" settingsRef="easyant.ivy.instance" />
-		<install-plugin module="abstract-.*" revision="0.9" />
 
+		<install-plugin module="abstract-.*" revision="0.9" />
 		<install-plugin module="antcontrib-activator" revision="0.9" />
 		<install-plugin module="antunit" revision="0.9" />
-
 		<install-plugin module="build-tools" revision="0.9" />
-
 		<install-plugin module="clean-std" revision="0.9" />
 		<install-plugin module="compile-java" revision="0.9" />
 		<install-plugin module="compile-test-java" revision="0.9" />
@@ -227,12 +244,10 @@
 		<install-plugin module="source-jar" revision="0.9" />
 		<install-plugin module="test-junit" revision="0.9" />
 
-
 		<install-buildtype module="build-std-java" revision="0.9" />
 		<install-buildtype module="build-std-ant-plugin" revision="0.9" />
 		<install-buildtype module="build-webapp-java" revision="0.9" />
 		<install-buildtype module="meta-build" revision="0.9" />
-
 	</target>
 
 </project>
