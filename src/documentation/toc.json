@@ -292,10 +292,23 @@
                       ]
                   },
                   {
-                    "id":"ref/ProjectIvyInstance",
-                    "title":"Project Ivy Instance",
+                    "id":"ref/Ivyconfiguration",
+                    "title":"Ivy configuration",
                     "children": [
+                        {
+                          "id":"ref/EasyAntivyinstance",
+                          "title":"EasyAnt ivy instance",
+                          "children": [
 
+                            ]
+                        },
+                        {
+                          "id":"ref/ProjectIvyInstance",
+                          "title":"Project Ivy Instance",
+                          "children": [
+
+                            ]
+                        }
                       ]
                   }
                 ]

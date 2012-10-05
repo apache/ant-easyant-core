@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<html>
+<head>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+	<script type="text/javascript">var xookiConfig = {level: 1};</script>	
+	<script type="text/javascript" src="../xooki/xooki.js"></script>
+</head>
+<body>
+	<textarea id="xooki-source">
+<h1>EasyAnt ivy instance</h1>
+
+EasyAnt ivy instance is in charge to configure ivy for easyant internal use (configure repositories used to retrieve buildtypes/plugins/skeletons for example).
+
+By default easyant ivy instance is configured to use the default ivysettings provided by easyant-core.jar.
+
+<h2>Lookup mechanism</h2>
+
+To configure EasyAnt ivy instance use a lookup mechanism. It will:
+<ul>
+  <li>Check default user location <i>${user.home}/.easyant/easyant-ivysettings.xml</i> (this can be configured through a property see bellow)</li>
+  <li>if not found, check url or file specified in <a href="EasyAntconfigurationfile.html">EasyAnt configuration file</a></li>
+  <li>if not found, check in default global localtion <i>${easyant.home}/ivysettings.xml</i> (this can be configured through a property see bellow)</li>
+  <li>if not found, use the default one provided by easyant-core.jar</li>
+</ul> 
+
+<h3>User location</h3>
+User default location can be configured through <i>user.easyant.ivysettings.file</i> property.
+
+Example :
+<code type="shell">
+> easyant -Duser.easyant.ivysettings.file=/path/to/ivysettings.xml
+</code>
+
+You can tell easyant to ignore user location by setting <i>ignore.user.ivysettings</i> property to true.
+
+Example :
+<code type="shell">
+> easyant -Dignore.user.ivysettings=true
+</code>
+
+<h3>Global location</h3>
+User default location can be configured through <i>global.easyant.ivysettings.file</i> property.
+
+<code type="shell">
+> easyant -Dglobal.easyant.ivysettings.file=/path/to/global/ivysettings.xml
+</code>
+
+<h2>default ivy settings provided by easyant-core.jar</h2>
+You can reference this default ivysettings file through the property <i>easyant.default.ivysettings.url</i>.
+This file preconfigure :
+<ul>
+  <li>easyant cache in $USER_HOME/.easyant/easyant-cache</li>
+  <li>default repositories:
+     <ul>
+       <li><i>easyant-core-modules</i> shipped in easyant-core.jar</li>
+       <li><i>easyant-shared-modules</i> pointing to "${user.home}/.easyant/repository/easyant-shared-modules" used to store users plugins/buildtypes</li>
+       <li><i>apache-easyant-plugins</i> our online repository</li>
+       <li><i>public-maven</i> used to retrieved plugins/buildtypes dependencies</li>
+       <li><i>easyant-default-chain</i> the default chain containing the 3 previous repositories</li>
+     </ul>
+  </li>
+</ul>
+
+<div id="note">
+apache-easyant-plugins repository base url is accessible through <i>apache.easyant.public.url</i> property.
+</div>
+
+<h2>Extending the default configuration</h2>
+In enterprise context it can make sense to configure an enteprise repository to store easyant plugins/ easyant skeletons etc...
+
+This can be done writting your own ivysettings including if necessary the default configuration :  
+<code type="xml">
+<ivysettings>
+        <!-- import the default ivy settings -->
+    <include url="${easyant.default.ivysettings.url}"/>
+    <!-- define your own default resolver, here a chain that include a new repo + the default chain provided by easyant -->
+    <settings defaultResolver="my-chain"/>
+    <resolvers>
+        <filesystem name="my-custom-repo">
+                <ivy pattern="/path/to/your/repo/[organisation]/[module]/ivy-[revision].xml"/>
+                <artifact pattern="/path/to/your/repo/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
+            </filesystem>
+
+        <chain name="my-chain">
+            <resolver ref="my-custom-repo" />
+            <resolver ref="easyant-default-chain" />
+        </chain>
+    </resolvers>
+</ivysettings>
+</code>
+
+</textarea>
+<script type="text/javascript">xooki.postProcess();</script>
+</body>
+</html>

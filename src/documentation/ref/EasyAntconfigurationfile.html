@@ -47,7 +47,7 @@ The configuration file named easyant-conf.xml allow you to tune :
 </code>
 
 <h2>Configuring easyant ivy instance</h2>
-By default, easyant ivy instance is configured to use a set of repositories based on your file system that are deployed with the easyant distribution. These repositories are supposed to be available online in a future release of easyant, and contain the build modules available to the user.
+By default, easyant ivy instance is configured to use a set of repositories based on your file system that are deployed with the easyant distribution. 
 
 Easyant ivy instance is not used to retrieve project dependencies.
 If you want to configure the project ivy instance you should look at <a href="ref/ProjectIvyInstance.html">this page</a>.
@@ -81,50 +81,6 @@ or
   </tr>
   </tbody>
 </table>
-
-By default easyant ivy instance is configured to use the default ivysettings provided by easyant-core.jar.
-
-<h3>default ivy settings provided by easyant-core.jar</h3>
-You can reference this default ivysettings file through the property <i>easyant.default.ivysettings.url</i>.
-This file preconfigure :
-<ul>
-  <li>easyant cache in $USER_HOME/.easyant/easyant-cache</li>
-  <li>default repositories:
-     <ul>
-       <li><i>easyant-core-modules</i> shipped in easyant-core.jar</li>
-       <li><i>easyant-shared-modules</i> pointing to "${user.home}/.easyant/repository/easyant-shared-modules" used to store users plugins/buildtypes</li>
-       <li><i>public-maven</i> used to retrieved plugins/buildtypes dependencies</li>
-       <li><i>easyant-default-chain</i> the default chain containing the 3 previous repositories</li>
-     </ul>
-  </li>
-</ul>
-
-<h3>Using easyant-extra-modules</h3>
-If you want to use easyant-extra-modules.jar (containing additional plugins/buildtypes) you can use the property <i>easyant.extra.ivysettings.url</i>.
-
-<h3>Extending the default configuration</h3>
-In an enterprise context it can make sense to configure a enteprise repository to store easyant plugins/ easyant skeletons etc...
-
-This can be done writting your own ivysettings including if necessary the default configuration :  
-<code type="xml">
-<ivysettings>
-        <!-- import the default ivy settings -->
-    <include url="${easyant.default.ivysettings.url}"/>
-    <!-- define your own default resolver, here a chain that include a new repo + the default chain provided by easyant -->
-    <settings defaultResolver="my-chain"/>
-    <resolvers>
-        <filesystem name="my-custom-repo">
-                <ivy pattern="/path/to/your/repo/[organisation]/[module]/ivy-[revision].xml"/>
-                <artifact pattern="/path/to/your/repo/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
-            </filesystem>
-
-        <chain name="my-chain">
-            <resolver ref="my-custom-repo" />
-            <resolver ref="easyant-default-chain" />
-        </chain>
-    </resolvers>
-</ivysettings>
-</code>
 
 <h2>Configuring system plugins</h2>
 A system plugin can provide some additionnal functionnalities that can be used from everywhere.
