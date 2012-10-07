@@ -15,7 +15,7 @@ REM  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 REM  See the License for the specific language governing permissions and
 REM  limitations under the License.
 
-set EASYANT_OPTS="%EASYANT_OPTS% -Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=y"
+set EASYANT_OPTS="%EASYANT_OPTS% -Xdebug -Xrunjdwp:transport=dt_socket,address=9000,server=y,suspend=y"
 
 easyant.bat %*
 
