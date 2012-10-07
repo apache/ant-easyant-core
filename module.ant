@@ -85,7 +85,7 @@
 			<exclude name="example/**/lib/**" />
 			<exclude name="example/**/target/**" />
 
-			<include name="ivysettings.xml" />
+			<include name="sample-easyant-ivysettings.xml" />
 			<include name="easyant-conf.xml" />
 			<include name="README" />
 			<include name="NOTICE" />
@@ -106,6 +106,8 @@
 			<fileset dir="${basedir}">
 				<patternset refid="easyant-files.patternset" />
 				<patternset refid="easyant-exec.patternset" />
+                                <!--copy ivysettings.xml for developpers --> 
+                                <patternset includes="ivysettings.xml"/>
 			</fileset>
 		</copy>
 
@@ -123,10 +125,6 @@
 	</target>
 
 	<target name="dist" depends="package-jar:jar, stage-dist" description="update the dist directory (used for development)">
-
-		<!-- publish latest easyant artifacts into dist repository -->
-		<ivy:settings id="dist.ivy.settings" file="${target.dist}/repository/third-party-lib/third-party-ivysettings.xml" />
-		<ivy:publish settingsRef="dist.ivy.settings" resolver="third-party-lib" overwrite="true" srcivypattern="module.ivy" artifactspattern="${target.artifacts}/[artifact].[ext]" />
 
 		<!-- declare distribution fileset for use in packaging targets -->
 		<fileset id="easyant-dist.fileset" dir="${target.dist}">
@@ -166,17 +164,36 @@
 		<echo message="Packaging full distribution." />
 		<property name="full.root.dir" value="${ivy.module}-${ivy.revision}-full" />
 		<bundle destfile="${target.distributions}/${ivy.module}-${version}-full">
-			<zipfileset dir="${target.dist}" prefix="${full.root.dir}">
+			<zipfileset dir="${target.dist}" prefix="${full.root.dir}/dist">
 				<patternset refid="easyant-files.patternset" />
 			</zipfileset>
 			<!-- make scripts executable -->
-			<zipfileset dir="${target.dist}" prefix="${full.root.dir}" filemode="744">
+			<zipfileset dir="${target.dist}" prefix="${full.root.dir}/dist" filemode="744">
 				<patternset refid="easyant-exec.patternset" />
 			</zipfileset>
 			<!-- ship the documentation -->
-			<zipfileset dir="${target.documentation.dir}" prefix="${full.root.dir}/doc" />
+			<zipfileset dir="${target.documentation.dir}" prefix="${full.root.dir}/dist/doc" />
 			<!-- easyant sources -->
-			<zipfileset dir="${basedir}" includes="src/**,module.ant, module.ivy" prefix="${full.root.dir}" />
+			<zipfileset dir="${basedir}" prefix="${full.root.dir}/sources">
+                            <patternset>
+                                <include name="src/**"/>
+                                <include name="bin/**"/>
+                                <include name="example/**"/>
+                                <include name="module.ant"/>
+                                <include name="module.ivy"/>
+                                <include name="build.xml"/>
+                                <include name="easyant-conf.xml"/>
+                                <include name="ivysettings.xml"/>
+                                <include name="ivysettings-bootstrap.xml"/>
+                                <include name="sample-easyant-ivysettings.xml"/>
+                                <include name="NOTICE"/>
+                                <include name="README"/>
+                                <include name="LICENSE"/>
+                                <include name=".settings/**"/>
+                                <include name=".project"/>
+                                <include name=".classpath"/>
+                            </patternset>
+                        </zipfileset>
 		</bundle>
 	</target>
 

@@ -15,10 +15,10 @@
    limitations under the License.
 -->
 <easyant-config>
-    <ivysettings file="${easyant.home}/ivysettings.xml"/>
     <system-plugins>
         <plugin mrid="org.apache.easyant.plugins#skeleton;0.9" as="skeleton"/>
         <plugin mrid="org.apache.easyant.plugins#ivy-repo-management;0.9" as="repo-management"/>
+        <plugin mrid="org.apache.easyant.plugins#offline;0.9"/>
         
     </system-plugins>
 </easyant-config>
