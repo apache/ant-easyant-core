@@ -117,23 +117,28 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
      */
     protected void handleOtherResourceFile(ModuleRevisionId moduleRevisionId, String artifactName,
             String artifactExtension, File localResourceFile) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(moduleRevisionId.getOrganisation());
-        sb.append("#");
-        sb.append(moduleRevisionId.getName());
-        sb.append(".");
-        if (!moduleRevisionId.getName().equals(artifactName)) {
-            sb.append(artifactName);
+        if (localResourceFile == null) {
+            getProject().log(
+                    "Can't find artifact " + artifactName + " ext" + artifactExtension
+                            + ". See resolution report to have details");
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(moduleRevisionId.getOrganisation());
+            sb.append("#");
+            sb.append(moduleRevisionId.getName());
             sb.append(".");
+            if (!moduleRevisionId.getName().equals(artifactName)) {
+                sb.append(artifactName);
+                sb.append(".");
+            }
+            sb.append(artifactExtension);
+            sb.append(".file");
+
+            getProject().log(
+                    "registering location of artifact " + artifactName + " ext" + artifactExtension + " on "
+                            + sb.toString(), Project.MSG_DEBUG);
+            getProject().setNewProperty(sb.toString(), localResourceFile.getAbsolutePath());
         }
-        sb.append(artifactExtension);
-        sb.append(".file");
-
-        getProject().log(
-                "registering location of artifact " + artifactName + " ext" + artifactExtension + " on "
-                        + sb.toString(), Project.MSG_DEBUG);
-
-        getProject().setNewProperty(sb.toString(), localResourceFile.getAbsolutePath());
     }
 
     /**
