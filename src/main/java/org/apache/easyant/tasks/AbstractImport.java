@@ -120,7 +120,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
         if (localResourceFile == null) {
             getProject().log(
                     "Can't find artifact " + artifactName + " ext" + artifactExtension
-                            + ". See resolution report to have details");
+                            + ". See resolution report to have details", Project.MSG_WARN);
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append(moduleRevisionId.getOrganisation());
