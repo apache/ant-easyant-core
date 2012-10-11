@@ -135,7 +135,7 @@
 	</target>
 
 	<!-- Create a zip for distribution -->
-	<target name="package-distribution" depends="populate-jar-repo, dist" description="package a distribution">
+	<target name="package-distribution" depends="populate-jar-repo, dist" description="package a distribution" extensionOf="distribution">
 		<echo message="Packaging standard distribution." />
 		<property name="root.dir" value="${ivy.module}-${ivy.revision}" />
 		<bundle destfile="${target.distributions}/${ivy.module}-${version}">
@@ -152,7 +152,7 @@
 
 	</target>
 
-	<target name="package-documentation" description="package the documentation">
+	<target name="package-documentation" description="package the documentation" extensionOf="distribution" depends="xooki:generate">
 		<echo message="Packaging documentation distribution." />
 		<bundle destfile="${target.distributions}/${ivy.module}-${version}-docs">
 			<zipfileset dir="${target.documentation.dir}" prefix="${ivy.module}-${ivy.revision}-docs" />
@@ -160,7 +160,7 @@
 	</target>
 
 	<!-- Create a zip for full distribution  -->
-	<target name="package-full-distribution" depends="distribution:init, populate-jar-repo, dist" description="package a distribution (including includes sources)">
+	<target name="package-full-distribution" depends="distribution:init, populate-jar-repo, dist" description="package a distribution (including includes sources)" extensionOf="distribution">
 		<echo message="Packaging full distribution." />
 		<property name="full.root.dir" value="${ivy.module}-${ivy.revision}-full" />
 		<bundle destfile="${target.distributions}/${ivy.module}-${version}-full">
