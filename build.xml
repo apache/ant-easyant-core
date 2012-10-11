@@ -78,10 +78,31 @@
             <sysproperty key="easyant.home" file="${basedir}" />
             <arg line="-configfile ${basedir}/easyant-conf.xml" />
             <arg line="-f ${basedir}/module.ivy" />
-            <arg line="-Dskip.xooki=true"/>
             <arg line="-Dskip.svn=true"/>
             <arg line="package-full-distribution" />
         </java>
+    </target>
+
+    <target name="distribution" depends="jar">
+        <property name="bootstrap.fork" value="false"/>
+        <java classname="org.apache.easyant.core.EasyAntMain" failonerror="true" fork="${bootstrap.fork}">
+            <classpath>
+                <path refid="default.classpath" />
+                <pathelement location="${bootstrap.dir}/easyant.jar" />
+                <!--
+                    Ant will try to find the tools.jar using java.home System property, but sometimes
+                    this points to JDK, and sometimes to JRE.
+                    See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4200300
+                -->
+                <path path="${java.class.path}"/>
+            </classpath>
+            <sysproperty key="easyant.home" file="${basedir}" />
+            <arg line="-configfile ${basedir}/easyant-conf.xml" />
+            <arg line="-f ${basedir}/module.ivy" />
+            <arg line="-Dskip.svn=true"/>
+            <arg line="distribution" />
+        </java>
+
     </target>
 
 </project>
