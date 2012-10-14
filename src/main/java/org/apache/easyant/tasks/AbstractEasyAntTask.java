@@ -47,6 +47,10 @@ public class AbstractEasyAntTask extends Task {
         return getEasyAntIvyAntSettings().getConfiguredIvyInstance(this);
     }
 
+    protected Ivy getProjectIvyInstance() {
+        return IvyInstanceHelper.getProjectIvyAntSettings(getProject()).getConfiguredIvyInstance(this);
+    }
+
     /**
      * Utilitary method to configure a task with the current one
      * 

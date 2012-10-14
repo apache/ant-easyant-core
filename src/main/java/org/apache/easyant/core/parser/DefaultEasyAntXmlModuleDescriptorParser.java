@@ -62,11 +62,17 @@ import org.xml.sax.SAXException;
 public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptorParser implements
         EasyAntModuleDescriptorParser {
 
+    private static final DefaultEasyAntXmlModuleDescriptorParser INSTANCE = new DefaultEasyAntXmlModuleDescriptorParser();
+
+    public static DefaultEasyAntXmlModuleDescriptorParser getInstance() {
+        return INSTANCE;
+    }
+
     static final String[] PLUGIN_REGULAR_ATTRIBUTES = new String[] { "organisation", "org", "module", "revision",
             "rev", "mrid", "conf", "mode", "as", "inheritable", "inherit-scope" };
 
     public boolean accept(Resource res) {
-        return res.getName().endsWith(".ivy");
+        return res.getName().endsWith(".ivy") || res.getName().endsWith(".xml");
     }
 
     protected Parser newParser(ParserSettings ivySettings) {
@@ -89,7 +95,6 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
         parser.setInput(xmlURL);
         parser.parse();
         easyAntModuleDescriptor = parser.getEasyAntModuleDescriptor();
-
         return parser.getModuleDescriptor();
     }
 

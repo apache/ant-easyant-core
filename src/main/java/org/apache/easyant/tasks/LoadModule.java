@@ -39,6 +39,7 @@ import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.ant.IvyInfo;
+import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.parser.ModuleDescriptorParser;
 import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
@@ -249,6 +250,7 @@ public class LoadModule extends AbstractEasyAntTask {
     }
 
     protected void loadBuildModule(File buildModule) {
+        IvyContext.pushNewContext().setIvy(getEasyAntIvyInstance());
         EasyAntModuleDescriptorParser parser = getEasyAntModuleDescriptorParser(buildModule);
         log("Loading EasyAnt module descriptor :" + parser.getClass().getName(), Project.MSG_DEBUG);
 
@@ -317,6 +319,7 @@ public class LoadModule extends AbstractEasyAntTask {
         } catch (Exception e) {
             throw new BuildException("problem while parsing Ivy module file: " + e.getMessage(), e);
         }
+        IvyContext.popContext();
     }
 
     /**
@@ -398,7 +401,6 @@ public class LoadModule extends AbstractEasyAntTask {
             // the default one
             log("Creating instance of " + DefaultEasyAntXmlModuleDescriptorParser.class.getName(), Project.MSG_DEBUG);
             parser = new DefaultEasyAntXmlModuleDescriptorParser();
-
             ModuleDescriptorParserRegistry.getInstance().addParser(parser);
             return parser;
 

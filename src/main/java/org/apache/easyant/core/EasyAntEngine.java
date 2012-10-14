@@ -39,8 +39,10 @@ import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
 import org.apache.easyant.tasks.ConfigureBuildScopedRepository;
 import org.apache.easyant.tasks.Import;
 import org.apache.easyant.tasks.LoadModule;
+import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
+import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.BuildLogger;
@@ -130,7 +132,15 @@ public class EasyAntEngine {
 
         configureEasyAntOfflineRepository(project);
 
-        return IvyInstanceHelper.getEasyAntIvyAntSettings(project);
+        IvyAntSettings easyantIvySettings = IvyInstanceHelper.getEasyAntIvyAntSettings(project);
+
+        Ivy easyantIvyInstance = easyantIvySettings.getConfiguredIvyInstance(easyantIvyConfigure);
+
+        EasyAntRepositoryCacheManager cacheManager = new EasyAntRepositoryCacheManager("default-easyant-cache",
+                easyantIvyInstance.getSettings(), easyantIvyInstance.getSettings().getDefaultCache());
+        easyantIvyInstance.getSettings().setDefaultRepositoryCacheManager(cacheManager);
+
+        return easyantIvySettings;
     }
 
     private static Method getLocalURL;
