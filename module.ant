@@ -98,7 +98,7 @@
 
 	</target>
 
-	<target name="stage-dist" depends="prepare-distribution, abstract-provisioning:provisioning-finished">
+	<target name="stage-dist" depends="prepare-distribution, abstract-provisioning:provisioning">
 
 		<mkdir dir="${target.dist}" />
 
