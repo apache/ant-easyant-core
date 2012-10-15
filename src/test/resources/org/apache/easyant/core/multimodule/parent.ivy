@@ -16,7 +16,7 @@
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
     <info organisation="org.apache.easyant" module="myapp-parent" revision="0.2" status="integration" >
-        <ea:property name="test" value="zz"/>
+        <ea:property name="test.property" value="myvalue"/>
         <ea:plugin module="source-jar" revision="0.9" inherit-scope="child" />
         <ea:plugin module="documentation" revision="0.9" inheritable="false" my.property="myvalue"/>
     </info>

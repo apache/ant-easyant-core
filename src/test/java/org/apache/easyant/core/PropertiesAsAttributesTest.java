@@ -24,55 +24,35 @@ import org.junit.Test;
 public class PropertiesAsAttributesTest extends EasyAntBaseTest {
 
     @Before
-    public void setUp() throws Exception {
-
-        configureProject(this.getResource("propertiesAsAttributes.ivy"), Project.MSG_INFO);
-
-        // Configure easyant ivy instance
-        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/ivysettings-test.xml"));
-
-        // init project with easyant configuration
-        initProject();
+    public void setUp() {
+        configureAndInitProject(this.getResource("propertiesAsAttributes.ivy"), Project.MSG_INFO);
     }
 
     @Test
-    public void testClean() throws Exception {
-        executeTarget("clean");
+    public void shouldHandlePropertiesInBuildType() {
+        assertPropertyEquals("my.property.inbuildtype", "true");
+        // properties loaded by build configuration
+        assertPropertyUnset("my.property.inconf");
     }
 
     @Test
-    public void testPropertiesInBuildType() throws Exception {
-        expectPropertySet("validate", "my.property.inbuildtype", "true");
+    public void shouldHandlePropertiesInPlugin() {
+        assertPropertyEquals("my.property.inplugin", "true");
 
         // properties loaded by build configuration
-        expectPropertyUnset("validate", "my.property.inconf");
+        assertPropertyUnset("my.property.inconf");
     }
 
     @Test
-    public void testPropertiesInPlugin() throws Exception {
-        expectPropertySet("validate", "my.property.inplugin", "true");
-
-        // properties loaded by build configuration
-        expectPropertyUnset("validate", "my.property.inconf");
-    }
-
-    @Test
-    public void testPropertiesInBuildConfiguration() throws Exception {
+    public void shouldHandlePropertiesInBuildConfiguration() {
         conf.getActiveBuildConfigurations().add("myBuild");
 
         // re-init project with easyant configuration including build types
         initProject();
 
-        expectPropertySet("validate", "my.property.inplugin", "true");
+        assertPropertyEquals("my.property.inplugin", "true");
 
         // properties loaded by build configuration
-        expectPropertySet("validate", "my.property.inconf", "true");
+        assertPropertyEquals("my.property.inconf", "true");
     }
-
-    @Test
-    public void testVerify() throws Exception {
-        testClean();
-        executeTarget("verify");
-    }
-
 }

@@ -17,12 +17,16 @@
  */
 package org.apache.easyant.core;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-
-import junit.framework.TestCase;
 
 import org.apache.easyant.core.factory.EasyantConfigurationFactory;
 import org.apache.tools.ant.BuildEvent;
@@ -31,17 +35,17 @@ import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.MagicNames;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.LogLevel;
+import org.junit.After;
 
 /**
- * A EasyAntBaseTest is a TestCase which executes targets from an easyant module
- * for testing.
+ * A EasyAntBaseTest is a TestCase which executes targets from an easyant module for testing.
  * 
- * This class provides a number of utility methods for particular build file
- * tests which extend this class.
+ * This class provides a number of utility methods for particular build file tests which extend this class.
  * 
  */
-public abstract class EasyAntBaseTest extends TestCase {
+public abstract class EasyAntBaseTest {
 
+    protected static final String EASYANT_CACHE_DIR = "easyant.default.cache.dir";
     protected Project project;
     protected EasyAntConfiguration conf;
 
@@ -52,37 +56,18 @@ public abstract class EasyAntBaseTest extends TestCase {
     private BuildException buildException;
 
     /**
-     * Default constructor for the BuildFileTest object.
-     */
-    public EasyAntBaseTest() {
-        super();
-    }
-
-    /**
-     * Constructor for the BuildFileTest object.
+     * Automatically calls the target called "tearDown" from the build file tested if it exits.
      * 
-     * @param name
-     *            string to pass up to TestCase constructor
+     * This allows to use Ant tasks directly in the build file to clean up after each test. Note that no "setUp" target
+     * is automatically called, since it's trivial to have a test target depend on it.
      */
-    public EasyAntBaseTest(String name) {
-        super(name);
-    }
-
-    /**
-     * Automatically calls the target called "tearDown" from the build file
-     * tested if it exits.
-     * 
-     * This allows to use Ant tasks directly in the build file to clean up after
-     * each test. Note that no "setUp" target is automatically called, since
-     * it's trivial to have a test target depend on it.
-     */
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         if (project == null) {
             /*
-             * Maybe the BuildFileTest was subclassed and there is no
-             * initialized project. So we could avoid getting a NPE. If there is
-             * an initialized project getTargets() does not return null as it is
-             * initialized by an empty HashSet.
+             * Maybe the EasyAntBaseTest was subclassed and there is no initialized project. So we could avoid getting a
+             * NPE. If there is an initialized project getTargets() does not return null as it is initialized by an
+             * empty HashSet.
              */
             return;
         }
@@ -90,6 +75,22 @@ public abstract class EasyAntBaseTest extends TestCase {
         if (project.getTargets().containsKey(tearDown)) {
             project.executeTarget(tearDown);
         }
+    }
+
+    public void cleanTargetDirectory() {
+        if (project == null) {
+            throw new IllegalStateException("Project is not configured !");
+        }
+        File targetDirectory = project.resolveFile(project.replaceProperties("${basedir}/target"));
+        targetDirectory.delete();
+    }
+
+    public void cleanCache() {
+        if (project == null) {
+            throw new IllegalStateException("Project is not configured !");
+        }
+        File cacheDirectory = project.resolveFile(project.replaceProperties(project.getProperty(EASYANT_CACHE_DIR)));
+        cacheDirectory.delete();
     }
 
     /**
@@ -105,8 +106,7 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
-     * Assert that only the given message has been logged with a priority &lt;=
-     * INFO when running the given target.
+     * Assert that only the given message has been logged with a priority &lt;= INFO when running the given target.
      */
     public void expectLog(String target, String log) {
         executeTarget(target);
@@ -119,8 +119,8 @@ public abstract class EasyAntBaseTest extends TestCase {
      */
     public void assertLogContaining(String substring) {
         String realLog = getLog();
-        assertTrue("expecting log to contain \"" + substring + "\" log was \""
-                + realLog + "\"", realLog.indexOf(substring) >= 0);
+        assertTrue("expecting log to contain \"" + substring + "\" log was \"" + realLog + "\"",
+                realLog.indexOf(substring) >= 0);
     }
 
     /**
@@ -128,8 +128,7 @@ public abstract class EasyAntBaseTest extends TestCase {
      */
     public void assertLogNotContaining(String substring) {
         String realLog = getLog();
-        assertFalse("didn't expect log to contain \"" + substring
-                + "\" log was \"" + realLog + "\"",
+        assertFalse("didn't expect log to contain \"" + substring + "\" log was \"" + realLog + "\"",
                 realLog.indexOf(substring) >= 0);
     }
 
@@ -146,15 +145,13 @@ public abstract class EasyAntBaseTest extends TestCase {
      * Assert that the given substring is in the output messages.
      * 
      * @param message
-     *            Print this message if the test fails. Defaults to a meaningful
-     *            text if <tt>null</tt> is passed.
+     *            Print this message if the test fails. Defaults to a meaningful text if <tt>null</tt> is passed.
      * @since Ant1.7
      */
     public void assertOutputContaining(String message, String substring) {
         String realOutput = getOutput();
-        String realMessage = (message != null) ? message
-                : "expecting output to contain \"" + substring
-                        + "\" output was \"" + realOutput + "\"";
+        String realMessage = (message != null) ? message : "expecting output to contain \"" + substring
+                + "\" output was \"" + realOutput + "\"";
         assertTrue(realMessage, realOutput.indexOf(substring) >= 0);
     }
 
@@ -162,21 +159,18 @@ public abstract class EasyAntBaseTest extends TestCase {
      * Assert that the given substring is not in the output messages.
      * 
      * @param message
-     *            Print this message if the test fails. Defaults to a meaningful
-     *            text if <tt>null</tt> is passed.
+     *            Print this message if the test fails. Defaults to a meaningful text if <tt>null</tt> is passed.
      * @since Ant1.7
      */
     public void assertOutputNotContaining(String message, String substring) {
         String realOutput = getOutput();
-        String realMessage = (message != null) ? message
-                : "expecting output to not contain \"" + substring
-                        + "\" output was \"" + realOutput + "\"";
+        String realMessage = (message != null) ? message : "expecting output to not contain \"" + substring
+                + "\" output was \"" + realOutput + "\"";
         assertFalse(realMessage, realOutput.indexOf(substring) >= 0);
     }
 
     /**
-     * Assert that the given message has been logged with a priority &lt;= INFO
-     * when running the given target.
+     * Assert that the given message has been logged with a priority &lt;= INFO when running the given target.
      */
     public void expectLogContaining(String target, String log) {
         executeTarget(target);
@@ -184,8 +178,7 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
-     * Assert that the given message has not been logged with a priority &lt;=
-     * INFO when running the given target.
+     * Assert that the given message has not been logged with a priority &lt;= INFO when running the given target.
      */
     public void expectLogNotContaining(String target, String log) {
         executeTarget(target);
@@ -193,8 +186,7 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
-     * Gets the log the BuildFileTest object. Only valid if configureProject()
-     * has been called.
+     * Gets the log the BuildFileTest object. Only valid if configureProject() has been called.
      * 
      * @pre logBuffer!=null
      * @return The log value
@@ -204,8 +196,7 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
-     * Assert that the given message has been logged with a priority &gt;=
-     * VERBOSE when running the given target.
+     * Assert that the given message has been logged with a priority &gt;= VERBOSE when running the given target.
      */
     public void expectDebuglog(String target, String log) {
         executeTarget(target);
@@ -218,8 +209,7 @@ public abstract class EasyAntBaseTest extends TestCase {
      */
     public void assertDebuglogContaining(String substring) {
         String realLog = getFullLog();
-        assertTrue("expecting debug log to contain \"" + substring
-                + "\" log was \"" + realLog + "\"",
+        assertTrue("expecting debug log to contain \"" + substring + "\" log was \"" + realLog + "\"",
                 realLog.indexOf(substring) >= 0);
     }
 
@@ -250,8 +240,7 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
-     * Executes the target, verify output matches expectations and that we got
-     * the named error at the end
+     * Executes the target, verify output matches expectations and that we got the named error at the end
      * 
      * @param target
      *            target to execute
@@ -300,6 +289,33 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
+     * configure and init to run the named project
+     * 
+     * @param url
+     *            path to project file to run
+     * @param logLevel
+     *            a given {@link LogLevel}
+     * 
+     * @throws BuildException
+     */
+    public void configureAndInitProject(URL url, int logLevel) {
+        configureProject(url, logLevel);
+        initProject();
+    }
+
+    /**
+     * configure and init to run the named project
+     * 
+     * @param url
+     *            path to project file to run
+     * @throws BuildException
+     */
+    public void configureAndInitProject(URL url) {
+        configureProject(url);
+        initProject();
+    }
+
+    /**
      * Set up to run the named project
      * 
      * @param url
@@ -311,8 +327,7 @@ public abstract class EasyAntBaseTest extends TestCase {
         try {
             f = new File(url.toURI());
         } catch (URISyntaxException e) {
-            throw new BuildException("Can't load project from url "
-                    + url.toString(), e);
+            throw new BuildException("Can't load project from url " + url.toString(), e);
         }
         configureProject(f.getAbsolutePath(), Project.MSG_DEBUG);
     }
@@ -332,8 +347,7 @@ public abstract class EasyAntBaseTest extends TestCase {
         try {
             f = new File(url.toURI());
         } catch (URISyntaxException e) {
-            throw new BuildException("Can't load project from url "
-                    + url.toString(), e);
+            throw new BuildException("Can't load project from url " + url.toString(), e);
         }
         configureProject(f.getAbsolutePath(), logLevel);
     }
@@ -349,36 +363,32 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
-     * Sets up to run the named project If you want to modify a few thing on the
-     * default configuration you should override this method
+     * Sets up to run the named project If you want to modify a few thing on the default configuration you should
+     * override this method
      * 
      * @param filename
      *            name of project file to run
      * @param logLevel
      *            a given {@link LogLevel}
      */
-    public void configureProject(String filename, int logLevel)
-            throws BuildException {
-        conf = EasyantConfigurationFactory.getInstance()
-                .createDefaultConfiguration();
+    public void configureProject(String filename, int logLevel) throws BuildException {
+        conf = EasyantConfigurationFactory.getInstance().createDefaultConfiguration();
         conf.setMsgOutputLevel(logLevel);
         conf.setBuildModule(new File(filename));
-        conf.getDefinedProps().put(
-                EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
+        conf.getDefinedProps().put(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
         // to avoid side effects due to user settings we ignore this setting by
         // default for test
-        conf.getDefinedProps().put(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS,
-                "true");
+        conf.getDefinedProps().put(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS, "true");
+
+        // Configure easyant ivy instance
+        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/ivysettings-test.xml"));
 
         // Configure the project basedir
         File projectModule = new File(filename);
         if (!projectModule.exists()) {
-            throw new BuildException("Project "
-                    + projectModule.getAbsolutePath() + " does not exists");
+            throw new BuildException("Project " + projectModule.getAbsolutePath() + " does not exists");
         }
-        conf.getDefinedProps().put(MagicNames.PROJECT_BASEDIR,
-                projectModule.getParent());
-
+        conf.getDefinedProps().put(MagicNames.PROJECT_BASEDIR, projectModule.getParent());
     }
 
     /**
@@ -388,8 +398,7 @@ public abstract class EasyAntBaseTest extends TestCase {
      */
     public void initProject() {
         if (conf == null) {
-            throw new RuntimeException(
-                    "You must call the configureProject method before initProject()");
+            throw new RuntimeException("You must call the configureProject method before initProject()");
         }
         // Flush the buffer
         logBuffer = new StringBuffer();
@@ -457,18 +466,16 @@ public abstract class EasyAntBaseTest extends TestCase {
      * @param cause
      *            information string to reader of report
      * @param msg
-     *            the message value of the build exception we are waiting for
-     *            set to null for any build exception to be valid
+     *            the message value of the build exception we are waiting for set to null for any build exception to be
+     *            valid
      */
-    public void expectSpecificBuildException(String target, String cause,
-            String msg) {
+    public void expectSpecificBuildException(String target, String cause, String msg) {
         try {
             executeTarget(target);
         } catch (org.apache.tools.ant.BuildException ex) {
             buildException = ex;
             if ((null != msg) && (!ex.getMessage().equals(msg))) {
-                fail("Should throw BuildException because '" + cause
-                        + "' with message '" + msg + "' (actual message '"
+                fail("Should throw BuildException because '" + cause + "' with message '" + msg + "' (actual message '"
                         + ex.getMessage() + "' instead)");
             }
             return;
@@ -477,8 +484,7 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
-     * run a target, expect an exception string containing the substring we look
-     * for (case sensitive match)
+     * run a target, expect an exception string containing the substring we look for (case sensitive match)
      * 
      * @param target
      *            target to run
@@ -487,17 +493,14 @@ public abstract class EasyAntBaseTest extends TestCase {
      * @param contains
      *            substring of the build exception to look for
      */
-    public void expectBuildExceptionContaining(String target, String cause,
-            String contains) {
+    public void expectBuildExceptionContaining(String target, String cause, String contains) {
         try {
             executeTarget(target);
         } catch (org.apache.tools.ant.BuildException ex) {
             buildException = ex;
             if ((null != contains) && (ex.getMessage().indexOf(contains) == -1)) {
-                fail("Should throw BuildException because '" + cause
-                        + "' with message containing '" + contains
-                        + "' (actual message '" + ex.getMessage()
-                        + "' instead)");
+                fail("Should throw BuildException because '" + cause + "' with message containing '" + contains
+                        + "' (actual message '" + ex.getMessage() + "' instead)");
             }
             return;
         }
@@ -577,9 +580,8 @@ public abstract class EasyAntBaseTest extends TestCase {
     }
 
     /**
-     * Retrieve a resource from the caller classloader to avoid assuming a vm
-     * working directory. The resource path must be relative to the package name
-     * or absolute from the root path.
+     * Retrieve a resource from the caller classloader to avoid assuming a vm working directory. The resource path must
+     * be relative to the package name or absolute from the root path.
      * 
      * @param resource
      *            the resource to retrieve its url.
@@ -614,8 +616,7 @@ public abstract class EasyAntBaseTest extends TestCase {
         private int logLevel;
 
         /**
-         * Constructs a test listener which will ignore log events above the
-         * given level.
+         * Constructs a test listener which will ignore log events above the given level.
          */
         public AntTestListener(int logLevel) {
             this.logLevel = logLevel;
@@ -628,8 +629,8 @@ public abstract class EasyAntBaseTest extends TestCase {
         }
 
         /**
-         * Fired after the last target has finished. This event will still be
-         * thrown if an error occurred during the build.
+         * Fired after the last target has finished. This event will still be thrown if an error occurred during the
+         * build.
          * 
          * @see BuildEvent#getException()
          */
@@ -647,8 +648,7 @@ public abstract class EasyAntBaseTest extends TestCase {
         }
 
         /**
-         * Fired when a target has finished. This event will still be thrown if
-         * an error occurred during the build.
+         * Fired when a target has finished. This event will still be thrown if an error occurred during the build.
          * 
          * @see BuildEvent#getException()
          */
@@ -668,8 +668,7 @@ public abstract class EasyAntBaseTest extends TestCase {
         }
 
         /**
-         * Fired when a task has finished. This event will still be throw if an
-         * error occurred during the build.
+         * Fired when a task has finished. This event will still be throw if an error occurred during the build.
          * 
          * @see BuildEvent#getException()
          */
@@ -690,8 +689,7 @@ public abstract class EasyAntBaseTest extends TestCase {
                 return;
             }
 
-            if (event.getPriority() == Project.MSG_INFO
-                    || event.getPriority() == Project.MSG_WARN
+            if (event.getPriority() == Project.MSG_INFO || event.getPriority() == Project.MSG_WARN
                     || event.getPriority() == Project.MSG_ERR) {
                 logBuffer.append(event.getMessage());
             }

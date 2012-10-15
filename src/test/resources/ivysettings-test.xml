@@ -16,8 +16,10 @@
 -->
 <ivysettings>
     <property name="apache.easyant.public.url" value="http://repository.easyant.org/apache-easyant"/>
+    <property name="easyant.default.cache.dir" value="${basedir}/easyant-cache-test"/>
+
     <settings defaultResolver="easyant-test-chain"/>
-    <caches defaultCacheDir="${basedir}/target/easyant-cache-test" useOrigin="true" />
+    <caches defaultCacheDir="${easyant.default.cache.dir}" useOrigin="true" />
     
     <resolvers>
         <url name="apache-easyant-plugins">

@@ -134,7 +134,7 @@ public class PluginServiceTest {
             }
         }
         Assert.assertNotNull(packageEP);
-        Assert.assertEquals("compile,abstract-package:package-finished,hello-world", packageEP.getDepends());
+        Assert.assertEquals("compile,abstract-package:package,hello-world", packageEP.getDepends());
 
         List<TargetReport> targets = packageEP.getTargetReports();
         Set<String> expectedTargets = new HashSet<String>(Arrays.asList("hello-world"));

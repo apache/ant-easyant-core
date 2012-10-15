@@ -18,48 +18,59 @@
 package org.apache.easyant.core;
 
 import org.apache.tools.ant.Project;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class StandardJavaProjectTest extends EasyAntBaseTest {
 
-    protected void setUp() throws Exception {
-        configureProject(this.getResource("standardJavaProject.ivy"), Project.MSG_INFO);
-
-        // Configure easyant ivy instance
-        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/ivysettings-test.xml"));
-
-        // init project with easyant configuration
-        initProject();
+    @Before
+    public void setUp() {
+        configureAndInitProject(this.getResource("standardJavaProject.ivy"), Project.MSG_INFO);
+        cleanTargetDirectory();
     }
 
-    public void testClean() throws Exception {
+    @After
+    public void tearDown() {
+        cleanTargetDirectory();
+    }
+
+    @Test
+    public void shouldInvokeClean() {
         executeTarget("clean");
     }
 
-    public void testValidate() throws Exception {
-        expectPropertySet("validate", "default.build.number", "10");
+    @Test
+    public void shouldInvokeCompile() {
+        executeTarget("compile");
     }
 
-    public void testPackage() throws Exception {
-        testClean();
+    @Test
+    public void shouldInvokePackage() {
         executeTarget("package");
     }
 
-    public void testImportWithoutAsAttribute() throws Exception {
-        testClean();
+    @Test
+    public void shouldInvokeVerify() {
+        executeTarget("verify");
+    }
+
+    @Test
+    public void shouldImportWithoutAsAttribute() {
         // <ea:plugin module="javadoc" revision="0.1"/>
         // no "as" attribute is specified, easyant should prefix all targets with "module" value by default
         executeTarget("javadoc:javadoc");
     }
 
-    public void testImportWithAsAttribute() throws Exception {
-        testClean();
+    @Test
+    public void shouldImportWithAsAttribute() {
         // <ea:plugin module="javadoc" revision="0.1" as="foobar"/>
         executeTarget("foobarjavadoc:javadoc");
     }
 
-    public void testVerify() throws Exception {
-        testClean();
-        executeTarget("verify");
+    @Test
+    public void shouldOverrideExistingProperty() {
+        assertPropertyEquals("default.build.number", "10");
     }
 
 }
