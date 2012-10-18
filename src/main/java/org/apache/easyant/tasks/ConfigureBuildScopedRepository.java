@@ -22,7 +22,7 @@ import java.io.File;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyTask;
-import org.apache.ivy.core.cache.DefaultRepositoryCacheManager;
+import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
 import org.apache.ivy.core.settings.IvySettings;
 import org.apache.ivy.plugins.resolver.ChainResolver;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
@@ -70,7 +70,7 @@ public class ConfigureBuildScopedRepository extends IvyTask {
 
         // Create a cache for build scoped repository
         File cacheDir = new File(DEFAULT_CACHE_BUILD_SCOPED_REPO);
-        DefaultRepositoryCacheManager rcm = new DefaultRepositoryCacheManager(CACHENAME, settings, cacheDir);
+        EasyAntRepositoryCacheManager rcm = new EasyAntRepositoryCacheManager(CACHENAME, settings, cacheDir);
         rcm.setUseOrigin(true); // no need to copy temporary build artifacts
                                 // into temporary cache.
         // Register the repository cache
@@ -119,7 +119,7 @@ public class ConfigureBuildScopedRepository extends IvyTask {
     private String buildDefaultRepositoryName() {
         return "build." + IvyInstanceHelper.getProjectIvyInstanceName(getProject());
     }
-    
+
     /**
      * Get the target directory where both build scoped repository and cache will be instanciated
      * 
