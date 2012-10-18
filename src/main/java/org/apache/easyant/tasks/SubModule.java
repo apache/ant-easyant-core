@@ -37,6 +37,7 @@ import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyPublish;
+import org.apache.ivy.ant.IvyResolve;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Location;
@@ -194,15 +195,22 @@ public class SubModule extends Task {
 
             ProjectUtils.injectTargetIntoExtensionPoint(subModule, helper);
 
-            filterTargets(subModule);
+            Set<String> targetsToRun = filterTargets(subModule);
             printExecutingTargetMsg(subModule);
 
-            if (targets != null && !targets.isEmpty()) {
-                subModule.executeTargets(targets);
+            if (targetsToRun != null && !targetsToRun.isEmpty()) {
+                subModule.executeTargets(new TargetList(targetsToRun));
                 if (useBuildRepository) {
-
                     File artifactsDir = subModule.resolveFile(subModule.getProperty("target.artifacts"));
                     if (artifactsDir.isDirectory()) {
+                        IvyResolve ivyResolve = new IvyResolve();
+                        ivyResolve.setFile(file);
+                        ivyResolve.setProject(subModule);
+                        ivyResolve.setOwningTarget(getOwningTarget());
+                        ivyResolve.setLocation(getLocation());
+                        ivyResolve.setTaskName("publish-buildscoped-repository");
+                        ivyResolve.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(subModule));
+                        ivyResolve.execute();
 
                         // this property set by LoadModule task when it
                         // configures the build repo
@@ -214,7 +222,8 @@ public class SubModule extends Task {
                         ivyPublish.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(subModule));
                         ivyPublish.setResolver(resolver);
                         // TODO: this should be more flexible!
-                        ivyPublish.setArtifactspattern("${target.artifacts}/[artifact](-[classifier]).[ext]");
+                        ivyPublish.setArtifactspattern(artifactsDir.getAbsolutePath()
+                                + "/[artifact](-[classifier]).[ext]");
                         // not all sub-build targets will generate ivy
                         // artifacts. we don't want to fail
                         // a successful build just because there's nothing to
@@ -304,15 +313,19 @@ public class SubModule extends Task {
     /**
      * Filter the active set of targets to only those defined in the given project.
      */
-    private void filterTargets(Project subProject) {
+    private Set<String> filterTargets(Project subProject) {
+        Set<String> filteredTargets = new HashSet<String>();
         Set<?> keys = subProject.getTargets().keySet();
+
         for (Iterator<String> it = targets.iterator(); it.hasNext();) {
             String target = it.next();
-            if (!keys.contains(target) && target.trim().length() > 0) {
+            if (keys.contains(target)) {
+                filteredTargets.add(target);
+            } else {
                 subProject.log("Skipping undefined target '" + target + "'", Project.MSG_VERBOSE);
-                it.remove();
             }
         }
+        return filteredTargets;
     }
 
     /**
@@ -655,6 +668,12 @@ public class SubModule extends Task {
         public TargetList(String... targets) {
             for (String target : targets)
                 add(target);
+        }
+
+        public TargetList(Set<String> targets) {
+            for (String target : targets) {
+                add(target);
+            }
         }
     }
 }
