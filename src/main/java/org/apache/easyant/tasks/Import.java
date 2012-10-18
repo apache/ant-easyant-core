@@ -27,6 +27,7 @@ import org.apache.ivy.ant.EasyAntPluginBridge;
 import org.apache.ivy.ant.IvyConflict;
 import org.apache.ivy.ant.IvyDependency;
 import org.apache.ivy.ant.IvyExclude;
+import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.core.report.ResolveReport;
@@ -114,6 +115,8 @@ public class Import extends AbstractImport implements DynamicAttribute {
                         .split(","), true, isChanging());
 
                 IvySettings settings = getEasyAntIvyInstance().getSettings();
+                IvyContext.pushNewContext();
+                IvyContext.getContext().setIvy(getEasyAntIvyInstance());
                 // FIXME: If additionnal dependency are loaded or a superior version of a dependency is defined it works
                 // as expected
                 // But it doesn't work if you specify a revision lower to original one
@@ -121,6 +124,7 @@ public class Import extends AbstractImport implements DynamicAttribute {
                 ResolveReport report = getEasyAntIvyInstance().getResolveEngine()
                         .resolve(md, configureResolveOptions());
                 importModule(moduleRevisionId, report);
+                IvyContext.popContext();
             } catch (ParseException e) {
                 throw new BuildException("Can't parse module descriptor", e);
             } catch (IOException e) {

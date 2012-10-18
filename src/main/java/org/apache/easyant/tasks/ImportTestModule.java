@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
+import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.module.descriptor.Artifact;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.core.report.ArtifactDownloadReport;
@@ -30,12 +31,14 @@ import org.apache.tools.ant.types.Path;
 
 /**
  * Alternative Import module implementation. This implementation is designed for test purpose. It doesn't take in
- * consideration : skipping module or buildConfiguration features.
- * Example :
- *  <pre>
+ * consideration : skipping module or buildConfiguration features. Example :
+ * 
+ * <pre>
  * &lt;import-test-module moduleIvy="/path/to/module.ivy" /&gt;
  * </pre>
- * Same example specifying sourceDirectory 
+ * 
+ * Same example specifying sourceDirectory
+ * 
  * <pre>
  * &lt;import-test-module moduleIvy="/path/to/module.ivy" sourceDirectory="/path/to/sourcedirectory"/&gt;
  * </pre>
@@ -57,11 +60,13 @@ public class ImportTestModule extends AbstractImport {
         }
 
         try {
-             
+            IvyContext.pushNewContext();
+            IvyContext.getContext().setIvy(getEasyAntIvyInstance());
             ResolveReport report = getEasyAntIvyInstance().getResolveEngine().resolve(moduleIvy);
-            //tiny hack report.getModuleDescriptor.getModuleRevisionId() return a caller instance
-            ModuleRevisionId moduleRevisionId =report.getModuleDescriptor().getAllArtifacts()[0].getModuleRevisionId();
-            importModule(moduleRevisionId,report);
+            // tiny hack report.getModuleDescriptor.getModuleRevisionId() return a caller instance
+            ModuleRevisionId moduleRevisionId = report.getModuleDescriptor().getAllArtifacts()[0].getModuleRevisionId();
+            importModule(moduleRevisionId, report);
+            IvyContext.popContext();
 
         } catch (ParseException e) {
             throw new BuildException("Can't parse module descriptor", e);
@@ -72,7 +77,7 @@ public class ImportTestModule extends AbstractImport {
     }
 
     @Override
-    protected void importModule(ModuleRevisionId moduleRevisionId,ResolveReport report) {
+    protected void importModule(ModuleRevisionId moduleRevisionId, ResolveReport report) {
         // Check dependency on core
         checkCoreCompliance(report, getProvidedConf());
 
@@ -93,7 +98,7 @@ public class ImportTestModule extends AbstractImport {
             if ("ant".equals(artifact.getType())) {
                 antFile = localResourceFile;
             } else {
-                handleOtherResourceFile(moduleRevisionId,artifact.getName(),artifact.getExt(), localResourceFile);
+                handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(), localResourceFile);
             }
         }
         // do effective import
