@@ -92,14 +92,14 @@ public interface EasyAntMagicNames {
     public static final String PLUGIN_SERVICE_INSTANCE = "plugin.service.instance";
 
     /**
-     * Name of the property containing the default location of ivysettings file used by easyant ivy instance Value:
-     * {@value}
+     * Name of the property containing the default location of ivysettings file used by easyant ivy instance Value: * *
+     * * {@value}
      */
     public static final String EASYANT_DEFAULT_IVYSETTINGS = "easyant.default.ivysettings.url";
 
     /**
-     * Name of the property containing the default location of ivysettings file used by project ivy instance Value:
-     * {@value}
+     * Name of the property containing the default location of ivysettings file used by project ivy instance Value: * *
+     * * {@value}
      */
     public static final String PROJECT_DEFAULT_IVYSETTINGS = "project.default.ivysettings.url";
 
@@ -175,4 +175,9 @@ public interface EasyAntMagicNames {
      * Specify if easyant is running in audit mode (plugin service for instance) Value: {@value}
      */
     public static final String AUDIT_MODE = "audit.mode";
+
+    /**
+     * Property specifying executed targets in current project
+     */
+    public static final String PROJECT_EXECUTED_TARGETS = "project.executed.targets";
 }

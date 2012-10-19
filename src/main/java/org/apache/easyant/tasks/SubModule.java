@@ -51,6 +51,7 @@ import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.util.CollectionUtils;
 import org.apache.tools.ant.util.StringUtils;
 
 /**
@@ -195,10 +196,11 @@ public class SubModule extends Task {
 
             ProjectUtils.injectTargetIntoExtensionPoint(subModule, helper);
 
-            Set<String> targetsToRun = filterTargets(subModule);
+            String targetsToRun = filterTargets(subModule);
             printExecutingTargetMsg(subModule);
 
             if (targetsToRun != null && !targetsToRun.isEmpty()) {
+                subModule.setNewProperty(EasyAntMagicNames.PROJECT_EXECUTED_TARGETS, targetsToRun);
                 subModule.executeTargets(new TargetList(targetsToRun));
                 if (useBuildRepository) {
                     File artifactsDir = subModule.resolveFile(subModule.getProperty("target.artifacts"));
@@ -297,6 +299,7 @@ public class SubModule extends Task {
         return subModule;
     }
 
+    @SuppressWarnings("unchecked")
     private void storeExecutionTimes(Project parent, Project child) {
         List<ExecutionResult> allresults = (List<ExecutionResult>) parent
                 .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
@@ -313,7 +316,7 @@ public class SubModule extends Task {
     /**
      * Filter the active set of targets to only those defined in the given project.
      */
-    private Set<String> filterTargets(Project subProject) {
+    private String filterTargets(Project subProject) {
         Set<String> filteredTargets = new HashSet<String>();
         Set<?> keys = subProject.getTargets().keySet();
 
@@ -325,7 +328,7 @@ public class SubModule extends Task {
                 subProject.log("Skipping undefined target '" + target + "'", Project.MSG_VERBOSE);
             }
         }
-        return filteredTargets;
+        return CollectionUtils.flattenToString(filteredTargets);
     }
 
     /**
@@ -668,12 +671,6 @@ public class SubModule extends Task {
         public TargetList(String... targets) {
             for (String target : targets)
                 add(target);
-        }
-
-        public TargetList(Set<String> targets) {
-            for (String target : targets) {
-                add(target);
-            }
         }
     }
 }

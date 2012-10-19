@@ -20,6 +20,8 @@ package org.apache.easyant.core.ant.listerners;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.ant.ExecutionStatus;
 import org.apache.ivy.util.StringUtils;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
@@ -54,28 +56,13 @@ public class BuildExecutionTimer implements BuildListener {
          */
         private String formattedElapsedTime;
 
-        /**
-         * Execution result
-         */
-        private int execResult;
+        private ExecutionStatus buildStatus;
 
-        /**
-         * Value to be assigned to execResult if failure
-         */
-        public static int FAILURE_RESULT = 0;
-
-        /**
-         * Value to be assigned to execResult if success
-         */
-        public static int SUCCESS_RESULT = 1;
-
-        public ExecutionResult(String unitName, long elapsedTime,
-                int buildResult) {
+        public ExecutionResult(String unitName, long elapsedTime, ExecutionStatus buildStatus) {
             this.unitName = unitName;
             this.elapsedTime = elapsedTime;
-            this.formattedElapsedTime = DateUtils
-                    .formatElapsedTime(elapsedTime);
-            this.execResult = buildResult;
+            this.formattedElapsedTime = DateUtils.formatElapsedTime(elapsedTime);
+            this.buildStatus = buildStatus;
         }
 
         public String getUnitName() {
@@ -90,28 +77,29 @@ public class BuildExecutionTimer implements BuildListener {
             return this.formattedElapsedTime;
         }
 
-        public int getResult() {
-            return this.execResult;
+        public ExecutionStatus getStatus() {
+            return this.buildStatus;
         }
     }
 
     /**
-     * stops the timer and stores the result as a project reference by the key
-     * 'referenceName'
+     * stops the timer and stores the result as a project reference by the key 'referenceName'
      */
-    protected void stopTimer(BuildEvent arg0, String referenceName,
-            long startTime) {
-        List<ExecutionResult> results = (List<ExecutionResult>) arg0
-                .getProject().getReference(referenceName);
+    protected void stopTimer(BuildEvent event, String referenceName, long startTime) {
+        List<ExecutionResult> results = (List<ExecutionResult>) event.getProject().getReference(referenceName);
         if (results == null) {
             results = new ArrayList<ExecutionResult>();
-            arg0.getProject().addReference(referenceName, results);
+            event.getProject().addReference(referenceName, results);
+        }
+        ExecutionStatus status = ExecutionStatus.SUCCESS;
+        if (event.getException() != null) {
+            status = ExecutionStatus.FAILED;
+        } else if (event.getProject().getProperty(EasyAntMagicNames.PROJECT_EXECUTED_TARGETS) == null) {
+            status = ExecutionStatus.SKIPPED;
         }
 
-        ExecutionResult execResult = new ExecutionResult(arg0.getProject()
-                .getName(), System.currentTimeMillis() - startTime, arg0
-                .getException() == null ? ExecutionResult.SUCCESS_RESULT
-                : ExecutionResult.FAILURE_RESULT);
+        ExecutionResult execResult = new ExecutionResult(event.getProject().getName(), System.currentTimeMillis()
+                - startTime, status);
 
         results.add(execResult);
 
@@ -147,8 +135,7 @@ public class BuildExecutionTimer implements BuildListener {
     }
 
     /**
-     * Returns a string containing results of execution timing for display on
-     * console in a tabular fashion
+     * Returns a string containing results of execution timing for display on console in a tabular fashion
      * 
      * @param results
      * @return
@@ -160,35 +147,31 @@ public class BuildExecutionTimer implements BuildListener {
         int maxExecTimeLength = 0;
         for (int i = 0; i < results.size(); i++) {
             ExecutionResult result = results.get(i);
-            maxUnitNameLength = result.getUnitName().length() > maxUnitNameLength ? result
-                    .getUnitName().length()
+            maxUnitNameLength = result.getUnitName().length() > maxUnitNameLength ? result.getUnitName().length()
                     : maxUnitNameLength;
             maxExecTimeLength = result.getFormattedElapsedTime().length() > maxExecTimeLength ? result
-                    .getFormattedElapsedTime().length()
-                    : maxExecTimeLength;
+                    .getFormattedElapsedTime().length() : maxExecTimeLength;
         }
-        StringBuffer sb = new StringBuffer(
-                org.apache.tools.ant.util.StringUtils.LINE_SEP);
+        StringBuffer sb = new StringBuffer(org.apache.tools.ant.util.StringUtils.LINE_SEP);
         for (int i = 0; i < results.size(); i++) {
             ExecutionResult result = results.get(i);
             String moduleName = result.getUnitName();
-            int variableSpaces = maxUnitNameLength - moduleName.length()
-                    + constantSpaces;
-            sb.append(" * ").append(result.getUnitName()).append(
-                    StringUtils.repeat(" ", variableSpaces));
+            int variableSpaces = maxUnitNameLength - moduleName.length() + constantSpaces;
+            sb.append(" * ").append(result.getUnitName()).append(StringUtils.repeat(" ", variableSpaces));
             // keeping both success and failed strings of equal length
-            String execResult = result.getResult() == ExecutionResult.SUCCESS_RESULT ? "SUCCESS "
-                    : "FAILED  ";
-            sb.append(execResult).append("[took ").append(
-                    result.getFormattedElapsedTime()).append("]").append(
-                    org.apache.tools.ant.util.StringUtils.LINE_SEP);
+            String execResult = result.getStatus().toString();
+            if (execResult.length() < 7) {
+                execResult += StringUtils.repeat(" ", 7 - execResult.length());
+            }
+            sb.append(execResult).append(" [took ").append(result.getFormattedElapsedTime()).append("]")
+                    .append(org.apache.tools.ant.util.StringUtils.LINE_SEP);
         }
 
         formattedResults = sb.toString();
         return formattedResults;
     }
 
-    /** 
+    /**
      * Reference key against which build execution results will be stored
      */
     public static final String EXECUTION_TIMER_BUILD_RESULTS = "execution.timer.build.results";
