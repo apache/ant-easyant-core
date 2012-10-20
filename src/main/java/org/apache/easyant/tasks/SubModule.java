@@ -199,7 +199,7 @@ public class SubModule extends Task {
             String targetsToRun = filterTargets(subModule);
             printExecutingTargetMsg(subModule);
 
-            if (targetsToRun != null && !targetsToRun.isEmpty()) {
+            if (targetsToRun != null && !"".equals(targetsToRun.trim())) {
                 subModule.setNewProperty(EasyAntMagicNames.PROJECT_EXECUTED_TARGETS, targetsToRun);
                 subModule.executeTargets(new TargetList(targetsToRun));
                 if (useBuildRepository) {
