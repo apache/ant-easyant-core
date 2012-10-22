@@ -17,42 +17,79 @@
  */
 package org.apache.easyant.core.descriptor;
 
-public class ExtensionPointMappingDescriptor {
-    
+import org.apache.easyant.core.ivy.InheritableScope;
+import org.apache.ivy.core.module.id.ModuleRevisionId;
+
+public class ExtensionPointMappingDescriptor implements AdvancedInheritableItem {
+
     private String target;
     private String extensionPoint;
     private String buildConfigurations;
+    private InheritableScope inheritScope = InheritableScope.BOTH;
+    private boolean inheritable = true;
+    private final ModuleRevisionId sourceModule;
+
+    public ExtensionPointMappingDescriptor() {
+        this.sourceModule = null;
+    }
+
+    public ExtensionPointMappingDescriptor(ModuleRevisionId sourceModule) {
+        this.sourceModule = sourceModule;
+    }
+
     public String getTarget() {
         return target;
     }
+
     public void setTarget(String target) {
         this.target = target;
     }
-    
+
     public String getExtensionPoint() {
         return extensionPoint;
     }
+
     public void setExtensionPoint(String extensionPoint) {
         this.extensionPoint = extensionPoint;
     }
-    
+
     /**
      * Return a build configuration name bound to this plugin
+     * 
      * @return a build configuration name
      */
     public String getBuildConfigurations() {
         return buildConfigurations;
     }
-    
+
     /**
      * set a build configuration name bound to this plugin
-     * @param buildConfigurationName a build configuration name
+     * 
+     * @param buildConfigurationName
+     *            a build configuration name
      */
     public void setBuildConfigurations(String buildConfigurations) {
         this.buildConfigurations = buildConfigurations;
     }
-    
-    
-    
+
+    public InheritableScope getInheritScope() {
+        return inheritScope;
+    }
+
+    public void setInheritScope(InheritableScope inheritScope) {
+        this.inheritScope = inheritScope;
+    }
+
+    public boolean isInheritable() {
+        return inheritable;
+    }
+
+    public void setInheritable(boolean inheritable) {
+        this.inheritable = inheritable;
+    }
+
+    public ModuleRevisionId getSourceModule() {
+        return sourceModule;
+    }
 
 }

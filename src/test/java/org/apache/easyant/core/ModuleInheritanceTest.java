@@ -52,4 +52,10 @@ public class ModuleInheritanceTest extends EasyAntBaseTest {
         expectPropertyUnset("validate", "my.property");
     }
 
+    @Test
+    public void shouldInheritBindTarget() {
+        // this property is loaded by source-jar:init and should be bind to validate extensionPoint only if bindtarget
+        // has been inherited
+        expectPropertySet("validate", "src.publish.conf", "source");
+    }
 }

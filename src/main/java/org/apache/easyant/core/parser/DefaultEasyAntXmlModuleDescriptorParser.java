@@ -456,13 +456,13 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 }
 
             }
-            // put this variable on the context
             ExtensionPointMappingDescriptor extensionPointMappingDescriptor = new ExtensionPointMappingDescriptor();
             extensionPointMappingDescriptor.setBuildConfigurations(conf);
-            // TODO: add a facility to get plugin alias if this is a
-            // declared as a subelement
             extensionPointMappingDescriptor.setTarget(target);
             extensionPointMappingDescriptor.setExtensionPoint(toExtensionPoint);
+
+            handleInheritedScopeAttribute(attributes, extensionPointMappingDescriptor);
+
             easyAntModuleDescriptor.addExtensionPointMapping(extensionPointMappingDescriptor);
 
         }
@@ -557,6 +557,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                         .getParser();
                 mergeEasyantProperties(parser.getEasyAntModuleDescriptor().getProperties());
                 mergeEasyantPlugins(parser.getEasyAntModuleDescriptor().getPlugins());
+                mergeBindTargets(parser.getEasyAntModuleDescriptor().getExtensionPointsMappings());
             }
         }
 
@@ -576,12 +577,13 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                         .getParser();
 
                 if (extendTypes.contains("properties")) {
-
                     mergeEasyantProperties(parser.getEasyAntModuleDescriptor().getProperties());
-
                 }
                 if (extendTypes.contains("plugins")) {
                     mergeEasyantPlugins(parser.getEasyAntModuleDescriptor().getPlugins());
+                }
+                if (extendTypes.contains("bindtarget")) {
+                    mergeBindTargets(parser.getEasyAntModuleDescriptor().getExtensionPointsMappings());
                 }
             }
 
@@ -631,6 +633,20 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             }
         }
 
+        protected void mergeBindTargets(List<ExtensionPointMappingDescriptor> extensionPointsMappings) {
+            for (ExtensionPointMappingDescriptor extensionPointMappingDescriptor : extensionPointsMappings) {
+                if (extensionPointMappingDescriptor.isInheritable()) {
+                    StringBuilder sb = new StringBuilder("Merging extension-point binding : ");
+                    sb.append(extensionPointMappingDescriptor.toString());
+                    if (extensionPointMappingDescriptor.getSourceModule() != null) {
+                        sb.append(" from ").append(extensionPointMappingDescriptor.getSourceModule().toString());
+                    }
+                    Message.debug(sb.toString());
+                    easyAntModuleDescriptor.addExtensionPointMapping(extensionPointMappingDescriptor);
+                }
+            }
+        }
+
         /**
          * Get the default parent location
          * 
@@ -640,5 +656,4 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             return "../parent.ivy";
         }
     }
-
 }
