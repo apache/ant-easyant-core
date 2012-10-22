@@ -77,9 +77,6 @@
 			<exclude name="target/**" />
 			<include name="lib/*.jar" />
 
-			<include name="repository/**" />
-			<exclude name="repository/bootstrap-cache/**" />
-
 			<include name="example/**" />
 			<exclude name="example/**/bin/**" />
 			<exclude name="example/**/lib/**" />
