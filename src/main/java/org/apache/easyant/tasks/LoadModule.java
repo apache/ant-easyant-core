@@ -284,11 +284,21 @@ public class LoadModule extends AbstractEasyAntTask {
                 }
             }
             if (md.getBuildType() != null) {
-                Import importTask = new Import();
-                importTask.setMrid(md.getBuildType());
-                importTask.setTaskType("antlib:org.apache.easyant:import");
-                getOwningTarget().addTask(importTask);
-                initTask(importTask).execute();
+                if (canInherit(md.getBuildType(), currentModule)) {
+                    Import importTask = new Import();
+                    importTask.setMrid(md.getBuildType().getMrid());
+                    importTask.setMode(md.getBuildType().getMode());
+                    importTask.setAs(md.getBuildType().getAs());
+                    importTask.setMandatory(md.getBuildType().isMandatory());
+                    importTask.setBuildConfigurations(md.getBuildType().getBuildConfigurations());
+                    importTask.setDependencies(md.getBuildType().getDependencies());
+                    importTask.setConflicts(md.getBuildType().getConflicts());
+                    importTask.setExcludes(md.getBuildType().getExcludes());
+
+                    importTask.setTaskType("antlib:org.apache.easyant:import");
+                    getOwningTarget().addTask(importTask);
+                    initTask(importTask).execute();
+                }
             }
             for (Iterator<?> iterator = md.getPlugins().iterator(); iterator.hasNext();) {
                 PluginDescriptor plugin = (PluginDescriptor) iterator.next();

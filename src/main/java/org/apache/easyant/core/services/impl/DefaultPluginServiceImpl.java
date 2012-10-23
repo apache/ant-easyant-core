@@ -30,6 +30,7 @@ import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
+import org.apache.easyant.core.descriptor.PluginType;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
@@ -521,9 +522,4 @@ public class DefaultPluginServiceImpl implements PluginService {
     public EasyAntReport generateEasyAntReport(File moduleDescriptor) throws Exception {
         return generateEasyAntReport(moduleDescriptor, null, null);
     }
-
-    private enum PluginType {
-        BUILDTYPE, PLUGIN
-    }
-
 }

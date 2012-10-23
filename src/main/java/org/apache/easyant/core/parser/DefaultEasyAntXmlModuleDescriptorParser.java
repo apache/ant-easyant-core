@@ -34,6 +34,7 @@ import org.apache.easyant.core.descriptor.DefaultEasyAntDescriptor;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
 import org.apache.easyant.core.descriptor.ExtensionPointMappingDescriptor;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
+import org.apache.easyant.core.descriptor.PluginType;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.ivy.ant.IvyConflict;
@@ -46,7 +47,6 @@ import org.apache.ivy.ant.IvyExclude;
 import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.module.descriptor.Configuration;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
-import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.parser.ModuleDescriptorParser;
 import org.apache.ivy.plugins.parser.ParserSettings;
 import org.apache.ivy.plugins.parser.xml.XmlModuleDescriptorParser;
@@ -98,20 +98,13 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
         return parser.getModuleDescriptor();
     }
 
+    private enum EasyAntState {
+        NONE, EASYANT, PLUGIN, PLUGIN_DEPENDENCY
+    }
+
     public class EasyAntParser extends Parser {
 
-        public final class EasyAntState {
-            public static final int NONE = 0;
-            public static final int EASYANT = 1;
-            public static final int PLUGIN = 2;
-            public static final int PLUGIN_DEPENDENCY = 3;
-
-            private EasyAntState() {
-            }
-
-        }
-
-        private int easyAntState;
+        private EasyAntState easyAntState;
 
         private DefaultEasyAntDescriptor easyAntModuleDescriptor;
 
@@ -227,54 +220,79 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
          *            reprensents the plugins attributes
          */
         protected void pluginStarted(Attributes attributes) {
+            easyAntState = EasyAntState.PLUGIN;
+            PluginDescriptor plugin = handleCommonPluginDescriptorAttributes(attributes, PluginType.PLUGIN);
+            // plugin specific attribute
             boolean mandatory = false;
-
             String mandatoryValue = getSettings().substitute(attributes.getValue("mandatory"));
             if (mandatoryValue != null && "true".equals(mandatoryValue)) {
                 mandatory = true;
             }
-            String conf = getSettings().substitute(attributes.getValue("conf"));
-
-            easyAntState = EasyAntState.PLUGIN;
-            PluginDescriptor plugin = new PluginDescriptor(getMd().getModuleRevisionId());
-
-            String mrid = getSettings().substitute(attributes.getValue("mrid"));
-            if (mrid != null) {
-                if (!mrid.matches(".*#.*")) {
-                    Message.debug("No organisation specified for plugin " + mrid + " using the default one");
-                    mrid = EasyAntConstants.EASYANT_PLUGIN_ORGANISATION + "#" + mrid;
-                }
-                plugin.setMrid(mrid);
-            } else {
-                String org = attributes.getValue("org") != null ? attributes.getValue("org") : attributes
-                        .getValue("organisation");
-                org = getSettings().substitute(org);
-                if (org == null) {
-                    Message.debug("No organisation specified for plugin " + mrid + " using the default one");
-                    org = EasyAntConstants.EASYANT_PLUGIN_ORGANISATION;
-
-                }
-                String module = getSettings().substitute(attributes.getValue("module"));
-                String revision = attributes.getValue("rev") != null ? attributes.getValue("rev") : attributes
-                        .getValue("revision");
-                revision = getSettings().substitute(revision);
-                plugin.setOrganisation(org);
-                plugin.setModule(module);
-                plugin.setRevision(revision);
-
-            }
-            plugin.setMode(getSettings().substitute(attributes.getValue("mode")));
-
             plugin.setMandatory(mandatory);
-            plugin.setAs(getSettings().substitute(attributes.getValue("as")));
-            plugin.setBuildConfigurations(conf);
-
             handleInheritedScopeAttribute(attributes, plugin);
 
             currentPluginDescriptor = plugin;
             easyAntModuleDescriptor.addPlugin(plugin);
 
+        }
+
+        /**
+         * Parsing the easyant tag
+         * 
+         * @param attributes
+         *            reprensents the easyant attributes
+         */
+        protected void eaBuildStarted(Attributes attributes) {
+            easyAntState = EasyAntState.EASYANT;
+            PluginDescriptor buildtype = handleCommonPluginDescriptorAttributes(attributes, PluginType.BUILDTYPE);
+            // a build type cannot be skipped
+            buildtype.setMandatory(true);
+            easyAntModuleDescriptor.setBuildType(buildtype);
+        }
+
+        private PluginDescriptor handleCommonPluginDescriptorAttributes(Attributes attributes, PluginType pluginType) {
+            PluginDescriptor pluginDescriptor = new PluginDescriptor();
+            String mrid = getSettings().substitute(attributes.getValue("mrid"));
+            if (mrid != null) {
+                if (!mrid.matches(".*#.*")) {
+                    if (pluginType == PluginType.BUILDTYPE) {
+                        Message.debug("No organisation specified for buildtype " + mrid + " using the default one");
+                        mrid = EasyAntConstants.EASYANT_BUILDTYPES_ORGANISATION + "#" + mrid;
+                    } else {
+                        Message.debug("No organisation specified for plugin " + mrid + " using the default one");
+                        mrid = EasyAntConstants.EASYANT_PLUGIN_ORGANISATION + "#" + mrid;
+                    }
+                }
+                pluginDescriptor.setMrid(mrid);
+            } else {
+                String org = attributes.getValue("org") != null ? attributes.getValue("org") : attributes
+                        .getValue("organisation");
+                org = getSettings().substitute(org);
+                if (org == null) {
+                    if (pluginType == PluginType.BUILDTYPE) {
+                        Message.debug("No organisation specified for buildtype " + mrid + " using the default one");
+                        org = EasyAntConstants.EASYANT_BUILDTYPES_ORGANISATION;
+                    } else {
+                        Message.debug("No organisation specified for plugin " + mrid + " using the default one");
+                        org = EasyAntConstants.EASYANT_PLUGIN_ORGANISATION;
+                    }
+                }
+                String module = getSettings().substitute(attributes.getValue("module"));
+                String revision = attributes.getValue("rev") != null ? attributes.getValue("rev") : attributes
+                        .getValue("revision");
+                revision = getSettings().substitute(revision);
+                pluginDescriptor.setOrganisation(org);
+                pluginDescriptor.setModule(module);
+                pluginDescriptor.setRevision(revision);
+            }
+
+            String conf = getSettings().substitute(attributes.getValue("conf"));
+            pluginDescriptor.setBuildConfigurations(conf);
+
+            pluginDescriptor.setMode(getSettings().substitute(attributes.getValue("mode")));
+            pluginDescriptor.setAs(getSettings().substitute(attributes.getValue("as")));
             handlePropertyAsAttribute(attributes, conf);
+            return pluginDescriptor;
         }
 
         public void pluginDependencyStarted(Attributes attributes) {
@@ -394,42 +412,6 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 inheritScopeElement.setInheritable("true".equalsIgnoreCase(inheritableValue));
             }
 
-        }
-
-        /**
-         * Parsing the easyant tag
-         * 
-         * @param attributes
-         *            reprensents the easyant attributes
-         */
-        protected void eaBuildStarted(Attributes attributes) {
-            easyAntState = EasyAntState.EASYANT;
-            String mrid = getSettings().substitute(attributes.getValue("mrid"));
-            if (mrid != null) {
-                if (!mrid.matches(".*#.*")) {
-                    Message.debug("No organisation specified for buildtype " + mrid + " using the default one");
-                    mrid = EasyAntConstants.EASYANT_BUILDTYPES_ORGANISATION + "#" + mrid;
-                }
-                easyAntModuleDescriptor.setBuildType(mrid);
-            } else {
-                String org = attributes.getValue("org") != null ? attributes.getValue("org") : attributes
-                        .getValue("organisation");
-                org = getSettings().substitute(org);
-                if (org == null) {
-                    Message.debug("No organisation specified for buildtype " + mrid + " using the default one");
-                    org = EasyAntConstants.EASYANT_BUILDTYPES_ORGANISATION;
-
-                }
-                String module = getSettings().substitute(attributes.getValue("module"));
-                String revision = attributes.getValue("rev") != null ? attributes.getValue("rev") : attributes
-                        .getValue("revision");
-                revision = getSettings().substitute(revision);
-                ModuleRevisionId moduleRevisionId = ModuleRevisionId.newInstance(org, module, revision);
-
-                easyAntModuleDescriptor.setBuildType(moduleRevisionId.toString());
-            }
-
-            handlePropertyAsAttribute(attributes, null);
         }
 
         /**
@@ -570,7 +552,8 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
          *            an other module descriptor
          * @throws ParseException
          */
-        protected void mergeWithOtherModuleDescriptor(List extendTypes, ModuleDescriptor parent) throws ParseException {
+        protected void mergeWithOtherModuleDescriptor(@SuppressWarnings("rawtypes") List extendTypes,
+                ModuleDescriptor parent) throws ParseException {
             super.mergeWithOtherModuleDescriptor(extendTypes, parent);
             if (parent.getParser() instanceof DefaultEasyAntXmlModuleDescriptorParser) {
                 DefaultEasyAntXmlModuleDescriptorParser parser = (DefaultEasyAntXmlModuleDescriptorParser) parent

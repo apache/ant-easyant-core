@@ -31,46 +31,45 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
 
     public DefaultEasyAntDescriptor() {
         // super(md);
-        properties = new HashMap<String,PropertyDescriptor>();
+        properties = new HashMap<String, PropertyDescriptor>();
         plugins = new ArrayList<PluginDescriptor>();
         buildConfigurations = new ArrayList<String>();
         extensionPointsMappings = new ArrayList<ExtensionPointMappingDescriptor>();
     }
 
     private ModuleDescriptor ivyModuleDescriptor;
-    private String buildType;
-    private Map<String,PropertyDescriptor> properties;
+    private PluginDescriptor buildType;
+    private Map<String, PropertyDescriptor> properties;
     private List<PluginDescriptor> plugins;
     private List<String> buildConfigurations;
-    
+
     private List<ExtensionPointMappingDescriptor> extensionPointsMappings;
 
-    public String getBuildType() {
+    public PluginDescriptor getBuildType() {
         return buildType;
     }
 
-    public Map<String,PropertyDescriptor> getProperties() {
+    public Map<String, PropertyDescriptor> getProperties() {
         return properties;
     }
 
-    public void setBuildType(String buildType) {
+    public void setBuildType(PluginDescriptor buildType) {
         this.buildType = buildType;
 
     }
 
-    public void setProperties(Map<String,PropertyDescriptor> properties) {
+    public void setProperties(Map<String, PropertyDescriptor> properties) {
         this.properties = properties;
 
     }
-    
+
     public void addPlugin(PluginDescriptor pluginDescriptor) {
         if (pluginDescriptor == null) {
             throw new IllegalArgumentException("pluginDescriptor argument can't be null");
         }
         this.plugins.add(pluginDescriptor);
     }
-    
-    
+
     public List<PluginDescriptor> getPlugins() {
         return plugins;
     }
@@ -82,19 +81,19 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
     public List<String> getBuildConfigurations() {
         return buildConfigurations;
     }
-    
+
     public void setIvyModuleDescriptor(ModuleDescriptor ivyModuleDescriptor) {
         this.ivyModuleDescriptor = ivyModuleDescriptor;
     }
 
-    public ModuleDescriptor getIvyModuleDescriptor() {      
+    public ModuleDescriptor getIvyModuleDescriptor() {
         return this.ivyModuleDescriptor;
     }
-    
+
     public String getName() {
         return getIvyModuleDescriptor().getModuleRevisionId().getName();
     }
-    
+
     public String getDescription() {
         return getIvyModuleDescriptor().getDescription();
     }
@@ -102,11 +101,9 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
     public List<ExtensionPointMappingDescriptor> getExtensionPointsMappings() {
         return extensionPointsMappings;
     }
-    
+
     public void addExtensionPointMapping(ExtensionPointMappingDescriptor extensionPointMappingDescriptor) {
         this.extensionPointsMappings.add(extensionPointMappingDescriptor);
     }
-    
-    
 
 }

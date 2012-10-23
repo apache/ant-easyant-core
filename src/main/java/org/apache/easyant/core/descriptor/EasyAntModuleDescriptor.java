@@ -23,8 +23,7 @@ import java.util.Map;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 
 /**
- * This interface is used to access to all metadata provided in &lt;easyant&gt;
- * tag in a module descriptor
+ * This interface is used to access to all metadata provided in &lt;easyant&gt; tag in a module descriptor
  */
 public interface EasyAntModuleDescriptor {
 
@@ -45,19 +44,17 @@ public interface EasyAntModuleDescriptor {
     /**
      * Get the build type defined in the module descriptor
      * 
-     * @return a string that represent the build type module revision id
-     *         (example org.apache.easyant#build-std-java;0.1)
+     * @return a {@link PluginDescriptor} of build type module
      */
-    String getBuildType();
+    PluginDescriptor getBuildType();
 
     /**
      * Set the build type that should be used
      * 
      * @param buildType
-     *            a string that represent the build type module revision id
-     *            (example org.apache.easyant#build-std-java;0.1)
+     *            a {@link PluginDescriptor} of build type module
      */
-    void setBuildType(String buildType);
+    void setBuildType(PluginDescriptor buildType);
 
     /**
      * Get all plugins defined in the module descriptor
@@ -102,16 +99,19 @@ public interface EasyAntModuleDescriptor {
      * @return a string representing the module description
      */
     String getDescription();
-    
+
     /**
      * Get all registered extension points mappings
+     * 
      * @return a list of {@link ExtensionPointMappingDescriptor}
      */
     public List<ExtensionPointMappingDescriptor> getExtensionPointsMappings();
-    
+
     /**
-     * Add a {@link ExtensionPointMappingDescriptor} to the list of all registered extension points mappings 
-     * @param extensionPointMappingDescriptor a {@link ExtensionPointMappingDescriptor}
+     * Add a {@link ExtensionPointMappingDescriptor} to the list of all registered extension points mappings
+     * 
+     * @param extensionPointMappingDescriptor
+     *            a {@link ExtensionPointMappingDescriptor}
      */
     public void addExtensionPointMapping(ExtensionPointMappingDescriptor extensionPointMappingDescriptor);
 
