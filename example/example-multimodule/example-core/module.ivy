@@ -17,7 +17,7 @@
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
     <info organisation="org.apache.easyant" module="example-core" revision="0.2" status="integration" >
         <!-- inherit from parent -->
-        <extends organisation="org.apache.easyant" module="example-multimodule" revision="0.2" />
+        <extends organisation="org.apache.easyant" module="example-parent" revision="0.2" />
         <!--
             This easyant section is equivalent to having a module.ant like this:
                 
