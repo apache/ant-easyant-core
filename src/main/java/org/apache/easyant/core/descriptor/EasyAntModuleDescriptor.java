@@ -115,4 +115,18 @@ public interface EasyAntModuleDescriptor {
      */
     public void addExtensionPointMapping(ExtensionPointMappingDescriptor extensionPointMappingDescriptor);
 
+    /**
+     * Get configure project descriptor (defining basedir/defaulttarget etc...)
+     * 
+     * @return a {@link ConfigureProjectDescriptor}
+     */
+    public ConfigureProjectDescriptor getConfigureProjectDescriptor();
+
+    /**
+     * Set configure project descriptor (defining basedir/defaulttarget etc...)
+     * 
+     * @param configureProjectDescriptor
+     *            a {@link ConfigureProjectDescriptor}
+     */
+    public void setConfigureProjectDescriptor(ConfigureProjectDescriptor configureProjectDescriptor);
 }

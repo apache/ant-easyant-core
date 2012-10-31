@@ -19,7 +19,7 @@
         <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.9" my.property.inbuildtype="true"/>
         <ea:plugin module="javadoc" revision="0.9" my.property.inplugin="true"/>
         <ea:plugin module="javadoc" revision="0.9" my-dashes="true" my.property.inconf="true" conf="myBuild"/>
-        
+        <ea:configure-project defaulttarget="package" my.property.inconfigureproject="true"/>       
     </info>
     <configurations>
         <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>

@@ -30,6 +30,8 @@
     <taskdef name="searchmodule" classname="org.apache.easyant.tasks.SearchModule"/>
     
     <taskdef name="configure-build-scoped-repository" classname="org.apache.easyant.tasks.ConfigureBuildScopedRepository"/> 
+    <taskdef name="configure-project" classname="org.apache.easyant.tasks.ConfigureProject"/> 
+
     
     <taskdef name="findclasspath" classname="org.apache.easyant.tasks.findclasspath.FindClasspathTask"/>
     <typedef name="environment-strategy" classname="org.apache.easyant.tasks.findclasspath.EnvironmentStrategy"/>

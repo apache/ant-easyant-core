@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.descriptor.AdvancedInheritableItem;
+import org.apache.easyant.core.descriptor.ConfigureProjectDescriptor;
 import org.apache.easyant.core.descriptor.DefaultEasyAntDescriptor;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
 import org.apache.easyant.core.descriptor.ExtensionPointMappingDescriptor;
@@ -99,7 +100,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
     }
 
     private enum EasyAntState {
-        NONE, EASYANT, PLUGIN, PLUGIN_DEPENDENCY
+        NONE, BUILDTYPE, PLUGIN, PLUGIN_DEPENDENCY, CONFIGURE_PROJECT
     }
 
     public class EasyAntParser extends Parser {
@@ -133,6 +134,12 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             }
             if (name.equals(easyantPrefix + ":bindtarget") && State.EXTRA_INFO == getState()) {
                 bindTargetStarted(attributes);
+            }
+            if (name.equals(easyantPrefix + ":configure-project") && State.EXTRA_INFO == getState()) {
+                if (easyAntState != EasyAntState.NONE) {
+                    throw new SAXException("configure-project is not supported as a nested element");
+                }
+                configureProjectStarted(attributes);
             }
 
             if (name.equals(easyantPrefix + ":dependency") && easyAntState == EasyAntState.PLUGIN) {
@@ -169,6 +176,10 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             if (name.equals(easyantPrefix + ":dependency") && easyAntState == EasyAntState.PLUGIN_DEPENDENCY) {
                 endPluginDependency();
             }
+
+            if (name.equals(easyantPrefix + ":configure-project") && easyAntState == EasyAntState.CONFIGURE_PROJECT) {
+                easyAntState = EasyAntState.NONE;
+            }
         }
 
         protected void endPlugin() {
@@ -193,7 +204,6 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                     easyantPrefix = (String) namespace.getKey();
                 }
             }
-
         }
 
         @Override
@@ -211,6 +221,25 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             } catch (ParseException e) {
                 throw new SAXException(e);
             }
+        }
+
+        /**
+         * Parses configure-project tag
+         * 
+         * @param attributes
+         *            represents configure project attributes
+         */
+        protected void configureProjectStarted(Attributes attributes) {
+            easyAntState = EasyAntState.CONFIGURE_PROJECT;
+            ConfigureProjectDescriptor configureProjectDescriptor = new ConfigureProjectDescriptor();
+            String basedir = getSettings().substitute(attributes.getValue("basedir"));
+            String defaultTarget = getSettings().substitute(attributes.getValue("defaulttarget"));
+            configureProjectDescriptor.setBasedir(basedir);
+            configureProjectDescriptor.setDefaultTarget(defaultTarget);
+            handlePropertyAsAttribute(attributes, Arrays.asList("basedir", "defaulttarget"),
+                    configureProjectDescriptor, null);
+            handleInheritedScopeAttribute(attributes, configureProjectDescriptor);
+            easyAntModuleDescriptor.setConfigureProjectDescriptor(configureProjectDescriptor);
         }
 
         /**
@@ -243,7 +272,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
          *            reprensents the easyant attributes
          */
         protected void eaBuildStarted(Attributes attributes) {
-            easyAntState = EasyAntState.EASYANT;
+            easyAntState = EasyAntState.BUILDTYPE;
             PluginDescriptor buildtype = handleCommonPluginDescriptorAttributes(attributes, PluginType.BUILDTYPE);
             // a build type cannot be skipped
             buildtype.setMandatory(true);
@@ -291,7 +320,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
 
             pluginDescriptor.setMode(getSettings().substitute(attributes.getValue("mode")));
             pluginDescriptor.setAs(getSettings().substitute(attributes.getValue("as")));
-            handlePropertyAsAttribute(attributes, conf);
+            handlePropertyAsAttribute(attributes, Arrays.asList(PLUGIN_REGULAR_ATTRIBUTES), pluginDescriptor, conf);
             return pluginDescriptor;
         }
 
@@ -374,19 +403,27 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
          * 
          * @param attributes
          *            a set of attributes
-         * @param conf
+         * @param ignoredAttributes
+         *            a list of ignored attributes
+         * @param parentNode
+         *            parent node used to apply some attributes to subelements (can be null)
+         * @param buildConf
          *            build configurations where this property should be applied (can be null)
+         * 
          */
-        protected void handlePropertyAsAttribute(Attributes attributes, String conf) {
-            List<String> ignored = Arrays.asList(PLUGIN_REGULAR_ATTRIBUTES);
+        private void handlePropertyAsAttribute(Attributes attributes, List<String> ignoredAttributes,
+                AdvancedInheritableItem parentNode, String buildConf) {
             for (int i = 0; i < attributes.getLength(); i++) {
-                if (!ignored.contains(attributes.getQName(i))) {
+                if (!ignoredAttributes.contains(attributes.getQName(i))) {
                     String propertyName = attributes.getQName(i);
                     String value = IvyContext.getContext().getSettings().substitute(attributes.getValue(i));
                     PropertyDescriptor property = new PropertyDescriptor(propertyName);
                     property.setValue(value);
-                    property.setBuildConfigurations(conf);
-                    applyInheritableItemAttributesFromPlugin(property);
+                    property.setBuildConfigurations(buildConf);
+                    if (parentNode != null) {
+                        property.setInheritScope(parentNode.getInheritScope());
+                        property.setInheritable(parentNode.isInheritable());
+                    }
                     easyAntModuleDescriptor.getProperties().put(propertyName, property);
                 }
             }
@@ -487,7 +524,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                     property.setValue(value);
                     property.setBuildConfigurations(conf);
 
-                    applyInheritableItemAttributesFromPlugin(property);
+                    applyInheritableItemAttributesFromParentNode(property);
                     // override with explicit inherited scope attributes
                     handleInheritedScopeAttribute(attributes, property);
 
@@ -506,7 +543,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 property.setValue(value);
                 property.setBuildConfigurations(conf);
 
-                applyInheritableItemAttributesFromPlugin(property);
+                applyInheritableItemAttributesFromParentNode(property);
                 // override with explicit inherited scope attributes
                 handleInheritedScopeAttribute(attributes, property);
 
@@ -517,12 +554,19 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
         /**
          * Apply {@link AdvancedInheritableItem} attributes from current plugin
          * 
-         * @param property
+         * @param currentItem
          */
-        private void applyInheritableItemAttributesFromPlugin(PropertyDescriptor property) {
-            if (EasyAntState.PLUGIN == easyAntState) {
-                property.setInheritable(currentPluginDescriptor.isInheritable());
-                property.setInheritScope(currentPluginDescriptor.getInheritScope());
+        private void applyInheritableItemAttributesFromParentNode(AdvancedInheritableItem currentItem) {
+            AdvancedInheritableItem parentNode = null;
+            if (easyAntState == EasyAntState.PLUGIN) {
+                parentNode = currentPluginDescriptor;
+            } else if (easyAntState == EasyAntState.CONFIGURE_PROJECT) {
+                parentNode = easyAntModuleDescriptor.getConfigureProjectDescriptor();
+            }
+
+            if (parentNode != null) {
+                currentItem.setInheritable(parentNode.isInheritable());
+                currentItem.setInheritScope(parentNode.getInheritScope());
             }
         }
 
@@ -540,6 +584,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 mergeEasyantProperties(parser.getEasyAntModuleDescriptor().getProperties());
                 mergeEasyantPlugins(parser.getEasyAntModuleDescriptor().getPlugins());
                 mergeBindTargets(parser.getEasyAntModuleDescriptor().getExtensionPointsMappings());
+                mergeConfigureProject(parser.getEasyAntModuleDescriptor().getConfigureProjectDescriptor());
             }
         }
 
@@ -567,6 +612,9 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 }
                 if (extendTypes.contains("bindtarget")) {
                     mergeBindTargets(parser.getEasyAntModuleDescriptor().getExtensionPointsMappings());
+                }
+                if (extendTypes.contains("configure-project")) {
+                    mergeConfigureProject(parser.getEasyAntModuleDescriptor().getConfigureProjectDescriptor());
                 }
             }
 
@@ -628,6 +676,31 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                     easyAntModuleDescriptor.addExtensionPointMapping(extensionPointMappingDescriptor);
                 }
             }
+        }
+
+        /**
+         * Merge configure project
+         * 
+         * @param configureProjectDescriptor
+         *            {@link ConfigureProjectDescriptor} that will be merged with current one
+         */
+        protected void mergeConfigureProject(ConfigureProjectDescriptor configureProjectDescriptor) {
+            if (configureProjectDescriptor != null && configureProjectDescriptor.isInheritable()) {
+                StringBuilder sb = new StringBuilder("Merging configure project : ");
+                sb.append(configureProjectDescriptor.toString());
+                if (configureProjectDescriptor.getSourceModule() != null) {
+                    sb.append(" from ").append(configureProjectDescriptor.getSourceModule().toString());
+                }
+                Message.debug(sb.toString());
+
+                ConfigureProjectDescriptor currentDescriptor = easyAntModuleDescriptor.getConfigureProjectDescriptor();
+                if (currentDescriptor == null) {
+                    currentDescriptor = new ConfigureProjectDescriptor();
+                    easyAntModuleDescriptor.setConfigureProjectDescriptor(configureProjectDescriptor);
+                }
+                currentDescriptor.setDefaultTarget(configureProjectDescriptor.getDefaultTarget());
+            }
+
         }
 
         /**

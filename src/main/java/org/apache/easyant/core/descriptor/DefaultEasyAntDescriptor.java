@@ -45,6 +45,8 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
 
     private List<ExtensionPointMappingDescriptor> extensionPointsMappings;
 
+    private ConfigureProjectDescriptor configureProjectDescriptor;
+
     public PluginDescriptor getBuildType() {
         return buildType;
     }
@@ -106,4 +108,11 @@ public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
         this.extensionPointsMappings.add(extensionPointMappingDescriptor);
     }
 
+    public ConfigureProjectDescriptor getConfigureProjectDescriptor() {
+        return configureProjectDescriptor;
+    }
+
+    public void setConfigureProjectDescriptor(ConfigureProjectDescriptor configureProjectDescriptor) {
+        this.configureProjectDescriptor = configureProjectDescriptor;
+    }
 }

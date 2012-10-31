@@ -28,6 +28,7 @@ import org.apache.easyant.core.BuildConfigurationHelper;
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.descriptor.AdvancedInheritableItem;
+import org.apache.easyant.core.descriptor.ConfigureProjectDescriptor;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
 import org.apache.easyant.core.descriptor.ExtensionPointMappingDescriptor;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
@@ -283,6 +284,16 @@ public class LoadModule extends AbstractEasyAntTask {
                     initTask(propTask).execute();
                 }
             }
+            if (md.getConfigureProjectDescriptor() != null) {
+                ConfigureProjectDescriptor descriptor = md.getConfigureProjectDescriptor();
+                ConfigureProject configureProject = new ConfigureProject();
+                configureProject.setDefaultTarget(descriptor.getDefaultTarget());
+                configureProject.setBasedir(descriptor.getBasedir());
+                configureProject.setTaskType("antlib:org.apache.easyant:configure-project");
+                getOwningTarget().addTask(configureProject);
+                initTask(configureProject).execute();
+            }
+
             if (md.getBuildType() != null) {
                 if (canInherit(md.getBuildType(), currentModule)) {
                     Import importTask = new Import();
@@ -385,7 +396,7 @@ public class LoadModule extends AbstractEasyAntTask {
         ModuleDescriptorParser mdp = null;
         EasyAntModuleDescriptorParser parser = null;
         try {
-            mdp = ModuleDescriptorParserRegistry.getInstance().getParser(new URLResource(file.toURL()));
+            mdp = ModuleDescriptorParserRegistry.getInstance().getParser(new URLResource(file.toURI().toURL()));
         } catch (MalformedURLException e) {
             throw new BuildException("Impossible to find a parser for " + file.getName());
         }

@@ -17,6 +17,8 @@
  */
 package org.apache.easyant.core;
 
+import junit.framework.Assert;
+
 import org.apache.tools.ant.Project;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +43,12 @@ public class PropertiesAsAttributesTest extends EasyAntBaseTest {
 
         // properties loaded by build configuration
         assertPropertyUnset("my.property.inconf");
+    }
+
+    @Test
+    public void shouldHandlePropertiesInConfigureProject() {
+        Assert.assertEquals("package", project.getDefaultTarget());
+        assertPropertyEquals("my.property.inconfigureproject", "true");
     }
 
     @Test
