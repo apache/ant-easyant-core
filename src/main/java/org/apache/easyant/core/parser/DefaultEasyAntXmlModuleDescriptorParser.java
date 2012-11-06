@@ -262,7 +262,8 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
 
             currentPluginDescriptor = plugin;
             easyAntModuleDescriptor.addPlugin(plugin);
-
+            handlePropertyAsAttribute(attributes, Arrays.asList(PLUGIN_REGULAR_ATTRIBUTES), plugin,
+                    plugin.getBuildConfigurations());
         }
 
         /**
@@ -277,6 +278,8 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             // a build type cannot be skipped
             buildtype.setMandatory(true);
             easyAntModuleDescriptor.setBuildType(buildtype);
+            handlePropertyAsAttribute(attributes, Arrays.asList(PLUGIN_REGULAR_ATTRIBUTES), buildtype,
+                    buildtype.getBuildConfigurations());
         }
 
         private PluginDescriptor handleCommonPluginDescriptorAttributes(Attributes attributes, PluginType pluginType) {
@@ -320,7 +323,6 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
 
             pluginDescriptor.setMode(getSettings().substitute(attributes.getValue("mode")));
             pluginDescriptor.setAs(getSettings().substitute(attributes.getValue("as")));
-            handlePropertyAsAttribute(attributes, Arrays.asList(PLUGIN_REGULAR_ATTRIBUTES), pluginDescriptor, conf);
             return pluginDescriptor;
         }
 
