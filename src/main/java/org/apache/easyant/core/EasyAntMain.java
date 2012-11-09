@@ -174,7 +174,7 @@ public class EasyAntMain implements AntMain {
                 }
             }
         } catch (BuildException be) {
-            printMessage(be);
+            // do nothing they have been already logged by our logger
         } catch (Throwable exc) {
             exc.printStackTrace();
             printMessage(exc);
