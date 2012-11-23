@@ -19,12 +19,15 @@ package org.apache.easyant.core.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -38,6 +41,7 @@ import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.descriptor.PluginType;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.ivy.InheritableScope;
+import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyConflict;
 import org.apache.ivy.ant.IvyDependency;
 import org.apache.ivy.ant.IvyDependencyArtifact;
@@ -47,11 +51,17 @@ import org.apache.ivy.ant.IvyDependencyInclude;
 import org.apache.ivy.ant.IvyExclude;
 import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.module.descriptor.Configuration;
+import org.apache.ivy.core.module.descriptor.DefaultExtendsDescriptor;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
+import org.apache.ivy.core.module.id.ModuleId;
+import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.parser.ModuleDescriptorParser;
+import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
 import org.apache.ivy.plugins.parser.ParserSettings;
 import org.apache.ivy.plugins.parser.xml.XmlModuleDescriptorParser;
 import org.apache.ivy.plugins.repository.Resource;
+import org.apache.ivy.plugins.repository.file.FileResource;
+import org.apache.ivy.util.FileUtil;
 import org.apache.ivy.util.Message;
 import org.apache.ivy.util.PropertiesFile;
 import org.xml.sax.Attributes;
@@ -713,5 +723,112 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
         protected String getDefaultParentLocation() {
             return "../parent.ivy";
         }
+
+        /**
+         * TODO: Fix for IVY-1391, should be removed on next ivy upgrade
+         */
+        /**
+         * Handle extends elements. It checks :
+         * <ul>
+         * <li>filesystem based on location attribute, if no one is specified it will check the default parent location</li>
+         * <li>cache to find a resolved parent descriptor</li>
+         * <li>ask repositories to retrieve the parent module descriptor</li>
+         * </ul>
+         * 
+         * @param attributes
+         * @throws ParseException
+         */
+        protected void extendsStarted(Attributes attributes) throws ParseException {
+            String parentOrganisation = getSettings().substitute(attributes.getValue("organisation"));
+            String parentModule = getSettings().substitute(attributes.getValue("module"));
+            String parentRevision = attributes.getValue("revision") != null ? getSettings().substitute(
+                    attributes.getValue("revision")) : Ivy.getWorkingRevision();
+            String location = attributes.getValue("location") != null ? getSettings().substitute(
+                    attributes.getValue("location")) : getDefaultParentLocation();
+            ModuleDescriptor parent = null;
+
+            String extendType = attributes.getValue("extendType") != null ? getSettings().substitute(
+                    attributes.getValue("extendType").toLowerCase(Locale.US)) : "all";
+
+            List<String> extendTypes = Arrays.asList(extendType.split(","));
+            ModuleId parentMid = new ModuleId(parentOrganisation, parentModule);
+            ModuleRevisionId parentMrid = new ModuleRevisionId(parentMid, parentRevision);
+
+            // check on filesystem based on location attribute (for dev ONLY)
+            boolean local = false;
+            try {
+                parent = parseParentModuleOnFilesystem(location);
+                if (parent != null) {
+                    ModuleId foundMid = parent.getResolvedModuleRevisionId().getModuleId();
+                    if (!foundMid.equals(parentMid)) {
+                        // the filesystem contains a parent module with different organisation
+                        // or module name; ignore that parent module
+                        Message.info("Found a parent module with unexpected ModuleRevisionId at source location "
+                                + location + "! Expected: " + parentMid + ". Found: " + foundMid
+                                + ". This parent module will be ignored.");
+                        parent = null;
+                    }
+                }
+
+                local = parent != null;
+            } catch (IOException e) {
+                Message.warn("Unable to parse included ivy file " + location, e);
+            }
+
+            // if not found, tries to resolve using repositories
+            if (parent == null) {
+                try {
+                    parent = parseOtherIvyFile(parentMrid);
+                } catch (ParseException e) {
+                    Message.warn("Unable to parse included ivy file for " + parentMrid.toString(), e);
+                }
+            }
+
+            // if still not found throw an exception
+            if (parent == null) {
+                throw new ParseException("Unable to parse included ivy file for " + parentMrid.toString(), 0);
+            }
+
+            DefaultExtendsDescriptor ed = new DefaultExtendsDescriptor(parent, location,
+                    (String[]) extendTypes.toArray(new String[extendTypes.size()]), local);
+            getMd().addInheritedDescriptor(ed);
+
+            mergeWithOtherModuleDescriptor(extendTypes, parent);
+        }
+
+        /**
+         * Returns the parent module using the location attribute (for dev purpose).
+         * 
+         * @param location
+         *            a given location
+         * @throws IOException
+         * @throws ParseException
+         */
+        private ModuleDescriptor parseParentModuleOnFilesystem(String location) throws IOException, ParseException {
+            if (!"file".equals(getDescriptorURL().getProtocol())) {
+                return null;
+            }
+
+            File file = new File(location);
+            if (!file.isAbsolute()) {
+                URL url = getSettings().getRelativeUrlResolver().getURL(getDescriptorURL(), location);
+                try {
+                    file = new File(new URI(url.toExternalForm()));
+                } catch (URISyntaxException e) {
+                    file = new File(url.getPath());
+                }
+            }
+
+            file = FileUtil.normalize(file.getAbsolutePath());
+            if (!file.exists()) {
+                Message.verbose("Parent module doesn't exist on the filesystem: " + file.getAbsolutePath());
+                return null;
+            }
+
+            FileResource res = new FileResource(null, file);
+            ModuleDescriptorParser parser = ModuleDescriptorParserRegistry.getInstance().getParser(res);
+            return parser.parseDescriptor(getSettings(), file.toURI().toURL(), res, isValidate());
+        }
+
     }
 }

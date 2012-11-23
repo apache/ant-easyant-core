@@ -43,6 +43,7 @@ import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
+import org.apache.ivy.core.cache.EasyantResolutionCacheManager;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.BuildLogger;
@@ -134,11 +135,17 @@ public class EasyAntEngine {
 
         IvyAntSettings easyantIvySettings = IvyInstanceHelper.getEasyAntIvyAntSettings(project);
 
+        // FIXME: hack as ResolutionCacheManager and RepositoryCacheManger use XmlModuleDescriptorParser under the hood
         Ivy easyantIvyInstance = easyantIvySettings.getConfiguredIvyInstance(easyantIvyConfigure);
 
         EasyAntRepositoryCacheManager cacheManager = new EasyAntRepositoryCacheManager("default-easyant-cache",
                 easyantIvyInstance.getSettings(), easyantIvyInstance.getSettings().getDefaultCache());
         easyantIvyInstance.getSettings().setDefaultRepositoryCacheManager(cacheManager);
+
+        EasyantResolutionCacheManager resolutionCacheManager = new EasyantResolutionCacheManager();
+        resolutionCacheManager.setBasedir(easyantIvyInstance.getSettings().getDefaultResolutionCacheBasedir());
+        resolutionCacheManager.setSettings(easyantIvyInstance.getSettings());
+        easyantIvyInstance.getSettings().setResolutionCacheManager(resolutionCacheManager);
 
         return easyantIvySettings;
     }

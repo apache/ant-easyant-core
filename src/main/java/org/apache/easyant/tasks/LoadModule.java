@@ -41,6 +41,8 @@ import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.ant.IvyInfo;
 import org.apache.ivy.core.IvyContext;
+import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
+import org.apache.ivy.core.cache.EasyantResolutionCacheManager;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.parser.ModuleDescriptorParser;
 import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
@@ -240,7 +242,19 @@ public class LoadModule extends AbstractEasyAntTask {
                 }
             }
         }
+
         initTask(projectIvyInstance).execute();
+
+        // FIXME: hack as ResolutionCacheManager use XmlModuleDescriptorParser under the hood
+        EasyAntRepositoryCacheManager cacheManager = new EasyAntRepositoryCacheManager("default-project-cache",
+                getProjectIvyInstance().getSettings(), getProjectIvyInstance().getSettings().getDefaultCache());
+        getProjectIvyInstance().getSettings().setDefaultRepositoryCacheManager(cacheManager);
+
+        EasyantResolutionCacheManager resolutionCacheManager = new EasyantResolutionCacheManager();
+        resolutionCacheManager.setBasedir(getProjectIvyInstance().getSettings().getDefaultResolutionCacheBasedir());
+        resolutionCacheManager.setSettings(getProjectIvyInstance().getSettings());
+        getProjectIvyInstance().getSettings().setResolutionCacheManager(resolutionCacheManager);
+
     }
 
     protected void loadBuildFile(File buildModule) {

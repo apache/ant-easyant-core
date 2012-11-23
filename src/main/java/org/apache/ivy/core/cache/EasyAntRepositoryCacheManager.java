@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.core.IvyPatternHelper;
 import org.apache.ivy.core.module.descriptor.Artifact;
@@ -58,6 +57,7 @@ import org.apache.ivy.plugins.repository.Repository;
 import org.apache.ivy.plugins.repository.Resource;
 import org.apache.ivy.plugins.repository.ResourceDownloader;
 import org.apache.ivy.plugins.repository.ResourceHelper;
+import org.apache.ivy.plugins.repository.url.URLResource;
 import org.apache.ivy.plugins.resolver.AbstractResolver;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.plugins.resolver.util.ResolvedResource;
@@ -621,8 +621,8 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
             if (ivyFile.exists()) {
                 // found in cache !
                 try {
-                    DefaultEasyAntXmlModuleDescriptorParser parser = DefaultEasyAntXmlModuleDescriptorParser
-                            .getInstance();
+                    ModuleDescriptorParser parser = ModuleDescriptorParserRegistry.getInstance().getParser(
+                            new URLResource(ivyFile.toURI().toURL()));
                     ModuleDescriptor depMD = getMdFromCache(parser, options, ivyFile);
                     String resolverName = getSavedResolverName(depMD);
                     String artResolverName = getSavedArtResolverName(depMD);
@@ -693,8 +693,8 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
         }
     }
 
-    private ModuleDescriptor getMdFromCache(XmlModuleDescriptorParser mdParser, CacheMetadataOptions options,
-            File ivyFile) throws ParseException, IOException {
+    private ModuleDescriptor getMdFromCache(ModuleDescriptorParser mdParser, CacheMetadataOptions options, File ivyFile)
+            throws ParseException, IOException {
         ModuleDescriptorMemoryCache cache = getMemoryCache();
         ModuleDescriptorProvider mdProvider = new MyModuleDescriptorProvider(mdParser, settings);
         return cache.get(ivyFile, settings, options.isValidate(), mdProvider);
