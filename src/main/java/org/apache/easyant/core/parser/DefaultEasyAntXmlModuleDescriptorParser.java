@@ -772,7 +772,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
 
                 local = parent != null;
             } catch (IOException e) {
-                Message.warn("Unable to parse included ivy file " + location, e);
+                Message.warn("Unable to parse included ivy file " + location + " : " + e.getMessage());
             }
 
             // if not found, tries to resolve using repositories
@@ -780,7 +780,8 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 try {
                     parent = parseOtherIvyFile(parentMrid);
                 } catch (ParseException e) {
-                    Message.warn("Unable to parse included ivy file for " + parentMrid.toString(), e);
+                    Message.warn("Unable to parse included ivy file for " + parentMrid.toString() + " : "
+                            + e.getMessage());
                 }
             }
 
