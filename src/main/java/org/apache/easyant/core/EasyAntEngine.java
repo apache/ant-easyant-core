@@ -400,6 +400,8 @@ public class EasyAntEngine {
      */
     public void initProject(Project project) {
         project.init();
+        project.addReference(EasyAntMagicNames.EASYANT_ENGINE_REF, this);
+
         // set user-define properties
         Enumeration<?> properties = configuration.getDefinedProps().propertyNames();
         while (properties.hasMoreElements()) {

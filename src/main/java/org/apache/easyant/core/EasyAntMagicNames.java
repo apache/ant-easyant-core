@@ -180,4 +180,9 @@ public interface EasyAntMagicNames {
      * Property specifying executed targets in current project
      */
     public static final String PROJECT_EXECUTED_TARGETS = "project.executed.targets";
+
+    /**
+     * Name of EasyAntEngine reference
+     */
+    public static final String EASYANT_ENGINE_REF = "easyant.engine.ref";
 }

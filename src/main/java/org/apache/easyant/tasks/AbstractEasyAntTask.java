@@ -17,6 +17,8 @@
  */
 package org.apache.easyant.tasks;
 
+import org.apache.easyant.core.EasyAntEngine;
+import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
@@ -73,6 +75,10 @@ public class AbstractEasyAntTask extends Task {
      */
     protected Reference getProjectIvyReference() {
         return IvyInstanceHelper.buildProjectIvyReference(getProject());
+    }
+
+    protected EasyAntEngine getEasyAntEngine() {
+        return (EasyAntEngine) getProject().getReference(EasyAntMagicNames.EASYANT_ENGINE_REF);
     }
 
 }

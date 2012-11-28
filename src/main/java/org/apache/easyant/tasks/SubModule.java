@@ -35,7 +35,6 @@ import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResul
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
-import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyPublish;
 import org.apache.ivy.ant.IvyResolve;
 import org.apache.tools.ant.BuildException;
@@ -45,7 +44,6 @@ import org.apache.tools.ant.MagicNames;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectComponent;
 import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Ant;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Path;
@@ -57,7 +55,7 @@ import org.apache.tools.ant.util.StringUtils;
 /**
  * This task is used to manage orchestration of submodules.
  */
-public class SubModule extends Task {
+public class SubModule extends AbstractEasyAntTask {
 
     private boolean failOnError = true;
     private boolean verbose = false;
@@ -272,11 +270,6 @@ public class SubModule extends Task {
 
         // copy all User properties
         addAlmostAll(getProject().getUserProperties(), subModule, PropertyType.USER);
-
-        // copy easyantIvyInstance
-        IvyAntSettings ivyAntSettings = IvyInstanceHelper.getEasyAntIvyAntSettings(getProject());
-        subModule.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE, ivyAntSettings);
-
         // inherit meta.target directory, for shared build repository.
         String metaTarget = getProject().getProperty("meta.target");
         if (metaTarget != null) {
@@ -293,6 +286,8 @@ public class SubModule extends Task {
 
         overrideProperties(subModule);
         addReferences(subModule);
+
+        getEasyAntEngine().configureEasyAntIvyInstance(subModule);
 
         subModule.setName(file.getName());
         subModule.setBaseDir(directory);
