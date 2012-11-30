@@ -150,8 +150,9 @@ public class LoadModule extends AbstractEasyAntTask {
         // to easyant ivy instance
         if (!EasyAntMagicNames.EASYANT_IVY_INSTANCE.equals(projectIvyInstanceProp)) {
             configureProjectIvyinstance(projectIvyInstanceProp);
-            configureProjectOfflineResolver();
         }
+
+        configureProjectOfflineResolver();
 
         if (shouldUseBuildRepository()) {
             configureBuildRepository(IvyInstanceHelper.getProjectIvyAntSettings(getProject()));
@@ -170,16 +171,22 @@ public class LoadModule extends AbstractEasyAntTask {
      *            {@link Project} where repository will be configured
      */
     private void configureProjectOfflineResolver() {
-        getProject().setProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER,
-                EasyAntConstants.DEFAULT_OFFLINE_PROJECT_RESOLVER);
-        ConfigureBuildScopedRepository projectOfflineRepository = new ConfigureBuildScopedRepository();
-        projectOfflineRepository.setGenerateWrapperResoler(false);
-        projectOfflineRepository.setName(getProject().getProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER));
-        projectOfflineRepository.setDictator(Project.toBoolean(getProject().getProperty(
-                EasyAntMagicNames.EASYANT_OFFLINE)));
-        projectOfflineRepository.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));
-        projectOfflineRepository.setTarget(getProject().getProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY));
-        initTask(projectOfflineRepository).execute();
+        if (EasyAntMagicNames.EASYANT_IVY_INSTANCE.equals(IvyInstanceHelper.getProjectIvyInstanceName(getProject()))) {
+            getProject().setProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER,
+                    getProject().getProperty(EasyAntMagicNames.OFFLINE_EASYANT_RESOLVER));
+        } else {
+
+            getProject().setProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER,
+                    EasyAntConstants.DEFAULT_OFFLINE_PROJECT_RESOLVER);
+            ConfigureBuildScopedRepository projectOfflineRepository = new ConfigureBuildScopedRepository();
+            projectOfflineRepository.setGenerateWrapperResoler(false);
+            projectOfflineRepository.setName(getProject().getProperty(EasyAntMagicNames.OFFLINE_PROJECT_RESOLVER));
+            projectOfflineRepository.setDictator(Project.toBoolean(getProject().getProperty(
+                    EasyAntMagicNames.EASYANT_OFFLINE)));
+            projectOfflineRepository.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));
+            projectOfflineRepository.setTarget(getProject().getProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY));
+            initTask(projectOfflineRepository).execute();
+        }
     }
 
     /**

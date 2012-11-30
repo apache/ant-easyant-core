@@ -276,6 +276,11 @@ public class SubModule extends AbstractEasyAntTask {
             File metaDir = getProject().resolveFile(metaTarget);
             subModule.setNewProperty("meta.target", metaDir.getAbsolutePath());
         }
+        // inherit easyant offline base
+        String offlineBaseDir = getProject().getProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY);
+        if (offlineBaseDir != null) {
+            subModule.setInheritedProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY, offlineBaseDir);
+        }
 
         subModule.initProperties();
 
