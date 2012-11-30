@@ -15,8 +15,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
     <xs:element name="easyant-config">
         <xs:complexType>
@@ -27,8 +26,7 @@
                         <xs:attribute name="url" type="xs:string" />
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="system-plugins" minOccurs="0"
-                    maxOccurs="1">
+                <xs:element name="system-plugins" minOccurs="0" maxOccurs="1">
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="plugin" minOccurs="0" maxOccurs="unbounded">
@@ -41,6 +39,16 @@
                                     <xs:attribute name="rev" type="xs:string" />
                                     <xs:attribute name="as" type="xs:string" />
                                     <xs:attribute name="mode" type="xs:string" />
+                                    <xs:attribute name="mandatory" type="xs:boolean" />
+                                    <xs:attribute name="inheritable" type="xs:boolean" />
+                                    <xs:attribute name="inherit-scope">
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                                <xs:enumeration value="BOTH" />
+                                                <xs:enumeration value="CHILD" />
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:attribute>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>

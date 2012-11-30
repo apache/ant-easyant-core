@@ -31,6 +31,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.easyant.core.EasyAntConfiguration;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
+import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.ivy.util.ContextualSAXHandler;
 import org.apache.ivy.util.Message;
 import org.apache.ivy.util.XMLHelper;
@@ -177,10 +178,18 @@ public class EasyAntConfigParser {
                 pluginDescriptor.setMrid(attributes.getValue("mrid"));
                 pluginDescriptor.setAs(attributes.getValue("as"));
                 boolean mandatory = false;
-                if (attributes.getValue("mandatory") != null && attributes.getValue("mandatory").equals("true"))
+                if (attributes.getValue("mandatory") != null && "true".equals(attributes.getValue("mandatory"))) {
                     mandatory = true;
-                ;
+                }
                 pluginDescriptor.setMandatory(mandatory);
+                if (attributes.getValue("inherit-scope") != null) {
+                    InheritableScope scope = InheritableScope.valueOf(attributes.getValue("inherit-scope")
+                            .toUpperCase());
+                    pluginDescriptor.setInheritScope(scope);
+                }
+                if (attributes.getValue("inheritable") != null && "true".equals(attributes.getValue("inheritable"))) {
+                    pluginDescriptor.setInheritable(true);
+                }
                 pluginDescriptor.setMode(attributes.getValue("mode"));
                 easyAntConfiguration.addSystemPlugin(pluginDescriptor);
             }

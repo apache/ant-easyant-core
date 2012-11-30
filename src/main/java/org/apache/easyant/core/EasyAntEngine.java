@@ -33,6 +33,7 @@ import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ant.listerners.DefaultEasyAntLogger;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.factory.EasyantConfigurationFactory;
+import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.core.services.PluginService;
 import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
@@ -431,22 +432,7 @@ public class EasyAntEngine {
             project.log("Active build configurations : " + buildConfigurations, Project.MSG_INFO);
             project.setProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS, buildConfigurations);
         }
-        // Load system plugins
-        if (configuration.getSystemPlugins().size() > 0) {
-            project.log("Loading System Plugins...");
-        }
-        for (PluginDescriptor systemPlugin : configuration.getSystemPlugins()) {
-            // import/include system plugin
-            Import importTask = new Import();
-            importTask.setMrid(systemPlugin.getMrid());
-            importTask.setOrganisation(systemPlugin.getOrganisation());
-            importTask.setModule(systemPlugin.getModule());
-            importTask.setRevision(systemPlugin.getRevision());
-            importTask.setAs(systemPlugin.getAs());
-            importTask.setMode(systemPlugin.getMode());
-            importTask.setMandatory(systemPlugin.isMandatory());
-            executeTask(importTask, "configure-system-plugins", project);
-        }
+        loadSystemPlugins(project, true);
 
         locateBuildModuleAndBuildFile(project);
 
@@ -459,6 +445,27 @@ public class EasyAntEngine {
 
         // FIXME:resolve extensionOf attributes this should be exposed by Apache Ant
         ProjectUtils.injectTargetIntoExtensionPoint(project, helper);
+    }
+
+    public void loadSystemPlugins(Project project, boolean isRootProject) {
+        if (configuration.getSystemPlugins().size() > 0) {
+            project.log("Loading System Plugins...");
+        }
+        for (PluginDescriptor systemPlugin : configuration.getSystemPlugins()) {
+            if (isRootProject && InheritableScope.BOTH == systemPlugin.getInheritScope()
+                    || systemPlugin.isInheritable()) {
+                // import/include system plugin
+                Import importTask = new Import();
+                importTask.setMrid(systemPlugin.getMrid());
+                importTask.setOrganisation(systemPlugin.getOrganisation());
+                importTask.setModule(systemPlugin.getModule());
+                importTask.setRevision(systemPlugin.getRevision());
+                importTask.setAs(systemPlugin.getAs());
+                importTask.setMode(systemPlugin.getMode());
+                importTask.setMandatory(systemPlugin.isMandatory());
+                executeTask(importTask, "configure-system-plugins", project);
+            }
+        }
     }
 
     private void locateBuildModuleAndBuildFile(Project project) {

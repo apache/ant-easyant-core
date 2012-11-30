@@ -18,7 +18,6 @@
     <system-plugins>
         <plugin mrid="org.apache.easyant.plugins#skeleton;0.9" as="skeleton"/>
         <plugin mrid="org.apache.easyant.plugins#ivy-repo-management;0.9" as="repo-management"/>
-        <plugin mrid="org.apache.easyant.plugins#offline;0.9"/>
-        
+        <plugin mrid="org.apache.easyant.plugins#offline;0.9" inheritable="true"/>
     </system-plugins>
 </easyant-config>

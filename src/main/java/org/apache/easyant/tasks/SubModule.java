@@ -182,6 +182,8 @@ public class SubModule extends AbstractEasyAntTask {
 
             ProjectHelper helper = ProjectUtils.configureProjectHelper(subModule);
 
+            getEasyAntEngine().loadSystemPlugins(subModule, false);
+
             LoadModule lm = new LoadModule();
             lm.setBuildModule(file);
             lm.setBuildFile(buildfile);
@@ -293,6 +295,8 @@ public class SubModule extends AbstractEasyAntTask {
         addReferences(subModule);
 
         getEasyAntEngine().configureEasyAntIvyInstance(subModule);
+        subModule.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE,
+                getProject().getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE));
 
         subModule.setName(file.getName());
         subModule.setBaseDir(directory);
