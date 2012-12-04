@@ -124,6 +124,13 @@
                             ]
                         },
                         {
+                          "id":"ref/anttasks/ConfigureProject",
+                          "title":"configure-project",
+                          "children": [
+
+                            ]
+                        },
+                        {
                           "id":"ref/anttasks/CoreVersiontask",
                           "title":"core-version",
                           "children": [

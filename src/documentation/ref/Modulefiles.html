@@ -53,9 +53,20 @@ xmlns:ea="http://www.easyant.org"
 Pay attention to the <b>ea:build</b> tag.
 This tags define which build-type is used for your project. In this example we use <b>build-std-java</b> which provides all the targets necessary to compile / package a standard java application.
 <div id="note">Note: The organisation argument in <b>ea:build</b> tag is optionnal. If not specified easyant will use the default one (org.apache.easyant.buildtypes).</div>
+<div id="note">Note: This tag support <a href="#propertyAsAttribute">property as attribute.</a> . If you have a few property to set it's often easier to use property as attribute. If you have lot of properties we strongly recommend you to declare it using property tag</div>
 
 Running easyant with this example will run the default target (package).
 A few seconds later, you will have the generated jar in your_project/target/artifacts/myJavaApp.jar.
+
+<h3>Configure the project</h3>
+By default default target are defined in builtypes, but you have the hability to adapt it if necessary.
+
+In the example bellow, we will configure <i>myDefaultTarget</i> as the default target.
+<code type="xml">
+ <ea:configure-project defaultTarget="myDefaultTarget"/>
+</code>
+
+<div id="note">Note: This tag support <a href="#propertyAsAttribute">property as attribute.</a> . If you have a few property to set it's often easier to use property as attribute. If you have lot of properties we strongly recommend your to declare it using property tag</div>
 
 <h3>Changing build-system properties</h3>
 So now we want to change several things on this build system.
@@ -108,6 +119,32 @@ Calling to "easyant -p" we should see the emma public target :
 emma.:emma generate emma covera report
 </code>
 <div id="note">Note: The organisation argument in <b>ea:plugin</b> tag is optionnal. If not specified easyant will use the default one (org.apache.easyant.plugins).</div>
+<div id="note">Note: This tag support <a href="#propertyAsAttribute">property as attribute.</a> . If you have a few property to set it's often easier to use property as attribute. If you have lot of properties we strongly recommend you to declare it using property tag</div>
+
+<a name="propertyAsAttribute"></a><h3>Property as attribute</h3>
+
+The following tags allow property as attribute :
+<ul>
+  <li>build</li>
+  <li>plugin</li>
+  <li>configure-project</li>
+</ul>
+If you have a few property to set it's often easier to use property as attribute. 
+Example in ea:build
+<code type="xml">
+  <ea:build module="build-std-java" revision="0.9" my.property="myvalue"/>
+</code>
+Example in plugin
+<code type="xml">
+  <ea:plugin module="run-java" revision="0.9" run.main.classname="org.myproject.Main"/>
+</code>
+Example in configure-project
+<code type="xml">
+  <ea:configure-project defaultTarget="myDefaultTarget" run.main.classname="org.myproject.Main"/>
+</code>
+
+If you have lot of properties we strongly recommend you to declare it using property tag.
+
 
 <h2>The Optional module.ant file</h2>
 <p />

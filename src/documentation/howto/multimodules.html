@@ -30,7 +30,7 @@
 <p>EasyAnt provides strong support for multi-module projects:
 
 <ul>
-  <li>The <a href="../ref/buildtypes/meta-build.html">meta-build</a> build type provides build orchestration (automatically orders the module build according to dependencies).</li>
+  <li>The <a href="http://repository.easyant.org/apache-easyant/org.apache.easyant.buildtypes/meta-build/">meta-build</a> build type provides build orchestration (automatically orders the module build according to dependencies).</li>
   <li>Optional <a href="#module-inheritance">module inheritance</a> allows modules in the same project to share configuration settings.</li>
   <li>Optional <a href="#packaging">top-level build script</a> allows extra packaging logic to run at the end of your multi-module build.</li>
 </ul>
@@ -48,7 +48,7 @@
 
 <h3>Project module.ivy</h3>
 
-<p>The project-level module.ivy uses the <a href="../ref/buildtypes/meta-build.html">meta-build</a> build type.  This build type implements build orchestration:  all submodules are analyzed to determine the required build order, and then each module is built.  Simple modules are built first, and then more complex modules that depend on them are built.</p>
+<p>The project-level module.ivy uses the <a href="http://repository.easyant.org/apache-easyant/org.apache.easyant.buildtypes/meta-build/">meta-build</a> build type.  This build type implements build orchestration:  all submodules are analyzed to determine the required build order, and then each module is built.  Simple modules are built first, and then more complex modules that depend on them are built.</p>
 
 <h4>Example</h4>
 <p>For example, you have an application with two modules.  One module is the main application, which depends on a core "API" module.  You want to build those two projects in the right order.  The simplest parent module.ivy file will look like this:
@@ -56,7 +56,7 @@
 <code type="xml">
 <ivy-module version="2.0">
     <info organisation="org.apache.easyant" module="example-multimodule" status="integration">
-        <ea:build module="meta-build" revision="0.2"/>
+        <ea:build module="meta-build" revision="0.9"/>
     </info>
 </ivy-module>
 </code>
@@ -66,13 +66,13 @@
 <p>Set up the module.ivy in each submodule as you would any other project; see <a href="GettingStarted.html">Getting Started</a> for an overview.  Often submodules belonging to the same project will have very similar Ivy files, with common dependencies and <a href="BuildConfigurations.html">build configurations</a>.  EasyAnt provides a <i>module inheritance</i> feature that allows you to put features shared by all of your modules in the project Ivy file.</p>
 
 <a name="module-inheritance"></a><h4>Module inheritance</h4>
-<p>Module inheritence is based on an ivy issue that is still opened, https://issues.apache.org/jira/browse/IVY-742.  We've made a small patch as a POC that allow you to extends ivy files:
+<p>Module inheritence is based on <a href="http://ant.apache.org/ivy/history/latest-milestone/extend.html">ivy's extend feature</a>.
 <code type="xml">
 <extends organisation="foobar" module="child" revision="latest.integration" location="../module.ivy" extendType="configurations,dependencies"/>
 </code>
 </p>
 
-<p>We've defined two optional attributes, "location" and "extendType".  Location defines the filesystem location of the parent desriptor relative to the submodule descriptor.  If the parent descriptor doesn't exist there, Ivy will search for it in the Ivy repository.  If unspecified, the default in EasyAnt is "../module.ivy".</p>
+<p>Extend tag has two optional attributes, "location" and "extendType".  Location defines the filesystem location of the parent desriptor relative to the submodule descriptor.  If the parent descriptor doesn't exist there, Ivy will search for it in the Ivy repository.  If unspecified, the default in EasyAnt is "../module.ivy".</p>
 <p>The extendType attribute defines which parts of the parent descriptor to import.  The default value is "all".  Possible values for extendType:
 <ul>
   <li>all</li>
@@ -105,11 +105,11 @@
 
 <p>Building a multi-module project is the same as building a single-module project:  type "easyant [target]", where [target] is a highlevel target or target that you want to execute.  [target] is then executed on all of your sub-modules, ordered so that dependencies are built before the modules that need them.  Type easyant -p from the project root directory to see a full list of available build targets.  The following highlevel targets (also named phases) are typical of any easyant build:
 <ul>
-  <li><code>&gt; easyant clean</code> execute the clean phase of the build on each submodule.  This deletes any artifacts produced by prior builds.</li>
-  <li><code>&gt; easyant verify</code> compile and test all modules</li>
-  <li><code>&gt; easyant package</code> package all modules for distribution</li>
-  <li><code>&gt; easyant publish-local</code> publish all project modules to your workstation Ivy repository.</li>
-  <li><code>&gt; easyant publish-shared</code> publish all project modules to your shared Ivy repository.</li>
+  <li><code>> easyant clean</code> execute the clean phase of the build on each submodule.  This deletes any artifacts produced by prior builds.</li>
+  <li><code>> easyant verify</code> compile and test all modules</li>
+  <li><code>> easyant package</code> package all modules for distribution</li>
+  <li><code>> easyant publish-local</code> publish all project modules to your workstation Ivy repository.</li>
+  <li><code>> easyant publish-shared</code> publish all project modules to your shared Ivy repository.</li>
 </ul>
 
 <h4>Build artifacts</h4>
@@ -122,12 +122,12 @@
 
 <p>So you have a complex project with many sub-modules, and you use meta-build to generate all of them.  At the end of your build you probably want to gather your various modules and put them together into one big distribution archive.</p>
 
-<p>The easiest way to do this is with a <code>module.ant</code> file in the project root directory.  Any targets in this file will be run after all of the sub-module builds are finished.  For example, this module.ant could be used with our example-multimodule project to build a tar.gz file at the end of the package phase:
+<p>The easiest way to do this is with a <b>module.ant</b> file in the project root directory.  Any targets in this file will be run after all of the sub-module builds are finished.  For example, this module.ant could be used with our example-multimodule project to build a tar.gz file at the end of the package phase:
 <code type="xml">
 <project name="org.apache.easyant#example-multimodule" xmlns:ea="antlib:org.apache.easyant">
 
     <property name="target.dir" location="target/release"/>
-    <ea:import mrid="org.apache.easyant.buildtypes#meta-build;0.2"/>
+    <ea:import mrid="org.apache.easyant.buildtypes#meta-build;0.9"/>
     
     <target name="build-distribution" phase="package" description="gather the submodules into one archive">
         <mkdir dir="${target.dir}"/>
