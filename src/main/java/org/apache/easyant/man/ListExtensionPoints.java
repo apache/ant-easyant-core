@@ -20,6 +20,7 @@ package org.apache.easyant.man;
 import java.util.List;
 
 import org.apache.easyant.core.report.ExtensionPointReport;
+import org.apache.easyant.core.report.ImportedModuleReport;
 
 /**
  * ManCommand implementation to list all extension points associated with specified build module.
@@ -31,7 +32,8 @@ public class ListExtensionPoints extends EasyantOption {
     private static final long serialVersionUID = 1L;
 
     public ListExtensionPoints() throws IllegalArgumentException {
-        super("listExtensionPoints", false, "List all extension-points available");
+        super("listExtensionPoints", true, "List all extension-points available");
+        setOptionalArg(true);
         setStopBuild(true);
     }
 
@@ -39,16 +41,34 @@ public class ListExtensionPoints extends EasyantOption {
         getProject().log(
                 LINE_SEP + "--- Available ExtensionPoints for current project: " + getProject().getName() + " ---"
                         + LINE_SEP);
+        String container = getValue();
+        if (container == null || container.trim().length() == 0) {
+            getProject().log(
+                    LINE_SEP + "No ExtensionPoint / Plugin specified. Listing all targets available in the project.");
 
-        List<ExtensionPointReport> extensionPoints = getEareport().getExtensionPointReports();
-        for (ExtensionPointReport extensionPointReport : extensionPoints) {
-            getProject().log("\t" + extensionPointReport.getName());
+            List<ExtensionPointReport> extensionPoints = getEareport().getExtensionPointReports();
+            printExtensionPoints(extensionPoints);
+        } else {
+            ImportedModuleReport importedModuleReport = getEareport().getImportedModuleReport(container);
+            if (importedModuleReport != null) {
+                getProject().log(LINE_SEP + "Extension-points for Module: " + container);
+                printExtensionPoints(importedModuleReport.getEasyantReport().getExtensionPointReports());
+            } else {
+                getProject().log(LINE_SEP + "\tNo Module / Plugin found by name: " + container);
+            }
         }
-
         getProject().log(
                 LINE_SEP + LINE_SEP + "For more information on an ExtensionPoint, run:" + LINE_SEP
                         + "\t easyant -describe <EXTENSION POINT>");
         getProject().log(LINE_SEP + "--- End Of (ExtensionPoints Listing) ---");
+    }
+
+    private void printExtensionPoints(List<ExtensionPointReport> extensionPoints) {
+        for (ExtensionPointReport extensionPointReport : extensionPoints) {
+            getProject().log("\tExtension-Point : " + extensionPointReport.getName());
+            getProject().log("\t\tDescription : " + extensionPointReport.getDescription());
+            getProject().log("\t\tDepends : " + extensionPointReport.getDepends());
+        }
     }
 
 }

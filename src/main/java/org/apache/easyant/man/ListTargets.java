@@ -77,25 +77,18 @@ public class ListTargets extends EasyantOption {
                 getProject().log("\tNo ExtensionPoint found by name: " + container);
             }
 
-            List<ImportedModuleReport> modules = getEareport().getImportedModuleReports();
-            ImportedModuleReport selected = null;
-            for (int i = 0; i < modules.size(); i++) {
-                selected = modules.get(i);
-                if (container.equals(selected.getModuleMrid())) {
-                    break;
-                }
-            }
-            if (selected != null) {
+            ImportedModuleReport selectedModule = getEareport().getImportedModuleReport(container);
+            if (selectedModule != null) {
                 getProject().log(LINE_SEP + "Targets for Module: " + container);
-                List<TargetReport> targets = selected.getEasyantReport().getTargetReports();
+                List<TargetReport> targets = selectedModule.getEasyantReport().getTargetReports();
                 printTargets(targets, getProject());
             } else {
                 getProject().log(LINE_SEP + "\tNo Module / Plugin found by name: " + container);
             }
 
             getProject().log(
-                    LINE_SEP + LINE_SEP + "For more information on an ExtensionPoint, run:" + LINE_SEP
-                            + "\t easyant -describe <EXTENSION POINT>");
+                    LINE_SEP + LINE_SEP + "For more information on an target, run:" + LINE_SEP
+                            + "\t easyant -describe <TARGET>");
         }
         getProject().log(LINE_SEP + "--- End Of (Targets Listing) ---");
     }
