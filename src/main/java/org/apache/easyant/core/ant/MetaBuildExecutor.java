@@ -77,26 +77,27 @@ public class MetaBuildExecutor extends DefaultExecutor {
         super.executeTargets(project, preTargetsToRun.toArray(new String[] {}));
 
         printSubBuildsInOrder(project);
+        try {
+            // delegate to the ea:submodule task to execute the list of targets on
+            // all modules in the build list
+            SubModule subModule = new SubModule();
+            subModule.setTaskName("meta:submodule");
+            subModule.setProject(project);
 
-        // delegate to the ea:submodule task to execute the list of targets on
-        // all modules in the build list
-        SubModule subModule = new SubModule();
-        subModule.setTaskName("meta:submodule");
-        subModule.setProject(project);
+            Boolean useBuildRepository = project.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY) != null ? Boolean
+                    .parseBoolean(project.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY)) : true;
+            subModule.setUseBuildRepository(useBuildRepository);
 
-        Boolean useBuildRepository = project.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY) != null ? Boolean
-                .parseBoolean(project.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY)) : true;
-        subModule.setUseBuildRepository(useBuildRepository);
+            subModule.setBuildpathRef(new Reference(project, "build-path"));
+            subModule.setTargets(new TargetList(targets));
+            subModule.execute();
 
-        subModule.setBuildpathRef(new Reference(project, "build-path"));
-        subModule.setTargets(new TargetList(targets));
-        subModule.execute();
-
-        // now call the default executor to include any extra targets defined in
-        // the root module.ant
-        super.executeTargets(project, postTargetsToRun.toArray(new String[] {}));
-
-        printExecutionSubBuildsExecutionTimes(project);
+            // now call the default executor to include any extra targets defined in
+            // the root module.ant
+            super.executeTargets(project, postTargetsToRun.toArray(new String[] {}));
+        } finally {
+            printExecutionSubBuildsExecutionTimes(project);
+        }
     }
 
     /*

@@ -448,7 +448,7 @@ public class EasyAntEngine {
     }
 
     public void loadSystemPlugins(Project project, boolean isRootProject) {
-        if (configuration.getSystemPlugins().size() > 0) {
+        if (isRootProject && configuration.getSystemPlugins().size() > 0) {
             project.log("Loading System Plugins...");
         }
         for (PluginDescriptor systemPlugin : configuration.getSystemPlugins()) {
