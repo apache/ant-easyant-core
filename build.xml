@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<project name="boostrap" default="dist" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="bootstrap" default="run" xmlns:ivy="antlib:org.apache.ivy.ant">
     <property name="bootstrap.dir" value="${basedir}/target/bootstrap"/>
 
     <target name="ivy:init">
