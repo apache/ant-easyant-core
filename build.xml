@@ -75,6 +75,12 @@
             <classpath>
                 <path refid="default.classpath" />
                 <pathelement location="${bootstrap.dir}/easyant.jar" />
+                <!--
+                    Ant will try to find the tools.jar using java.home System property, but sometimes
+                    this points to JDK, and sometimes to JRE.
+                    See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4200300
+                -->
+                <path path="${java.class.path}"/>
             </classpath>
             <sysproperty key="easyant.home" file="${basedir}" />
             <arg line="-configfile ${basedir}/easyant-conf.xml" />
