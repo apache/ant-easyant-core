@@ -16,46 +16,46 @@
 -->
 <project name="org.apache.easyant#easyant-core" xmlns:ea="antlib:org.apache.easyant" xmlns:ivy="antlib:org.apache.ivy.ant">
 
-	<!-- Force compatibility to java 1.5 -->
-	<property name="compile.java.target.version" value="1.5" />
-	<property name="compile.java.source.version" value="1.5" />
+    <!-- Force compatibility to java 1.5 -->
+    <property name="compile.java.target.version" value="1.5" />
+    <property name="compile.java.source.version" value="1.5" />
 
-	<property name="target.documentation.dir" value="${basedir}/target/documentation" />
-	<property name="xooki.temp.dir" value="${basedir}/target/temp-doc" />
-	<property name="xooki.resources.include.pattern" value="style/**,images/**,sortable.js" />
-	<property name="eadoc.documentation.dir" value="${xooki.temp.dir}" />
+    <property name="target.documentation.dir" value="${basedir}/target/documentation" />
+    <property name="xooki.temp.dir" value="${basedir}/target/temp-doc" />
+    <property name="xooki.resources.include.pattern" value="style/**,images/**,sortable.js" />
+    <property name="eadoc.documentation.dir" value="${xooki.temp.dir}" />
 
-	<property name="project.ivy.instance" value="easyant.ivy.instance" />
-	<property name="release.resolver" value="easyant-shared-modules" />
-	<property name="shared.resolver" value="easyant-shared-modules" />
+    <property name="project.ivy.instance" value="easyant.ivy.instance" />
+    <property name="release.resolver" value="easyant-shared-modules" />
+    <property name="shared.resolver" value="easyant-shared-modules" />
 
-	<property name="retrieve.dependencies" value="true" />
+    <property name="retrieve.dependencies" value="true" />
 
-	<property name="test.run.excludes.pattern" value="**/EasyAntBaseTest*,**/*AntTestListener*,**/*AntOutputStream*" />
+    <property name="test.run.excludes.pattern" value="**/EasyAntBaseTest*,**/*AntTestListener*,**/*AntOutputStream*" />
 
-	<!-- override main artifact retrieve pattern -->
-	<property name="retrieve.pattern.lib.main" value="${basedir}/lib/main/[artifact].[ext]" />
+    <!-- override main artifact retrieve pattern -->
+    <property name="retrieve.pattern.lib.main" value="${basedir}/lib/main/[artifact].[ext]" />
 
-
-	<!-- Load external properties 
+    <!-- Load external properties 
         /!\ This file will contains svn credentials so it should not be commited /!\
     -->
-	<property file="module.properties" />
+    <property file="module.properties" />
 
-	<!--Loading build type -->
-	<ea:build module="build-std-java" rev="0.9" />
+    <!--Loading build type -->
+    <ea:build module="build-std-java" rev="0.9" />
 
-	<!-- Loading plugins -->
-	<ea:plugin module="xooki" rev="0.9" as="xooki" />
-	<ea:plugin module="scm-svn" rev="0.9" as="svn" />
-	<ea:plugin module="javadoc" rev="0.9" as="javadoc" />
-	<ea:plugin module="distribution" rev="0.9" as="distribution" />
+    <!-- Loading plugins -->
+    <ea:plugin module="xooki" rev="0.9" as="xooki" />
+    <ea:plugin module="scm-svn" rev="0.9" as="svn" />
+    <ea:plugin module="javadoc" rev="0.9" as="javadoc" />
+    <ea:plugin module="distribution" rev="0.9" as="distribution" />
+    <ea:plugin module="rat" rev="0.9" as="rat" />
 
-	<extension-point name="distribution" description="create a distribution package" depends="package-jar:jar" />
-	<property name="target.dist" value="${target}/dist" />
+    <extension-point name="distribution" description="create a distribution package" depends="package-jar:jar" />
+    <property name="target.dist" value="${target}/dist" />
 
-	<target name="test-setup" description="add extra information to classpath for unit tests">
-		<!--
+    <target name="test-setup" description="add extra information to classpath for unit tests">
+        <!--
            our unit test requires the JDK tools.jar to run, which cannot be defined normally
            in module.ivy dependencies.
 
@@ -63,203 +63,186 @@
            this points to JDK, and sometimes to JRE.
            See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4200300
         -->
-		<augment id="run.test.classpath">
-			<path path="${java.class.path}" />
-		</augment>
-	</target>
+        <augment id="run.test.classpath">
+            <path path="${java.class.path}" />
+        </augment>
+    </target>
 
-	<target name="prepare-distribution">
+    <target name="prepare-distribution">
 
-		<mkdir dir="${target.distributions}" />
-		<mkdir dir="${target.documentation.dir}" />
+        <mkdir dir="${target.distributions}" />
+        <mkdir dir="${target.documentation.dir}" />
 
-		<patternset id="easyant-files.patternset">
-			<exclude name="target/**" />
-			<include name="lib/*.jar" />
+        <patternset id="easyant-files.patternset">
+            <exclude name="target/**" />
+            <include name="lib/*.jar" />
 
-			<include name="example/**" />
-			<exclude name="example/**/bin/**" />
-			<exclude name="example/**/lib/**" />
-			<exclude name="example/**/target/**" />
+            <include name="example/**" />
+            <exclude name="example/**/bin/**" />
+            <exclude name="example/**/lib/**" />
+            <exclude name="example/**/target/**" />
 
-			<include name="sample-easyant-ivysettings.xml" />
-			<include name="easyant-conf.xml" />
-			<include name="README" />
-			<include name="NOTICE" />
-			<include name="LICENSE" />
-		</patternset>
+            <include name="sample-easyant-ivysettings.xml" />
+            <include name="easyant-conf.xml" />
+            <include name="README" />
+            <include name="NOTICE" />
+            <include name="LICENSE" />
+        </patternset>
 
-		<patternset id="easyant-exec.patternset">
-			<include name="bin/**" />
-		</patternset>
+        <patternset id="easyant-exec.patternset">
+            <include name="bin/**" />
+        </patternset>
 
-	</target>
+    </target>
 
-	<target name="stage-dist" depends="prepare-distribution, abstract-provisioning:provisioning">
+    <target name="stage-dist" depends="prepare-distribution, abstract-provisioning:provisioning">
 
-		<mkdir dir="${target.dist}" />
+        <mkdir dir="${target.dist}" />
 
-		<copy todir="${target.dist}">
-			<fileset dir="${basedir}">
-				<patternset refid="easyant-files.patternset" />
-				<patternset refid="easyant-exec.patternset" />
+        <copy todir="${target.dist}">
+            <fileset dir="${basedir}">
+                <patternset refid="easyant-files.patternset" />
+                <patternset refid="easyant-exec.patternset" />
                                 <!--copy ivysettings.xml for developpers --> 
                                 <patternset includes="ivysettings.xml"/>
-			</fileset>
-		</copy>
+            </fileset>
+        </copy>
 
-		<mkdir dir="${target.dist}/lib/" />
-		<copy todir="${target.dist}/lib">
-			<fileset dir="${basedir}/lib/main" />
-		</copy>
-		<copy file="${target.main.artifact}" todir="${target.dist}/lib" />
+        <mkdir dir="${target.dist}/lib/" />
+        <copy todir="${target.dist}/lib">
+            <fileset dir="${basedir}/lib/main" />
+        </copy>
+        <copy file="${target.main.artifact}" todir="${target.dist}/lib" />
 
-		<!-- makes easyant scripts executable -->
-		<chmod perm="744" dir="${target.dist}">
-			<patternset refid="easyant-exec.patternset" />
-		</chmod>
+        <!-- makes easyant scripts executable -->
+        <chmod perm="744" dir="${target.dist}">
+            <patternset refid="easyant-exec.patternset" />
+        </chmod>
 
-	</target>
+    </target>
 
-	<target name="dist" depends="package-jar:jar, stage-dist" description="update the dist directory (used for development)">
+    <target name="dist" depends="package-jar:jar, stage-dist" description="update the dist directory (used for development)">
 
-		<!-- declare distribution fileset for use in packaging targets -->
-		<fileset id="easyant-dist.fileset" dir="${target.dist}">
-			<patternset refid="easyant-files.patternset" />
-			<patternset refid="easyant-exec.patternset" />
-		</fileset>
+        <!-- declare distribution fileset for use in packaging targets -->
+        <fileset id="easyant-dist.fileset" dir="${target.dist}">
+            <patternset refid="easyant-files.patternset" />
+            <patternset refid="easyant-exec.patternset" />
+        </fileset>
 
-	</target>
+    </target>
 
-	<!-- Create a zip for distribution -->
-	<target name="package-distribution" depends="populate-jar-repo, dist" description="package a distribution" extensionOf="distribution">
-		<echo message="Packaging standard distribution." />
-		<property name="root.dir" value="${ivy.module}-${ivy.revision}" />
-		<bundle destfile="${target.distributions}/${ivy.module}-${version}">
-			<zipfileset dir="${target.dist}" prefix="${root.dir}">
-				<patternset refid="easyant-files.patternset" />
-			</zipfileset>
-			<!-- make scripts executable -->
-			<zipfileset dir="${target.dist}" prefix="${root.dir}" filemode="744">
-				<patternset refid="easyant-exec.patternset" />
-			</zipfileset>
-			<!-- ship the documentation -->
-			<zipfileset dir="${target.documentation.dir}" prefix="${root.dir}/doc" />
-		</bundle>
+    <!-- Create a zip for the binary distribution -->
+    <target name="package-bin-distribution" depends="distribution:init, populate-jar-repo, dist, xooki:generate" description="package the binary distribution" extensionOf="distribution">
+        <echo message="Packaging binary distribution." />
+        <property name="root.dir" value="${ivy.module}-${ivy.revision}" />
+        <bundle destfile="${target.distributions}/${ivy.module}-${version}-bin">
+            <zipfileset dir="${target.dist}" prefix="${root.dir}">
+                <patternset refid="easyant-files.patternset" />
+            </zipfileset>
+            <!-- make scripts executable -->
+            <zipfileset dir="${target.dist}" prefix="${root.dir}" filemode="744">
+                <patternset refid="easyant-exec.patternset" />
+            </zipfileset>
+            <!-- ship the documentation -->
+            <zipfileset dir="${target.documentation.dir}" prefix="${root.dir}/doc" />
+        </bundle>
 
-	</target>
+    </target>
 
-	<target name="package-documentation" description="package the documentation" extensionOf="distribution" depends="xooki:generate">
-		<echo message="Packaging documentation distribution." />
-		<bundle destfile="${target.distributions}/${ivy.module}-${version}-docs">
-			<zipfileset dir="${target.documentation.dir}" prefix="${ivy.module}-${ivy.revision}-docs" />
-		</bundle>
-	</target>
+    <!-- Create a zip for the source distribution  -->
+    <target name="package-src-distribution" depends="distribution:init" description="package the sources" extensionOf="distribution">
+        <echo message="Packaging source distribution." />
+        <property name="full.root.dir" value="${ivy.module}-${ivy.revision}-src" />
+        <bundle destfile="${target.distributions}/${ivy.module}-${version}-src">
+            <zipfileset dir="${basedir}" prefix="${full.root.dir}">
+                <patternset>
+                    <include name="src/**"/>
+                    <include name="bin/**"/>
+                    <include name="example/**"/>
+                    <include name="module.ant"/>
+                    <include name="module.ivy"/>
+                    <include name="build.xml"/>
+                    <include name="easyant-conf.xml"/>
+                    <include name="ivysettings.xml"/>
+                    <include name="ivysettings-bootstrap.xml"/>
+                    <include name="sample-easyant-ivysettings.xml"/>
+                    <include name="NOTICE"/>
+                    <include name="README"/>
+                    <include name="LICENSE"/>
+                    <include name=".settings/**"/>
+                    <include name=".project"/>
+                    <include name=".classpath"/>
+                </patternset>
+            </zipfileset>
+        </bundle>
+    </target>
 
-	<!-- Create a zip for full distribution  -->
-	<target name="package-full-distribution" depends="distribution:init, populate-jar-repo, dist, xooki:generate" description="package a distribution (including includes sources)" extensionOf="distribution">
-		<echo message="Packaging full distribution." />
-		<property name="full.root.dir" value="${ivy.module}-${ivy.revision}-full" />
-		<bundle destfile="${target.distributions}/${ivy.module}-${version}-full">
-			<zipfileset dir="${target.dist}" prefix="${full.root.dir}/dist">
-				<patternset refid="easyant-files.patternset" />
-			</zipfileset>
-			<!-- make scripts executable -->
-			<zipfileset dir="${target.dist}" prefix="${full.root.dir}/dist" filemode="744">
-				<patternset refid="easyant-exec.patternset" />
-			</zipfileset>
-			<!-- ship the documentation -->
-			<zipfileset dir="${target.documentation.dir}" prefix="${full.root.dir}/dist/doc" />
-			<!-- easyant sources -->
-			<zipfileset dir="${basedir}" prefix="${full.root.dir}/sources">
-                            <patternset>
-                                <include name="src/**"/>
-                                <include name="bin/**"/>
-                                <include name="example/**"/>
-                                <include name="module.ant"/>
-                                <include name="module.ivy"/>
-                                <include name="build.xml"/>
-                                <include name="easyant-conf.xml"/>
-                                <include name="ivysettings.xml"/>
-                                <include name="ivysettings-bootstrap.xml"/>
-                                <include name="sample-easyant-ivysettings.xml"/>
-                                <include name="NOTICE"/>
-                                <include name="README"/>
-                                <include name="LICENSE"/>
-                                <include name=".settings/**"/>
-                                <include name=".project"/>
-                                <include name=".classpath"/>
-                            </patternset>
-                        </zipfileset>
-		</bundle>
-	</target>
+    <macrodef name="install-module">
+        <attribute name="organisation" />
+        <attribute name="module" />
+        <attribute name="revision" />
+        <sequential>
+            <ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="true" />
+        </sequential>
+    </macrodef>
 
-	<macrodef name="install-module">
-		<attribute name="organisation" />
-		<attribute name="module" />
-		<attribute name="revision" />
-		<sequential>
-			<ivy:install matcher="exactOrRegexp" from="apache-easyant-plugins" to="core" organisation="@{organisation}" module="@{module}" revision="@{revision}" settingsRef="easyant.ivy.instance" overwrite="true" />
-		</sequential>
-	</macrodef>
+    <macrodef name="install-buildtype">
+        <attribute name="organisation" default="org.apache.easyant.buildtypes" />
+        <attribute name="module" />
+        <attribute name="revision" />
+        <sequential>
+            <install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
+        </sequential>
+    </macrodef>
 
-	<macrodef name="install-buildtype">
-		<attribute name="organisation" default="org.apache.easyant.buildtypes" />
-		<attribute name="module" />
-		<attribute name="revision" />
-		<sequential>
-			<install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
-		</sequential>
-	</macrodef>
+    <macrodef name="install-plugin">
+        <attribute name="organisation" default="org.apache.easyant.plugins" />
+        <attribute name="module" />
+        <attribute name="revision" />
+        <sequential>
+            <install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
+        </sequential>
+    </macrodef>
 
-	<macrodef name="install-plugin">
-		<attribute name="organisation" default="org.apache.easyant.plugins" />
-		<attribute name="module" />
-		<attribute name="revision" />
-		<sequential>
-			<install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
-		</sequential>
-	</macrodef>
+    <macrodef name="install-skeleton">
+        <attribute name="organisation" default="org.apache.easyant.skeletons" />
+        <attribute name="module" />
+        <attribute name="revision" />
+        <sequential>
+            <install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
+        </sequential>
+    </macrodef>
 
-	<macrodef name="install-skeleton">
-		<attribute name="organisation" default="org.apache.easyant.skeletons" />
-		<attribute name="module" />
-		<attribute name="revision" />
-		<sequential>
-			<install-module organisation="@{organisation}" module="@{module}" revision="@{revision}" />
-		</sequential>
-	</macrodef>
+    <target name="populate-jar-repo" description="fetch plugins and buildtypes from online repository and prepare them to be shipped within easyant">
+        <ea:configure-build-scoped-repository target="${basedir}/target/main/classes/" generateWrapperResoler="false" name="core" settingsRef="easyant.ivy.instance" />
 
-	<target name="populate-jar-repo" description="fetch plugins and buildtypes from online repository and prepare them to be shipped within easyant">
-		<ea:configure-build-scoped-repository target="${basedir}/target/main/classes/" generateWrapperResoler="false" name="core" settingsRef="easyant.ivy.instance" />
+        <install-plugin module="abstract-.*" revision="0.9" />
+        <install-plugin module="antcontrib-activator" revision="0.9" />
+        <install-plugin module="antunit" revision="0.9" />
+        <install-plugin module="build-tools" revision="0.9" />
+        <install-plugin module="clean-std" revision="0.9" />
+        <install-plugin module="compile-java" revision="0.9" />
+        <install-plugin module="compile-test-java" revision="0.9" />
+        <install-plugin module="default-version-strategy" revision="0.9" />
+        <install-plugin module="deps-lib" revision="0.9" />
+        <install-plugin module="distribution" revision="0.9" />
+        <install-plugin module="documentation" revision="0.9" />
+        <install-plugin module="easyant-plugin-publication" revision="0.9" />
+        <install-plugin module="ivy-.*" revision="0.9" />
+        <install-plugin module="javadoc" revision="0.9" />
+        <install-plugin module="manifest" revision="0.9" />
+        <install-plugin module="offline" revision="0.9" />
+        <install-plugin module="phases-std" revision="0.9" />
+        <install-plugin module="resources-std" revision="0.9" />
+        <install-plugin module="run-java" revision="0.9" />
+        <install-plugin module="skeleton" revision="0.9" />
+        <install-plugin module="source-jar" revision="0.9" />
+        <install-plugin module="test-junit" revision="0.9" />
 
-		<install-plugin module="abstract-.*" revision="0.9" />
-		<install-plugin module="antcontrib-activator" revision="0.9" />
-		<install-plugin module="antunit" revision="0.9" />
-		<install-plugin module="build-tools" revision="0.9" />
-		<install-plugin module="clean-std" revision="0.9" />
-		<install-plugin module="compile-java" revision="0.9" />
-		<install-plugin module="compile-test-java" revision="0.9" />
-		<install-plugin module="default-version-strategy" revision="0.9" />
-		<install-plugin module="deps-lib" revision="0.9" />
-		<install-plugin module="distribution" revision="0.9" />
-		<install-plugin module="documentation" revision="0.9" />
-		<install-plugin module="easyant-plugin-publication" revision="0.9" />
-		<install-plugin module="ivy-.*" revision="0.9" />
-		<install-plugin module="javadoc" revision="0.9" />
-		<install-plugin module="manifest" revision="0.9" />
-		<install-plugin module="offline" revision="0.9" />
-		<install-plugin module="phases-std" revision="0.9" />
-		<install-plugin module="resources-std" revision="0.9" />
-		<install-plugin module="run-java" revision="0.9" />
-		<install-plugin module="skeleton" revision="0.9" />
-		<install-plugin module="source-jar" revision="0.9" />
-		<install-plugin module="test-junit" revision="0.9" />
-
-		<install-buildtype module="build-std-java" revision="0.9" />
-		<install-buildtype module="build-std-ant-plugin" revision="0.9" />
-		<install-buildtype module="build-webapp-java" revision="0.9" />
-		<install-buildtype module="meta-build" revision="0.9" />
-	</target>
+        <install-buildtype module="build-std-java" revision="0.9" />
+        <install-buildtype module="build-std-ant-plugin" revision="0.9" />
+        <install-buildtype module="build-webapp-java" revision="0.9" />
+        <install-buildtype module="meta-build" revision="0.9" />
+    </target>
 
 </project>

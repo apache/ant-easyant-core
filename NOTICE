@@ -1,24 +1,5 @@
-=========================================================================
-== NOTICE file corresponding to the section 4 d of ==
-== the Apache License, Version 2.0, ==
-== in this case for the EasyAnt distribution. ==
-=========================================================================
+Apache Easyant (TM)
+Copyright 2007-2012 The Apache Software Foundation
 
 This product includes software developed by
-the EasyAnt project members, who are :
-Jean Louis Boudart
-Xavier Hanin
-Siddhartha Purkayastha
-Jérôme Benois
-Jason Trump
-Nicolas Lalevée
-
-The following people contributed to EasyAnt :
-Markus M. May
-Nicolas Gapaillard
-
-This software is based on Apache Ant and Apache Ivy, 
-which are open source software, available under
-the terms of an Apache v2 License
-The original software and related information are available
-at http://ant.apache.org/ and http://ant.apache.org/ivy/.
+The Apache Software Foundation (http://www.apache.org/).
