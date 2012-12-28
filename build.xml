@@ -70,7 +70,8 @@
 
     <target name="run" depends="jar">
         <property name="target" value="distribution" />
-        <java classname="org.apache.easyant.core.EasyAntMain" failonerror="true" fork="true">
+        <property name="bootstrap.fork" value="false" />
+        <java classname="org.apache.easyant.core.EasyAntMain" failonerror="true" fork="${bootstrap.fork}">
             <classpath>
                 <path refid="default.classpath" />
                 <pathelement location="${bootstrap.dir}/easyant.jar" />
