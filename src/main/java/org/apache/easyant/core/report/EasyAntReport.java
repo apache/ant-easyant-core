@@ -156,6 +156,25 @@ public class EasyAntReport {
     }
 
     /**
+     * Get a parameter reports by its name Return null if not found
+     * 
+     * @param name
+     *            represent parameter name
+     * @return a parameter report
+     */
+    public ParameterReport getParameterReport(String parameterName) {
+        if (parameterName == null || parameterName.equals("")) {
+            throw new IllegalArgumentException("parameterName cannot be null");
+        }
+        for (ParameterReport parameterReport : parameterReports) {
+            if (parameterReport.getName().equals(parameterName)) {
+                return parameterReport;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Add a parameterReport
      * 
      * @param parameterReport

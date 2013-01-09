@@ -18,14 +18,15 @@
 package org.apache.easyant.core.report;
 
 public class ParameterReport {
-    
+
     private String name = null;
     private String description = null;
     private boolean required = false;
     private String defaultValue = null;
     private String value = null;
     private final ParameterType type;
-    
+    private String owningTarget = null;
+
     public ParameterReport(ParameterType parameterType) {
         this.type = parameterType;
     }
@@ -74,4 +75,11 @@ public class ParameterReport {
         return type;
     }
 
+    public String getOwningTarget() {
+        return owningTarget;
+    }
+
+    public void setOwningTarget(String owningTarget) {
+        this.owningTarget = owningTarget;
+    }
 }

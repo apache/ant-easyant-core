@@ -19,6 +19,7 @@ package org.apache.easyant.man;
 
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.report.ExtensionPointReport;
+import org.apache.easyant.core.report.ParameterReport;
 import org.apache.easyant.core.report.TargetReport;
 
 /**
@@ -32,7 +33,7 @@ public class Describe extends EasyantOption {
     private static final long serialVersionUID = 1L;
 
     public Describe() throws IllegalArgumentException {
-        super("describe", true, "Describes extension points / target / property specified by the argument");
+        super("describe", true, "Describes extension point / target / property / parameters  specified by the argument");
         setStopBuild(true);
     }
 
@@ -60,7 +61,7 @@ public class Describe extends EasyantOption {
             getProject().log(LINE_SEP + "\t\tFor information on targets attached to this extension-point, run:");
             getProject().log("\t\teasyant -listTargets " + target);
         } else {
-            getProject().log("\tNo extrnsion point found for name: " + target);
+            getProject().log("\tNo extension point found for name: " + target);
         }
         TargetReport targetRep = getEareport().getTargetReport(target);
         if (targetRep != null) {
@@ -85,8 +86,23 @@ public class Describe extends EasyantOption {
             getProject().log("\t\tRequired: " + prop.isRequired());
             String currentValue = prop.getValue() == null ? defaultValue : prop.getValue();
             getProject().log("\t\tCurrent value: " + currentValue);
+            if (prop.getOwningTarget() != null) {
+                getProject().log("\t\tDefined in :" + prop.getOwningTarget());
+            }
         } else {
             getProject().log("\tNo Property found for name: " + target);
+        }
+        ParameterReport parameter = getEareport().getParameterReport(target);
+        if (parameter != null) {
+            getProject().log("\tName: " + target);
+            getProject().log("\t\tType: " + parameter.getType());
+            getProject().log("\t\tDescription: " + parameter.getDescription());
+            getProject().log("\t\tRequired: " + parameter.isRequired());
+            if (parameter.getOwningTarget() != null) {
+                getProject().log("\t\tDefined in :" + parameter.getOwningTarget());
+            }
+        } else {
+            getProject().log("\tNo Parameter found for name: " + target);
         }
 
         getProject().log(LINE_SEP + "--- End Of (Describe) ---");

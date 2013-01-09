@@ -284,6 +284,9 @@ public class DefaultPluginServiceImpl implements PluginService {
                         String key = (String) iter.next();
                         PropertyDescriptor propertyDescriptor = new PropertyDescriptor(key);
                         propertyDescriptor.setValue(propToLoad.getProperty(key));
+                        if (property.getOwningTarget() != null) {
+                            propertyDescriptor.setOwningTarget(property.getOwningTarget().getName());
+                        }
                         eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor);
                     }
 
@@ -297,6 +300,9 @@ public class DefaultPluginServiceImpl implements PluginService {
         if (property.getName() != null) {
             PropertyDescriptor propertyDescriptor = new PropertyDescriptor(property.getName());
             propertyDescriptor.setValue(property.getValue());
+            if (property.getOwningTarget() != null) {
+                propertyDescriptor.setOwningTarget(property.getOwningTarget().getName());
+            }
             eaReport.addPropertyDescriptor(property.getName(), propertyDescriptor);
         }
     }
@@ -307,6 +313,9 @@ public class DefaultPluginServiceImpl implements PluginService {
             propertyDescriptor.setDefaultValue(parameterTask.getDefault());
             propertyDescriptor.setRequired(parameterTask.isRequired());
             propertyDescriptor.setDescription(parameterTask.getDescription());
+            if (parameterTask.getOwningTarget() != null) {
+                propertyDescriptor.setOwningTarget(parameterTask.getOwningTarget().getName());
+            }
             Message.debug("Ant file has a property called : " + propertyDescriptor.getName());
             eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor);
         } else if (parameterTask.getPath() != null) {
@@ -314,6 +323,9 @@ public class DefaultPluginServiceImpl implements PluginService {
             parameterReport.setName(parameterTask.getPath());
             parameterReport.setRequired(parameterTask.isRequired());
             parameterReport.setDescription(parameterTask.getDescription());
+            if (parameterTask.getOwningTarget() != null) {
+                parameterReport.setOwningTarget(parameterTask.getOwningTarget().getName());
+            }
             eaReport.addParameterReport(parameterReport);
             Message.debug("Ant file has a path called : " + parameterReport.getName());
         }

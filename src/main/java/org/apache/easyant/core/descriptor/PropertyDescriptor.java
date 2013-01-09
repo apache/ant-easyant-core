@@ -29,13 +29,15 @@ public class PropertyDescriptor implements AdvancedInheritableItem {
     private String buildConfigurations;
     private final ModuleRevisionId sourceModule;
     private InheritableScope inheritScope;
-    private boolean inheritable=true;
+    private boolean inheritable = true;
+
+    private String owningTarget;
 
     public PropertyDescriptor(String propertyName) {
         this.name = propertyName;
         this.sourceModule = null;
     }
-    
+
     public PropertyDescriptor(String propertyName, ModuleRevisionId sourceModule) {
         this.name = propertyName;
         this.sourceModule = sourceModule;
@@ -102,7 +104,15 @@ public class PropertyDescriptor implements AdvancedInheritableItem {
     }
 
     public void setInheritable(boolean isIneritable) {
-        this.inheritable=isIneritable;
-        
+        this.inheritable = isIneritable;
+
+    }
+
+    public String getOwningTarget() {
+        return owningTarget;
+    }
+
+    public void setOwningTarget(String owningTarget) {
+        this.owningTarget = owningTarget;
     }
 }
