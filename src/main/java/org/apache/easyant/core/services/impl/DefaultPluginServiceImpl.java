@@ -46,6 +46,7 @@ import org.apache.easyant.tasks.Import;
 import org.apache.easyant.tasks.ImportTestModule;
 import org.apache.easyant.tasks.LoadModule;
 import org.apache.easyant.tasks.ParameterTask;
+import org.apache.easyant.tasks.PathTask;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.core.IvyContext;
@@ -236,6 +237,14 @@ public class DefaultPluginServiceImpl implements PluginService {
                     Import importTask = (Import) maybeConfigureTask(task);
                     handleImport(importTask, eaReport, conf);
                 }
+                if (Path.class.isAssignableFrom(taskClass)) {
+                    Path path = (Path) maybeConfigureTask(task);
+                    handlePathParameter(task.getRuntimeConfigurableWrapper().getId(), path, eaReport);
+                }
+                if (PathTask.class.isAssignableFrom(taskClass)) {
+                    PathTask pathTask = (PathTask) maybeConfigureTask(task);
+                    handlePathParameter(pathTask, eaReport);
+                }
             }
         }
     }
@@ -325,6 +334,31 @@ public class DefaultPluginServiceImpl implements PluginService {
             parameterReport.setDescription(parameterTask.getDescription());
             if (parameterTask.getOwningTarget() != null) {
                 parameterReport.setOwningTarget(parameterTask.getOwningTarget().getName());
+            }
+            eaReport.addParameterReport(parameterReport);
+            Message.debug("Ant file has a path called : " + parameterReport.getName());
+        }
+    }
+
+    private void handlePathParameter(String pathid, Path path, EasyAntReport eaReport) {
+        ParameterReport parameterReport = new ParameterReport(ParameterType.PATH);
+        if (pathid != null) {
+            parameterReport.setName(pathid);
+            parameterReport.setRequired(false);
+            parameterReport.setDescription(path.getDescription());
+            eaReport.addParameterReport(parameterReport);
+            Message.debug("Ant file has a path called : " + parameterReport.getName());
+        }
+    }
+
+    private void handlePathParameter(PathTask pathTask, EasyAntReport eaReport) {
+        ParameterReport parameterReport = new ParameterReport(ParameterType.PATH);
+        if (pathTask.getPathid() != null && pathTask.getDescription() != null) {
+            parameterReport.setName(pathTask.getPathid());
+            parameterReport.setRequired(false);
+            parameterReport.setDescription(pathTask.getDescription());
+            if (pathTask.getOwningTarget() != null) {
+                parameterReport.setOwningTarget(pathTask.getOwningTarget().getName());
             }
             eaReport.addParameterReport(parameterReport);
             Message.debug("Ant file has a path called : " + parameterReport.getName());
