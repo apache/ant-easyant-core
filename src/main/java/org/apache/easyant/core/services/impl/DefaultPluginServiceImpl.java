@@ -72,6 +72,7 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.UnknownElement;
 import org.apache.tools.ant.taskdefs.Property;
+import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 
 public class DefaultPluginServiceImpl implements PluginService {
@@ -245,6 +246,11 @@ public class DefaultPluginServiceImpl implements PluginService {
                     PathTask pathTask = (PathTask) maybeConfigureTask(task);
                     handlePathParameter(pathTask, eaReport);
                 }
+                if (FileSet.class.isAssignableFrom(taskClass)) {
+                    FileSet fileSet = (FileSet) maybeConfigureTask(task);
+                    handleFilesetParameter(task.getRuntimeConfigurableWrapper().getId(), fileSet,
+                            task.getOwningTarget(), eaReport);
+                }
             }
         }
     }
@@ -338,6 +344,19 @@ public class DefaultPluginServiceImpl implements PluginService {
             eaReport.addParameterReport(parameterReport);
             Message.debug("Ant file has a path called : " + parameterReport.getName());
         }
+    }
+
+    private void handleFilesetParameter(String id, FileSet fileSet, Target target, EasyAntReport eaReport) {
+        ParameterReport parameterReport = new ParameterReport(ParameterType.FILESET);
+        if (id != null) {
+            parameterReport.setName(id);
+            parameterReport.setRequired(false);
+            parameterReport.setDescription(fileSet.getDescription());
+            parameterReport.setOwningTarget(target.getName());
+            eaReport.addParameterReport(parameterReport);
+            Message.debug("Ant file has a fileset called : " + parameterReport.getName());
+        }
+
     }
 
     private void handlePathParameter(String pathid, Path path, EasyAntReport eaReport) {

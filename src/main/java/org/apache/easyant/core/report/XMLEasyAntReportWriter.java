@@ -383,8 +383,13 @@ public class XMLEasyAntReportWriter {
         for (ParameterReport paramReport : easyAntReport.getParameterReports()) {
             StringBuffer param = new StringBuffer();
 
-            if (ParameterType.PATH.equals(paramReport.getType())) {
-                param.append("\t\t\t<path name=\"");
+            if (!ParameterType.PROPERTY.equals(paramReport.getType())) {
+                if (ParameterType.PATH.equals(paramReport.getType())) {
+                    param.append("\t\t\t<path name=\"");
+                }
+                if (ParameterType.FILESET.equals(paramReport.getType())) {
+                    param.append("\t\t\t<fileset name=\"");
+                }
                 param.append(paramReport.getName());
                 param.append("\"");
                 if (paramReport.getDescription() != null) {
