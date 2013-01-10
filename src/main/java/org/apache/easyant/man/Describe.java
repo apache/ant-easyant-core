@@ -87,7 +87,7 @@ public class Describe extends EasyantOption {
             String currentValue = prop.getValue() == null ? defaultValue : prop.getValue();
             getProject().log("\t\tCurrent value: " + currentValue);
             if (prop.getOwningTarget() != null) {
-                getProject().log("\t\tDefined in :" + prop.getOwningTarget());
+                getProject().log("\t\tDefined in: " + prop.getOwningTarget());
             }
         } else {
             getProject().log("\tNo Property found for name: " + target);
@@ -99,7 +99,7 @@ public class Describe extends EasyantOption {
             getProject().log("\t\tDescription: " + parameter.getDescription());
             getProject().log("\t\tRequired: " + parameter.isRequired());
             if (parameter.getOwningTarget() != null) {
-                getProject().log("\t\tDefined in :" + parameter.getOwningTarget());
+                getProject().log("\t\tDefined in: " + parameter.getOwningTarget());
             }
         } else {
             getProject().log("\tNo Parameter found for name: " + target);
