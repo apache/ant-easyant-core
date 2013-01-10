@@ -96,7 +96,8 @@ public class Describe extends EasyantOption {
         if (parameter != null) {
             getProject().log("\tName: " + target);
             getProject().log("\t\tType: " + parameter.getType());
-            getProject().log("\t\tDescription: " + parameter.getDescription());
+            getProject().log(
+                    "\t\tDescription: " + (parameter.getDescription() == null ? NONE : parameter.getDescription()));
             getProject().log("\t\tRequired: " + parameter.isRequired());
             if (parameter.getOwningTarget() != null) {
                 getProject().log("\t\tDefined in: " + parameter.getOwningTarget());
