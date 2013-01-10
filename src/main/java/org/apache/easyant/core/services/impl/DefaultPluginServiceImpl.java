@@ -240,7 +240,8 @@ public class DefaultPluginServiceImpl implements PluginService {
                 }
                 if (Path.class.isAssignableFrom(taskClass)) {
                     Path path = (Path) maybeConfigureTask(task);
-                    handlePathParameter(task.getRuntimeConfigurableWrapper().getId(), path, eaReport);
+                    handlePathParameter(task.getRuntimeConfigurableWrapper().getId(), path, task.getOwningTarget(),
+                            eaReport);
                 }
                 if (PathTask.class.isAssignableFrom(taskClass)) {
                     PathTask pathTask = (PathTask) maybeConfigureTask(task);
@@ -352,19 +353,24 @@ public class DefaultPluginServiceImpl implements PluginService {
             parameterReport.setName(id);
             parameterReport.setRequired(false);
             parameterReport.setDescription(fileSet.getDescription());
-            parameterReport.setOwningTarget(target.getName());
+            if (target != null) {
+                parameterReport.setOwningTarget(target.getName());
+            }
             eaReport.addParameterReport(parameterReport);
             Message.debug("Ant file has a fileset called : " + parameterReport.getName());
         }
 
     }
 
-    private void handlePathParameter(String pathid, Path path, EasyAntReport eaReport) {
+    private void handlePathParameter(String pathid, Path path, Target target, EasyAntReport eaReport) {
         ParameterReport parameterReport = new ParameterReport(ParameterType.PATH);
         if (pathid != null) {
             parameterReport.setName(pathid);
             parameterReport.setRequired(false);
             parameterReport.setDescription(path.getDescription());
+            if (target != null) {
+                parameterReport.setOwningTarget(target.getName());
+            }
             eaReport.addParameterReport(parameterReport);
             Message.debug("Ant file has a path called : " + parameterReport.getName());
         }
@@ -372,7 +378,7 @@ public class DefaultPluginServiceImpl implements PluginService {
 
     private void handlePathParameter(PathTask pathTask, EasyAntReport eaReport) {
         ParameterReport parameterReport = new ParameterReport(ParameterType.PATH);
-        if (pathTask.getPathid() != null && pathTask.getDescription() != null) {
+        if (pathTask.getPathid() != null) {
             parameterReport.setName(pathTask.getPathid());
             parameterReport.setRequired(false);
             parameterReport.setDescription(pathTask.getDescription());
