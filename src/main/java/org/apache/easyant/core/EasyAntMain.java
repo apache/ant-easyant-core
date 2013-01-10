@@ -45,6 +45,7 @@ import org.apache.easyant.core.factory.EasyantConfigurationFactory;
 import org.apache.easyant.man.Describe;
 import org.apache.easyant.man.EasyantOption;
 import org.apache.easyant.man.ListExtensionPoints;
+import org.apache.easyant.man.ListParameters;
 import org.apache.easyant.man.ListPlugins;
 import org.apache.easyant.man.ListProps;
 import org.apache.easyant.man.ListTargets;
@@ -678,6 +679,7 @@ public class EasyAntMain implements AntMain {
         options.addOption(new ListExtensionPoints());
         options.addOption(new ListTargets());
         options.addOption(new ListProps());
+        options.addOption(new ListParameters());
         options.addOption(new ListPlugins());
     }
 

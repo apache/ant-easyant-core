@@ -32,6 +32,7 @@ EasyAnt cames with a few new switches usable from the command line that allow yo
   <li>listExtensionPoints : Lists all extension-points available</li>
   <li>listPugins : Lists all plugins imported in the current project</li>
   <li>listProps [plugin] : Lists all properties available in the specified plugin</li>
+  <li>listParameters [plugin] : Lists all parameters available in the specified plugin</li>
   <li>describe [arg] : Describes an extension-point / target / property specified by argument</li>
 </ul>
 
@@ -182,6 +183,27 @@ For more information on a Property, run:
 
 --- End Of (Properties Listing) ---
 </code>
+
+
+<h2>listParameters [plugin]</h2>
+Lists all parameters available in the specified plugin:
+<code type="shell">
+> easyant -listParameters junit
+</code>
+Should print :
+<code type="shell">
+--- Available parameters for current project: easyant-core ---
+
+--- Filtering parameters declared in the following plugin: abstract-test ---
+
+    Parameter (type=PATH): run.test.classpath
+
+For more information on a parameter, run:
+     easyant -describe <parameter name>
+
+--- End Of (Parameter Listing) ---
+</code>
+
 
 <h2>describe [arg]</h2>
 Describes an extension-point / target / property specified by argument:
