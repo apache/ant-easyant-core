@@ -33,26 +33,14 @@ import org.apache.ivy.core.report.ResolveReport;
  */
 public class EasyAntReport {
 
-    private List<TargetReport> targetReports;
-    private List<ExtensionPointReport> extensionPointReports;
-    private List<ParameterReport> parameterReports;
-    private List<ImportedModuleReport> importedModuleReports;
-    private Map<String, PropertyDescriptor> propertyReports;
+    private List<TargetReport> targetReports = new ArrayList<TargetReport>();
+    private List<ExtensionPointReport> extensionPointReports = new ArrayList<ExtensionPointReport>();
+    private List<ParameterReport> parameterReports = new ArrayList<ParameterReport>();
+    private List<ImportedModuleReport> importedModuleReports = new ArrayList<ImportedModuleReport>();
+    private Map<String, PropertyDescriptor> propertyReports = new HashMap<String, PropertyDescriptor>();
     private ResolveReport resolveReport;
     private ModuleDescriptor moduleDescriptor;
     private boolean extensionPointsConfigured;
-
-    /**
-     * Default Constructor
-     */
-    public EasyAntReport() {
-        super();
-        targetReports = new ArrayList<TargetReport>();
-        extensionPointReports = new ArrayList<ExtensionPointReport>();
-        parameterReports = new ArrayList<ParameterReport>();
-        importedModuleReports = new ArrayList<ImportedModuleReport>();
-        propertyReports = new HashMap<String, PropertyDescriptor>();
-    }
 
     /**
      * Get a list of targets available in this module

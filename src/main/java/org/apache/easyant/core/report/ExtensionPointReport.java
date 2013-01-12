@@ -26,12 +26,10 @@ public class ExtensionPointReport {
     private String description;
     private String depends;
 
-    private List<TargetReport> targetReports;
+    private List<TargetReport> targetReports = new ArrayList<TargetReport>();
 
     public ExtensionPointReport(String name) {
-        super();
         this.name = name;
-        targetReports = new ArrayList<TargetReport>();  
     }
 
     public String getName() {

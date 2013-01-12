@@ -94,7 +94,7 @@ public class Describe extends EasyantOption {
         }
         ParameterReport parameter = getEareport().getParameterReport(target);
         if (parameter != null) {
-            getProject().log("\tName: " + target);
+            getProject().log("\tParameter name: " + target);
             getProject().log("\t\tType: " + parameter.getType());
             getProject().log(
                     "\t\tDescription: " + (parameter.getDescription() == null ? NONE : parameter.getDescription()));
