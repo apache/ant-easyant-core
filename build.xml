@@ -16,6 +16,7 @@
 -->
 <project name="bootstrap" default="run" xmlns:ivy="antlib:org.apache.ivy.ant">
     <property name="bootstrap.dir" value="${basedir}/target/bootstrap"/>
+    <property name="version" value="0.9-incubating" />
 
     <target name="ivy:init">
         <mkdir dir="${bootstrap.dir}"/>
@@ -86,6 +87,7 @@
             <arg line="-configfile ${basedir}/easyant-conf.xml" />
             <arg line="-f ${basedir}/module.ivy" />
             <arg line="-Dskip.svn=true"/>
+            <arg line="-Dversion=${version}"/>
             <arg line="${target}" />
         </java>
 
