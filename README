@@ -87,7 +87,7 @@ Then run: %EASYANT_HOME%\bin\easyant
 
 The example should be compiled, as well as unit tests, which should then be executed, and a jar should be produced in target/artifacts.
 
-To find more informations check the online documentation (http://www.easyant.org/doc/) or download it through our website.
+To find more informations check the online documentation (http://incubator.apache.org/easyant/history/trunk/index.html) or download it through our website.
 
 
 ***************
@@ -96,18 +96,13 @@ To find more informations check the online documentation (http://www.easyant.org
 Easyant is released under Apache License 2.0.
 
 Sources can be found here
-SVN Url : http://svn.easyant.org
+SVN Url : http://svn.apache.org/repos/asf/incubator/easyant/
 
-****************
-* Google group *
-**************** 
+************
+* Web site *
+************ 
 
-A google group is accessible here http://groups.google.com/group/easyant
-
-************************
-* Others Notifications *
-************************
-notifications@easyant.org is a fairly high traffic mailing list for ticket changes. Every time a easyant ticket is modified a new message is posted on this list. You can subscribe to this list here : http://easyant.org/mailman/listinfo/notifications. Archives are available here : http://easyant.org/pipermail/notifications
+Check the website to get further information http://incubator.apache.org/easyant/
 
 **************************************
 * IRC Channel (#easyant on freenode) *
