@@ -86,6 +86,7 @@
             <include name="easyant-conf.xml" />
             <include name="README" />
             <include name="NOTICE" />
+            <include name="DISCLAIMER" />
             <include name="LICENSE" />
         </patternset>
 
@@ -167,6 +168,7 @@
                     <include name="ivysettings-bootstrap.xml"/>
                     <include name="sample-easyant-ivysettings.xml"/>
                     <include name="NOTICE"/>
+                    <include name="DISCLAIMER"/>
                     <include name="README"/>
                     <include name="LICENSE"/>
                     <include name=".settings/**"/>
