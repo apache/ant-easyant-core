@@ -83,12 +83,6 @@ table, sortable {
     position:relative;
 }
 
-/* Header > Logo */
-
-#incubatorlogo  {
-    float: right;
-    padding: 30px 0 0 0;
-}
 /* Header > Menu */
 ul.menu{
 padding: 0;
