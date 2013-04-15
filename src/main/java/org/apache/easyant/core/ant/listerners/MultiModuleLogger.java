@@ -29,15 +29,6 @@ public class MultiModuleLogger extends DefaultEasyAntLogger {
     private volatile boolean subBuildStartedRaised = false;
     private final Object subBuildLock = new Object();
 
-    // CheckStyle:VisibilityModifier OFF - bc
-    /**
-     * Name of the current target, if it should be displayed on the next
-     * message. This is set when a target starts building, and reset to
-     * <code>null</code> after the first message for the target is logged.
-     */
-    protected String targetName;
-    // CheckStyle:VisibilityModifier ON
-
     /**
      * Header string for the log. * {@value}
      */
@@ -48,25 +39,23 @@ public class MultiModuleLogger extends DefaultEasyAntLogger {
     public static final String FOOTER = HEADER;
 
     /**
-     * This is an override point: the message that indicates whether a build
-     * failed. Subclasses can change/enhance the message.
+     * This is an override point: the message that indicates whether a build failed. Subclasses can change/enhance the
+     * message.
      * 
      * @return The classic "BUILD FAILED" plus a timestamp
      */
     protected String getBuildFailedMessage() {
-        return super.getBuildFailedMessage() + TimestampedLogger.SPACER
-                + getTimestamp();
+        return super.getBuildFailedMessage() + TimestampedLogger.SPACER + getTimestamp();
     }
 
     /**
-     * This is an override point: the message that indicates that a build
-     * succeeded. Subclasses can change/enhance the message.
+     * This is an override point: the message that indicates that a build succeeded. Subclasses can change/enhance the
+     * message.
      * 
      * @return The classic "BUILD SUCCESSFUL" plus a timestamp
      */
     protected String getBuildSuccessfulMessage() {
-        return super.getBuildSuccessfulMessage() + TimestampedLogger.SPACER
-                + getTimestamp();
+        return super.getBuildSuccessfulMessage() + TimestampedLogger.SPACER + getTimestamp();
     }
 
     /**
@@ -108,37 +97,22 @@ public class MultiModuleLogger extends DefaultEasyAntLogger {
     public void messageLogged(BuildEvent event) {
         maybeRaiseSubBuildStarted(event);
         super.messageLogged(event);
-        if (event.getPriority() > msgOutputLevel || null == event.getMessage()
-                || "".equals(event.getMessage().trim())) {
-            return;
-        }
-
-        synchronized (this) {
-            if (null != targetName) {
-                out.println(StringUtils.LINE_SEP + targetName + ":");
-                targetName = null;
-            }
-        }
-
     }
 
     /**
      * {@inheritDoc}
      * 
      * @param event
-     *            An event with any relevant extra information. Must not be
-     *            <code>null</code>.
+     *            An event with any relevant extra information. Must not be <code>null</code>.
      */
     public void subBuildStarted(BuildEvent event) {
         String name = extractNameOrDefault(event);
         Project project = event.getProject();
 
         File base = project == null ? null : project.getBaseDir();
-        String path = (base == null) ? "With no base directory" : "In "
-                + base.getAbsolutePath();
-        printMessage(StringUtils.LINE_SEP + getHeader() + StringUtils.LINE_SEP
-                + "Entering project " + name + StringUtils.LINE_SEP + path
-                + StringUtils.LINE_SEP + getFooter(), out, event.getPriority());
+        String path = (base == null) ? "With no base directory" : "In " + base.getAbsolutePath();
+        printMessage(StringUtils.LINE_SEP + getHeader() + StringUtils.LINE_SEP + "Entering project " + name
+                + StringUtils.LINE_SEP + path + StringUtils.LINE_SEP + getFooter(), out, event.getPriority());
     }
 
     /**
@@ -162,9 +136,8 @@ public class MultiModuleLogger extends DefaultEasyAntLogger {
     public void subBuildFinished(BuildEvent event) {
         String name = extractNameOrDefault(event);
         String failed = event.getException() != null ? "failing " : "";
-        printMessage(StringUtils.LINE_SEP + getHeader() + StringUtils.LINE_SEP
-                + "Exiting " + failed + "project " + name
-                + StringUtils.LINE_SEP + getFooter(), out, event.getPriority());
+        printMessage(StringUtils.LINE_SEP + getHeader() + StringUtils.LINE_SEP + "Exiting " + failed + "project "
+                + name + StringUtils.LINE_SEP + getFooter(), out, event.getPriority());
     }
 
     /**
