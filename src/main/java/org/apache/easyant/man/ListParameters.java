@@ -66,15 +66,14 @@ public class ListParameters extends EasyantOption {
                 List<ParameterReport> parameterReports = moduleRep.getEasyantReport().getParameterReports();
                 if (parameterReports.size() > 0) {
                     printParameters(parameterReports);
-
-                    getProject().log(
-                            LINE_SEP + LINE_SEP + "For more information on a parameter, run:" + LINE_SEP
-                                    + "\t easyant -describe <parameter name>");
                 } else {
                     getProject().log(LINE_SEP + "No parameter found in the plugin: " + plugin);
                 }
             }
         }
+        getProject().log(
+                LINE_SEP + LINE_SEP + "For more information on a parameter, run:" + LINE_SEP
+                        + "\t easyant -describe <parameter name>");
         getProject().log(LINE_SEP + "--- End Of (Parameter Listing) ---");
     }
 

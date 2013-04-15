@@ -22,29 +22,30 @@ import java.util.List;
 import org.apache.easyant.core.report.ImportedModuleReport;
 
 /**
- * Lists all available plugins (imported modules) for the specified 
- * build module.
+ * Lists all available plugins (imported modules) for the specified build module.
  */
 public class ListPlugins extends EasyantOption {
     private static final long serialVersionUID = 1L;
-    
-    
-    public ListPlugins()
-            throws IllegalArgumentException {
-        super("listPlugins",false,"List all plugins used by the project");
+
+    public ListPlugins() throws IllegalArgumentException {
+        super("listPlugins", false, "List all plugins used by the project");
         setStopBuild(true);
     }
 
     public void execute() {
-        getProject().log(LINE_SEP + "--- Available Plugins for current project: " + getProject().getName() + " ---" + LINE_SEP);
-        
+        getProject().log(
+                LINE_SEP + "--- Available Plugins for current project: " + getProject().getName() + " ---" + LINE_SEP);
+
         List<ImportedModuleReport> moduleReps = getEareport().getImportedModuleReports();
-        for(int i = 0; i<moduleReps.size(); i++) {
-            getProject().log("\t" + moduleReps.get(i).getModuleMrid() + (moduleReps.get(i).getAs() == null ? 
-                    "" : ": Known as " + moduleReps.get(i).getAs()));
+        for (int i = 0; i < moduleReps.size(); i++) {
+            getProject().log(
+                    "\t" + moduleReps.get(i).getModuleMrid()
+                            + (moduleReps.get(i).getAs() == null ? "" : ": Known as " + moduleReps.get(i).getAs()));
         }
-        
-        getProject().log(LINE_SEP + LINE_SEP + "For more information on a Plugin, run:" + LINE_SEP + "\t easyant -describe <PLUGIN>");
+
+        getProject().log(
+                LINE_SEP + LINE_SEP + "For more information on a Plugin, run:" + LINE_SEP
+                        + "\t easyant -describe <PLUGIN>");
         getProject().log(LINE_SEP + "--- End Of (Plugins Listing) ---");
     }
 

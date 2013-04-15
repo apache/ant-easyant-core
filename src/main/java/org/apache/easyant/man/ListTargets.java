@@ -85,11 +85,10 @@ public class ListTargets extends EasyantOption {
             } else {
                 getProject().log(LINE_SEP + "\tNo Module / Plugin found by name: " + container);
             }
-
-            getProject().log(
-                    LINE_SEP + LINE_SEP + "For more information on an target, run:" + LINE_SEP
-                            + "\t easyant -describe <TARGET>");
         }
+        getProject().log(
+                LINE_SEP + LINE_SEP + "For more information on an target, run:" + LINE_SEP
+                        + "\t easyant -describe <TARGET>");
         getProject().log(LINE_SEP + "--- End Of (Targets Listing) ---");
     }
 
