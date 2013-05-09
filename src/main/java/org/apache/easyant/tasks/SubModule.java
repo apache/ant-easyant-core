@@ -262,6 +262,8 @@ public class SubModule extends AbstractEasyAntTask {
     private Project configureSubModule(File file, File directory) {
         Project subModule = getProject().createSubProject();
 
+        subModule.setNewProperty(EasyAntMagicNames.SUBMODULE, "true");
+
         subModule.setJavaVersionProperty();
         for (int i = 0; i < getProject().getBuildListeners().size(); i++) {
             BuildListener buildListener = (BuildListener) getProject().getBuildListeners().elementAt(i);
@@ -274,10 +276,10 @@ public class SubModule extends AbstractEasyAntTask {
         // copy all User properties
         addAlmostAll(getProject().getUserProperties(), subModule, PropertyType.USER);
         // inherit meta.target directory, for shared build repository.
-        String metaTarget = getProject().getProperty("meta.target");
+        String metaTarget = getProject().getProperty(EasyAntMagicNames.META_TARGET);
         if (metaTarget != null) {
             File metaDir = getProject().resolveFile(metaTarget);
-            subModule.setNewProperty("meta.target", metaDir.getAbsolutePath());
+            subModule.setNewProperty(EasyAntMagicNames.META_TARGET, metaDir.getAbsolutePath());
         }
         // inherit easyant offline base
         String offlineBaseDir = getProject().getProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY);

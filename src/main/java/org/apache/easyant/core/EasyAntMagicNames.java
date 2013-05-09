@@ -118,6 +118,9 @@ public interface EasyAntMagicNames {
      */
     public static final String EASYANT_BUILD_REPOSITORY = "easyant.build.repository";
 
+    /**
+     * Name of the property containing agregator target directory
+     */
     public static final String META_TARGET = "meta.target";
 
     /**
@@ -185,4 +188,9 @@ public interface EasyAntMagicNames {
      * Name of EasyAntEngine reference
      */
     public static final String EASYANT_ENGINE_REF = "easyant.engine.ref";
+
+    /**
+     * Name of the property telling if we are in a submodule
+     */
+    public static final String SUBMODULE = "submodule";
 }
