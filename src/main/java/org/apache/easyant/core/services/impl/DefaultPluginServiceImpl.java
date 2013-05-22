@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
@@ -119,8 +119,8 @@ public class DefaultPluginServiceImpl implements PluginService {
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
             resolveOptions.setConfs(conf.split(","));
-            ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
-                    .resolve(pluginIvyFile.toURI().toURL(), resolveOptions);
+            ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine().resolve(
+                    pluginIvyFile.toURI().toURL(), resolveOptions);
             eaReport = new EasyAntReport();
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
@@ -155,8 +155,8 @@ public class DefaultPluginServiceImpl implements PluginService {
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
             resolveOptions.setConfs(conf.split(","));
-            final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
-                    .resolve(moduleRevisionId, resolveOptions, true);
+            final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine().resolve(moduleRevisionId,
+                    resolveOptions, true);
             eaReport = new EasyAntReport();
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
@@ -177,8 +177,8 @@ public class DefaultPluginServiceImpl implements PluginService {
                         } else if ("jar".equals(artifact.getType())) {
                             path.createPathElement().setLocation(artifact.getLocalFile());
                         } else {
-                            handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(),
-                                    artifact.getLocalFile());
+                            handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(), artifact
+                                    .getLocalFile());
                         }
                     }
                     if (antFile != null && antFile.exists()) {
@@ -249,8 +249,8 @@ public class DefaultPluginServiceImpl implements PluginService {
                 }
                 if (FileSet.class.isAssignableFrom(taskClass)) {
                     FileSet fileSet = (FileSet) maybeConfigureTask(task);
-                    handleFilesetParameter(task.getRuntimeConfigurableWrapper().getId(), fileSet,
-                            task.getOwningTarget(), eaReport);
+                    handleFilesetParameter(task.getRuntimeConfigurableWrapper().getId(), fileSet, task
+                            .getOwningTarget(), eaReport);
                 }
             }
         }
@@ -280,8 +280,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         importedModuleReport.setMandatory(importTask.isMandatory());
         importedModuleReport.setMode(importTask.getMode());
         importedModuleReport.setAs(importTask.getAs());
-        importedModuleReport
-                .setEasyantReport(getPluginInfo(ModuleRevisionId.parse(importedModuleReport.getModuleMrid())));
+        importedModuleReport.setEasyantReport(getPluginInfo(ModuleRevisionId
+                .parse(importedModuleReport.getModuleMrid())));
         eaReport.addImportedModuleReport(importedModuleReport);
 
         Message.debug("Ant file import another module called : " + importedModuleReport.getModuleMrid() + " with mode "
@@ -492,7 +492,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         loadModule.setLocation(new Location(ProjectUtils.emulateMainScript(p).getAbsolutePath()));
         loadModule.setProject(p);
         loadModule.execute();
-        ProjectUtils.injectTargetIntoExtensionPoint(p, ProjectUtils.getConfiguredProjectHelper(p));
+        ProjectHelper projectHelper = ProjectUtils.getConfiguredProjectHelper(p);
+        projectHelper.resolveExtensionOfAttributes(p);
         analyseProject(p, eaReport, "default");
 
         return eaReport;

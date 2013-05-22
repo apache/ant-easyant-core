@@ -100,9 +100,8 @@ public class EasyAntEngine {
         IvyConfigure easyantIvyConfigure = new IvyConfigure();
         easyantIvyConfigure.setSettingsId(EasyAntMagicNames.EASYANT_IVY_INSTANCE);
 
-        project.setNewProperty(EasyAntMagicNames.EASYANT_DEFAULT_IVYSETTINGS,
-                this.getClass().getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml")
-                        .toExternalForm());
+        project.setNewProperty(EasyAntMagicNames.EASYANT_DEFAULT_IVYSETTINGS, this.getClass().getResource(
+                "/org/apache/easyant/core/default-easyant-ivysettings.xml").toExternalForm());
 
         project.setNewProperty(EasyAntMagicNames.EASYANT_CORE_JAR_URL, guessEasyantCoreJarUrl().toExternalForm());
 
@@ -229,8 +228,8 @@ public class EasyAntEngine {
         }
         // if no property is set check the default location
         if (path == null) {
-            File defaultGlboalEasyAntIvySettings = new File(
-                    helper.replaceProperties(EasyAntConstants.DEFAULT_GLOBAL_EASYANT_IVYSETTINGS));
+            File defaultGlboalEasyAntIvySettings = new File(helper
+                    .replaceProperties(EasyAntConstants.DEFAULT_GLOBAL_EASYANT_IVYSETTINGS));
             if (!defaultGlboalEasyAntIvySettings.exists()) {
                 return null;
             }
@@ -260,8 +259,8 @@ public class EasyAntEngine {
 
         for (int i = 0; i < configuration.getListeners().size(); i++) {
             String className = (String) configuration.getListeners().elementAt(i);
-            BuildListener listener = (BuildListener) ClasspathUtils.newInstance(className,
-                    EasyAntEngine.class.getClassLoader(), BuildListener.class);
+            BuildListener listener = (BuildListener) ClasspathUtils.newInstance(className, EasyAntEngine.class
+                    .getClassLoader(), BuildListener.class);
             project.setProjectReference(listener);
 
             project.addBuildListener(listener);
@@ -283,8 +282,8 @@ public class EasyAntEngine {
         if (configuration.getInputHandlerClassname() == null) {
             handler = new DefaultInputHandler();
         } else {
-            handler = (InputHandler) ClasspathUtils.newInstance(configuration.getInputHandlerClassname(),
-                    Main.class.getClassLoader(), InputHandler.class);
+            handler = (InputHandler) ClasspathUtils.newInstance(configuration.getInputHandlerClassname(), Main.class
+                    .getClassLoader(), InputHandler.class);
             project.setProjectReference(handler);
         }
         project.setInputHandler(handler);
@@ -403,7 +402,7 @@ public class EasyAntEngine {
         try {
             project.init();
             project.addReference(EasyAntMagicNames.EASYANT_ENGINE_REF, this);
-    
+
             // set user-define properties
             Enumeration<?> properties = configuration.getDefinedProps().propertyNames();
             while (properties.hasMoreElements()) {
@@ -411,14 +410,14 @@ public class EasyAntEngine {
                 String value = (String) configuration.getDefinedProps().get(arg);
                 project.setUserProperty(arg, value);
             }
-    
+
             project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
-    
+
             ProjectHelper helper = ProjectUtils.configureProjectHelper(project);
-    
+
             IvyAntSettings easyantIvySettings = configureEasyAntIvyInstance(project);
             configurePluginService(project, easyantIvySettings);
-    
+
             // Profile
             if (configuration.getActiveBuildConfigurations().size() != 0) {
                 String buildConfigurations = null;
@@ -428,30 +427,29 @@ public class EasyAntEngine {
                     } else {
                         buildConfigurations = buildConfigurations + "," + conf;
                     }
-    
+
                 }
                 project.log("Active build configurations : " + buildConfigurations, Project.MSG_INFO);
                 project.setProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS, buildConfigurations);
             }
             loadSystemPlugins(project, true);
-    
+
             locateBuildModuleAndBuildFile(project);
-    
+
             if (configuration.getBuildModule() != null || configuration.getBuildFile() != null) {
                 LoadModule lm = new LoadModule();
                 lm.setBuildModule(configuration.getBuildModule());
                 lm.setBuildFile(configuration.getBuildFile());
                 executeTask(lm, "load-module", project);
             }
-    
-            // FIXME:resolve extensionOf attributes this should be exposed by Apache Ant
-            ProjectUtils.injectTargetIntoExtensionPoint(project, helper);        
-        } catch (RuntimeException exc) {            
+
+            helper.resolveExtensionOfAttributes(project);
+        } catch (RuntimeException exc) {
             fireBuildFinished(project, exc);
             throw exc;
         } catch (Error e) {
             fireBuildFinished(project, e);
-            throw e;        
+            throw e;
         }
     }
 

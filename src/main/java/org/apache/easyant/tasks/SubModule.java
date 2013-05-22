@@ -194,7 +194,7 @@ public class SubModule extends AbstractEasyAntTask {
             lm.setUseBuildRepository(useBuildRepository);
             lm.execute();
 
-            ProjectUtils.injectTargetIntoExtensionPoint(subModule, helper);
+            helper.resolveExtensionOfAttributes(subModule);
 
             String targetsToRun = filterTargets(subModule);
             printExecutingTargetMsg(subModule);

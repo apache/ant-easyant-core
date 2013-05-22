@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -29,11 +28,9 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.ProjectHelper.OnMissingExtensionPoint;
 import org.apache.tools.ant.Target;
 
 /**
@@ -122,8 +119,10 @@ public class ProjectUtils {
      */
     public static void printMemoryDetails(Project project) {
         project.log("---- Memory Details ----");
-        project.log("  Used Memory  = "
-                + (Runtime.getRuntime().totalMemory() / MEGABYTE - Runtime.getRuntime().freeMemory() / MEGABYTE) + "MB");
+        project
+                .log("  Used Memory  = "
+                        + (Runtime.getRuntime().totalMemory() / MEGABYTE - Runtime.getRuntime().freeMemory() / MEGABYTE)
+                        + "MB");
         project.log("  Free Memory  = " + (Runtime.getRuntime().freeMemory() / MEGABYTE) + "MB");
         project.log("  Total Memory = " + (Runtime.getRuntime().totalMemory() / MEGABYTE) + "MB");
         project.log("-----------------------");
@@ -158,32 +157,6 @@ public class ProjectUtils {
             ret.put(target.getName(), target);
         }
         return ret;
-    }
-
-    public static void injectTargetIntoExtensionPoint(Project project, ProjectHelper helper) {
-        for (Object extensionInfos : helper.getExtensionStack()) {
-            String[] extensionInfo = (String[]) extensionInfos;
-            String tgName = extensionInfo[0];
-            String name = extensionInfo[1];
-            OnMissingExtensionPoint missingBehaviour = OnMissingExtensionPoint.FAIL;
-            Hashtable<?, ?> projectTargets = project.getTargets();
-            if (!projectTargets.containsKey(tgName)) {
-                String message = "can't add target " + name + " to extension-point " + tgName
-                        + " because the extension-point is unknown.";
-                if (missingBehaviour == OnMissingExtensionPoint.FAIL) {
-                    throw new BuildException(message);
-                } else if (missingBehaviour == OnMissingExtensionPoint.WARN) {
-                    Target target = (Target) projectTargets.get(name);
-                    project.log(target, "Warning: " + message, Project.MSG_WARN);
-                }
-            } else {
-                Target t = (Target) projectTargets.get(tgName);
-                if (!(t instanceof ExtensionPoint)) {
-                    throw new BuildException("referenced target " + tgName + " is not an extension-point");
-                }
-                t.addDependency(name);
-            }
-        }
     }
 
     @SuppressWarnings("unchecked")
