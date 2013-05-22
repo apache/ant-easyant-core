@@ -293,15 +293,32 @@ public class EasyAntMain implements AntMain {
         if (line.hasOption("buildconf")) {
             easyAntConfiguration.getActiveBuildConfigurations().add(line.getOptionValue("buildconf"));
         }
+        
+        File easyantConfFile = null;
+
         if (line.hasOption("configfile")) {
+            easyantConfFile = new File(line.getOptionValue("configfile").replace('/', File.separatorChar));
+        } else {
+            // if no command line switch is specified check the default location
+
+            File easyantHome = new File(System.getProperty(EasyAntMagicNames.EASYANT_HOME).replace('/',
+                    File.separatorChar));
+            File defaultGlobalEasyantConfFile = new File(easyantHome, EasyAntConstants.DEFAULT_GLOBAL_EASYANT_CONF_FILE);
+
+            if (defaultGlobalEasyantConfFile.exists()) {
+                easyantConfFile = defaultGlobalEasyantConfFile;
+            }
+        }
+
+        if (easyantConfFile != null) {
             try {
-                File easyantConfFile = new File(line.getOptionValue("configfile").replace('/', File.separatorChar));
                 easyAntConfiguration = EasyantConfigurationFactory.getInstance().createConfigurationFromFile(
                         easyAntConfiguration, easyantConfFile.toURI().toURL());
             } catch (Exception e) {
                 throw new BuildException(e);
             }
         }
+            
         if (line.hasOption("listener")) {
             easyAntConfiguration.getListeners().addElement(line.getOptionValue("listener"));
         }

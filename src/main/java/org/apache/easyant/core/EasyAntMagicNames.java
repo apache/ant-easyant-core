@@ -28,6 +28,13 @@ import org.apache.easyant.tasks.CoreRevisionCheckerTask;
  */
 public interface EasyAntMagicNames {
 
+
+    /**
+     * property for easyant home directory. Value: {@value}
+     */
+    public static final String EASYANT_HOME = "easyant.home";
+
+    
     /**
      * property for easyant file name. Value: {@value}
      */
