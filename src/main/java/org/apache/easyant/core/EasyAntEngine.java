@@ -400,51 +400,75 @@ public class EasyAntEngine {
      * @param project
      */
     public void initProject(Project project) {
-        project.init();
-        project.addReference(EasyAntMagicNames.EASYANT_ENGINE_REF, this);
-
-        // set user-define properties
-        Enumeration<?> properties = configuration.getDefinedProps().propertyNames();
-        while (properties.hasMoreElements()) {
-            String arg = (String) properties.nextElement();
-            String value = (String) configuration.getDefinedProps().get(arg);
-            project.setUserProperty(arg, value);
-        }
-
-        project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
-
-        ProjectHelper helper = ProjectUtils.configureProjectHelper(project);
-
-        IvyAntSettings easyantIvySettings = configureEasyAntIvyInstance(project);
-        configurePluginService(project, easyantIvySettings);
-
-        // Profile
-        if (configuration.getActiveBuildConfigurations().size() != 0) {
-            String buildConfigurations = null;
-            for (String conf : configuration.getActiveBuildConfigurations()) {
-                if (buildConfigurations == null) {
-                    buildConfigurations = conf;
-                } else {
-                    buildConfigurations = buildConfigurations + "," + conf;
-                }
-
+        try {
+            project.init();
+            project.addReference(EasyAntMagicNames.EASYANT_ENGINE_REF, this);
+    
+            // set user-define properties
+            Enumeration<?> properties = configuration.getDefinedProps().propertyNames();
+            while (properties.hasMoreElements()) {
+                String arg = (String) properties.nextElement();
+                String value = (String) configuration.getDefinedProps().get(arg);
+                project.setUserProperty(arg, value);
             }
-            project.log("Active build configurations : " + buildConfigurations, Project.MSG_INFO);
-            project.setProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS, buildConfigurations);
+    
+            project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
+    
+            ProjectHelper helper = ProjectUtils.configureProjectHelper(project);
+    
+            IvyAntSettings easyantIvySettings = configureEasyAntIvyInstance(project);
+            configurePluginService(project, easyantIvySettings);
+    
+            // Profile
+            if (configuration.getActiveBuildConfigurations().size() != 0) {
+                String buildConfigurations = null;
+                for (String conf : configuration.getActiveBuildConfigurations()) {
+                    if (buildConfigurations == null) {
+                        buildConfigurations = conf;
+                    } else {
+                        buildConfigurations = buildConfigurations + "," + conf;
+                    }
+    
+                }
+                project.log("Active build configurations : " + buildConfigurations, Project.MSG_INFO);
+                project.setProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS, buildConfigurations);
+            }
+            loadSystemPlugins(project, true);
+    
+            locateBuildModuleAndBuildFile(project);
+    
+            if (configuration.getBuildModule() != null || configuration.getBuildFile() != null) {
+                LoadModule lm = new LoadModule();
+                lm.setBuildModule(configuration.getBuildModule());
+                lm.setBuildFile(configuration.getBuildFile());
+                executeTask(lm, "load-module", project);
+            }
+    
+            // FIXME:resolve extensionOf attributes this should be exposed by Apache Ant
+            ProjectUtils.injectTargetIntoExtensionPoint(project, helper);        
+        } catch (RuntimeException exc) {            
+            fireBuildFinished(project, exc);
+            throw exc;
+        } catch (Error e) {
+            fireBuildFinished(project, e);
+            throw e;        
         }
-        loadSystemPlugins(project, true);
+    }
 
-        locateBuildModuleAndBuildFile(project);
-
-        if (configuration.getBuildModule() != null || configuration.getBuildFile() != null) {
-            LoadModule lm = new LoadModule();
-            lm.setBuildModule(configuration.getBuildModule());
-            lm.setBuildFile(configuration.getBuildFile());
-            executeTask(lm, "load-module", project);
+    protected void fireBuildFinished(Project project, Throwable error) {
+        try {
+            project.fireBuildFinished(error);
+        } catch (Throwable t) {
+            // yes, I know it is bad style to catch Throwable,
+            // but if we don't, we lose valuable information
+            System.err.println("Caught an exception while logging the" + " end of the build.  Exception was:");
+            t.printStackTrace();
+            if (error != null) {
+                System.err.println("There has been an error prior to" + " that:");
+                error.printStackTrace();
+            }
+            throw new BuildException(t);
         }
-
-        // FIXME:resolve extensionOf attributes this should be exposed by Apache Ant
-        ProjectUtils.injectTargetIntoExtensionPoint(project, helper);
     }
 
     public void loadSystemPlugins(Project project, boolean isRootProject) {
@@ -608,19 +632,7 @@ public class EasyAntEngine {
             error = e;
             throw e;
         } finally {
-            try {
-                project.fireBuildFinished(error);
-            } catch (Throwable t) {
-                // yes, I know it is bad style to catch Throwable,
-                // but if we don't, we lose valuable information
-                System.err.println("Caught an exception while logging the" + " end of the build.  Exception was:");
-                t.printStackTrace();
-                if (error != null) {
-                    System.err.println("There has been an error prior to" + " that:");
-                    error.printStackTrace();
-                }
-                throw new BuildException(t);
-            }
+            fireBuildFinished(project, error);
         }
         if (configuration.isShowMemoryDetails() || configuration.getMsgOutputLevel() >= Project.MSG_VERBOSE) {
             ProjectUtils.printMemoryDetails(project);
