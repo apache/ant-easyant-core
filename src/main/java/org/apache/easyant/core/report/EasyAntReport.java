@@ -20,8 +20,10 @@ package org.apache.easyant.core.report;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
@@ -36,7 +38,7 @@ public class EasyAntReport {
     private List<TargetReport> targetReports = new ArrayList<TargetReport>();
     private List<ExtensionPointReport> extensionPointReports = new ArrayList<ExtensionPointReport>();
     private List<ParameterReport> parameterReports = new ArrayList<ParameterReport>();
-    private List<ImportedModuleReport> importedModuleReports = new ArrayList<ImportedModuleReport>();
+    private Set<ImportedModuleReport> importedModuleReports = new HashSet<ImportedModuleReport>();
     private Map<String, PropertyDescriptor> propertyReports = new HashMap<String, PropertyDescriptor>();
     private ResolveReport resolveReport;
     private ModuleDescriptor moduleDescriptor;
@@ -180,8 +182,8 @@ public class EasyAntReport {
      * 
      * @return a list of imported modules
      */
-    public List<ImportedModuleReport> getImportedModuleReports() {
-        return Collections.unmodifiableList(importedModuleReports);
+    public Set<ImportedModuleReport> getImportedModuleReports() {
+        return Collections.unmodifiableSet(importedModuleReports);
     }
 
     /**

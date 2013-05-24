@@ -17,7 +17,7 @@
  */
 package org.apache.easyant.man;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.easyant.core.report.ImportedModuleReport;
 
@@ -36,11 +36,14 @@ public class ListPlugins extends EasyantOption {
         getProject().log(
                 LINE_SEP + "--- Available Plugins for current project: " + getProject().getName() + " ---" + LINE_SEP);
 
-        List<ImportedModuleReport> moduleReps = getEareport().getImportedModuleReports();
-        for (int i = 0; i < moduleReps.size(); i++) {
-            getProject().log(
-                    "\t" + moduleReps.get(i).getModuleMrid()
-                            + (moduleReps.get(i).getAs() == null ? "" : ": Known as " + moduleReps.get(i).getAs()));
+        Set<ImportedModuleReport> moduleReps = getEareport().getImportedModuleReports();
+        for (ImportedModuleReport importedModuleReport : moduleReps) {
+            getProject()
+                    .log(
+                            "\t"
+                                    + importedModuleReport.getModuleMrid()
+                                    + (importedModuleReport.getAs() == null ? "" : ": Known as "
+                                            + importedModuleReport.getAs()));
         }
 
         getProject().log(

@@ -90,50 +90,32 @@ public class PluginServiceTest {
         EasyAntReport eaReport = generateReport();
         Assert.assertNotNull(eaReport);
 
-        // the report should contain the run-java plugin
-        boolean containsBuildType = false;
-        boolean containsPlugin = false;
-        for (ImportedModuleReport importedModule : eaReport.getImportedModuleReports()) {
-            if (importedModule.getModuleMrid().equals("org.apache.easyant.buildtypes#build-std-java;0.9")) {
-                containsBuildType = true;
-            }
-            if (importedModule.getModuleMrid().equals("org.apache.easyant.plugins#run-java;0.9")) {
-                containsPlugin = true;
-            }
-        }
-        Assert.assertTrue(containsBuildType);
-        Assert.assertTrue(containsPlugin);
+        Assert.assertNotNull(eaReport.getImportedModuleReport("org.apache.easyant.buildtypes#build-std-java;0.9"));
+        Assert.assertNotNull(eaReport.getImportedModuleReport("org.apache.easyant.plugins#run-java;0.9"));
 
-        // be sure that the property exist
-        PropertyDescriptor property = eaReport.getPropertyDescriptors().get("run.main.classname");
-        Assert.assertNotNull(property);
-        // check the value of the property
-        Assert.assertEquals("org.apache.easyant.example.Example", property.getValue());
+        ImportedModuleReport buildType = eaReport
+                .getImportedModuleReport("org.apache.easyant.buildtypes#build-std-java;0.9");
+        // global importedModule size should be equals to :
+        // importedModule size of buildtype + 2 (buildtype itself +run-java plugin)
+        Assert.assertEquals(buildType.getEasyantReport().getImportedModuleReports().size() + 2, eaReport
+                .getImportedModuleReports().size());
 
-        // be sure that the property exist
-        PropertyDescriptor srcMainJava = eaReport.getAvailableProperties().get("src.main.java");
-        Assert.assertNotNull(srcMainJava);
-        // check the value of the property
-        Assert.assertEquals("${basedir}/src/main/java", srcMainJava.getValue());
+        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("run.main.classname"),
+                "org.apache.easyant.example.Example");
+
+        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("src.main.java"), "${basedir}/src/main/java");
 
         // the property should also be contained in getAvailableProperties which
         // list all properties (those for the current module and those in
         // imported modules)
-        property = eaReport.getAvailableProperties().get("run.main.classname");
-        Assert.assertNotNull(property);
-        // check the value of the property
-        Assert.assertEquals("org.apache.easyant.example.Example", property.getValue());
+        checkPropertyValueEquals(eaReport.getAvailableProperties().get("run.main.classname"),
+                "org.apache.easyant.example.Example");
 
-        // check that package ExtensionPoint exists and that jar:jar target is bound to
+        // check that package ExtensionPoint exists and targets are bound to
         // this extension-point
-        ExtensionPointReport packageEP = null;
-        for (ExtensionPointReport extensionPoint : eaReport.getExtensionPointReports()) {
-            if ("package".equals(extensionPoint.getName())) {
-                packageEP = extensionPoint;
-                break;
-            }
-        }
+        ExtensionPointReport packageEP = eaReport.getExtensionPointReport("package");
         Assert.assertNotNull(packageEP);
+
         Assert.assertEquals("compile,abstract-package:package,hello-world", packageEP.getDepends());
 
         List<TargetReport> targets = packageEP.getTargetReports();
@@ -160,17 +142,38 @@ public class PluginServiceTest {
         EasyAntReport pluginInfo = pluginService.getPluginInfo("org.apache.easyant.plugins#compile-java;0.9");
         Assert.assertNotNull(pluginInfo);
         Assert.assertEquals(2, pluginInfo.getImportedModuleReports().size());
+        Assert.assertNotNull(pluginInfo.getImportedModuleReport("abstract-provisioning"));
+        Assert.assertNotNull(pluginInfo.getImportedModuleReport("abstract-compile"));
+
+        checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("compile.java.includes.pattern"),
+                "**/*.java");
+        checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("target.test.integration.classes"),
+                "target/integration-test/classes");
+    }
+
+    @Test
+    public void testGetPluginInfoWithNestedPlugin() throws Exception {
+        EasyAntReport pluginInfo = pluginService.getPluginInfo("org.apache.easyant.plugins#compile-java;0.9");
+        Assert.assertNotNull(pluginInfo);
+
+        // verify abstract-provisioning is imported in abstract-compile
         ImportedModuleReport importedModuleReport = pluginInfo.getImportedModuleReport("abstract-compile");
         Assert.assertNotNull(importedModuleReport);
         Assert.assertNotNull(importedModuleReport.getEasyantReport());
-        // abstract-compile import abstract-provisioning
         Assert.assertEquals(1, importedModuleReport.getEasyantReport().getImportedModuleReports().size());
+        Assert.assertNotNull(importedModuleReport.getEasyantReport().getImportedModuleReport("abstract-provisioning"));
 
-        Assert.assertNotNull(pluginInfo.getPropertyDescriptors().get("compile.java.includes.pattern"));
-        Assert.assertEquals("**/*.java", pluginInfo.getPropertyDescriptors().get("compile.java.includes.pattern")
-                .getDefaultValue());
-        Assert.assertNotNull(pluginInfo.getPropertyDescriptors().get("target.test.integration.classes"));
-        Assert.assertEquals("target/integration-test/classes", pluginInfo.getPropertyDescriptors().get(
-                "target.test.integration.classes").getDefaultValue());
+        checkPropertyDefaultValueEquals(importedModuleReport.getEasyantReport().getPropertyDescriptors().get(
+                "target.test.integration.classes"), "target/integration-test/classes");
+    }
+
+    public void checkPropertyDefaultValueEquals(PropertyDescriptor propertyDescriptor, String expectedValue) {
+        Assert.assertNotNull(propertyDescriptor);
+        Assert.assertEquals(expectedValue, propertyDescriptor.getDefaultValue());
+    }
+
+    public void checkPropertyValueEquals(PropertyDescriptor propertyDescriptor, String expectedValue) {
+        Assert.assertNotNull(propertyDescriptor);
+        Assert.assertEquals(expectedValue, propertyDescriptor.getValue());
     }
 }

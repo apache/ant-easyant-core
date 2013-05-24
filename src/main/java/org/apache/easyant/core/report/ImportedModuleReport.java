@@ -55,10 +55,10 @@ public class ImportedModuleReport {
     }
 
     public String getModuleMrid() {
-        return moduleMrid != null ? moduleMrid : ModuleRevisionId.newInstance(
-                organisation, module, revision).toString();
+        return moduleMrid != null ? moduleMrid : ModuleRevisionId.newInstance(organisation, module, revision)
+                .toString();
     }
-    
+
     public ModuleRevisionId getModuleRevisionId() {
         return ModuleRevisionId.parse(getModuleMrid());
     }
@@ -97,6 +97,49 @@ public class ImportedModuleReport {
 
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((module == null) ? 0 : module.hashCode());
+        result = prime * result + ((moduleMrid == null) ? 0 : moduleMrid.hashCode());
+        result = prime * result + ((organisation == null) ? 0 : organisation.hashCode());
+        result = prime * result + ((revision == null) ? 0 : revision.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ImportedModuleReport other = (ImportedModuleReport) obj;
+        if (module == null) {
+            if (other.module != null)
+                return false;
+        } else if (!module.equals(other.module))
+            return false;
+        if (moduleMrid == null) {
+            if (other.moduleMrid != null)
+                return false;
+        } else if (!moduleMrid.equals(other.moduleMrid))
+            return false;
+        if (organisation == null) {
+            if (other.organisation != null)
+                return false;
+        } else if (!organisation.equals(other.organisation))
+            return false;
+        if (revision == null) {
+            if (other.revision != null)
+                return false;
+        } else if (!revision.equals(other.revision))
+            return false;
+        return true;
     }
 
 }
