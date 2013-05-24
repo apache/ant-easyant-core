@@ -92,7 +92,7 @@ public class PluginServiceTest {
 
         // the report should contain the run-java plugin
         boolean containsBuildType = false;
-        boolean containsPlugin = true;
+        boolean containsPlugin = false;
         for (ImportedModuleReport importedModule : eaReport.getImportedModuleReports()) {
             if (importedModule.getModuleMrid().equals("org.apache.easyant.buildtypes#build-std-java;0.9")) {
                 containsBuildType = true;
@@ -153,5 +153,24 @@ public class PluginServiceTest {
     public void testGetDescription() throws Exception {
         String description = pluginService.getPluginDescription("org.apache.easyant.plugins#run-java;0.9");
         Assert.assertEquals("This module provides java bytecode execution feature.", description);
+    }
+
+    @Test
+    public void testGetPluginInfo() throws Exception {
+        EasyAntReport pluginInfo = pluginService.getPluginInfo("org.apache.easyant.plugins#compile-java;0.9");
+        Assert.assertNotNull(pluginInfo);
+        Assert.assertEquals(2, pluginInfo.getImportedModuleReports().size());
+        ImportedModuleReport importedModuleReport = pluginInfo.getImportedModuleReport("abstract-compile");
+        Assert.assertNotNull(importedModuleReport);
+        Assert.assertNotNull(importedModuleReport.getEasyantReport());
+        // abstract-compile import abstract-provisioning
+        Assert.assertEquals(1, importedModuleReport.getEasyantReport().getImportedModuleReports().size());
+
+        Assert.assertNotNull(pluginInfo.getPropertyDescriptors().get("compile.java.includes.pattern"));
+        Assert.assertEquals("**/*.java", pluginInfo.getPropertyDescriptors().get("compile.java.includes.pattern")
+                .getDefaultValue());
+        Assert.assertNotNull(pluginInfo.getPropertyDescriptors().get("target.test.integration.classes"));
+        Assert.assertEquals("target/integration-test/classes", pluginInfo.getPropertyDescriptors().get(
+                "target.test.integration.classes").getDefaultValue());
     }
 }

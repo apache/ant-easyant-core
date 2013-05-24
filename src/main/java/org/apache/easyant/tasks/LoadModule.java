@@ -250,7 +250,7 @@ public class LoadModule extends AbstractEasyAntTask {
             }
         }
 
-        initTask(projectIvyInstance).execute();
+        initTask(projectIvyInstance).perform();
 
         // FIXME: hack as ResolutionCacheManager use XmlModuleDescriptorParser under the hood
         EasyAntRepositoryCacheManager cacheManager = new EasyAntRepositoryCacheManager("default-project-cache",
@@ -268,7 +268,7 @@ public class LoadModule extends AbstractEasyAntTask {
         ImportTask importTask = new ImportTask();
         importTask.setFile(buildModule.getAbsolutePath());
         importTask.setOptional(true);
-        initTask(importTask).execute();
+        initTask(importTask).perform();
     }
 
     protected void loadBuildModule(File buildModule) {
@@ -302,7 +302,7 @@ public class LoadModule extends AbstractEasyAntTask {
                     propTask.setBuildConfigurations(property.getBuildConfigurations());
                     propTask.setTaskType("antlib:org.apache.easyant:property");
                     getOwningTarget().addTask(propTask);
-                    initTask(propTask).execute();
+                    initTask(propTask).perform();
                 }
             }
             if (md.getConfigureProjectDescriptor() != null) {
@@ -312,7 +312,7 @@ public class LoadModule extends AbstractEasyAntTask {
                 configureProject.setBasedir(descriptor.getBasedir());
                 configureProject.setTaskType("antlib:org.apache.easyant:configure-project");
                 getOwningTarget().addTask(configureProject);
-                initTask(configureProject).execute();
+                initTask(configureProject).perform();
             }
 
             if (md.getBuildType() != null) {
@@ -329,7 +329,7 @@ public class LoadModule extends AbstractEasyAntTask {
 
                     importTask.setTaskType("antlib:org.apache.easyant:import");
                     getOwningTarget().addTask(importTask);
-                    initTask(importTask).execute();
+                    initTask(importTask).perform();
                 }
             }
             for (Iterator<?> iterator = md.getPlugins().iterator(); iterator.hasNext();) {
@@ -347,7 +347,7 @@ public class LoadModule extends AbstractEasyAntTask {
                     importTask.setExcludes(plugin.getExcludes());
                     importTask.setTaskType("antlib:org.apache.easyant:import");
                     getOwningTarget().addTask(importTask);
-                    initTask(importTask).execute();
+                    initTask(importTask).perform();
                 }
             }
             // Apply ExtensionPointMapping
@@ -356,7 +356,7 @@ public class LoadModule extends AbstractEasyAntTask {
                 bindTarget.setTarget(epMapping.getTarget());
                 bindTarget.setExtensionOf(epMapping.getExtensionPoint());
                 bindTarget.setBuildConfigurations(epMapping.getBuildConfigurations());
-                initTask(bindTarget).execute();
+                initTask(bindTarget).perform();
             }
         } catch (Exception e) {
             throw new BuildException("problem while parsing Ivy module file: " + e.getMessage(), e);
@@ -473,7 +473,7 @@ public class LoadModule extends AbstractEasyAntTask {
         configureBuildScopedRepository.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));
         configureBuildScopedRepository.setGenerateWrapperResoler(true);
         getProject().setProperty(EasyAntMagicNames.EASYANT_BUILD_REPOSITORY, EasyAntConstants.BUILD_SCOPE_REPOSITORY);
-        initTask(configureBuildScopedRepository).execute();
+        initTask(configureBuildScopedRepository).perform();
     }
 
 }

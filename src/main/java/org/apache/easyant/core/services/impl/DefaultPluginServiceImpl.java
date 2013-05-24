@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
+import org.apache.easyant.core.ant.listerners.TaskCollectorFromImplicitTargetListener;
 import org.apache.easyant.core.descriptor.EasyAntModuleDescriptor;
 import org.apache.easyant.core.descriptor.PluginType;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
@@ -63,6 +64,7 @@ import org.apache.ivy.plugins.repository.url.URLResource;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.util.Message;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.ComponentHelper;
 import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Location;
@@ -206,6 +208,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         project.setNewProperty(EasyAntMagicNames.AUDIT_MODE, "true");
         project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
         project.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE, easyantIvySettings);
+        project.addBuildListener(new TaskCollectorFromImplicitTargetListener());
+
         if (properties != null) {
             for (Entry<String, String> entry : properties.entrySet()) {
                 project.setNewProperty(entry.getKey(), entry.getValue());
@@ -217,40 +221,28 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws IOException, Exception {
+        // handle tasks from implicit target
+        // When using import/include, ant create a "implicit target" to process root tasks. When tasks are declared
+        // outside of a target in root project we are able to parse them "normally" as this implicit target is added to
+        // the project. However this is not the case for tasks declared outside any target in imported build script.
+        // So we use a listener to collect required informations
+        for (BuildListener buildListener : project.getBuildListeners()) {
+            if (buildListener instanceof TaskCollectorFromImplicitTargetListener) {
+                TaskCollectorFromImplicitTargetListener taskCollectorFromImplicitTargetListener = (TaskCollectorFromImplicitTargetListener) buildListener;
+                for (Task task : taskCollectorFromImplicitTargetListener.getTasksCollected()) {
+                    handleTask(project, eaReport, conf, task);
+                }
+            }
+        }
+
+        // handle tasks declared in targets
         Map<String, Target> targets = ProjectUtils.removeDuplicateTargets(project.getTargets());
         for (Target target : targets.values()) {
-            handleTarget(target, eaReport);
-            for (int i = 0; i < target.getTasks().length; i++) {
-                Task task = target.getTasks()[i];
-                Class<?> taskClass = ComponentHelper.getComponentHelper(project).getComponentClass(task.getTaskType());
-                if (taskClass == null) {
-                    continue;
-                }
-                if (ParameterTask.class.isAssignableFrom(taskClass)) {
-                    ParameterTask parameterTask = (ParameterTask) maybeConfigureTask(task);
-                    handleParameterTask(parameterTask, eaReport);
-                }
-                if (Property.class.isAssignableFrom(taskClass)) {
-                    Property propertyTask = (Property) maybeConfigureTask(task);
-                    handleProperty(propertyTask, eaReport);
-                }
-                if (Import.class.isAssignableFrom(taskClass)) {
-                    Import importTask = (Import) maybeConfigureTask(task);
-                    handleImport(importTask, eaReport, conf);
-                }
-                if (Path.class.isAssignableFrom(taskClass)) {
-                    Path path = (Path) maybeConfigureTask(task);
-                    handlePathParameter(task.getRuntimeConfigurableWrapper().getId(), path, task.getOwningTarget(),
-                            eaReport);
-                }
-                if (PathTask.class.isAssignableFrom(taskClass)) {
-                    PathTask pathTask = (PathTask) maybeConfigureTask(task);
-                    handlePathParameter(pathTask, eaReport);
-                }
-                if (FileSet.class.isAssignableFrom(taskClass)) {
-                    FileSet fileSet = (FileSet) maybeConfigureTask(task);
-                    handleFilesetParameter(task.getRuntimeConfigurableWrapper().getId(), fileSet, task
-                            .getOwningTarget(), eaReport);
+            if (!"".equals(target.getName())) {
+                handleTarget(target, eaReport);
+                for (int i = 0; i < target.getTasks().length; i++) {
+                    Task task = target.getTasks()[i];
+                    handleTask(project, eaReport, conf, task);
                 }
             }
         }
@@ -267,6 +259,38 @@ public class DefaultPluginServiceImpl implements PluginService {
             return ue.getRealThing();
         } else {
             return task;
+        }
+    }
+
+    private void handleTask(Project project, EasyAntReport eaReport, String conf, Task task) throws Exception {
+        Class<?> taskClass = ComponentHelper.getComponentHelper(project).getComponentClass(task.getTaskType());
+        if (taskClass != null) {
+            if (ParameterTask.class.isAssignableFrom(taskClass)) {
+                ParameterTask parameterTask = (ParameterTask) maybeConfigureTask(task);
+                handleParameterTask(parameterTask, eaReport);
+            }
+            if (Property.class.isAssignableFrom(taskClass)) {
+                Property propertyTask = (Property) maybeConfigureTask(task);
+                handleProperty(propertyTask, eaReport);
+            }
+            if (Import.class.isAssignableFrom(taskClass)) {
+                Import importTask = (Import) maybeConfigureTask(task);
+                handleImport(importTask, eaReport, conf);
+            }
+            if (Path.class.isAssignableFrom(taskClass)) {
+                Path path = (Path) maybeConfigureTask(task);
+                handlePathParameter(task.getRuntimeConfigurableWrapper().getId(), path, task.getOwningTarget(),
+                        eaReport);
+            }
+            if (PathTask.class.isAssignableFrom(taskClass)) {
+                PathTask pathTask = (PathTask) maybeConfigureTask(task);
+                handlePathParameter(pathTask, eaReport);
+            }
+            if (FileSet.class.isAssignableFrom(taskClass)) {
+                FileSet fileSet = (FileSet) maybeConfigureTask(task);
+                handleFilesetParameter(task.getRuntimeConfigurableWrapper().getId(), fileSet, task.getOwningTarget(),
+                        eaReport);
+            }
         }
     }
 
@@ -391,57 +415,55 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     private void handleTarget(Target target, EasyAntReport eaReport) {
-        if (!"".equals(target.getName())) {
-            boolean isExtensionPoint = target instanceof ExtensionPoint;
-            if (!isExtensionPoint) {
-                TargetReport targetReport = new TargetReport();
-                targetReport.setName(target.getName());
-                StringBuilder sb = new StringBuilder();
-                Enumeration<?> targetDeps = target.getDependencies();
-                while (targetDeps.hasMoreElements()) {
-                    String t = (String) targetDeps.nextElement();
-                    sb.append(t);
-                    if (targetDeps.hasMoreElements()) {
-                        sb.append(",");
-                    }
+        boolean isExtensionPoint = target instanceof ExtensionPoint;
+        if (!isExtensionPoint) {
+            TargetReport targetReport = new TargetReport();
+            targetReport.setName(target.getName());
+            StringBuilder sb = new StringBuilder();
+            Enumeration<?> targetDeps = target.getDependencies();
+            while (targetDeps.hasMoreElements()) {
+                String t = (String) targetDeps.nextElement();
+                sb.append(t);
+                if (targetDeps.hasMoreElements()) {
+                    sb.append(",");
                 }
-                targetReport.setDepends(sb.toString());
-                targetReport.setDescription(target.getDescription());
-                targetReport.setIfCase(target.getIf());
-                targetReport.setUnlessCase(target.getUnless());
-                for (Iterator<?> iterator = target.getProject().getTargets().values().iterator(); iterator.hasNext();) {
-                    Target currentTarget = (Target) iterator.next();
-                    if (currentTarget instanceof ExtensionPoint) {
-                        Enumeration<?> dependencies = currentTarget.getDependencies();
-                        while (dependencies.hasMoreElements()) {
-                            String dep = (String) dependencies.nextElement();
-                            if (dep.equals(target.getName())) {
-                                targetReport.setExtensionPoint(currentTarget.getName());
-                            }
-                        }
-
-                    }
-                }
-
-                eaReport.addTargetReport(targetReport);
-
-                Message.debug("Ant file has a target called : " + targetReport.getName());
-            } else {
-                ExtensionPointReport extensionPoint = new ExtensionPointReport(target.getName());
-                StringBuilder sb = new StringBuilder();
-                Enumeration<?> targetDeps = target.getDependencies();
-                while (targetDeps.hasMoreElements()) {
-                    String t = (String) targetDeps.nextElement();
-                    sb.append(t);
-                    if (targetDeps.hasMoreElements()) {
-                        sb.append(",");
-                    }
-                }
-                extensionPoint.setDepends(sb.toString());
-                extensionPoint.setDescription(target.getDescription());
-                eaReport.addExtensionPointReport(extensionPoint);
-                Message.debug("Ant file has an extensionPoint called : " + extensionPoint.getName());
             }
+            targetReport.setDepends(sb.toString());
+            targetReport.setDescription(target.getDescription());
+            targetReport.setIfCase(target.getIf());
+            targetReport.setUnlessCase(target.getUnless());
+            for (Iterator<?> iterator = target.getProject().getTargets().values().iterator(); iterator.hasNext();) {
+                Target currentTarget = (Target) iterator.next();
+                if (currentTarget instanceof ExtensionPoint) {
+                    Enumeration<?> dependencies = currentTarget.getDependencies();
+                    while (dependencies.hasMoreElements()) {
+                        String dep = (String) dependencies.nextElement();
+                        if (dep.equals(target.getName())) {
+                            targetReport.setExtensionPoint(currentTarget.getName());
+                        }
+                    }
+
+                }
+            }
+
+            eaReport.addTargetReport(targetReport);
+
+            Message.debug("Ant file has a target called : " + targetReport.getName());
+        } else {
+            ExtensionPointReport extensionPoint = new ExtensionPointReport(target.getName());
+            StringBuilder sb = new StringBuilder();
+            Enumeration<?> targetDeps = target.getDependencies();
+            while (targetDeps.hasMoreElements()) {
+                String t = (String) targetDeps.nextElement();
+                sb.append(t);
+                if (targetDeps.hasMoreElements()) {
+                    sb.append(",");
+                }
+            }
+            extensionPoint.setDepends(sb.toString());
+            extensionPoint.setDescription(target.getDescription());
+            eaReport.addExtensionPointReport(extensionPoint);
+            Message.debug("Ant file has an extensionPoint called : " + extensionPoint.getName());
         }
     }
 
@@ -484,13 +506,14 @@ public class DefaultPluginServiceImpl implements PluginService {
 
         Project p = buildProject(null);
         Target implicitTarget = ProjectUtils.createTopLevelTarget();
-        p.addTarget("", implicitTarget);
+        p.addTarget(implicitTarget);
         LoadModule loadModule = new LoadModule();
         loadModule.setBuildModule(moduleDescriptor);
         loadModule.setBuildFile(optionalAntModule);
         loadModule.setOwningTarget(implicitTarget);
         loadModule.setLocation(new Location(ProjectUtils.emulateMainScript(p).getAbsolutePath()));
         loadModule.setProject(p);
+        loadModule.setTaskName("load-module");
         loadModule.execute();
         ProjectHelper projectHelper = ProjectUtils.getConfiguredProjectHelper(p);
         projectHelper.resolveExtensionOfAttributes(p);
