@@ -17,6 +17,9 @@
  */
 package org.apache.easyant.tasks;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -41,6 +44,7 @@ public class ParameterTask extends Task {
     private String defaultValue;
     private boolean required;
     private String phase;
+    private List<String> possibleValues = new ArrayList<String>();
 
     /**
      * Get a description to the property / path
@@ -156,10 +160,41 @@ public class ParameterTask extends Task {
         this.required = required;
     }
 
+    /**
+     * Get list of possible values of a property
+     * 
+     * @return a list of values
+     */
+    public List<String> getPossibleValues() {
+        return possibleValues;
+    }
+
+    /**
+     * Set list of possible values of a property
+     * 
+     * @param possibleValuesAsString
+     *            a comma separated list of values
+     */
+    public void setPossibleValues(String possibleValuesAsString) {
+        if (possibleValuesAsString != null) {
+            String[] split = possibleValuesAsString.split(",");
+            for (String possibleValue : split) {
+                possibleValues.add(possibleValue.trim());
+            }
+        }
+    }
+
     public void execute() throws BuildException {
         if (property != null) {
             if (isRequired() && getProject().getProperty(property) == null) {
                 throw new BuildException("expected property '" + property + "': " + description);
+            }
+            if (!possibleValues.isEmpty()) {
+                String currentValue = getProject().getProperty(property);
+                if (!possibleValues.contains(currentValue)) {
+                    throw new BuildException("current value of property '" + property
+                            + "' doesn't match with possible values : " + possibleValues.toString());
+                }
             }
             if (defaultValue != null && getProject().getProperty(property) == null) {
                 Property propTask = new Property();
