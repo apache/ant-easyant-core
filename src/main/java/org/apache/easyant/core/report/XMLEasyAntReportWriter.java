@@ -92,8 +92,9 @@ public class XMLEasyAntReportWriter {
         out.println(report.getModuleDescriptor().getDescription());
         out.println("\t</description>");
         out.println("\t<configurations>");
-        StringBuffer sb = new StringBuffer();
+
         for (Configuration configuration : easyAntReport.getModuleDescriptor().getConfigurations()) {
+            StringBuffer sb = new StringBuffer();
             sb.append("\t\t<configuration name=\"");
             sb.append(XMLHelper.escape(configuration.getName()));
             sb.append("\" description=\"");
@@ -169,18 +170,20 @@ public class XMLEasyAntReportWriter {
         extraAttributes = md != null ? md.getExtraAttributes() : dep.getResolvedId().getExtraAttributes();
         for (Iterator<?> iterator = extraAttributes.keySet().iterator(); iterator.hasNext();) {
             String attName = (String) iterator.next();
-            details.append(" extra-").append(attName).append("=\"")
-                    .append(XMLHelper.escape(extraAttributes.get(attName).toString())).append("\"");
+            details.append(" extra-").append(attName).append("=\"").append(
+                    XMLHelper.escape(extraAttributes.get(attName).toString())).append("\"");
         }
         String defaultValue = dep.getDescriptor() != null ? " default=\"" + dep.getDescriptor().isDefault() + "\"" : "";
         int position = dependencies.indexOf(dep.getResolvedId());
-        out.println("\t\t\t<revision name=\""
-                + XMLHelper.escape(dep.getResolvedId().getRevision())
-                + "\""
-                + (dep.getResolvedId().getBranch() == null ? "" : " branch=\""
-                        + XMLHelper.escape(dep.getResolvedId().getBranch()) + "\"") + details + " downloaded=\""
-                + dep.isDownloaded() + "\"" + " searched=\"" + dep.isSearched() + "\"" + defaultValue + " conf=\""
-                + toString(dep.getConfigurations(report.getConfiguration())) + "\"" + " position=\"" + position + "\">");
+        out
+                .println("\t\t\t<revision name=\""
+                        + XMLHelper.escape(dep.getResolvedId().getRevision())
+                        + "\""
+                        + (dep.getResolvedId().getBranch() == null ? "" : " branch=\""
+                                + XMLHelper.escape(dep.getResolvedId().getBranch()) + "\"") + details
+                        + " downloaded=\"" + dep.isDownloaded() + "\"" + " searched=\"" + dep.isSearched() + "\""
+                        + defaultValue + " conf=\"" + toString(dep.getConfigurations(report.getConfiguration())) + "\""
+                        + " position=\"" + position + "\">");
         if (md != null) {
             License[] licenses = md.getLicenses();
             for (int i = 0; i < licenses.length; i++) {
@@ -249,8 +252,8 @@ public class XMLEasyAntReportWriter {
             Map<?, ?> callerExtraAttributes = callers[i].getDependencyDescriptor().getExtraAttributes();
             for (Iterator<?> iterator = callerExtraAttributes.keySet().iterator(); iterator.hasNext();) {
                 String attName = (String) iterator.next();
-                callerDetails.append(" extra-").append(attName).append("=\"")
-                        .append(XMLHelper.escape(callerExtraAttributes.get(attName).toString())).append("\"");
+                callerDetails.append(" extra-").append(attName).append("=\"").append(
+                        XMLHelper.escape(callerExtraAttributes.get(attName).toString())).append("\"");
             }
 
             out.println("\t\t\t\t<caller organisation=\""
@@ -416,17 +419,16 @@ public class XMLEasyAntReportWriter {
             StringBuffer importedModule = new StringBuffer();
             try {
                 ModuleRevisionId mrid = ModuleRevisionId.parse(importedModuleReport.getModuleMrid());
-                importedModule.append("\t\t\t<import organisation=\"").append(mrid.getOrganisation())
-                        .append("\" name=\"").append(mrid.getName()).append("\" revision=\"")
-                        .append(mrid.getRevision()).append("\" type=\"").append(importedModuleReport.getMode())
-                        .append("\"");
+                importedModule.append("\t\t\t<import organisation=\"").append(mrid.getOrganisation()).append(
+                        "\" name=\"").append(mrid.getName()).append("\" revision=\"").append(mrid.getRevision())
+                        .append("\" type=\"").append(importedModuleReport.getMode()).append("\"");
 
             } catch (IllegalArgumentException e) {
                 Message.debug("Unable to parse " + importedModuleReport.getModuleMrid());
-                importedModule.append("                        <import organisation=\"")
-                        .append(importedModuleReport.getModuleMrid()).append("\" name=\"").append("null")
-                        .append("\" revision=\"").append("null").append("\" type=\"")
-                        .append(importedModuleReport.getMode()).append("\"");
+                importedModule.append("                        <import organisation=\"").append(
+                        importedModuleReport.getModuleMrid()).append("\" name=\"").append("null").append(
+                        "\" revision=\"").append("null").append("\" type=\"").append(importedModuleReport.getMode())
+                        .append("\"");
 
             }
             importedModule.append(" mandatory=\"");
