@@ -49,6 +49,9 @@
 
     <taskdef name="plugin-report" classname="org.apache.easyant.tasks.PluginReport"/>
 
+    <taskdef name="checkdepsupdate" classname="org.apache.easyant.tasks.IvyDependencyUpdateChecker"/>
+    <taskdef name="check-plugin-updates" classname="org.apache.easyant.tasks.PluginUpdateChecker"/>
+
     
     <presetdef name="include">
         <current:import mode="include" />
