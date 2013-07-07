@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
@@ -70,6 +70,8 @@ import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.PropertyHelper;
+import org.apache.tools.ant.PropertyHelper.PropertyEvaluator;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.UnknownElement;
@@ -209,6 +211,16 @@ public class DefaultPluginServiceImpl implements PluginService {
         project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
         project.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE, easyantIvySettings);
         project.addBuildListener(new TaskCollectorFromImplicitTargetListener());
+        
+        //add a property helper to ignore basedir property on reports
+        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(project);
+        propertyHelper.add(new PropertyEvaluator() {
+
+            public Object evaluate(String propertyName, PropertyHelper helper) {
+                return propertyName.equals("basedir") ? "${basedir}" : null;
+            }
+            
+        });
 
         if (properties != null) {
             for (Entry<String, String> entry : properties.entrySet()) {
