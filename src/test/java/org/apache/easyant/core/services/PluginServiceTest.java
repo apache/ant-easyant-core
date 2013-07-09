@@ -104,6 +104,12 @@ public class PluginServiceTest {
                 "org.apache.easyant.example.Example");
 
         checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("src.main.java"), "${basedir}/src/main/java");
+        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("target.main.classes"), "${target}/main/classes");
+        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("target"), "${basedir}/target");
+        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("test.framework"), "junit");
+
+        checkPropertyDefaultValueEquals(eaReport.getPropertyDescriptors().get("target.main.artifact"),
+                "${target.artifacts}/${target.artifacts.main.jar.name}");
 
         // the property should also be contained in getAvailableProperties which
         // list all properties (those for the current module and those in
@@ -148,7 +154,7 @@ public class PluginServiceTest {
         checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("compile.java.includes.pattern"),
                 "**/*.java");
         checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("target.test.integration.classes"),
-                "target/integration-test/classes");
+                "${target}/integration-test/classes");
     }
 
     @Test
@@ -163,8 +169,9 @@ public class PluginServiceTest {
         Assert.assertEquals(1, importedModuleReport.getEasyantReport().getImportedModuleReports().size());
         Assert.assertNotNull(importedModuleReport.getEasyantReport().getImportedModuleReport("abstract-provisioning"));
 
-        checkPropertyDefaultValueEquals(importedModuleReport.getEasyantReport().getPropertyDescriptors().get(
-                "target.test.integration.classes"), "target/integration-test/classes");
+        checkPropertyDefaultValueEquals(
+                importedModuleReport.getEasyantReport().getPropertyDescriptors().get("target.test.integration.classes"),
+                "${target}/integration-test/classes");
     }
 
     public void checkPropertyDefaultValueEquals(PropertyDescriptor propertyDescriptor, String expectedValue) {

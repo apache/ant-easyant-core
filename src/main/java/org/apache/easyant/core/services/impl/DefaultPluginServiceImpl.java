@@ -20,6 +20,7 @@ package org.apache.easyant.core.services.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParsePosition;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
@@ -71,10 +72,11 @@ import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.PropertyHelper;
-import org.apache.tools.ant.PropertyHelper.PropertyEvaluator;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.UnknownElement;
+import org.apache.tools.ant.property.ParseNextProperty;
+import org.apache.tools.ant.property.PropertyExpander;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
@@ -123,8 +125,8 @@ public class DefaultPluginServiceImpl implements PluginService {
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
             resolveOptions.setConfs(conf.split(","));
-            ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine().resolve(
-                    pluginIvyFile.toURI().toURL(), resolveOptions);
+            ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
+                    .resolve(pluginIvyFile.toURI().toURL(), resolveOptions);
             eaReport = new EasyAntReport();
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
@@ -159,8 +161,8 @@ public class DefaultPluginServiceImpl implements PluginService {
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
             resolveOptions.setConfs(conf.split(","));
-            final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine().resolve(moduleRevisionId,
-                    resolveOptions, true);
+            final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
+                    .resolve(moduleRevisionId, resolveOptions, true);
             eaReport = new EasyAntReport();
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
@@ -181,8 +183,8 @@ public class DefaultPluginServiceImpl implements PluginService {
                         } else if ("jar".equals(artifact.getType())) {
                             path.createPathElement().setLocation(artifact.getLocalFile());
                         } else {
-                            handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(), artifact
-                                    .getLocalFile());
+                            handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(),
+                                    artifact.getLocalFile());
                         }
                     }
                     if (antFile != null && antFile.exists()) {
@@ -210,17 +212,11 @@ public class DefaultPluginServiceImpl implements PluginService {
         project.setNewProperty(EasyAntMagicNames.AUDIT_MODE, "true");
         project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
         project.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE, easyantIvySettings);
-        project.addBuildListener(new TaskCollectorFromImplicitTargetListener());
-        
-        //add a property helper to ignore basedir property on reports
-        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(project);
-        propertyHelper.add(new PropertyEvaluator() {
 
-            public Object evaluate(String propertyName, PropertyHelper helper) {
-                return propertyName.equals("basedir") ? "${basedir}" : null;
-            }
-            
-        });
+        project.addBuildListener(new TaskCollectorFromImplicitTargetListener());
+        // add a property helper to ignore basedir property on reports
+        PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(project);
+        propertyHelper.add(new BypassDefaultPropertyExpander());
 
         if (properties != null) {
             for (Entry<String, String> entry : properties.entrySet()) {
@@ -233,6 +229,7 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws IOException, Exception {
+
         // handle tasks from implicit target
         // When using import/include, ant create a "implicit target" to process root tasks. When tasks are declared
         // outside of a target in root project we are able to parse them "normally" as this implicit target is added to
@@ -316,8 +313,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         importedModuleReport.setMandatory(importTask.isMandatory());
         importedModuleReport.setMode(importTask.getMode());
         importedModuleReport.setAs(importTask.getAs());
-        importedModuleReport.setEasyantReport(getPluginInfo(ModuleRevisionId
-                .parse(importedModuleReport.getModuleMrid())));
+        importedModuleReport
+                .setEasyantReport(getPluginInfo(ModuleRevisionId.parse(importedModuleReport.getModuleMrid())));
         eaReport.addImportedModuleReport(importedModuleReport);
 
         Message.debug("Ant file import another module called : " + importedModuleReport.getModuleMrid() + " with mode "
@@ -628,5 +625,44 @@ public class DefaultPluginServiceImpl implements PluginService {
 
     public EasyAntReport generateEasyAntReport(File moduleDescriptor) throws Exception {
         return generateEasyAntReport(moduleDescriptor, null, null);
+    }
+
+    /**
+     * Don't try to expand property on reports. Bypassing default property expander allow us to show real static value
+     * of properties on reports.
+     */
+    private class BypassDefaultPropertyExpander implements PropertyExpander {
+
+        public String parsePropertyName(String s, ParsePosition pos, ParseNextProperty notUsed) {
+            int index = pos.getIndex();
+            // directly check near, triggering characters:
+            if (s.length() - index >= 3 && '$' == s.charAt(index) && '{' == s.charAt(index + 1)) {
+                // int start = index + 2;
+                int start = index;
+
+                // defer to String.indexOf() for protracted check:
+                int end = s.indexOf('}', start);
+                if (end < 0) {
+                    throw new BuildException("Syntax error in property: " + s.substring(index));
+                }
+
+                // set marker after "}"
+                pos.setIndex(end + 1);
+
+                // allow to resolve path to property files
+                // this is mandatory if we want report to contains properties loaded by
+                // property file like done on buildtypes
+                // in that case property needs to be really expanded so we need to strips "${" and "}" characters
+                String strippedPropertyName = s.substring(start + 2, end);
+                if (strippedPropertyName.endsWith("properties.file")) {
+
+                    return strippedPropertyName;
+                }
+
+                // in other cases return the whole property with "${" and "}"
+                return start == end ? "" : s.substring(start, end + 1);
+            }
+            return null;
+        }
     }
 }
