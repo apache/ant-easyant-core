@@ -56,6 +56,8 @@ public class PluginReport extends AbstractEasyAntTask {
 
     private File todir;
 
+    private File toFile;
+
     private String conf;
 
     private File xslFile;
@@ -124,6 +126,14 @@ public class PluginReport extends AbstractEasyAntTask {
 
     public void setXslext(String xslext) {
         this.xslext = xslext;
+    }
+
+    public File getToFile() {
+        return toFile;
+    }
+
+    public void setToFile(File toFile) {
+        this.toFile = toFile;
     }
 
     public void execute() throws BuildException {
@@ -223,7 +233,12 @@ public class PluginReport extends AbstractEasyAntTask {
                 transformer.setParameter(param.getName(), param.getExpression());
             }
             ModuleRevisionId moduleRevisionId = easyantReport.getModuleDescriptor().getModuleRevisionId();
-            File outFile = new File(todir, getOutputPattern(moduleRevisionId, conf, xslext));
+            File outFile;
+            if (toFile != null) {
+                outFile = toFile;
+            } else {
+                outFile = new File(todir, getOutputPattern(moduleRevisionId, conf, xslext));
+            }
 
             log("Processing " + reportFile + " to " + outFile);
 
