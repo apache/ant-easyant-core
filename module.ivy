@@ -15,7 +15,7 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-    <info organisation="org.apache.easyant" module="easyant-core" revision="0.9" status="integration"/>
+    <info organisation="org.apache.easyant" module="easyant-core" revision="0.10" status="integration"/>
 
     <configurations>
         <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
