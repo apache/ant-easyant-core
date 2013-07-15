@@ -47,7 +47,7 @@ public class PropertiesAsAttributesTest extends EasyAntBaseTest {
 
     @Test
     public void shouldHandlePropertiesInConfigureProject() {
-        Assert.assertEquals("package", project.getDefaultTarget());
+        Assert.assertEquals("dist", project.getDefaultTarget());
         assertPropertyEquals("my.property.inconfigureproject", "true");
     }
 
