@@ -31,9 +31,9 @@ import java.util.Vector;
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
+import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
-import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyPublish;
 import org.apache.ivy.ant.IvyResolve;
@@ -203,7 +203,11 @@ public class SubModule extends AbstractEasyAntTask {
                 subModule.setNewProperty(EasyAntMagicNames.PROJECT_EXECUTED_TARGETS, targetsToRun);
                 subModule.executeTargets(new TargetList(targetsToRun));
                 if (useBuildRepository) {
-                    File artifactsDir = subModule.resolveFile(subModule.getProperty("target.artifacts"));
+                    String targetArtifacts = subModule.getProperty("target.artifacts");
+                    if (targetArtifacts == null) {
+                        targetArtifacts = "target/artifacts";
+                    }
+                    File artifactsDir = subModule.resolveFile(targetArtifacts);
                     if (artifactsDir.isDirectory()) {
                         IvyResolve ivyResolve = new IvyResolve();
                         ivyResolve.setFile(file);
@@ -298,8 +302,8 @@ public class SubModule extends AbstractEasyAntTask {
         addReferences(subModule);
 
         getEasyAntEngine().configureEasyAntIvyInstance(subModule);
-        subModule.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE, getProject().getReference(
-                EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE));
+        subModule.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE,
+                getProject().getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE));
 
         subModule.setName(file.getName());
         subModule.setBaseDir(directory);
