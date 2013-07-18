@@ -158,6 +158,23 @@ public class PluginServiceTest {
     }
 
     @Test
+    public void testGetPluginInfoOnlyForCurrentPlugin() throws Exception {
+        ModuleRevisionId mrid = ModuleRevisionId.parse("org.apache.easyant.plugins#compile-java;0.9");
+        EasyAntReport pluginInfo = pluginService.getPluginInfo(mrid, "default");
+        Assert.assertNotNull(pluginInfo);
+        Assert.assertEquals(1, pluginInfo.getImportedModuleReportsFromCurrentModule().size());
+        ImportedModuleReport abstractCompile = pluginInfo.getImportedModuleReport("abstract-compile");
+        Assert.assertNotNull(abstractCompile);
+        Assert.assertEquals(1, abstractCompile.getEasyantReport().getImportedModuleReportsFromCurrentModule().size());
+        Assert.assertNotNull(abstractCompile.getEasyantReport().getImportedModuleReport("abstract-provisioning"));
+        checkPropertyDefaultValueEquals(
+                pluginInfo.getPropertyReportsFromCurrentModule().get("compile.java.includes.pattern"), "**/*.java");
+        checkPropertyDefaultValueEquals(
+                abstractCompile.getEasyantReport().getPropertyReportsFromCurrentModule()
+                        .get("target.test.integration.classes"), "${target}/integration-test/classes");
+    }
+
+    @Test
     public void testGetPluginInfoWithNestedPlugin() throws Exception {
         EasyAntReport pluginInfo = pluginService.getPluginInfo("org.apache.easyant.plugins#compile-java;0.9");
         Assert.assertNotNull(pluginInfo);

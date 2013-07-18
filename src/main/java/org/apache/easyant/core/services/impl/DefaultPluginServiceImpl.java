@@ -153,7 +153,6 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     public EasyAntReport getPluginInfo(final ModuleRevisionId moduleRevisionId, String conf) throws Exception {
-
         IvyContext.pushNewContext().setIvy(ivyInstance);
         EasyAntReport eaReport = null;
         try {
@@ -303,6 +302,15 @@ public class DefaultPluginServiceImpl implements PluginService {
         }
     }
 
+    private boolean isCurrentModule(Project project, Location location) {
+        String rootModuleLocation = project.getProperty(TaskCollectorFromImplicitTargetListener.ROOT_MODULE_LOCATION);
+        if (rootModuleLocation == null) {
+            throw new IllegalStateException(
+                    "rootModuleLocation not found, looks like TaskCOllectorFromImplicitTargetListener is not properly configured");
+        }
+        return rootModuleLocation != null && location != null && location.getFileName().equals(rootModuleLocation);
+    }
+
     private void handleImport(Import importTask, EasyAntReport eaReport, String conf) throws Exception {
         ImportedModuleReport importedModuleReport = new ImportedModuleReport();
 
@@ -313,16 +321,18 @@ public class DefaultPluginServiceImpl implements PluginService {
         importedModuleReport.setMandatory(importTask.isMandatory());
         importedModuleReport.setMode(importTask.getMode());
         importedModuleReport.setAs(importTask.getAs());
-        importedModuleReport
-                .setEasyantReport(getPluginInfo(ModuleRevisionId.parse(importedModuleReport.getModuleMrid())));
-        eaReport.addImportedModuleReport(importedModuleReport);
+
+        EasyAntReport pluginInfo = getPluginInfo(ModuleRevisionId.parse(importedModuleReport.getModuleMrid()), conf);
+        importedModuleReport.setEasyantReport(pluginInfo);
+        eaReport.addImportedModuleReport(importedModuleReport,
+                isCurrentModule(importTask.getProject(), importTask.getLocation()));
 
         Message.debug("Ant file import another module called : " + importedModuleReport.getModuleMrid() + " with mode "
                 + importedModuleReport.getMode());
     }
 
     private void handleProperty(Property property, EasyAntReport eaReport) throws IOException {
-
+        boolean isCurrentModule = isCurrentModule(property.getProject(), property.getLocation());
         if (property.getFile() != null) {
             Properties propToLoad = new Properties();
             File f = property.getFile();
@@ -336,7 +346,8 @@ public class DefaultPluginServiceImpl implements PluginService {
                         if (property.getOwningTarget() != null) {
                             propertyDescriptor.setOwningTarget(property.getOwningTarget().getName());
                         }
-                        eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor);
+                        eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor,
+                                isCurrentModule);
                     }
 
                 } catch (IOException e) {
@@ -352,11 +363,13 @@ public class DefaultPluginServiceImpl implements PluginService {
             if (property.getOwningTarget() != null) {
                 propertyDescriptor.setOwningTarget(property.getOwningTarget().getName());
             }
-            eaReport.addPropertyDescriptor(property.getName(), propertyDescriptor);
+            eaReport.addPropertyDescriptor(property.getName(), propertyDescriptor, isCurrentModule);
         }
     }
 
     private void handleParameterTask(ParameterTask parameterTask, EasyAntReport eaReport) {
+        boolean isCurrentModule = isCurrentModule(parameterTask.getProject(), parameterTask.getLocation());
+
         if (parameterTask.getProperty() != null) {
             PropertyDescriptor propertyDescriptor = new PropertyDescriptor(parameterTask.getProperty());
             propertyDescriptor.setDefaultValue(parameterTask.getDefault());
@@ -366,7 +379,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                 propertyDescriptor.setOwningTarget(parameterTask.getOwningTarget().getName());
             }
             Message.debug("Ant file has a property called : " + propertyDescriptor.getName());
-            eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor);
+            eaReport.addPropertyDescriptor(propertyDescriptor.getName(), propertyDescriptor, isCurrentModule);
         } else if (parameterTask.getPath() != null) {
             ParameterReport parameterReport = new ParameterReport(ParameterType.PATH);
             parameterReport.setName(parameterTask.getPath());
@@ -375,7 +388,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             if (parameterTask.getOwningTarget() != null) {
                 parameterReport.setOwningTarget(parameterTask.getOwningTarget().getName());
             }
-            eaReport.addParameterReport(parameterReport);
+            eaReport.addParameterReport(parameterReport, isCurrentModule);
             Message.debug("Ant file has a path called : " + parameterReport.getName());
         }
     }
@@ -389,7 +402,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             if (target != null) {
                 parameterReport.setOwningTarget(target.getName());
             }
-            eaReport.addParameterReport(parameterReport);
+            eaReport.addParameterReport(parameterReport, isCurrentModule(fileSet.getProject(), fileSet.getLocation()));
             Message.debug("Ant file has a fileset called : " + parameterReport.getName());
         }
 
@@ -404,7 +417,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             if (target != null) {
                 parameterReport.setOwningTarget(target.getName());
             }
-            eaReport.addParameterReport(parameterReport);
+            eaReport.addParameterReport(parameterReport, isCurrentModule(path.getProject(), path.getLocation()));
             Message.debug("Ant file has a path called : " + parameterReport.getName());
         }
     }
@@ -418,12 +431,13 @@ public class DefaultPluginServiceImpl implements PluginService {
             if (pathTask.getOwningTarget() != null) {
                 parameterReport.setOwningTarget(pathTask.getOwningTarget().getName());
             }
-            eaReport.addParameterReport(parameterReport);
+            eaReport.addParameterReport(parameterReport, isCurrentModule(pathTask.getProject(), pathTask.getLocation()));
             Message.debug("Ant file has a path called : " + parameterReport.getName());
         }
     }
 
     private void handleTarget(Target target, EasyAntReport eaReport) {
+        boolean isCurrentModule = isCurrentModule(target.getProject(), target.getLocation());
         boolean isExtensionPoint = target instanceof ExtensionPoint;
         if (!isExtensionPoint) {
             TargetReport targetReport = new TargetReport();
@@ -455,7 +469,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                 }
             }
 
-            eaReport.addTargetReport(targetReport);
+            eaReport.addTargetReport(targetReport, isCurrentModule);
 
             Message.debug("Ant file has a target called : " + targetReport.getName());
         } else {
@@ -471,7 +485,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             }
             extensionPoint.setDepends(sb.toString());
             extensionPoint.setDescription(target.getDescription());
-            eaReport.addExtensionPointReport(extensionPoint);
+            eaReport.addExtensionPointReport(extensionPoint, isCurrentModule);
             Message.debug("Ant file has an extensionPoint called : " + extensionPoint.getName());
         }
     }

@@ -40,6 +40,13 @@ public class EasyAntReport {
     private List<ParameterReport> parameterReports = new ArrayList<ParameterReport>();
     private Set<ImportedModuleReport> importedModuleReports = new HashSet<ImportedModuleReport>();
     private Map<String, PropertyDescriptor> propertyReports = new HashMap<String, PropertyDescriptor>();
+
+    private List<TargetReport> targetReportsFromCurrentModule = new ArrayList<TargetReport>();
+    private List<ExtensionPointReport> extensionPointReportsFromCurrentModule = new ArrayList<ExtensionPointReport>();
+    private List<ParameterReport> parameterReportsFromCurrentModule = new ArrayList<ParameterReport>();
+    private Set<ImportedModuleReport> importedModuleReportsFromCurrentModule = new HashSet<ImportedModuleReport>();
+    private Map<String, PropertyDescriptor> propertyReportsFromCurrentModule = new HashMap<String, PropertyDescriptor>();
+
     private ResolveReport resolveReport;
     private ModuleDescriptor moduleDescriptor;
     private boolean extensionPointsConfigured;
@@ -71,11 +78,14 @@ public class EasyAntReport {
      * @param targetReport
      *            a given targeReport
      */
-    public void addTargetReport(TargetReport targetReport) {
+    public void addTargetReport(TargetReport targetReport, boolean isCurrentModule) {
         if (targetReport == null) {
             throw new IllegalArgumentException("targetReport cannot be null");
         }
         targetReports.add(targetReport);
+        if (isCurrentModule) {
+            targetReportsFromCurrentModule.add(targetReport);
+        }
     }
 
     /**
@@ -128,12 +138,16 @@ public class EasyAntReport {
      * 
      * @param extensionPointReport
      *            a given extensionPointReport
+     * @param isCurrentModule
      */
-    public void addExtensionPointReport(ExtensionPointReport extensionPointReport) {
+    public void addExtensionPointReport(ExtensionPointReport extensionPointReport, boolean isCurrentModule) {
         if (extensionPointReport == null) {
             throw new IllegalArgumentException("extensionPointReport cannot be null");
         }
         extensionPointReports.add(extensionPointReport);
+        if (isCurrentModule) {
+            extensionPointReportsFromCurrentModule.add(extensionPointReport);
+        }
     }
 
     /**
@@ -169,12 +183,16 @@ public class EasyAntReport {
      * 
      * @param parameterReport
      *            a parameterReport
+     * @param isCurrentModule
      */
-    public void addParameterReport(ParameterReport parameterReport) {
+    public void addParameterReport(ParameterReport parameterReport, boolean isCurrentModule) {
         if (parameterReport == null) {
             throw new IllegalArgumentException("parameterReport cannot be null");
         }
         parameterReports.add(parameterReport);
+        if (isCurrentModule) {
+            parameterReportsFromCurrentModule.add(parameterReport);
+        }
     }
 
     /**
@@ -228,12 +246,16 @@ public class EasyAntReport {
      * 
      * @param importedModuleReport
      *            a report that represent the importedModule
+     * @param isCurrentModule
      */
-    public void addImportedModuleReport(ImportedModuleReport importedModuleReport) {
+    public void addImportedModuleReport(ImportedModuleReport importedModuleReport, boolean isCurrentModule) {
         if (importedModuleReport == null) {
             throw new IllegalArgumentException("importedModuleReport cannot be null");
         }
         importedModuleReports.add(importedModuleReport);
+        if (isCurrentModule) {
+            importedModuleReportsFromCurrentModule.add(importedModuleReport);
+        }
     }
 
     /**
@@ -243,12 +265,17 @@ public class EasyAntReport {
      *            the property name
      * @param propertyDescriptor
      *            a property descriptor that contains several info on the propery (description / required or not etc...)
+     * @param isCurrentModule
      */
-    public void addPropertyDescriptor(String propertyName, PropertyDescriptor propertyDescriptor) {
+    public void addPropertyDescriptor(String propertyName, PropertyDescriptor propertyDescriptor,
+            boolean isCurrentModule) {
         if (propertyName == null || propertyDescriptor == null) {
             throw new IllegalArgumentException("propertyName and propertyDescriptor cannot be null");
         }
         addProperty(propertyDescriptor, propertyReports);
+        if (isCurrentModule) {
+            addProperty(propertyDescriptor, propertyReportsFromCurrentModule);
+        }
     }
 
     /**
@@ -277,25 +304,10 @@ public class EasyAntReport {
      * Get a list of all the properties available in this module or in all imported modules
      * 
      * @return a list of all the properties available in this module or in all imported modules
+     * @deprecated since 0.10 use getPropertyDescriptors() method instead or getPropertiesFromCurrentModule()
      */
     public Map<String, PropertyDescriptor> getAvailableProperties() {
-        Map<String, PropertyDescriptor> availableProperties = new HashMap<String, PropertyDescriptor>();
-
-        if (propertyReports != null) {
-            availableProperties.putAll(propertyReports);
-        }
-        if (importedModuleReports != null) {
-            for (ImportedModuleReport importedModuleReport : importedModuleReports) {
-                if (importedModuleReport.getEasyantReport() != null) {
-                    Map<String, PropertyDescriptor> subproperties = importedModuleReport.getEasyantReport()
-                            .getAvailableProperties();
-                    for (PropertyDescriptor propertyDescriptor : subproperties.values()) {
-                        addProperty(propertyDescriptor, availableProperties);
-                    }
-                }
-            }
-        }
-        return availableProperties;
+        return getPropertyDescriptors();
     }
 
     private void addProperty(PropertyDescriptor propertyDescriptor, Map<String, PropertyDescriptor> availableProperties) {
@@ -358,6 +370,26 @@ public class EasyAntReport {
     public void setModuleDescriptor(ModuleDescriptor moduleDescriptor) {
         this.moduleDescriptor = moduleDescriptor;
 
+    }
+
+    public List<TargetReport> getTargetReportsFromCurrentModule() {
+        return Collections.unmodifiableList(targetReportsFromCurrentModule);
+    }
+
+    public List<ExtensionPointReport> getExtensionPointReportsFromCurrentModule() {
+        return Collections.unmodifiableList(extensionPointReportsFromCurrentModule);
+    }
+
+    public List<ParameterReport> getParameterReportsFromCurrentModule() {
+        return Collections.unmodifiableList(parameterReportsFromCurrentModule);
+    }
+
+    public Set<ImportedModuleReport> getImportedModuleReportsFromCurrentModule() {
+        return Collections.unmodifiableSet(importedModuleReportsFromCurrentModule);
+    }
+
+    public Map<String, PropertyDescriptor> getPropertyReportsFromCurrentModule() {
+        return Collections.unmodifiableMap(propertyReportsFromCurrentModule);
     }
 
 }

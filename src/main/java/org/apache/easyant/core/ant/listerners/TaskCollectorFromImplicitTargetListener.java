@@ -32,6 +32,7 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 
 public class TaskCollectorFromImplicitTargetListener implements BuildListener {
+    public static final String ROOT_MODULE_LOCATION = "report.root.module.location";
     private List<Task> tasksCollected = new ArrayList<Task>();
     private List<Class<?>> supportedClasses = new ArrayList<Class<?>>();
 
@@ -45,6 +46,7 @@ public class TaskCollectorFromImplicitTargetListener implements BuildListener {
     }
 
     public void taskStarted(BuildEvent buildEvent) {
+        collectRootModuleLocation(buildEvent);
         if (buildEvent.getTarget().getName().equals("")) {
             Task task = buildEvent.getTask();
             if (task.getTaskType() != null) {
@@ -59,6 +61,13 @@ public class TaskCollectorFromImplicitTargetListener implements BuildListener {
                 }
             }
 
+        }
+    }
+
+    private void collectRootModuleLocation(BuildEvent buildEvent) {
+        if (buildEvent.getProject().getProperty(ROOT_MODULE_LOCATION) == null) {
+            buildEvent.getProject().setNewProperty(ROOT_MODULE_LOCATION,
+                    buildEvent.getTask().getLocation().getFileName());
         }
     }
 
