@@ -428,20 +428,19 @@ public class XMLEasyAntReportWriter {
         }
 
         for (ImportedModuleReport importedModuleReport : importedModuleReports) {
+            String mode = importedModuleReport.getMode() != null ? importedModuleReport.getMode() : "import";
             StringBuffer importedModule = new StringBuffer();
             try {
                 ModuleRevisionId mrid = ModuleRevisionId.parse(importedModuleReport.getModuleMrid());
                 importedModule.append("\t\t\t<import organisation=\"").append(mrid.getOrganisation())
                         .append("\" name=\"").append(mrid.getName()).append("\" revision=\"")
-                        .append(mrid.getRevision()).append("\" type=\"").append(importedModuleReport.getMode())
-                        .append("\"");
+                        .append(mrid.getRevision()).append("\" type=\"").append(mode).append("\"");
 
             } catch (IllegalArgumentException e) {
                 Message.debug("Unable to parse " + importedModuleReport.getModuleMrid());
                 importedModule.append("                        <import organisation=\"")
                         .append(importedModuleReport.getModuleMrid()).append("\" name=\"").append("null")
-                        .append("\" revision=\"").append("null").append("\" type=\"")
-                        .append(importedModuleReport.getMode()).append("\"");
+                        .append("\" revision=\"").append("null").append("\" type=\"").append(mode).append("\"");
 
             }
             importedModule.append(" mandatory=\"");
