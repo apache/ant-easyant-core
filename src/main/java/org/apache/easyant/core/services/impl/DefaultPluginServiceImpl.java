@@ -247,6 +247,9 @@ public class DefaultPluginServiceImpl implements PluginService {
         Map<String, Target> targets = ProjectUtils.removeDuplicateTargets(project.getTargets());
         for (Target target : targets.values()) {
             if (!"".equals(target.getName())) {
+                // gather root module location from target if no task at root level was defined
+                TaskCollectorFromImplicitTargetListener.gatherRootModuleLocation(target.getProject(),
+                        target.getLocation());
                 handleTarget(target, eaReport);
                 for (int i = 0; i < target.getTasks().length; i++) {
                     Task task = target.getTasks()[i];
@@ -306,7 +309,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         String rootModuleLocation = project.getProperty(TaskCollectorFromImplicitTargetListener.ROOT_MODULE_LOCATION);
         if (rootModuleLocation == null) {
             throw new IllegalStateException(
-                    "rootModuleLocation not found, looks like TaskCOllectorFromImplicitTargetListener is not properly configured");
+                    "rootModuleLocation not found, looks like TaskCollectorFromImplicitTargetListener is not properly configured");
         }
         return rootModuleLocation != null && location != null && location.getFileName().equals(rootModuleLocation);
     }

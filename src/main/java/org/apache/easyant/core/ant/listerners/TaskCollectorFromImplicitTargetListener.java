@@ -26,6 +26,8 @@ import org.apache.easyant.tasks.PathTask;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.ComponentHelper;
+import org.apache.tools.ant.Location;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.FileSet;
@@ -46,7 +48,7 @@ public class TaskCollectorFromImplicitTargetListener implements BuildListener {
     }
 
     public void taskStarted(BuildEvent buildEvent) {
-        collectRootModuleLocation(buildEvent);
+        gatherRootModuleLocation(buildEvent.getProject(), buildEvent.getTask().getLocation());
         if (buildEvent.getTarget().getName().equals("")) {
             Task task = buildEvent.getTask();
             if (task.getTaskType() != null) {
@@ -64,10 +66,17 @@ public class TaskCollectorFromImplicitTargetListener implements BuildListener {
         }
     }
 
-    private void collectRootModuleLocation(BuildEvent buildEvent) {
-        if (buildEvent.getProject().getProperty(ROOT_MODULE_LOCATION) == null) {
-            buildEvent.getProject().setNewProperty(ROOT_MODULE_LOCATION,
-                    buildEvent.getTask().getLocation().getFileName());
+    /**
+     * Set rootModuleLocation property
+     * 
+     * @param project
+     *            a given project
+     * @param rootModuleLocation
+     *            root module location to set
+     */
+    public static void gatherRootModuleLocation(Project project, Location rootModuleLocation) {
+        if (project.getProperty(ROOT_MODULE_LOCATION) == null) {
+            project.setNewProperty(ROOT_MODULE_LOCATION, rootModuleLocation.getFileName());
         }
     }
 
