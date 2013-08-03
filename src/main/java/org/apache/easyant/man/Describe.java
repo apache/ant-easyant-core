@@ -77,7 +77,7 @@ public class Describe extends EasyantOption {
         } else {
             getProject().log("\tNo Target found for name: " + target);
         }
-        PropertyDescriptor prop = getEareport().getAvailableProperties().get(target);
+        PropertyDescriptor prop = getEareport().getPropertyDescriptors().get(target);
         if (prop != null) {
             getProject().log("\tProperty: " + target);
             getProject().log("\t\tDescription: " + (prop.getDescription() == null ? NONE : prop.getDescription()));
