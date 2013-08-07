@@ -1,0 +1,31 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project name="org.apache.easyant.plugins#simple-plugin-without-rootlevel-tasks" xmlns:ea="antlib:org.apache.easyant">
+	
+    <extension-point name="simple-plugin-without-rootlevel-tasks:plugin-ready" description="plugin-ready description"/>
+	
+	
+	<target name="-simple-plugin-without-rootlevel-tasks:a-private-target">
+		<echo>a private target</echo>
+	</target>
+	
+    <target name="simple-plugin-without-rootlevel-tasks:hello-world" description="hello-world description"
+    	depends="-simple-plugin-without-rootlevel-tasks:a-private-target">
+    	<ea:parameter property="src.main.java" default="${basedir}/src/main/java" description="directory where sources to be compiled are" />
+        <echo>hello world</echo>
+    </target>
+</project>

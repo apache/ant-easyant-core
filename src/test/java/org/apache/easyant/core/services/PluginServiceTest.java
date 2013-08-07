@@ -191,6 +191,28 @@ public class PluginServiceTest {
                 "${target}/integration-test/classes");
     }
 
+    @Test
+    public void shouldGetPluginReportWithoutRootlevelTasks() throws Exception {
+        EasyAntReport pluginInfo = pluginService.getPluginInfo(
+                new File(this.getClass().getResource("plugins/simple-plugin-without-rootlevel-tasks.ivy").toURI()),
+                new File(this.getClass().getResource("plugins").toURI()), "default");
+
+        Assert.assertEquals(0, pluginInfo.getImportedModuleReports().size());
+        Assert.assertEquals(1, pluginInfo.getPropertyDescriptors().size());
+        checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("src.main.java"),
+                "${basedir}/src/main/java");
+        Assert.assertEquals(1, pluginInfo.getTargetReports().size());
+
+        TargetReport helloWorld = pluginInfo.getTargetReport("simple-plugin-without-rootlevel-tasks:hello-world");
+        Assert.assertNotNull(helloWorld);
+        Assert.assertEquals("hello-world description", helloWorld.getDescription());
+
+        ExtensionPointReport pluginReadyEP = pluginInfo
+                .getExtensionPointReport("simple-plugin-without-rootlevel-tasks:plugin-ready");
+        Assert.assertNotNull(pluginReadyEP);
+        Assert.assertEquals("plugin-ready description", pluginReadyEP.getDescription());
+    }
+
     public void checkPropertyDefaultValueEquals(PropertyDescriptor propertyDescriptor, String expectedValue) {
         Assert.assertNotNull(propertyDescriptor);
         Assert.assertEquals(expectedValue, propertyDescriptor.getDefaultValue());
