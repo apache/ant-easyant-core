@@ -201,7 +201,7 @@ public class PluginServiceTest {
         Assert.assertEquals(1, pluginInfo.getPropertyDescriptors().size());
         checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("src.main.java"),
                 "${basedir}/src/main/java");
-        Assert.assertEquals(1, pluginInfo.getTargetReports().size());
+        Assert.assertEquals(2, pluginInfo.getTargetReports().size());
 
         TargetReport helloWorld = pluginInfo.getTargetReport("simple-plugin-without-rootlevel-tasks:hello-world");
         Assert.assertNotNull(helloWorld);
