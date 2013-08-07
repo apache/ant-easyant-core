@@ -146,6 +146,10 @@ public class PluginDescriptor implements AdvancedInheritableItem {
         this.mrid = mrid;
     }
 
+    public ModuleRevisionId getModuleRevisionId() {
+        return ModuleRevisionId.parse(getMrid());
+    }
+
     /**
      * Get the import mode of a plugin
      * 
