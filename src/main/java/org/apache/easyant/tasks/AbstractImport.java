@@ -75,7 +75,6 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
         File antFile = null;
         for (int j = 0; j < report.getConfigurationReport(mainConf).getAllArtifactsReports().length; j++) {
             ArtifactDownloadReport artifact = report.getConfigurationReport(mainConf).getAllArtifactsReports()[j];
-
             if ("ant".equals(artifact.getType())) {
                 antFile = artifact.getLocalFile();
             } else if ("jar".equals(artifact.getType())) {
@@ -85,6 +84,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
                         artifact.getLocalFile());
             }
         }
+        // effective import should be executed AFTER any other resource files has been handled
         if (antFile != null && antFile.exists()) {
             doEffectiveImport(antFile);
         }
@@ -98,10 +98,6 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
      */
     protected void doEffectiveImport(File antFile) {
         ImportTask importTask = new ImportTask();
-        importTask.setProject(getProject());
-        importTask.setTaskName(getTaskName());
-        importTask.setOwningTarget(getOwningTarget());
-        importTask.setLocation(getLocation());
         importTask.setFile(antFile.getAbsolutePath());
         if (as != null) {
             importTask.setAs(as);
@@ -110,7 +106,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
         if (mode != null && "include".equals(mode)) {
             importTask.setTaskType(getMode());
         }
-        importTask.execute();
+        initTask(importTask).execute();
     }
 
     /**
