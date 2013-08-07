@@ -217,7 +217,7 @@ public class LoadModule extends AbstractEasyAntTask {
             }
         }
         // if no property is set check the default user location
-        if (null == null) {
+        if (!ivysettingsConfigured) {
             File userProjectIvyFile = new File(getProject().replaceProperties(
                     EasyAntConstants.DEFAULT_USER_PROJECT_IVYSETTINGS));
             if (userProjectIvyFile.exists()) {
