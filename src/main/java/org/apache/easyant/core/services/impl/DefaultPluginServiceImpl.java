@@ -45,6 +45,7 @@ import org.apache.easyant.core.report.TargetReport;
 import org.apache.easyant.core.services.PluginService;
 import org.apache.easyant.tasks.AbstractImport;
 import org.apache.easyant.tasks.Import;
+import org.apache.easyant.tasks.ImportDeferred;
 import org.apache.easyant.tasks.ImportTestModule;
 import org.apache.easyant.tasks.LoadModule;
 import org.apache.easyant.tasks.ParameterTask;
@@ -56,6 +57,7 @@ import org.apache.ivy.core.module.id.ModuleId;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.core.report.ArtifactDownloadReport;
 import org.apache.ivy.core.report.ResolveReport;
+import org.apache.ivy.core.resolve.IvyNode;
 import org.apache.ivy.core.resolve.ResolveOptions;
 import org.apache.ivy.core.resolve.ResolvedModuleRevision;
 import org.apache.ivy.core.settings.IvySettings;
@@ -133,6 +135,9 @@ public class DefaultPluginServiceImpl implements PluginService {
 
             Project project = buildProject(null);
 
+            // expose resolve report for import deferred
+            project.addReference(EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF, report);
+
             // emulate top level project
             ImportTestModule importTestModule = new ImportTestModule();
             importTestModule.setModuleIvy(pluginIvyFile);
@@ -167,11 +172,13 @@ public class DefaultPluginServiceImpl implements PluginService {
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
 
             Project project = buildProject(null);
+            // expose resolve report for import deferred
+            project.addReference(EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF, report);
 
             AbstractImport abstractImport = new AbstractImport() {
                 @Override
                 public void execute() throws BuildException {
-                    Path path = createModulePath(moduleRevisionId);
+                    Path path = createModulePath(moduleRevisionId.getModuleId());
                     File antFile = null;
                     for (int j = 0; j < report.getConfigurationReport(getMainConf()).getAllArtifactsReports().length; j++) {
                         ArtifactDownloadReport artifact = report.getConfigurationReport(getMainConf())
@@ -288,6 +295,11 @@ public class DefaultPluginServiceImpl implements PluginService {
                 Import importTask = (Import) maybeConfigureTask(task);
                 handleImport(importTask, eaReport, conf);
             }
+
+            if (ImportDeferred.class.isAssignableFrom(taskClass)) {
+                ImportDeferred importTask = (ImportDeferred) maybeConfigureTask(task);
+                handleImportDeferred(importTask, eaReport, conf);
+            }
             if (Path.class.isAssignableFrom(taskClass)) {
                 Path path = (Path) maybeConfigureTask(task);
                 handlePathParameter(task.getRuntimeConfigurableWrapper().getId(), path, task.getOwningTarget(),
@@ -321,6 +333,37 @@ public class DefaultPluginServiceImpl implements PluginService {
         importedModuleReport.setOrganisation(importTask.getOrganisation());
         importedModuleReport.setModule(importTask.getModule());
         importedModuleReport.setRevision(importTask.getRevision());
+        importedModuleReport.setMandatory(importTask.isMandatory());
+        importedModuleReport.setMode(importTask.getMode());
+        importedModuleReport.setAs(importTask.getAs());
+
+        EasyAntReport pluginInfo = getPluginInfo(ModuleRevisionId.parse(importedModuleReport.getModuleMrid()), conf);
+        importedModuleReport.setEasyantReport(pluginInfo);
+        eaReport.addImportedModuleReport(importedModuleReport,
+                isCurrentModule(importTask.getProject(), importTask.getLocation()));
+
+        Message.debug("Ant file import another module called : " + importedModuleReport.getModuleMrid() + " with mode "
+                + importedModuleReport.getMode());
+    }
+
+    private void handleImportDeferred(ImportDeferred importTask, EasyAntReport eaReport, String conf) throws Exception {
+        ImportedModuleReport importedModuleReport = new ImportedModuleReport();
+
+        importedModuleReport.setOrganisation(importTask.getOrganisation());
+        importedModuleReport.setModule(importTask.getModule());
+        ResolveReport resolveReport = importTask.getProject().getReference(
+                EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF);
+        if (resolveReport != null) {
+            for (Iterator<?> iterator = resolveReport.getDependencies().iterator(); iterator.hasNext();) {
+                IvyNode dependency = (IvyNode) iterator.next();
+                if (dependency.getResolvedId().getOrganisation().equals(importTask.getOrganisation()) //
+                        && dependency.getResolvedId().getName().equals(importTask.getModule())) {
+                    importedModuleReport.setRevision(dependency.getResolvedId().getRevision());
+                }
+
+            }
+        }
+
         importedModuleReport.setMandatory(importTask.isMandatory());
         importedModuleReport.setMode(importTask.getMode());
         importedModuleReport.setAs(importTask.getAs());

@@ -20,6 +20,10 @@
     <taskdef name="parameter" classname="org.apache.easyant.tasks.ParameterTask"/>
     
     <taskdef name="import" classname="org.apache.easyant.tasks.Import"/>
+
+    <taskdef name="resolve-plugins" classname="org.apache.easyant.tasks.ResolvePlugins"/>
+    <taskdef name="import-deferred" classname="org.apache.easyant.tasks.ImportDeferred"/>
+
     <taskdef name="import-test-module" classname="org.apache.easyant.tasks.ImportTestModule"/>
     <taskdef name="configure-easyant-ivy-instance" classname="org.apache.easyant.tasks.ConfigureEasyAntIvyInstance"/>
     <taskdef name="loadmodule" classname="org.apache.easyant.tasks.LoadModule"/>
@@ -63,5 +67,13 @@
     
     <presetdef name="plugin">
         <current:import organisation="org.apache.easyant.plugins"/>
+    </presetdef>
+    
+    <presetdef name="import-build">
+        <current:import-deferred organisation="org.apache.easyant.buildtypes"/>
+    </presetdef>
+    
+    <presetdef name="import-plugin">
+        <current:import-deferred organisation="org.apache.easyant.plugins"/>
     </presetdef>
 </antlib>

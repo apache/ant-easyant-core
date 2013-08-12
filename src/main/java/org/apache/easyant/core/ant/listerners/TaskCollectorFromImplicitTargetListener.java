@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.easyant.tasks.Import;
 import org.apache.easyant.tasks.ParameterTask;
 import org.apache.easyant.tasks.PathTask;
+import org.apache.easyant.tasks.ImportDeferred;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.ComponentHelper;
@@ -42,6 +43,7 @@ public class TaskCollectorFromImplicitTargetListener implements BuildListener {
         supportedClasses.add(ParameterTask.class);
         supportedClasses.add(Property.class);
         supportedClasses.add(Import.class);
+        supportedClasses.add(ImportDeferred.class);
         supportedClasses.add(Path.class);
         supportedClasses.add(PathTask.class);
         supportedClasses.add(FileSet.class);

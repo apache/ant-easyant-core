@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.ivy.core.LogOptions;
+import org.apache.ivy.core.module.id.ModuleId;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.core.report.ArtifactDownloadReport;
 import org.apache.ivy.core.report.ResolveReport;
@@ -71,7 +72,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
         // Check dependency on core
         checkCoreCompliance(report, providedConf);
 
-        Path path = createModulePath(moduleRevisionId);
+        Path path = createModulePath(moduleRevisionId.getModuleId());
         File antFile = null;
         for (int j = 0; j < report.getConfigurationReport(mainConf).getAllArtifactsReports().length; j++) {
             ArtifactDownloadReport artifact = report.getConfigurationReport(mainConf).getAllArtifactsReports()[j];
@@ -158,12 +159,12 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
      * creates a classpath specific for each module, this classpath will contains all the required dependency .jars. The
      * classpath is named [organisation]#[module].classpath
      * 
-     * @param moduleRevisionId
+     * @param moduleId
      * @return
      */
-    protected Path createModulePath(ModuleRevisionId moduleRevisionId) {
+    protected Path createModulePath(ModuleId moduleId) {
         Path path = new Path(getProject());
-        getProject().addReference(moduleRevisionId.getModuleId().toString() + ".classpath", path);
+        getProject().addReference(moduleId.toString() + ".classpath", path);
         return path;
     }
 

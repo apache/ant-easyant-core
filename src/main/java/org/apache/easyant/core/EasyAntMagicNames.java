@@ -28,13 +28,11 @@ import org.apache.easyant.tasks.CoreRevisionCheckerTask;
  */
 public interface EasyAntMagicNames {
 
-
     /**
      * property for easyant home directory. Value: {@value}
      */
     public static final String EASYANT_HOME = "easyant.home";
 
-    
     /**
      * property for easyant file name. Value: {@value}
      */
@@ -200,4 +198,10 @@ public interface EasyAntMagicNames {
      * Name of the property telling if we are in a submodule
      */
     public static final String SUBMODULE = "submodule";
+
+    /**
+     * Reference name holding resolve report for plugins and buildtype
+     */
+    public static final String IMPORTED_MODULES_RESOLVE_REPORT_REF = "importedModules.report.ref";
+
 }

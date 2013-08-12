@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
+import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.module.descriptor.Artifact;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
@@ -63,6 +64,10 @@ public class ImportTestModule extends AbstractImport {
             IvyContext.pushNewContext();
             IvyContext.getContext().setIvy(getEasyAntIvyInstance());
             ResolveReport report = getEasyAntIvyInstance().getResolveEngine().resolve(moduleIvy);
+
+            // expose resolve report for import deferred
+            getProject().addReference(EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF, report);
+
             // tiny hack report.getModuleDescriptor.getModuleRevisionId() return a caller instance
             ModuleRevisionId moduleRevisionId = report.getModuleDescriptor().getAllArtifacts()[0].getModuleRevisionId();
             importModule(moduleRevisionId, report);
@@ -81,7 +86,7 @@ public class ImportTestModule extends AbstractImport {
         // Check dependency on core
         checkCoreCompliance(report, getProvidedConf());
 
-        Path path = createModulePath(moduleRevisionId);
+        Path path = createModulePath(moduleRevisionId.getModuleId());
         File antFile = null;
         // handle downloaded resources
         for (int j = 0; j < report.getConfigurationReport(getMainConf()).getAllArtifactsReports().length; j++) {

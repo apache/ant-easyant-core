@@ -221,7 +221,7 @@ public class EasyAntReport {
         }
         ImportedModuleReport retVal = null;
         for (ImportedModuleReport moduleRep : importedModuleReports) {
-            if (moduleRep.moduleMrid != null && moduleRep.moduleMrid.startsWith(module)) {
+            if (moduleRep.getModuleMrid() != null && moduleRep.getModuleMrid().startsWith(module)) {
                 retVal = moduleRep;
                 break;
             } else if (module.equals(moduleRep.getModuleRevisionId().getName())) {

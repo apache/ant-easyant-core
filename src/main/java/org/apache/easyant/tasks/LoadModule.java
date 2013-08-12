@@ -39,6 +39,7 @@ import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
+import org.apache.ivy.ant.IvyDependency;
 import org.apache.ivy.ant.IvyInfo;
 import org.apache.ivy.core.IvyContext;
 import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
@@ -315,41 +316,86 @@ public class LoadModule extends AbstractEasyAntTask {
                 initTask(configureProject).perform();
             }
 
+            ResolvePlugins resolvePlugins = new ResolvePlugins();
+
             if (md.getBuildType() != null) {
                 if (canInherit(md.getBuildType(), currentModule)) {
-                    Import importTask = new Import();
-                    importTask.setMrid(md.getBuildType().getMrid());
-                    importTask.setMode(md.getBuildType().getMode());
-                    importTask.setAs(md.getBuildType().getAs());
-                    importTask.setMandatory(md.getBuildType().isMandatory());
-                    importTask.setBuildConfigurations(md.getBuildType().getBuildConfigurations());
-                    importTask.setDependencies(md.getBuildType().getDependencies());
-                    importTask.setConflicts(md.getBuildType().getConflicts());
-                    importTask.setExcludes(md.getBuildType().getExcludes());
-
-                    importTask.setTaskType("antlib:org.apache.easyant:import");
-                    getOwningTarget().addTask(importTask);
-                    initTask(importTask).perform();
+                    // Import importTask = new Import();
+                    // importTask.setMrid(md.getBuildType().getMrid());
+                    // importTask.setMode(md.getBuildType().getMode());
+                    // importTask.setAs(md.getBuildType().getAs());
+                    // importTask.setMandatory(md.getBuildType().isMandatory());
+                    // importTask.setBuildConfigurations(md.getBuildType().getBuildConfigurations());
+                    // importTask.setDependencies(md.getBuildType().getDependencies());
+                    // importTask.setConflicts(md.getBuildType().getConflicts());
+                    // importTask.setExcludes(md.getBuildType().getExcludes());
+                    //
+                    // importTask.setTaskType("antlib:org.apache.easyant:import");
+                    // getOwningTarget().addTask(importTask);
+                    // initTask(importTask).perform();
+                    IvyDependency buildtype = resolvePlugins.createDependency();
+                    buildtype.setOrg(md.getBuildType().getModuleRevisionId().getOrganisation());
+                    buildtype.setName(md.getBuildType().getModuleRevisionId().getName());
+                    buildtype.setRev(md.getBuildType().getModuleRevisionId().getRevision());
                 }
             }
             for (Iterator<?> iterator = md.getPlugins().iterator(); iterator.hasNext();) {
                 PluginDescriptor plugin = (PluginDescriptor) iterator.next();
 
                 if (canInherit(plugin, currentModule)) {
-                    Import importTask = new Import();
-                    importTask.setMrid(plugin.getMrid());
-                    importTask.setMode(plugin.getMode());
-                    importTask.setAs(plugin.getAs());
-                    importTask.setMandatory(plugin.isMandatory());
-                    importTask.setBuildConfigurations(plugin.getBuildConfigurations());
-                    importTask.setDependencies(plugin.getDependencies());
-                    importTask.setConflicts(plugin.getConflicts());
-                    importTask.setExcludes(plugin.getExcludes());
-                    importTask.setTaskType("antlib:org.apache.easyant:import");
-                    getOwningTarget().addTask(importTask);
-                    initTask(importTask).perform();
+                    // Import importTask = new Import();
+                    // importTask.setMrid(plugin.getMrid());
+                    // importTask.setMode(plugin.getMode());
+                    // importTask.setAs(plugin.getAs());
+                    // importTask.setMandatory(plugin.isMandatory());
+                    // importTask.setBuildConfigurations(plugin.getBuildConfigurations());
+                    // importTask.setDependencies(plugin.getDependencies());
+                    // importTask.setConflicts(plugin.getConflicts());
+                    // importTask.setExcludes(plugin.getExcludes());
+                    // importTask.setTaskType("antlib:org.apache.easyant:import");
+                    // getOwningTarget().addTask(importTask);
+                    // initTask(importTask).perform();
+                    IvyDependency pluginDependency = resolvePlugins.createDependency();
+                    pluginDependency.setOrg(plugin.getModuleRevisionId().getOrganisation());
+                    pluginDependency.setName(plugin.getModuleRevisionId().getName());
+                    pluginDependency.setRev(plugin.getModuleRevisionId().getRevision());
                 }
             }
+            initTask(resolvePlugins).execute();
+
+            if (md.getBuildType() != null) {
+                if (canInherit(md.getBuildType(), currentModule)) {
+                    ImportDeferred importDeferredTask = new ImportDeferred();
+                    importDeferredTask.setOrganisation(md.getBuildType().getModuleRevisionId().getOrganisation());
+                    importDeferredTask.setModule(md.getBuildType().getModuleRevisionId().getName());
+                    importDeferredTask.setMode(md.getBuildType().getMode());
+                    importDeferredTask.setAs(md.getBuildType().getAs());
+                    importDeferredTask.setMandatory(md.getBuildType().isMandatory());
+                    importDeferredTask.setBuildConfigurations(md.getBuildType().getBuildConfigurations());
+
+                    importDeferredTask.setTaskType("antlib:org.apache.easyant:import-deferred");
+                    getOwningTarget().addTask(importDeferredTask);
+                    initTask(importDeferredTask).perform();
+                }
+            }
+            for (Iterator<?> iterator = md.getPlugins().iterator(); iterator.hasNext();) {
+                PluginDescriptor plugin = (PluginDescriptor) iterator.next();
+
+                if (canInherit(plugin, currentModule)) {
+                    ImportDeferred importDeferredTask = new ImportDeferred();
+                    importDeferredTask.setOrganisation(plugin.getModuleRevisionId().getOrganisation());
+                    importDeferredTask.setModule(plugin.getModuleRevisionId().getName());
+                    importDeferredTask.setMode(plugin.getMode());
+                    importDeferredTask.setAs(plugin.getAs());
+                    importDeferredTask.setMandatory(plugin.isMandatory());
+                    importDeferredTask.setBuildConfigurations(plugin.getBuildConfigurations());
+                    importDeferredTask.setTaskType("antlib:org.apache.easyant:import-deferred");
+                    getOwningTarget().addTask(importDeferredTask);
+                    initTask(importDeferredTask).perform();
+
+                }
+            }
+
             // Apply ExtensionPointMapping
             for (ExtensionPointMappingDescriptor epMapping : md.getExtensionPointsMappings()) {
                 BindTarget bindTarget = new BindTarget();
