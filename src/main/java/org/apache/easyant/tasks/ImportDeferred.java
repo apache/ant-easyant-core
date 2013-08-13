@@ -81,11 +81,16 @@ public class ImportDeferred extends AbstractImport implements DynamicAttribute {
         if (isMandatory() && toBeSkipped) {
             log("Impossible to skip a mandatory module : " + moduleName, Project.MSG_WARN);
         }
+        // a module can be skipped *only* if it is not mandatory
+        if (!isMandatory() && toBeSkipped) {
+            log(moduleName + " skipped !");
+        } else {
 
-        ResolveReport importedModuleResolveReport = getProject().getReference(
-                EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF);
-        if (importedModuleResolveReport != null) {
-            importModule(moduleId, importedModuleResolveReport);
+            ResolveReport importedModuleResolveReport = getProject().getReference(
+                    EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF);
+            if (importedModuleResolveReport != null) {
+                importModule(moduleId, importedModuleResolveReport);
+            }
         }
     }
 
