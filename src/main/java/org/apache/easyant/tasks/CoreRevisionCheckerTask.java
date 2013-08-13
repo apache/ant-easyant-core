@@ -28,18 +28,15 @@ import org.apache.tools.ant.Project;
 
 /**
  * <p>
- * The core-version task is used to define the compatibility between core and
- * modules.
+ * The core-version task is used to define the compatibility between core and modules.
  * </p>
  * <p>
  * This tasks support :
  * <ul>
  * <li>static version (Example : 0.5)</li>
- * <li>dynamic version (Example : latest.revision) even if we do not recommend
- * to use it</li>
+ * <li>dynamic version (Example : latest.revision) even if we do not recommend to use it</li>
  * <li>listed version (Example : (0.1,0.3,0.5))</li>
- * <li>range version (Example : [0.5,0.8] means from 0.5 to 0.8. Example2 :
- * [0.5,+] means all version superior to 0.5)</li>
+ * <li>range version (Example : [0.5,0.8] means from 0.5 to 0.8. Example2 : [0.5,+] means all version superior to 0.5)</li>
  * </ul>
  * </p>
  */
@@ -56,8 +53,8 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
     }
 
     /**
-     * Appends CDATA text inside the Ant task to the error message used if
-     * the revision check fails.
+     * Appends CDATA text inside the Ant task to the error message used if the revision check fails.
+     * 
      * @see #setMessage(String)
      */
     public void addText(String messageText) {
@@ -70,7 +67,7 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
             }
         }
     }
-    
+
     /**
      * Get the requiredRevision
      * 
@@ -89,26 +86,23 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
     public void setRequiredRevision(String requiredRevision) {
         this.requiredRevision = requiredRevision;
     }
-    
-    private static String easyantSpecVersion = null;
+
+    static String easyantSpecVersion = null;
+
     public static synchronized String getEasyAntSpecVersion() throws BuildException {
         if (easyantSpecVersion == null) {
             try {
                 Properties props = new Properties();
-                InputStream in = CoreRevisionCheckerTask.class
-                        .getResourceAsStream("/META-INF/version.properties");
+                InputStream in = CoreRevisionCheckerTask.class.getResourceAsStream("/META-INF/version.properties");
                 props.load(in);
                 in.close();
                 easyantSpecVersion = props.getProperty("SPEC-VERSION");
             } catch (IOException ioe) {
-                throw new BuildException(
-                        "Could not load the version information:"
-                                + ioe.getMessage());
+                throw new BuildException("Could not load the version information:" + ioe.getMessage());
             } catch (NullPointerException npe) {
-                throw new BuildException(
-                        "Could not load the version information.");
+                throw new BuildException("Could not load the version information.");
             }
-        } 
+        }
         return easyantSpecVersion;
     }
 
@@ -117,13 +111,9 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
             throw new BuildException("requiredRevision argument is required!");
         }
 
-        if (getProject().getProperty(
-                EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER) != null
-                && "true".equals(getProject().getProperty(
-                        EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER))) {
-            log(
-                    "core revision checker is disabled, this should not append in production.",
-                    Project.MSG_DEBUG);
+        if (getProject().getProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER) != null
+                && "true".equals(getProject().getProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER))) {
+            log("core revision checker is disabled, this should not append in production.", Project.MSG_DEBUG);
             return;
         }
 
@@ -131,15 +121,11 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
         if (easyantVersion == null) {
             throw new BuildException("Unable to find easyant version.");
         }
-        ModuleRevisionId easyantMrid = ModuleRevisionId
-                .parse("org.apache.ant#easyant;" + easyantVersion);
-        ModuleRevisionId requiredMrid = ModuleRevisionId
-                .parse("org.apache.ant#easyant;" + requiredRevision);
-        
-        
+        ModuleRevisionId easyantMrid = ModuleRevisionId.parse("org.apache.ant#easyant;" + easyantVersion);
+        ModuleRevisionId requiredMrid = ModuleRevisionId.parse("org.apache.ant#easyant;" + requiredRevision);
+
         // Should we loop on each VersionMatchers?
-        if (!getEasyAntIvyInstance().getSettings().getVersionMatcher()
-                .accept(requiredMrid, easyantMrid)) {
+        if (!getEasyAntIvyInstance().getSettings().getVersionMatcher().accept(requiredMrid, easyantMrid)) {
             throw new BuildException(getErrorMessage());
         }
 
@@ -149,9 +135,9 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
         if (message != null) {
             return message;
         } else {
-            //no custom message provided, return default error message.
+            // no custom message provided, return default error message.
             return "This module requires easyant " + requiredRevision;
         }
     }
-    
+
 }
