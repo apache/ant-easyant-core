@@ -21,16 +21,14 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
-import junit.framework.Assert;
-
 import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.easyant.tasks.ResolvePlugins;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.ant.IvyDependency;
 import org.apache.ivy.core.report.ResolveReport;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

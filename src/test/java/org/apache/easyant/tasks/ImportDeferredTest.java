@@ -21,8 +21,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
-import junit.framework.Assert;
-
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.ivy.ant.IvyConfigure;
@@ -33,6 +31,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.types.Path;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -106,6 +105,7 @@ public class ImportDeferredTest {
         importTask.execute();
 
         Path pluginClasspath = importTask.getProject().getReference("mycompany#simpleplugin.classpath");
+        org.junit.Assert.assertNotNull(pluginClasspath);
         Assert.assertNotNull(pluginClasspath);
         Assert.assertEquals(0, pluginClasspath.list().length);
     }

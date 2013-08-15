@@ -17,9 +17,8 @@
  */
 package org.apache.easyant.core;
 
-import junit.framework.Assert;
-
 import org.apache.tools.ant.Project;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

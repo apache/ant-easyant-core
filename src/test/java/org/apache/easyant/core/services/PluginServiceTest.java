@@ -25,8 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.ExtensionPointReport;
@@ -37,6 +35,7 @@ import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.matcher.PatternMatcher;
 import org.apache.tools.ant.Project;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
