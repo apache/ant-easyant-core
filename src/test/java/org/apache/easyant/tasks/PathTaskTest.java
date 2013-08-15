@@ -27,11 +27,15 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class PathTaskTest {
 
     private PathTask pathTask = new PathTask();
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() throws MalformedURLException, URISyntaxException {
@@ -163,23 +167,26 @@ public class PathTaskTest {
         Assert.assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfPrependDoesntMatchWithExistingPath() {
+        expectedException.expectMessage("destination path not found: aMissingClasspath");
         pathTask.setPathid("aMissingClasspath");
         pathTask.setOverwrite("prepend");
         pathTask.execute();
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfAppendDoesntMatchWithExistingPath() {
+        expectedException.expectMessage("destination path not found: aMissingClasspath");
         pathTask.setPathid("aMissingClasspath");
         pathTask.setOverwrite("append");
         pathTask.execute();
 
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfPathIdExistsButIsNotAPath() {
+        expectedException.expectMessage("destination path is not a path: class java.lang.String");
         pathTask.getProject().addReference("aReference", "plop");
         pathTask.setPathid("aReference");
         pathTask.execute();
