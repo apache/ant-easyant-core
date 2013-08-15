@@ -218,6 +218,7 @@ public class ParameterTask extends Task {
         }
     }
 
+    @Deprecated
     // FIXME : remove this method after 0.9 release
     public void setPhase(String phase) {
         this.phase = phase;
