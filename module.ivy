@@ -26,7 +26,7 @@
         <artifact name="easyant-core" type="jar" conf="default"/>
     </publications>
     <dependencies>
-        <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
+        <dependency org="junit" name="junit" rev="4.11" conf="test->default"/>
         <dependency org="org.apache.ant" name="ant-testutil" rev="1.9.1" conf="test->default" transitive="false" />
 
         <dependency org="org.apache.ant" name="ant" rev="1.9.2" conf="default->default"/>
