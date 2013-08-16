@@ -28,7 +28,11 @@ public class BaseAntTaskTest {
     private AntTestListener antTestListener;
 
     public Project configureProject(Project project) {
-        antTestListener = new AntTestListener(Project.MSG_INFO);
+        return configureProject(project, Project.MSG_INFO);
+    }
+
+    public Project configureProject(Project project, int logLevel) {
+        antTestListener = new AntTestListener(logLevel);
         project.addBuildListener(antTestListener);
         return project;
     }
@@ -36,15 +40,13 @@ public class BaseAntTaskTest {
     public void assertLogContaining(String substring) {
         checkAntListener();
         String realLog = antTestListener.getLog();
-        assertThat(realLog,
-                containsString("expecting log to contain \"" + substring + "\" log was \"" + realLog + "\""));
+        assertThat(realLog, containsString(substring));
     }
 
     public void assertLogNotContaining(String substring) {
         checkAntListener();
         String realLog = antTestListener.getLog();
-        assertThat(realLog, not(containsString("expecting log to contain \"" + substring + "\" log was \"" + realLog
-                + "\"")));
+        assertThat(realLog, not(containsString(substring)));
     }
 
     private void checkAntListener() {
