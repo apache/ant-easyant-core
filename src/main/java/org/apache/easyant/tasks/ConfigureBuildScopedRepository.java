@@ -48,9 +48,6 @@ public class ConfigureBuildScopedRepository extends IvyTask {
     @Override
     public void doExecute() throws BuildException {
         String target = getTarget();
-        if (getName() == null) {
-            buildDefaultRepositoryName();
-        }
 
         // be sure that we have an absolute path
         File targetDir = new File(target);
@@ -179,6 +176,9 @@ public class ConfigureBuildScopedRepository extends IvyTask {
      * @return repository name
      */
     public String getName() {
+        if (name == null) {
+            name = buildDefaultRepositoryName();
+        }
         return name;
     }
 
