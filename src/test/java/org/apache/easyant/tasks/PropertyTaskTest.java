@@ -34,7 +34,6 @@ public class PropertyTaskTest extends BaseAntTaskTest {
     @Before
     public void setUp() {
         Project project = new Project();
-        configureProject(project);
 
         propertyTask = new PropertyTask();
         propertyTask.setProject(project);
@@ -51,6 +50,8 @@ public class PropertyTaskTest extends BaseAntTaskTest {
 
     @Test
     public void shouldNotCreatePropertyWhenConfigurationDoesntMatch() {
+        configureProject(propertyTask.getProject(), Project.MSG_DEBUG);
+
         propertyTask.getProject().setProperty(EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS, "aBuildConfNotActive");
 
         propertyTask.setName("a-property");
@@ -59,10 +60,13 @@ public class PropertyTaskTest extends BaseAntTaskTest {
         propertyTask.execute();
 
         assertThat(propertyTask.getProject().getProperty("a-property"), is(nullValue()));
+        assertLogContaining("this property will be skipped ");
     }
 
     @Test
     public void shouldCreatePropertyWhenConfigurationMatch() {
+        configureProject(propertyTask.getProject(), Project.MSG_DEBUG);
+
         propertyTask.getProject().setProperty(EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS, "aBuildConfActive");
         propertyTask.getProject().setProperty(EasyAntMagicNames.MAIN_CONFS, "aBuildConfActive");
 
@@ -72,6 +76,7 @@ public class PropertyTaskTest extends BaseAntTaskTest {
         propertyTask.execute();
 
         assertThat(propertyTask.getProject().getProperty("a-property"), equalTo("a-value"));
+        assertLogContaining("property a-property bound to build configuration aBuildConfActive");
     }
 
 }
