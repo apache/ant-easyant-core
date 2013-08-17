@@ -76,7 +76,6 @@ public class PropertyTaskTest extends BaseAntTaskTest {
         propertyTask.execute();
 
         assertThat(propertyTask.getProject().getProperty("a-property"), equalTo("a-value"));
-        assertLogContaining("property a-property bound to build configuration aBuildConfActive");
     }
 
 }
