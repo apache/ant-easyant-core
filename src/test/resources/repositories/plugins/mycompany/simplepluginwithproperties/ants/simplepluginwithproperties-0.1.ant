@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<project xmlns:ea="antlib:org.apache.easyant">
+<project name="mycompany#simplepluginwithproperties" xmlns:ea="antlib:org.apache.easyant">
 	<property file="${mycompany#simplepluginwithproperties.properties.file}"/>
     <ea:parameter property="src.main.java" default="${basedir}/src/main/java" description="directory where sources to be compiled are" />
 

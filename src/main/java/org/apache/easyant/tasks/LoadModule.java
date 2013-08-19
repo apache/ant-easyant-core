@@ -117,7 +117,7 @@ public class LoadModule extends AbstractEasyAntTask {
             // paranoid lets check everything category
 
             if (buildModule.isDirectory()) {
-                System.out.println("What? buildModule: " + buildModule + " is a dir!");
+                log("What? buildModule: " + buildModule + " is a dir!");
                 throw new BuildException("Build failed");
             }
             // load override buildFile before buildModule to allow target/extension-point
@@ -137,7 +137,7 @@ public class LoadModule extends AbstractEasyAntTask {
             // paranoid lets check everything category
 
             if (buildFile.isDirectory()) {
-                System.out.println("What? buildFile: " + buildFile + " is a dir!");
+                log("What? buildFile: " + buildFile + " is a dir!");
                 throw new BuildException("Build failed");
             }
 
@@ -232,7 +232,7 @@ public class LoadModule extends AbstractEasyAntTask {
                 .toExternalForm();
         getProject().setNewProperty(EasyAntMagicNames.PROJECT_DEFAULT_IVYSETTINGS, defaultUrl);
         if (!ivysettingsConfigured) {
-            File localSettings = new File(buildModule.getParent(), "ivysettings.xml");
+            File localSettings = new File(getProject().getBaseDir(), "ivysettings.xml");
             if (localSettings.exists()) {
                 getProject().log("loading local project settings file...", Project.MSG_VERBOSE);
                 projectIvyInstance.setFile(localSettings);
