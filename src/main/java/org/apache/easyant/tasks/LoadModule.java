@@ -241,7 +241,7 @@ public class LoadModule extends AbstractEasyAntTask {
 
             } else {
                 getProject().log("no settings file found, using default...", Project.MSG_VERBOSE);
-                getProject().setNewProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_URL, defaultUrl.toString());
+                getProject().setNewProperty(EasyAntMagicNames.PROJECT_IVY_SETTING_URL, defaultUrl);
                 try {
                     projectIvyInstance.setUrl(defaultUrl);
                 } catch (MalformedURLException e) {
