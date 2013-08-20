@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.tools.ant.Project;
@@ -362,7 +361,7 @@ public class EasyAntConfiguration {
     /**
      * Names of classes to add as listeners to project.
      * 
-     * @return a vector of listerners
+     * @return a list of listerners
      */
     public List<String> getListeners() {
         return listeners;
@@ -373,7 +372,7 @@ public class EasyAntConfiguration {
      * 
      * @param listeners
      */
-    public void setListeners(Vector<String> listeners) {
+    public void setListeners(List<String> listeners) {
         this.listeners = listeners;
     }
 
