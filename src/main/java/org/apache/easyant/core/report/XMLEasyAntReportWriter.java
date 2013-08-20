@@ -168,10 +168,10 @@ public class XMLEasyAntReportWriter {
             details.append(" homepage=\"").append(XMLHelper.escape(md.getHomePage())).append("\"");
         }
         extraAttributes = md != null ? md.getExtraAttributes() : dep.getResolvedId().getExtraAttributes();
-        for (Iterator<?> iterator = extraAttributes.keySet().iterator(); iterator.hasNext();) {
-            String attName = (String) iterator.next();
-            details.append(" extra-").append(attName).append("=\"")
-                    .append(XMLHelper.escape(extraAttributes.get(attName).toString())).append("\"");
+        for (Iterator<?> iterator = extraAttributes.entrySet().iterator(); iterator.hasNext();) {
+            Entry<String, Object> entry = (Entry<String, Object>) iterator.next();
+            details.append(" extra-").append(entry.getKey()).append("=\"")
+                    .append(XMLHelper.escape(entry.getValue().toString())).append("\"");
         }
         String defaultValue = dep.getDescriptor() != null ? " default=\"" + dep.getDescriptor().isDefault() + "\"" : "";
         int position = dependencies.indexOf(dep.getResolvedId());
@@ -248,10 +248,10 @@ public class XMLEasyAntReportWriter {
         for (int i = 0; i < callers.length; i++) {
             StringBuffer callerDetails = new StringBuffer();
             Map<?, ?> callerExtraAttributes = callers[i].getDependencyDescriptor().getExtraAttributes();
-            for (Iterator<?> iterator = callerExtraAttributes.keySet().iterator(); iterator.hasNext();) {
-                String attName = (String) iterator.next();
-                callerDetails.append(" extra-").append(attName).append("=\"")
-                        .append(XMLHelper.escape(callerExtraAttributes.get(attName).toString())).append("\"");
+            for (Iterator<?> iterator = callerExtraAttributes.entrySet().iterator(); iterator.hasNext();) {
+                Entry<String, Object> entry = (Entry<String, Object>) iterator.next();
+                callerDetails.append(" extra-").append(entry.getKey()).append("=\"")
+                        .append(XMLHelper.escape(entry.getValue().toString())).append("\"");
             }
 
             out.println("\t\t\t\t<caller organisation=\""
@@ -284,10 +284,9 @@ public class XMLEasyAntReportWriter {
             out.print("\t\t\t\t\t<artifact name=\"" + XMLHelper.escape(adr[i].getName()) + "\" type=\""
                     + XMLHelper.escape(adr[i].getType()) + "\" ext=\"" + XMLHelper.escape(adr[i].getExt()) + "\"");
             extraAttributes = adr[i].getArtifact().getExtraAttributes();
-            for (Iterator<?> iterator = extraAttributes.keySet().iterator(); iterator.hasNext();) {
-                String attName = (String) iterator.next();
-                out.print(" extra-" + attName + "=\"" + XMLHelper.escape(extraAttributes.get(attName).toString())
-                        + "\"");
+            for (Iterator<?> iterator = extraAttributes.entrySet().iterator(); iterator.hasNext();) {
+                Entry<String, Object> entry = (Entry<String, Object>) iterator.next();
+                out.print(" extra-" + entry.getKey() + "=\"" + XMLHelper.escape(entry.getValue().toString()) + "\"");
             }
             out.print(" status=\"" + XMLHelper.escape(adr[i].getDownloadStatus().toString()) + "\"");
             out.print(" details=\"" + XMLHelper.escape(adr[i].getDownloadDetails()) + "\"");
