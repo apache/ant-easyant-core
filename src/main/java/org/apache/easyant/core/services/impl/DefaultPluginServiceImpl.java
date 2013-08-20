@@ -498,8 +498,8 @@ public class DefaultPluginServiceImpl implements PluginService {
             targetReport.setName(target.getName());
             StringBuilder sb = new StringBuilder();
             Enumeration<?> targetDeps = target.getDependencies();
-            String t = (String) targetDeps.nextElement();
             while (targetDeps.hasMoreElements()) {
+                String t = (String) targetDeps.nextElement();
                 sb.append(t);
                 if (targetDeps.hasMoreElements()) {
                     sb.append(",");
