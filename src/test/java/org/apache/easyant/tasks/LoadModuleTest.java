@@ -47,7 +47,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class LoadModuleTest extends BaseAntTaskTest {
+public class LoadModuleTest extends AntTaskBaseTest {
 
     private File cache;
 

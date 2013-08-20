@@ -27,7 +27,7 @@ import org.apache.tools.ant.Project;
 import org.junit.Before;
 import org.junit.Test;
 
-public class PropertyTaskTest extends BaseAntTaskTest {
+public class PropertyTaskTest extends AntTaskBaseTest {
 
     private PropertyTask propertyTask;
 

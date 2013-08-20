@@ -23,7 +23,7 @@ import static org.junit.Assert.assertThat;
 
 import org.apache.tools.ant.Project;
 
-public class BaseAntTaskTest {
+public class AntTaskBaseTest {
 
     private AntTestListener antTestListener;
 

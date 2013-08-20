@@ -41,6 +41,7 @@ public class ModuleIvyProjectHelperTest {
     public void shouldHandleModuleIvyFile() throws URISyntaxException {
         File f = new File(this.getClass().getResource("../standardJavaProject.ivy").toURI());
         Project p = new Project();
+        p.setBaseDir(new File(this.getClass().getResource(".").toURI()));
         p.setNewProperty(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS, "true");
         p.setNewProperty(EasyAntMagicNames.GLOBAL_EASYANT_IVYSETTINGS,
                 this.getClass().getResource("/ivysettings-test.xml").toString());

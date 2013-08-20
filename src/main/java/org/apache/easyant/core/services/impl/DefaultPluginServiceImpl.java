@@ -576,6 +576,16 @@ public class DefaultPluginServiceImpl implements PluginService {
         Project p = buildProject(null);
         Target implicitTarget = ProjectUtils.createTopLevelTarget();
         p.addTarget(implicitTarget);
+
+        // calculate basedir
+        if (moduleDescriptor != null) {
+            p.setBaseDir(moduleDescriptor.getParentFile());
+        } else if (optionalAntModule != null) {
+            p.setBaseDir(optionalAntModule.getParentFile());
+        } else if (overrideAntModule != null) {
+            p.setBaseDir(overrideAntModule.getParentFile());
+        }
+
         LoadModule loadModule = new LoadModule();
         loadModule.setBuildModule(moduleDescriptor);
         loadModule.setBuildFile(optionalAntModule);

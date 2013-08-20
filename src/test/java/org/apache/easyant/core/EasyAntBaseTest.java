@@ -32,7 +32,6 @@ import org.apache.easyant.core.factory.EasyantConfigurationFactory;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
-import org.apache.tools.ant.MagicNames;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.LogLevel;
 import org.junit.After;
@@ -383,12 +382,10 @@ public abstract class EasyAntBaseTest {
         // Configure easyant ivy instance
         conf.setEasyantIvySettingsUrl(this.getClass().getResource("/ivysettings-test.xml"));
 
-        // Configure the project basedir
         File projectModule = new File(filename);
         if (!projectModule.exists()) {
             throw new BuildException("Project " + projectModule.getAbsolutePath() + " does not exists");
         }
-        conf.getDefinedProps().put(MagicNames.PROJECT_BASEDIR, projectModule.getParent());
     }
 
     /**
@@ -406,6 +403,11 @@ public abstract class EasyAntBaseTest {
         // init the new project instance
         project = new Project();
         project.addBuildListener(new AntTestListener(conf.getMsgOutputLevel()));
+        try {
+            project.setBaseDir(new File(this.getResource(".").toURI()));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Can't configure basedir");
+        }
         EasyAntEngine eaEngine = new EasyAntEngine(conf);
         eaEngine.initProject(project);
     }
