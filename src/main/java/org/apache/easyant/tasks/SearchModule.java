@@ -17,6 +17,8 @@
  */
 package org.apache.easyant.tasks;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.easyant.core.EasyAntConstants;
@@ -78,7 +80,7 @@ public class SearchModule extends IvyTask {
                 settings.getMatcher(matcher));
 
         // diplay the list
-        Vector<String> choices = new Vector<String>();
+        List<String> choices = new ArrayList<String>();
         for (int i = 0; i < mrids.length; i++) {
             ResolvedModuleRevision rmr = ivy.findModule(mrids[i]);
             if (rmr == null) {
@@ -117,9 +119,9 @@ public class SearchModule extends IvyTask {
 
     }
 
-    protected String getInput(String message, String defaultvalue, Vector<String> choices) {
+    protected String getInput(String message, String defaultvalue, List<String> choices) {
         InputRequest request = null;
-        request = new MultipleChoiceInputRequest(message, choices);
+        request = new MultipleChoiceInputRequest(message, new Vector(choices));
         request.setDefaultValue(defaultvalue);
 
         InputHandler h = getProject().getInputHandler();

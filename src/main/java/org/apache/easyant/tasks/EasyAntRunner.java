@@ -21,6 +21,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.easyant.core.EasyAntConfiguration;
 import org.apache.easyant.core.EasyAntEngine;
@@ -37,11 +38,11 @@ public class EasyAntRunner extends Task {
     @Override
     public void execute() throws BuildException {
         EasyAntEngine eaEngine = new EasyAntEngine(getEasyantConfiguration());
-        if (fork)  {
+        if (fork) {
             eaEngine.doBuild();
         } else {
             eaEngine.initProject(getProject());
-            getProject().executeTargets(getEasyantConfiguration().getTargets());
+            getProject().executeTargets(new Vector(getEasyantConfiguration().getTargets()));
         }
     }
 
@@ -63,27 +64,20 @@ public class EasyAntRunner extends Task {
     public void setConfigurationFile(String configurationFile) {
         File f = new File(configurationFile);
         try {
-            EasyantConfigurationFactory.getInstance()
-                    .createConfigurationFromFile(getEasyantConfiguration(),
-                            f.toURI().toURL());
+            EasyantConfigurationFactory.getInstance().createConfigurationFromFile(getEasyantConfiguration(),
+                    f.toURI().toURL());
         } catch (Exception e) {
-            throw new BuildException(
-                    "Can't create easyantConfiguration from File "
-                            + configurationFile, e);
+            throw new BuildException("Can't create easyantConfiguration from File " + configurationFile, e);
         }
     }
 
     public void setConfigurationUrl(String configurationUrl) {
         try {
             URL url = new URL(configurationUrl);
-            EasyantConfigurationFactory
-                    .getInstance()
-                    .createConfigurationFromFile(getEasyantConfiguration(), url);
+            EasyantConfigurationFactory.getInstance().createConfigurationFromFile(getEasyantConfiguration(), url);
 
         } catch (Exception e) {
-            throw new BuildException(
-                    "Can't create easyantConfiguration from URL "
-                            + configurationUrl, e);
+            throw new BuildException("Can't create easyantConfiguration from URL " + configurationUrl, e);
         }
     }
 
@@ -93,8 +87,7 @@ public class EasyAntRunner extends Task {
         for (String conf : buildConfs) {
             buildConfigurations.add(conf);
         }
-        getEasyantConfiguration().setActiveBuildConfigurations(
-                buildConfigurations);
+        getEasyantConfiguration().setActiveBuildConfigurations(buildConfigurations);
     }
 
     public void setModuleIvy(String moduleIvy) {
@@ -111,8 +104,7 @@ public class EasyAntRunner extends Task {
         return easyantConfiguration;
     }
 
-    public void setEasyantConfiguration(
-            EasyAntConfiguration easyantConfiguration) {
+    public void setEasyantConfiguration(EasyAntConfiguration easyantConfiguration) {
         this.easyantConfiguration = easyantConfiguration;
     }
 

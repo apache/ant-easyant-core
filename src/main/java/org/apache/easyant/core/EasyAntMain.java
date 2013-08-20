@@ -320,7 +320,7 @@ public class EasyAntMain implements AntMain {
         }
 
         if (line.hasOption("listener")) {
-            easyAntConfiguration.getListeners().addElement(line.getOptionValue("listener"));
+            easyAntConfiguration.getListeners().add(line.getOptionValue("listener"));
         }
         if (line.hasOption("D")) {
             easyAntConfiguration.getDefinedProps().putAll(line.getOptionProperties("D"));
@@ -378,7 +378,7 @@ public class EasyAntMain implements AntMain {
         if (line.getArgList().size() > 0) {
             for (Iterator<?> iterator = line.getArgList().iterator(); iterator.hasNext();) {
                 String target = (String) iterator.next();
-                easyAntConfiguration.getTargets().addElement(target);
+                easyAntConfiguration.getTargets().add(target);
             }
         }
 

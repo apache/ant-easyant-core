@@ -67,9 +67,9 @@ public class SubModule extends AbstractEasyAntTask {
     private boolean overwrite = true;
 
     private boolean inheritRefs = false;
-    private Vector<Property> properties = new Vector<Property>();
-    private Vector<Ant.Reference> references = new Vector<Ant.Reference>();
-    private Vector<PropertySet> propertySets = new Vector<PropertySet>();
+    private List<Property> properties = new ArrayList<Property>();
+    private List<Ant.Reference> references = new ArrayList<Ant.Reference>();
+    private List<PropertySet> propertySets = new ArrayList<PropertySet>();
 
     public void execute() throws BuildException {
         if (buildpath == null) {
@@ -521,7 +521,7 @@ public class SubModule extends AbstractEasyAntTask {
      *            the property to pass on explicitly to the sub-build.
      */
     public void addProperty(Property p) {
-        properties.addElement(p);
+        properties.add(p);
     }
 
     /**
@@ -531,7 +531,7 @@ public class SubModule extends AbstractEasyAntTask {
      *            the reference to pass on explicitly to the sub-build.
      */
     public void addReference(Ant.Reference r) {
-        references.addElement(r);
+        references.add(r);
     }
 
     /**
@@ -541,7 +541,7 @@ public class SubModule extends AbstractEasyAntTask {
      *            the propertset
      */
     public void addPropertyset(PropertySet ps) {
-        propertySets.addElement(ps);
+        propertySets.add(ps);
     }
 
     /**

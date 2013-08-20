@@ -28,6 +28,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ant.listerners.DefaultEasyAntLogger;
@@ -259,7 +260,7 @@ public class EasyAntEngine {
         project.addBuildListener(createLogger());
 
         for (int i = 0; i < configuration.getListeners().size(); i++) {
-            String className = (String) configuration.getListeners().elementAt(i);
+            String className = (String) configuration.getListeners().get(i);
             BuildListener listener = (BuildListener) ClasspathUtils.newInstance(className,
                     EasyAntEngine.class.getClassLoader(), BuildListener.class);
             project.setProjectReference(listener);
@@ -610,11 +611,10 @@ public class EasyAntEngine {
                 // make sure that we have a target to execute
                 if (configuration.getTargets().size() == 0) {
                     if (project.getDefaultTarget() != null) {
-                        configuration.getTargets().addElement(project.getDefaultTarget());
+                        configuration.getTargets().add(project.getDefaultTarget());
                     }
                 }
-
-                project.executeTargets(configuration.getTargets());
+                project.executeTargets(new Vector(configuration.getTargets()));
             } finally {
                 // put back the original security manager
                 // The following will never eval to true. (PD)

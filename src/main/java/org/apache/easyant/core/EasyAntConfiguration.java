@@ -20,7 +20,9 @@ package org.apache.easyant.core;
 import java.io.File;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
@@ -48,12 +50,12 @@ public class EasyAntConfiguration {
     private File buildModule; /* null */
 
     /** The build targets. */
-    private Vector<String> targets = new Vector<String>(1);
+    private List<String> targets = new ArrayList<String>(1);
     /** Set of properties that can be used by tasks. */
     private Properties definedProps = new Properties();
 
     /** Names of classes to add as listeners to project. */
-    private Vector<String> listeners = new Vector<String>(1);
+    private List<String> listeners = new ArrayList<String>(1);
 
     /** Indicates whether this build is to support interactive input */
     private boolean allowInput = true;
@@ -64,9 +66,8 @@ public class EasyAntConfiguration {
     private boolean showMemoryDetails = false;
 
     /**
-     * The Ant logger class. There may be only one logger. It will have the
-     * right to use the 'out' PrintStream. The class must implements the
-     * BuildLogger interface.
+     * The Ant logger class. There may be only one logger. It will have the right to use the 'out' PrintStream. The
+     * class must implements the BuildLogger interface.
      */
     private String loggerClassname = null;
 
@@ -140,7 +141,7 @@ public class EasyAntConfiguration {
     public void setEasyantIvySettingsUrl(String easyantIvySettingsUrl) {
         this.easyantIvySettingsUrl = easyantIvySettingsUrl;
     }
-    
+
     /**
      * Set the url of a ivysettings.xml used by easyant
      * 
@@ -272,9 +273,8 @@ public class EasyAntConfiguration {
     }
 
     /**
-     * Get the default logger classname The Ant logger class. There may be only
-     * one logger. It will have the right to use the 'out' PrintStream. The
-     * class must implements the BuildLogger interface.
+     * Get the default logger classname The Ant logger class. There may be only one logger. It will have the right to
+     * use the 'out' PrintStream. The class must implements the BuildLogger interface.
      * 
      * @return a string representing the logger classname
      */
@@ -283,9 +283,8 @@ public class EasyAntConfiguration {
     }
 
     /**
-     * Set the default logger classname The Ant logger class. There may be only
-     * one logger. It will have the right to use the 'out' PrintStream. The
-     * class must implements the BuildLogger interface.
+     * Set the default logger classname The Ant logger class. There may be only one logger. It will have the right to
+     * use the 'out' PrintStream. The class must implements the BuildLogger interface.
      * 
      * @param loggerClassname
      *            a string representing the logger classname
@@ -352,11 +351,11 @@ public class EasyAntConfiguration {
         this.proxy = proxy;
     }
 
-    public Vector<String> getTargets() {
+    public List<String> getTargets() {
         return targets;
     }
 
-    public void setTargets(Vector<String> targets) {
+    public void setTargets(List<String> targets) {
         this.targets = targets;
     }
 
@@ -365,7 +364,7 @@ public class EasyAntConfiguration {
      * 
      * @return a vector of listerners
      */
-    public Vector<String> getListeners() {
+    public List<String> getListeners() {
         return listeners;
     }
 
@@ -390,7 +389,8 @@ public class EasyAntConfiguration {
     /**
      * Stream to use for logging.
      * 
-     * @param out stream to use for logging
+     * @param out
+     *            stream to use for logging
      */
     public void setOut(PrintStream out) {
         this.out = out;
@@ -408,7 +408,8 @@ public class EasyAntConfiguration {
     /**
      * Stream that we are using for logging error messages.
      * 
-     * @param err stream used for error logging 
+     * @param err
+     *            stream used for error logging
      */
     public void setErr(PrintStream err) {
         this.err = err;
@@ -442,8 +443,7 @@ public class EasyAntConfiguration {
      */
     public boolean addSystemPlugin(PluginDescriptor pluginDescriptor) {
         if (pluginDescriptor == null) {
-            throw new IllegalArgumentException(
-                    "pluginDescriptor cannot be null");
+            throw new IllegalArgumentException("pluginDescriptor cannot be null");
         }
         return this.systemPlugins.add(pluginDescriptor);
     }
