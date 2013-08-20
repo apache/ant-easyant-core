@@ -191,10 +191,6 @@ public class PluginReport extends AbstractEasyAntTask {
         }
     }
 
-    // private void genreport(String[] confs) throws IOException {
-    // genStyled(confs, getReportStylePath(), xslext);
-    // }
-
     private File getReportStylePath() throws IOException {
         if (xslFile != null) {
             return xslFile;

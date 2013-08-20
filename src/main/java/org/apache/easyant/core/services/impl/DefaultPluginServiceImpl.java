@@ -551,8 +551,9 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     public EasyAntModuleDescriptor getEasyAntModuleDescriptor(File moduleDescriptor) throws Exception {
-        if (moduleDescriptor == null)
+        if (moduleDescriptor == null) {
             throw new Exception("moduleDescriptor cannot be null");
+        }
         if (!moduleDescriptor.exists()) {
             throw new Exception("imposible to find the specified module descriptor"
                     + moduleDescriptor.getAbsolutePath());
@@ -707,7 +708,6 @@ public class DefaultPluginServiceImpl implements PluginService {
             int index = pos.getIndex();
             // directly check near, triggering characters:
             if (s.length() - index >= 3 && '$' == s.charAt(index) && '{' == s.charAt(index + 1)) {
-                // int start = index + 2;
                 int start = index;
 
                 // defer to String.indexOf() for protracted check:

@@ -62,7 +62,7 @@ public class DefaultEasyAntLogger extends NoBannerLogger {
                 break;
             }
         }
-        // if (verbose || !(error instanceof BuildException)) {
+
         if (verbose) {
             m.append(StringUtils.getStackTrace(error));
         } else {

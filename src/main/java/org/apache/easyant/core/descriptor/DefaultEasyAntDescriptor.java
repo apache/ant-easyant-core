@@ -30,7 +30,6 @@ import org.apache.ivy.core.module.descriptor.ModuleDescriptor;
 public class DefaultEasyAntDescriptor implements EasyAntModuleDescriptor {
 
     public DefaultEasyAntDescriptor() {
-        // super(md);
         properties = new HashMap<String, PropertyDescriptor>();
         plugins = new ArrayList<PluginDescriptor>();
         buildConfigurations = new ArrayList<String>();

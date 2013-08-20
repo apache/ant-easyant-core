@@ -112,33 +112,44 @@ public class ImportedModuleReport {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ImportedModuleReport other = (ImportedModuleReport) obj;
         if (module == null) {
-            if (other.module != null)
+            if (other.module != null) {
                 return false;
-        } else if (!module.equals(other.module))
+            }
+        } else if (!module.equals(other.module)) {
             return false;
+        }
         if (moduleMrid == null) {
-            if (other.moduleMrid != null)
+            if (other.moduleMrid != null) {
                 return false;
-        } else if (!moduleMrid.equals(other.moduleMrid))
+            }
+        } else if (!moduleMrid.equals(other.moduleMrid)) {
             return false;
+        }
         if (organisation == null) {
-            if (other.organisation != null)
+            if (other.organisation != null) {
                 return false;
-        } else if (!organisation.equals(other.organisation))
+            }
+        } else if (!organisation.equals(other.organisation)) {
             return false;
+        }
         if (revision == null) {
-            if (other.revision != null)
+            if (other.revision != null) {
                 return false;
-        } else if (!revision.equals(other.revision))
+            }
+        } else if (!revision.equals(other.revision)) {
             return false;
+        }
         return true;
     }
 

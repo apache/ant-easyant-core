@@ -320,8 +320,9 @@ public class SubModule extends AbstractEasyAntTask {
         }
         List<ExecutionResult> childResults = (List<ExecutionResult>) child
                 .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
-        if (childResults != null)
+        if (childResults != null) {
             allresults.addAll(childResults);
+        }
     }
 
     /**
@@ -680,8 +681,9 @@ public class SubModule extends AbstractEasyAntTask {
         }
 
         public TargetList(String... targets) {
-            for (String target : targets)
+            for (String target : targets) {
                 add(target);
+            }
         }
     }
 }

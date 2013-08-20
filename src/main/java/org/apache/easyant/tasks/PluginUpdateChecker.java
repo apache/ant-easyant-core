@@ -70,7 +70,7 @@ public class PluginUpdateChecker extends AbstractEasyAntTask {
                     .append(moduleRevisionId.getOrganisation()) //
                     .append('#')//
                     .append(moduleRevisionId.getName())//
-                    .append("\t")// ;
+                    .append("\t")//
                     .append(moduleRevisionId.getRevision())//
                     .append(" -> ")//
                     .append(resolvedRevision);
