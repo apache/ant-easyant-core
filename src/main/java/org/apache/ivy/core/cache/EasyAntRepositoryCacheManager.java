@@ -1036,8 +1036,6 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
                 rmr.getReport().setOriginalLocalFile(originalFileInCache);
             }
             rmr.getReport().setLocalFile(mdFileInCache);
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
             Message.warn("impossible to put metadata file in cache: "
                     + (orginalMetadataRef == null ? String.valueOf(md.getResolvedModuleRevisionId()) : String
