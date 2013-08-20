@@ -57,8 +57,9 @@ public class ExtensionPointReport {
     }
 
     public void addTargetReport(TargetReport targetReport) {
-        if (targetReport == null)
+        if (targetReport == null) {
             throw new IllegalArgumentException("targetReport cannot be null");
+        }
         targetReports.add(targetReport);
     }
 
