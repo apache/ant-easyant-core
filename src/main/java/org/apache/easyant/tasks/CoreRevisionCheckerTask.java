@@ -95,12 +95,13 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
             try {
                 Properties props = new Properties();
                 in = CoreRevisionCheckerTask.class.getResourceAsStream("/META-INF/version.properties");
+                if (in == null) {
+                    throw new BuildException("Could not load the version information.");
+                }
                 props.load(in);
                 easyantSpecVersion = props.getProperty("SPEC-VERSION");
             } catch (IOException ioe) {
                 throw new BuildException("Could not load the version information:" + ioe.getMessage());
-            } catch (NullPointerException npe) {
-                throw new BuildException("Could not load the version information.");
             } finally {
                 if (in != null) {
                     try {

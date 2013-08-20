@@ -717,6 +717,10 @@ public class EasyAntEngine {
             try {
                 Properties props = new Properties();
                 in = Main.class.getResourceAsStream("/META-INF/version.properties");
+                if (in == null) {
+                    throw new BuildException("Could not load the version information.");
+
+                }
                 props.load(in);
 
                 StringBuffer msg = new StringBuffer();
@@ -727,8 +731,6 @@ public class EasyAntEngine {
                 easyantVersion = msg.toString();
             } catch (IOException ioe) {
                 throw new BuildException("Could not load the version information:" + ioe.getMessage());
-            } catch (NullPointerException npe) {
-                throw new BuildException("Could not load the version information.");
             } finally {
                 if (in != null) {
                     try {
