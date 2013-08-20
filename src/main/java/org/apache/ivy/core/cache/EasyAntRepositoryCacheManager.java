@@ -185,17 +185,17 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
 
     public long getDefaultTTL() {
         if (defaultTTL == null) {
-            defaultTTL = new Long(parseDuration(settings.getVariable("ivy.cache.ttl.default")));
+            defaultTTL = Long.valueOf(parseDuration(settings.getVariable("ivy.cache.ttl.default")));
         }
         return defaultTTL.longValue();
     }
 
     public void setDefaultTTL(long defaultTTL) {
-        this.defaultTTL = new Long(defaultTTL);
+        this.defaultTTL = Long.valueOf(defaultTTL);
     }
 
     public void setDefaultTTL(String defaultTTL) {
-        this.defaultTTL = new Long(parseDuration(defaultTTL));
+        this.defaultTTL = Long.valueOf(parseDuration(defaultTTL));
     }
 
     public String getDataFilePattern() {
@@ -237,7 +237,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
     }
 
     public void addTTL(Map attributes, PatternMatcher matcher, long duration) {
-        ttlRules.defineRule(new MapMatcher(attributes, matcher), new Long(duration));
+        ttlRules.defineRule(new MapMatcher(attributes, matcher), Long.valueOf(duration));
     }
 
     public void addConfiguredTtl(Map/* <String,String> */attributes) {
@@ -911,7 +911,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
                 }
             } else {
                 long start = System.currentTimeMillis();
-                origin.setLastChecked(new Long(start));
+                origin.setLastChecked(Long.valueOf(start));
                 try {
                     ResolvedResource artifactRef = new ResolvedResource(resource, Ivy.getWorkingRevision());
                     if (useOrigin && resource.isLocal()) {
@@ -1009,7 +1009,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
             // the the file doesn't exist in the cache, obviously not up to date
             return false;
         }
-        origin.setLastChecked(new Long(time));
+        origin.setLastChecked(Long.valueOf(time));
         // check if the local resource is up to date regarding the remote one
         return archiveFile.lastModified() >= resource.getLastModified();
     }
