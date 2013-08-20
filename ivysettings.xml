@@ -27,8 +27,8 @@
             <resolver ref="apache-easyant-plugins"/>
             <!-- still necessary for plugins using buildtypes prior to 0.9. Should be remove on next release -->
             <url name="legacy-modules" m2compatible="false">
-                <artifact pattern="http://repo.easyant.org/legacy-releases-local/[organization]/[module]/[revision]/[type]s/[module](-[classifier])-[revision].[ext]" />
-                 <ivy pattern="http://repo.easyant.org/legacy-releases-local/[organization]/[module]/[revision]/[type]s/ivy-[revision].xml" />
+                <artifact pattern="http://repo.easyant.org/legacy-releases-local/[organisation]/[module]/[revision]/[type]s/[module](-[classifier])-[revision].[ext]" />
+                 <ivy pattern="http://repo.easyant.org/legacy-releases-local/[organisation]/[module]/[revision]/[type]s/ivy-[revision].xml" />
             </url>
             <resolver ref="public-maven" />
         </chain>
