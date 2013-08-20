@@ -47,16 +47,16 @@ public class ConfigureBuildScopedRepository extends IvyTask {
 
     @Override
     public void doExecute() throws BuildException {
-        String target = getTarget();
+        String targetDirectory = getTarget();
 
         // be sure that we have an absolute path
-        File targetDir = new File(target);
-        target = targetDir.getAbsolutePath();
+        File targetDir = new File(targetDirectory);
+        targetDirectory = targetDir.getAbsolutePath();
 
         String buildScopeRepositoryName = getName();
 
-        final String DEFAULT_BUILD_SCOPED_REPOSITORY_DIR = target + "/repository/" + buildScopeRepositoryName;
-        final String DEFAULT_CACHE_BUILD_SCOPED_REPO = target + "/cache/" + buildScopeRepositoryName;
+        final String DEFAULT_BUILD_SCOPED_REPOSITORY_DIR = targetDirectory + "/repository/" + buildScopeRepositoryName;
+        final String DEFAULT_CACHE_BUILD_SCOPED_REPO = targetDirectory + "/cache/" + buildScopeRepositoryName;
         getProject().log("Registering build scoped repository in " + DEFAULT_BUILD_SCOPED_REPOSITORY_DIR,
                 Project.MSG_DEBUG);
         final String CACHENAME = "build-scoped-cache-" + buildScopeRepositoryName;

@@ -37,7 +37,6 @@ import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
-import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.ant.IvyDependency;
 import org.apache.ivy.ant.IvyInfo;
@@ -156,7 +155,7 @@ public class LoadModule extends AbstractEasyAntTask {
         configureProjectOfflineResolver();
 
         if (shouldUseBuildRepository()) {
-            configureBuildRepository(IvyInstanceHelper.getProjectIvyAntSettings(getProject()));
+            configureBuildRepository();
         }
 
         if (getProject().getDefaultTarget() == null
@@ -513,7 +512,7 @@ public class LoadModule extends AbstractEasyAntTask {
      * Change the given Ivy settings to use a local build-scoped repository and cache by default. This allows submodules
      * to access each others' artifacts before they have been published to a shared repository.
      */
-    private void configureBuildRepository(IvyAntSettings projectSettings) throws BuildException {
+    private void configureBuildRepository() throws BuildException {
         ConfigureBuildScopedRepository configureBuildScopedRepository = new ConfigureBuildScopedRepository();
         configureBuildScopedRepository.setName(EasyAntConstants.BUILD_SCOPE_REPOSITORY);
         configureBuildScopedRepository.setSettingsRef(IvyInstanceHelper.buildProjectIvyReference(getProject()));

@@ -323,7 +323,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             throw new IllegalStateException(
                     "rootModuleLocation not found, looks like TaskCollectorFromImplicitTargetListener is not properly configured");
         }
-        return rootModuleLocation != null && location != null && location.getFileName().equals(rootModuleLocation);
+        return location != null && location.getFileName().equals(rootModuleLocation);
     }
 
     private void handleImport(Import importTask, EasyAntReport eaReport, String conf) throws Exception {
@@ -690,8 +690,7 @@ public class DefaultPluginServiceImpl implements PluginService {
                 mrid = EasyAntConstants.EASYANT_PLUGIN_ORGANISATION + "#" + mrid;
             }
         }
-        ModuleRevisionId module = ModuleRevisionId.parse(mrid);
-        return module;
+        return ModuleRevisionId.parse(mrid);
     }
 
     public EasyAntReport generateEasyAntReport(File moduleDescriptor) throws Exception {

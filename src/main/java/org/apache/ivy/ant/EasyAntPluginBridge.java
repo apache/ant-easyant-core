@@ -28,6 +28,9 @@ import org.apache.ivy.core.settings.IvySettings;
  */
 public class EasyAntPluginBridge {
 
+    private EasyAntPluginBridge() {
+    }
+
     public static DefaultModuleDescriptor computeModuleDescriptor(DefaultModuleDescriptor md, IvySettings settings,
             List<IvyDependency> dependencies, List<IvyConflict> conflicts, List<IvyExclude> excludes) {
         for (IvyDependency dependency : dependencies) {

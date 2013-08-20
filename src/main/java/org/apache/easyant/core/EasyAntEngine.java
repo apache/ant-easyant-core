@@ -100,8 +100,9 @@ public class EasyAntEngine {
         IvyConfigure easyantIvyConfigure = new IvyConfigure();
         easyantIvyConfigure.setSettingsId(EasyAntMagicNames.EASYANT_IVY_INSTANCE);
 
-        project.setNewProperty(EasyAntMagicNames.EASYANT_DEFAULT_IVYSETTINGS, this.getClass().getResource(
-                "/org/apache/easyant/core/default-easyant-ivysettings.xml").toExternalForm());
+        project.setNewProperty(EasyAntMagicNames.EASYANT_DEFAULT_IVYSETTINGS,
+                this.getClass().getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml")
+                        .toExternalForm());
 
         project.setNewProperty(EasyAntMagicNames.EASYANT_CORE_JAR_URL, guessEasyantCoreJarUrl().toExternalForm());
 
@@ -228,8 +229,8 @@ public class EasyAntEngine {
         }
         // if no property is set check the default location
         if (path == null) {
-            File defaultGlboalEasyAntIvySettings = new File(helper
-                    .replaceProperties(EasyAntConstants.DEFAULT_GLOBAL_EASYANT_IVYSETTINGS));
+            File defaultGlboalEasyAntIvySettings = new File(
+                    helper.replaceProperties(EasyAntConstants.DEFAULT_GLOBAL_EASYANT_IVYSETTINGS));
             if (!defaultGlboalEasyAntIvySettings.exists()) {
                 return null;
             }
@@ -259,8 +260,8 @@ public class EasyAntEngine {
 
         for (int i = 0; i < configuration.getListeners().size(); i++) {
             String className = (String) configuration.getListeners().elementAt(i);
-            BuildListener listener = (BuildListener) ClasspathUtils.newInstance(className, EasyAntEngine.class
-                    .getClassLoader(), BuildListener.class);
+            BuildListener listener = (BuildListener) ClasspathUtils.newInstance(className,
+                    EasyAntEngine.class.getClassLoader(), BuildListener.class);
             project.setProjectReference(listener);
 
             project.addBuildListener(listener);
@@ -282,8 +283,8 @@ public class EasyAntEngine {
         if (configuration.getInputHandlerClassname() == null) {
             handler = new DefaultInputHandler();
         } else {
-            handler = (InputHandler) ClasspathUtils.newInstance(configuration.getInputHandlerClassname(), Main.class
-                    .getClassLoader(), InputHandler.class);
+            handler = (InputHandler) ClasspathUtils.newInstance(configuration.getInputHandlerClassname(),
+                    Main.class.getClassLoader(), InputHandler.class);
             project.setProjectReference(handler);
         }
         project.setInputHandler(handler);
@@ -366,6 +367,8 @@ public class EasyAntEngine {
      * @throws BuildException
      */
     public void configureProject(Project project) throws BuildException {
+
+        project.setCoreLoader(configuration.getCoreLoader());
 
         addBuildListeners(project);
         addInputHandler(project);

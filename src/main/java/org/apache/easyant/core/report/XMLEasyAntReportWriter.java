@@ -122,7 +122,7 @@ public class XMLEasyAntReportWriter {
                     + XMLHelper.escape(mid.getName()) + "\">");
             for (Iterator<?> it2 = report.getNodes(mid).iterator(); it2.hasNext();) {
                 IvyNode dep = (IvyNode) it2.next();
-                ouputRevision(report, out, dependencies, dep, easyAntReport);
+                ouputRevision(report, out, dependencies, dep);
             }
             out.println("\t\t</module>");
         }
@@ -133,8 +133,7 @@ public class XMLEasyAntReportWriter {
         out.flush();
     }
 
-    private void ouputRevision(ConfigurationResolveReport report, PrintWriter out, List<?> dependencies, IvyNode dep,
-            EasyAntReport easyAntReport) {
+    private void ouputRevision(ConfigurationResolveReport report, PrintWriter out, List<?> dependencies, IvyNode dep) {
         Map<?, ?> extraAttributes;
         ModuleDescriptor md = null;
         if (dep.getModuleRevision() != null) {

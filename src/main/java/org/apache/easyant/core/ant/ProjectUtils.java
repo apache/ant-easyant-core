@@ -39,6 +39,9 @@ import org.apache.tools.ant.Target;
  */
 public class ProjectUtils {
 
+    private ProjectUtils() {
+    }
+
     private static final long MEGABYTE = 1024 * 1024;
 
     /**
@@ -119,10 +122,8 @@ public class ProjectUtils {
      */
     public static void printMemoryDetails(Project project) {
         project.log("---- Memory Details ----");
-        project
-                .log("  Used Memory  = "
-                        + (Runtime.getRuntime().totalMemory() / MEGABYTE - Runtime.getRuntime().freeMemory() / MEGABYTE)
-                        + "MB");
+        project.log("  Used Memory  = "
+                + (Runtime.getRuntime().totalMemory() / MEGABYTE - Runtime.getRuntime().freeMemory() / MEGABYTE) + "MB");
         project.log("  Free Memory  = " + (Runtime.getRuntime().freeMemory() / MEGABYTE) + "MB");
         project.log("  Total Memory = " + (Runtime.getRuntime().totalMemory() / MEGABYTE) + "MB");
         project.log("-----------------------");

@@ -46,16 +46,16 @@ public class RegisterArtifact extends IvyPostResolveTask {
         // this is a published artifact
         String artName = getSettings().substitute(getName());
         artName = artName == null ? md.getModuleRevisionId().getName() : artName;
-        String type = getSettings().substitute(getType());
-        type = type == null ? "jar" : type;
-        String ext = getSettings().substitute(getExt());
-        ext = ext != null ? ext : type;
+        String artType = getSettings().substitute(getType());
+        artType = artType == null ? "jar" : artType;
+        String artExt = getSettings().substitute(getExt());
+        artExt = artExt != null ? artExt : artType;
         Map<String, String> extraAttributes = new HashMap<String, String>();
         if (getClassifier() != null) {
             md.addExtraAttributeNamespace("m", "http://ant.apache.org/ivy/maven");
             extraAttributes.put("m:classifier", getClassifier());
         }
-        MDArtifact artifact = new MDArtifact(md, artName, type, ext, null, extraAttributes);
+        MDArtifact artifact = new MDArtifact(md, artName, artType, artExt, null, extraAttributes);
         String[] configurations = getConfs().split(",");
         for (int i = 0; i < configurations.length; i++) {
             if ("*".equals(configurations[i])) {

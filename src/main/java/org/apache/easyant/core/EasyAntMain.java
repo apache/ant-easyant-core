@@ -166,7 +166,7 @@ public class EasyAntMain implements AntMain {
         int exitCode = 1;
         try {
             try {
-                runBuild(line, coreLoader);
+                runBuild(line);
                 exitCode = 0;
             } catch (ExitStatusException ese) {
                 exitCode = ese.getStatus();
@@ -244,7 +244,7 @@ public class EasyAntMain implements AntMain {
             return;
         }
         if (easyAntConfiguration.getMsgOutputLevel() >= Project.MSG_VERBOSE || line.hasOption("version")) {
-            printVersion(easyAntConfiguration.getMsgOutputLevel());
+            printVersion();
             if (line.hasOption("version")) {
                 return;
             }
@@ -293,7 +293,7 @@ public class EasyAntMain implements AntMain {
         if (line.hasOption("buildconf")) {
             easyAntConfiguration.getActiveBuildConfigurations().add(line.getOptionValue("buildconf"));
         }
-        
+
         File easyantConfFile = null;
 
         if (line.hasOption("configfile")) {
@@ -318,7 +318,7 @@ public class EasyAntMain implements AntMain {
                 throw new BuildException(e);
             }
         }
-            
+
         if (line.hasOption("listener")) {
             easyAntConfiguration.getListeners().addElement(line.getOptionValue("listener"));
         }
@@ -428,14 +428,10 @@ public class EasyAntMain implements AntMain {
      * Executes the build. If the constructor for this instance failed (e.g. returned after issuing a warning), this
      * method returns immediately.
      * 
-     * @param coreLoader
-     *            The classloader to use to find core classes. May be <code>null</code>, in which case the system
-     *            classloader is used.
-     * 
      * @exception BuildException
      *                if the build fails
      */
-    private void runBuild(CommandLine line, ClassLoader coreLoader) throws BuildException {
+    private void runBuild(CommandLine line) throws BuildException {
         if (!readyToRun) {
             return;
         }
@@ -522,7 +518,7 @@ public class EasyAntMain implements AntMain {
                 spaces += spaces;
             }
             StringBuffer msg = new StringBuffer();
-            msg.append(lSep + heading + lSep + lSep);
+            msg.append(lSep).append(heading).append(lSep).append(lSep);
             for (int i = 0; i < names.size(); i++) {
                 msg.append(" ");
                 msg.append(names.get(i));
@@ -716,7 +712,7 @@ public class EasyAntMain implements AntMain {
      * @exception BuildException
      *                if the version information is unavailable
      */
-    private static void printVersion(int logLevel) throws BuildException {
+    private static void printVersion() throws BuildException {
         System.out.println(EasyAntEngine.getEasyAntVersion());
         System.out.println(getAntVersion());
     }
