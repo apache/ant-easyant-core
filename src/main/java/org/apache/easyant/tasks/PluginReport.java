@@ -175,19 +175,26 @@ public class PluginReport extends AbstractEasyAntTask {
 
         PluginService pluginService = (PluginService) getProject().getReference(
                 EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
-
+        OutputStream stream = null;
         try {
             EasyAntReport easyantReport = pluginService.getPluginInfo(moduleIvy, sourceDirectory, conf);
             ModuleRevisionId moduleRevisionId = easyantReport.getModuleDescriptor().getModuleRevisionId();
             File reportFile = new File(todir, getOutputPattern(moduleRevisionId, conf, "xml"));
             todir.mkdirs();
-            OutputStream stream = new FileOutputStream(reportFile);
+            stream = new FileOutputStream(reportFile);
             XMLEasyAntReportWriter writer = new XMLEasyAntReportWriter();
             writer.output(easyantReport, stream);
-            stream.close();
             genStyled(reportFile, getReportStylePath(), easyantReport);
         } catch (Exception e) {
             throw new BuildException("impossible to generate report: " + e, e);
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    // do nothing
+                }
+            }
         }
     }
 

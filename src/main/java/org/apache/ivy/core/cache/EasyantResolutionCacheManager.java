@@ -147,9 +147,16 @@ public class EasyantResolutionCacheManager implements ResolutionCacheManager, Iv
         File parentsFile = getResolvedIvyPropertiesInCache(ModuleRevisionId.newInstance(mrid, mrid.getRevision()
                 + "-parents"));
         if (parentsFile.exists()) {
-            FileInputStream in = new FileInputStream(parentsFile);
-            paths.load(in);
-            in.close();
+            FileInputStream in = null;
+            try {
+                in = new FileInputStream(parentsFile);
+                paths.load(in);
+
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
         }
 
         ParserSettings pSettings = new CacheParserSettings(settings, paths);
@@ -171,9 +178,15 @@ public class EasyantResolutionCacheManager implements ResolutionCacheManager, Iv
         if (!paths.isEmpty()) {
             File parentsFile = getResolvedIvyPropertiesInCache(ModuleRevisionId.newInstance(mrevId,
                     mrevId.getRevision() + "-parents"));
-            FileOutputStream out = new FileOutputStream(parentsFile);
-            paths.store(out, null);
-            out.close();
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(parentsFile);
+                paths.store(out, null);
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+            }
         }
     }
 

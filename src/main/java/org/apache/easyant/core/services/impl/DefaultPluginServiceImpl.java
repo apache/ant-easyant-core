@@ -383,8 +383,11 @@ public class DefaultPluginServiceImpl implements PluginService {
             Properties propToLoad = new Properties();
             File f = property.getFile();
             if (f.exists()) {
+                FileInputStream fis = null;
+
                 try {
-                    propToLoad.load(new FileInputStream(f));
+                    fis = new FileInputStream(f);
+                    propToLoad.load(fis);
                     for (Iterator<?> iter = propToLoad.keySet().iterator(); iter.hasNext();) {
                         String key = (String) iter.next();
                         PropertyDescriptor propertyDescriptor = new PropertyDescriptor(key);
@@ -400,8 +403,13 @@ public class DefaultPluginServiceImpl implements PluginService {
                     IOException ioe = new IOException("Unable to parse the property file :" + property.getFile());
                     ioe.initCause(e);
                     throw ioe;
+                } finally {
+                    if (fis != null) {
+                        fis.close();
+                    }
                 }
             }
+
         }
         if (property.getName() != null) {
             PropertyDescriptor propertyDescriptor = new PropertyDescriptor(property.getName());
@@ -490,8 +498,8 @@ public class DefaultPluginServiceImpl implements PluginService {
             targetReport.setName(target.getName());
             StringBuilder sb = new StringBuilder();
             Enumeration<?> targetDeps = target.getDependencies();
+            String t = (String) targetDeps.nextElement();
             while (targetDeps.hasMoreElements()) {
-                String t = (String) targetDeps.nextElement();
                 sb.append(t);
                 if (targetDeps.hasMoreElements()) {
                     sb.append(",");

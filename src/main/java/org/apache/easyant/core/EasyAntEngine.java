@@ -712,11 +712,12 @@ public class EasyAntEngine {
     public static String getEasyAntVersion() {
 
         if (easyantVersion == null) {
+            InputStream in = null;
+
             try {
                 Properties props = new Properties();
-                InputStream in = Main.class.getResourceAsStream("/META-INF/version.properties");
+                in = Main.class.getResourceAsStream("/META-INF/version.properties");
                 props.load(in);
-                in.close();
 
                 StringBuffer msg = new StringBuffer();
                 msg.append("EasyAnt version ");
@@ -728,6 +729,14 @@ public class EasyAntEngine {
                 throw new BuildException("Could not load the version information:" + ioe.getMessage());
             } catch (NullPointerException npe) {
                 throw new BuildException("Could not load the version information.");
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        // do nothing
+                    }
+                }
             }
         }
         return easyantVersion;

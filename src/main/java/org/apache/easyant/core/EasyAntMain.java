@@ -733,11 +733,11 @@ public class EasyAntMain implements AntMain {
      */
     public static synchronized String getAntVersion() throws BuildException {
         if (antVersion == null) {
+            InputStream in = null;
             try {
                 Properties props = new Properties();
-                InputStream in = Main.class.getResourceAsStream("/org/apache/tools/ant/version.txt");
+                in = Main.class.getResourceAsStream("/org/apache/tools/ant/version.txt");
                 props.load(in);
-                in.close();
 
                 StringBuffer msg = new StringBuffer();
                 msg.append("Apache Ant version ");
@@ -749,6 +749,14 @@ public class EasyAntMain implements AntMain {
                 throw new BuildException("Could not load the version information:" + ioe.getMessage());
             } catch (NullPointerException npe) {
                 throw new BuildException("Could not load the version information.");
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        // do nothing
+                    }
+                }
             }
         }
         return antVersion;

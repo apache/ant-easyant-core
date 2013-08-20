@@ -19,6 +19,7 @@ package org.apache.easyant.core.parser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.ParseException;
@@ -196,20 +197,19 @@ public class EasyAntConfigParser {
             if ("easyant-config/properties/property".equals(getContext())) {
                 if (attributes.getValue("file") != null || attributes.getValue("url") != null) {
                     Properties properties = new Properties();
+                    InputStream is = null;
 
                     try {
-                        InputStream is = null;
                         if (attributes.getValue("file") != null) {
                             File f = new File(attributes.getValue("file"));
                             is = new FileInputStream(f);
                             properties.load(is);
-                            is.close();
                         } else if (attributes.getValue("url") != null) {
                             URL url = new URL(attributes.getValue("url"));
                             is = url.openStream();
                             properties.load(is);
-                            is.close();
                         }
+
                         Enumeration<?> propertiesEnum = properties.propertyNames();
                         while (propertiesEnum.hasMoreElements()) {
                             String key = (String) propertiesEnum.nextElement();
@@ -221,7 +221,16 @@ public class EasyAntConfigParser {
                         } else if (attributes.getValue("url") != null) {
                             throw new SAXException("can't read property file at : " + attributes.getValue("url"));
                         }
+                    } finally {
+                        if (is != null) {
+                            try {
+                                is.close();
+                            } catch (IOException e) {
+                                // do nothing
+                            }
+                        }
                     }
+
                 } else if (attributes.getValue("name") != null) {
                     easyAntConfiguration.getDefinedProps().put(attributes.getValue("name"),
                             attributes.getValue("value"));
