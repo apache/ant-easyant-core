@@ -641,14 +641,15 @@ public class SubModule extends AbstractEasyAntTask {
 
         Class<?> c = orig.getClass();
         Object copy = orig;
+        Method cloneM;
         try {
-            Method cloneM = c.getMethod("clone", new Class[0]);
+            cloneM = c.getMethod("clone", new Class[0]);
             if (cloneM != null) {
                 copy = cloneM.invoke(orig, new Object[0]);
                 log("Adding clone of reference " + oldKey, Project.MSG_DEBUG);
             }
-        } catch (Exception e) {
-            // not Clonable
+        } catch (ReflectiveOperationException e) {
+            // not clonable
         }
 
         if (copy instanceof ProjectComponent) {

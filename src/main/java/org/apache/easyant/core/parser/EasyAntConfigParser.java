@@ -215,7 +215,7 @@ public class EasyAntConfigParser {
                             String key = (String) propertiesEnum.nextElement();
                             easyAntConfiguration.getDefinedProps().put(key, properties.get(key));
                         }
-                    } catch (Exception e) {
+                    } catch (IOException e) {
                         if (attributes.getValue("file") != null) {
                             throw new SAXException("can't read property file at : " + attributes.getValue("file"));
                         } else if (attributes.getValue("url") != null) {

@@ -662,9 +662,12 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
                         Message.debug("\tresolver not found: " + resolverName + " => cannot use cached ivy file for "
                                 + mrid);
                     }
-                } catch (Exception e) {
+                } catch (ParseException e) {
                     // will try with resolver
                     Message.debug("\tproblem while parsing cached ivy file for: " + mrid + ": " + e.getMessage());
+                } catch (IOException e) {
+                    // will try with resolver
+                    Message.debug("\tproblem while accessing cached ivy file for: " + mrid + ": " + e.getMessage());
                 }
             } else {
                 Message.debug("\tno ivy file in cache for " + mrid + ": tried " + ivyFile);
