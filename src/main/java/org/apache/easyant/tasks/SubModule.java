@@ -18,6 +18,7 @@
 package org.apache.easyant.tasks;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -648,7 +649,11 @@ public class SubModule extends AbstractEasyAntTask {
                 copy = cloneM.invoke(orig, new Object[0]);
                 log("Adding clone of reference " + oldKey, Project.MSG_DEBUG);
             }
-        } catch (ReflectiveOperationException e) {
+        } catch (NoSuchMethodException e) {
+            // not clonable
+        } catch (IllegalAccessException e) {
+            // not clonable
+        } catch (InvocationTargetException e) {
             // not clonable
         }
 
