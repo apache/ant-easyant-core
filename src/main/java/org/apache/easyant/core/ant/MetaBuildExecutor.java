@@ -23,9 +23,6 @@ import java.util.List;
 
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
-import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
-import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
 import org.apache.easyant.tasks.SubModule;
 import org.apache.easyant.tasks.SubModule.TargetList;
 import org.apache.tools.ant.BuildException;
@@ -77,27 +74,23 @@ public class MetaBuildExecutor extends DefaultExecutor {
         super.executeTargets(project, preTargetsToRun.toArray(new String[] {}));
 
         printSubBuildsInOrder(project);
-        try {
-            // delegate to the ea:submodule task to execute the list of targets on
-            // all modules in the build list
-            SubModule subModule = new SubModule();
-            subModule.setTaskName("meta:submodule");
-            subModule.setProject(project);
+        // delegate to the ea:submodule task to execute the list of targets on
+        // all modules in the build list
+        SubModule subModule = new SubModule();
+        subModule.setTaskName("meta:submodule");
+        subModule.setProject(project);
 
-            Boolean useBuildRepository = project.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY) != null ? Boolean
-                    .parseBoolean(project.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY)) : true;
-            subModule.setUseBuildRepository(useBuildRepository);
+        Boolean useBuildRepository = project.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY) != null ? Boolean
+                .parseBoolean(project.getProperty(EasyAntMagicNames.USE_BUILD_REPOSITORY)) : true;
+        subModule.setUseBuildRepository(useBuildRepository);
 
-            subModule.setBuildpathRef(new Reference(project, "build-path"));
-            subModule.setTargets(new TargetList(targets));
-            subModule.execute();
+        subModule.setBuildpathRef(new Reference(project, "build-path"));
+        subModule.setTargets(new TargetList(targets));
+        subModule.execute();
 
-            // now call the default executor to include any extra targets defined in
-            // the root module.ant
-            super.executeTargets(project, postTargetsToRun.toArray(new String[] {}));
-        } finally {
-            printExecutionSubBuildsExecutionTimes(project);
-        }
+        // now call the default executor to include any extra targets defined in
+        // the root module.ant
+        super.executeTargets(project, postTargetsToRun.toArray(new String[] {}));
     }
 
     /*
@@ -121,16 +114,4 @@ public class MetaBuildExecutor extends DefaultExecutor {
         }
     }
 
-    private void printExecutionSubBuildsExecutionTimes(Project project) {
-        List<ExecutionResult> allSubBuildResults = project
-                .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
-        if (allSubBuildResults != null && allSubBuildResults.size() > 0) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(StringUtils.LINE_SEP).append(DEMARKER).append(StringUtils.LINE_SEP);
-            sb.append("Project Sub-modules Summary: ").append(StringUtils.LINE_SEP).append(DEMARKER);
-            sb.append(StringUtils.LINE_SEP).append(BuildExecutionTimer.formatExecutionResults(allSubBuildResults));
-            sb.append(StringUtils.LINE_SEP).append(DEMARKER);
-            project.log(sb.toString());
-        }
-    }
 }

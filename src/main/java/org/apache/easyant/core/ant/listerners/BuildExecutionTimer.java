@@ -25,6 +25,8 @@ import org.apache.easyant.core.ant.ExecutionStatus;
 import org.apache.ivy.util.StringUtils;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.SubBuildListener;
 import org.apache.tools.ant.util.DateUtils;
 
 /*
@@ -35,7 +37,20 @@ import org.apache.tools.ant.util.DateUtils;
 /**
  * Build listener to time execution of builds.
  */
-public class BuildExecutionTimer implements BuildListener {
+public class BuildExecutionTimer implements BuildListener, SubBuildListener {
+
+    /**
+     * Reference key against which build execution results will be stored
+     */
+    public static final String EXECUTION_TIMER_BUILD_RESULTS = "execution.timer.build.results";
+
+    /**
+     * Reference key against which sub-build execution times will be stored
+     */
+    public static final String EXECUTION_TIMER_SUBBUILD_RESULTS = "execution.timer.subbuild.results";
+
+    private static final String DEMARKER = "======================================================================";
+
     // build start time
     // to be initialized in buildStarted method
     protected long buildStartTime;
@@ -105,8 +120,22 @@ public class BuildExecutionTimer implements BuildListener {
 
     }
 
-    public void buildFinished(BuildEvent arg0) {
-        stopTimer(arg0, EXECUTION_TIMER_BUILD_RESULTS, buildStartTime);
+    public void buildFinished(BuildEvent event) {
+        stopTimer(event, EXECUTION_TIMER_BUILD_RESULTS, buildStartTime);
+        printExecutionSubBuildsExecutionTimes(event.getProject());
+    }
+
+    private void printExecutionSubBuildsExecutionTimes(Project project) {
+        String lineSep = org.apache.tools.ant.util.StringUtils.LINE_SEP;
+        List<ExecutionResult> allSubBuildResults = project.getReference(EXECUTION_TIMER_SUBBUILD_RESULTS);
+        if (allSubBuildResults != null && allSubBuildResults.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(lineSep).append(DEMARKER).append(lineSep);
+            sb.append("Project Sub-modules Summary: ").append(lineSep).append(DEMARKER);
+            sb.append(lineSep).append(formatExecutionResults(allSubBuildResults));
+            sb.append(lineSep).append(DEMARKER);
+            project.log(sb.toString());
+        }
     }
 
     public void buildStarted(BuildEvent arg0) {
@@ -140,7 +169,7 @@ public class BuildExecutionTimer implements BuildListener {
      * @param results
      * @return
      */
-    public static String formatExecutionResults(List<ExecutionResult> results) {
+    public String formatExecutionResults(List<ExecutionResult> results) {
         String formattedResults = "";
         int constantSpaces = 10;
         int maxUnitNameLength = 0;
@@ -171,8 +200,12 @@ public class BuildExecutionTimer implements BuildListener {
         return formattedResults;
     }
 
-    /**
-     * Reference key against which build execution results will be stored
-     */
-    public static final String EXECUTION_TIMER_BUILD_RESULTS = "execution.timer.build.results";
+    public void subBuildFinished(BuildEvent arg0) {
+        stopTimer(arg0, EXECUTION_TIMER_SUBBUILD_RESULTS, buildStartTime);
+    }
+
+    public void subBuildStarted(BuildEvent arg0) {
+        buildStartTime = System.currentTimeMillis();
+    }
+
 }

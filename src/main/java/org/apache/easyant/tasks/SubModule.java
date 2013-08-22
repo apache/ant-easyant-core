@@ -32,9 +32,9 @@ import java.util.Vector;
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
-import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
-import org.apache.easyant.core.ant.listerners.SubBuildExecutionTimer;
+import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
 import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
+import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyPublish;
 import org.apache.ivy.ant.IvyResolve;
@@ -276,7 +276,7 @@ public class SubModule extends AbstractEasyAntTask {
         }
         // explicitly add the execution timer to time
         // sub builds
-        subModule.addBuildListener(new SubBuildExecutionTimer());
+        subModule.addBuildListener(new BuildExecutionTimer());
 
         // copy all User properties
         addAlmostAll(getProject().getUserProperties(), subModule, PropertyType.USER);
@@ -314,13 +314,13 @@ public class SubModule extends AbstractEasyAntTask {
     @SuppressWarnings("unchecked")
     private void storeExecutionTimes(Project parent, Project child) {
         List<ExecutionResult> allresults = (List<ExecutionResult>) parent
-                .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+                .getReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
         if (allresults == null) {
             allresults = new ArrayList<ExecutionResult>();
-            parent.addReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS, allresults);
+            parent.addReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS, allresults);
         }
         List<ExecutionResult> childResults = (List<ExecutionResult>) child
-                .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+                .getReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
         if (childResults != null) {
             allresults.addAll(childResults);
         }
