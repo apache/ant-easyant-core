@@ -34,12 +34,12 @@ public class ModuleIvyProjectHelperTest {
         // ProjectHelperRepository.getInstance().registerProjectHelper("org.apache.easyant.core.ant.EasyAntProjectHelper");
 
         ProjectHelperRepository.getInstance().registerProjectHelper(
-                "org.apache.easyant.core.ant.ModuleIvyProjectHelper");
+                "org.apache.easyant.core.ant.helper.ModuleIvyProjectHelper");
     }
 
     @Test
     public void shouldHandleModuleIvyFile() throws URISyntaxException {
-        File f = new File(this.getClass().getResource("../standardJavaProject.ivy").toURI());
+        File f = new File(this.getClass().getResource("../../standardJavaProject.ivy").toURI());
         Project p = new Project();
         p.setBaseDir(new File(this.getClass().getResource(".").toURI()));
         p.setNewProperty(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS, "true");
