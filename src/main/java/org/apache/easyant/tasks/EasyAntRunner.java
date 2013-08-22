@@ -23,9 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.easyant.core.EasyAntConfiguration;
 import org.apache.easyant.core.EasyAntEngine;
-import org.apache.easyant.core.factory.EasyantConfigurationFactory;
+import org.apache.easyant.core.configuration.EasyAntConfiguration;
+import org.apache.easyant.core.configuration.EasyantConfigurationFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 

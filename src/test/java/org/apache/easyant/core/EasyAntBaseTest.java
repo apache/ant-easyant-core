@@ -28,7 +28,8 @@ import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.easyant.core.factory.EasyantConfigurationFactory;
+import org.apache.easyant.core.configuration.EasyAntConfiguration;
+import org.apache.easyant.core.configuration.EasyantConfigurationFactory;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;

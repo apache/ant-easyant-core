@@ -86,7 +86,7 @@ public class BuildExecutionTimer implements BuildListener {
      * stops the timer and stores the result as a project reference by the key 'referenceName'
      */
     protected void stopTimer(BuildEvent event, String referenceName, long startTime) {
-        List<ExecutionResult> results = (List<ExecutionResult>) event.getProject().getReference(referenceName);
+        List<ExecutionResult> results = event.getProject().getReference(referenceName);
         if (results == null) {
             results = new ArrayList<ExecutionResult>();
             event.getProject().addReference(referenceName, results);

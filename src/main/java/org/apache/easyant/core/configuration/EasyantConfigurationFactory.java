@@ -15,12 +15,9 @@
  *  limitations under the License.
  *
  */
-package org.apache.easyant.core.factory;
+package org.apache.easyant.core.configuration;
 
 import java.net.URL;
-
-import org.apache.easyant.core.EasyAntConfiguration;
-import org.apache.easyant.core.parser.EasyAntConfigParser;
 
 public class EasyantConfigurationFactory {
 

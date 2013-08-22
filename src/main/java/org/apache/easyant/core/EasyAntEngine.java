@@ -32,8 +32,9 @@ import java.util.Vector;
 
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ant.listerners.DefaultEasyAntLogger;
+import org.apache.easyant.core.configuration.EasyAntConfiguration;
+import org.apache.easyant.core.configuration.EasyantConfigurationFactory;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
-import org.apache.easyant.core.factory.EasyantConfigurationFactory;
 import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.core.services.PluginService;

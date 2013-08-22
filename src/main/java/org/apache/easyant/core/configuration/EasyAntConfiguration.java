@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.apache.easyant.core;
+package org.apache.easyant.core.configuration;
 
 import java.io.File;
 import java.io.PrintStream;

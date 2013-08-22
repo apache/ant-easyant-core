@@ -219,7 +219,16 @@ public class DefaultPluginServiceImpl implements PluginService {
         project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
         project.addReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE, easyantIvySettings);
 
-        project.addBuildListener(new TaskCollectorFromImplicitTargetListener());
+        TaskCollectorFromImplicitTargetListener listener = new TaskCollectorFromImplicitTargetListener();
+        listener.addClassToCollect(ParameterTask.class);
+        listener.addClassToCollect(Property.class);
+        listener.addClassToCollect(Import.class);
+        listener.addClassToCollect(ImportDeferred.class);
+        listener.addClassToCollect(Path.class);
+        listener.addClassToCollect(PathTask.class);
+        listener.addClassToCollect(FileSet.class);
+        project.addBuildListener(listener);
+
         // add a property helper to ignore basedir property on reports
         PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(project);
         propertyHelper.add(new BypassDefaultPropertyExpander());

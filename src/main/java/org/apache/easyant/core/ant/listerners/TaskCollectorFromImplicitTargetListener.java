@@ -20,33 +20,20 @@ package org.apache.easyant.core.ant.listerners;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.easyant.tasks.Import;
-import org.apache.easyant.tasks.ParameterTask;
-import org.apache.easyant.tasks.PathTask;
-import org.apache.easyant.tasks.ImportDeferred;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.ComponentHelper;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.Property;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
 
 public class TaskCollectorFromImplicitTargetListener implements BuildListener {
     public static final String ROOT_MODULE_LOCATION = "report.root.module.location";
     private List<Task> tasksCollected = new ArrayList<Task>();
     private List<Class<?>> supportedClasses = new ArrayList<Class<?>>();
 
-    public TaskCollectorFromImplicitTargetListener() {
-        supportedClasses.add(ParameterTask.class);
-        supportedClasses.add(Property.class);
-        supportedClasses.add(Import.class);
-        supportedClasses.add(ImportDeferred.class);
-        supportedClasses.add(Path.class);
-        supportedClasses.add(PathTask.class);
-        supportedClasses.add(FileSet.class);
+    public void addClassToCollect(Class<?> classToCollect) {
+        supportedClasses.add(classToCollect);
     }
 
     public void taskStarted(BuildEvent buildEvent) {

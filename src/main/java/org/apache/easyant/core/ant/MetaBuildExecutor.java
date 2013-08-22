@@ -122,7 +122,7 @@ public class MetaBuildExecutor extends DefaultExecutor {
     }
 
     private void printExecutionSubBuildsExecutionTimes(Project project) {
-        List<ExecutionResult> allSubBuildResults = (List<ExecutionResult>) project
+        List<ExecutionResult> allSubBuildResults = project
                 .getReference(SubBuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
         if (allSubBuildResults != null && allSubBuildResults.size() > 0) {
             StringBuilder sb = new StringBuilder();

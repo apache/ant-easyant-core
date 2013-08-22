@@ -15,12 +15,12 @@
  *  limitations under the License.
  *
  */
-package org.apache.easyant.core.ant;
+package org.apache.easyant.core.ant.helper;
 
 import java.io.File;
 
-import org.apache.easyant.core.EasyAntConfiguration;
 import org.apache.easyant.core.EasyAntEngine;
+import org.apache.easyant.core.configuration.EasyAntConfiguration;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;

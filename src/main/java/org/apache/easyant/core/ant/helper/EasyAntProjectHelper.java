@@ -15,11 +15,13 @@
  *  limitations under the License.
  *
  */
-package org.apache.easyant.core.ant;
+package org.apache.easyant.core.ant.helper;
 
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import org.apache.easyant.core.ant.Phase;
+import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Location;

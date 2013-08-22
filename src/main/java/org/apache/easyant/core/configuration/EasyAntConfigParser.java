@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.apache.easyant.core.parser;
+package org.apache.easyant.core.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +30,6 @@ import java.util.Properties;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.easyant.core.EasyAntConfiguration;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.ivy.util.ContextualSAXHandler;

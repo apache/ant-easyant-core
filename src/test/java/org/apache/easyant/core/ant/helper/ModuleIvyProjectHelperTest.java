@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.apache.easyant.core.ant;
+package org.apache.easyant.core.ant.helper;
 
 import java.io.File;
 import java.net.URISyntaxException;
