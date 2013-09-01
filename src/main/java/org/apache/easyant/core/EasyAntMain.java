@@ -750,7 +750,7 @@ public class EasyAntMain implements AntMain {
                 msg.append(props.getProperty("DATE"));
                 antVersion = msg.toString();
             } catch (IOException ioe) {
-                throw new BuildException("Could not load the version information:" + ioe.getMessage());
+                throw new BuildException("Could not load the version information", ioe);
             } finally {
                 if (in != null) {
                     try {

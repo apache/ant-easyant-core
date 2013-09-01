@@ -582,7 +582,7 @@ public class EasyAntEngine {
 
     }
 
-    public void doBuild(final Project project) throws Error {
+    public void doBuild(final Project project) {
         project.fireBuildStarted();
 
         Throwable error = null;
@@ -610,10 +610,8 @@ public class EasyAntEngine {
                 System.setErr(new PrintStream(new DemuxOutputStream(project, true)));
 
                 // make sure that we have a target to execute
-                if (configuration.getTargets().size() == 0) {
-                    if (project.getDefaultTarget() != null) {
-                        configuration.getTargets().add(project.getDefaultTarget());
-                    }
+                if (configuration.getTargets().size() == 0 && project.getDefaultTarget() != null) {
+                    configuration.getTargets().add(project.getDefaultTarget());
                 }
                 project.executeTargets(new Vector(configuration.getTargets()));
             } finally {
@@ -731,7 +729,7 @@ public class EasyAntEngine {
                 msg.append(props.getProperty("DATE"));
                 easyantVersion = msg.toString();
             } catch (IOException ioe) {
-                throw new BuildException("Could not load the version information:" + ioe.getMessage());
+                throw new BuildException("Could not load the version information", ioe);
             } finally {
                 if (in != null) {
                     try {
