@@ -63,7 +63,7 @@ public class SubModule extends AbstractEasyAntTask {
     private String moduleFile = EasyAntConstants.DEFAULT_BUILD_MODULE;
 
     private Path buildpath;
-    private TargetList targets = null;
+    private TargetList targets = new TargetList();
     private boolean useBuildRepository = false;
     private boolean overwrite = true;
 
@@ -338,7 +338,13 @@ public class SubModule extends AbstractEasyAntTask {
             if (keys.contains(target)) {
                 filteredTargets.add(target);
             } else {
-                subProject.log("Skipping undefined target '" + target + "'", Project.MSG_VERBOSE);
+                StringBuilder sb = new StringBuilder();
+                sb.append("Skipping undefined target '")//
+                        .append(target)//
+                        .append("'")//
+                        .append(" on ")//
+                        .append(subProject.getName());
+                subProject.log(sb.toString(), Project.MSG_VERBOSE);
             }
         }
         return CollectionUtils.flattenToString(filteredTargets);
