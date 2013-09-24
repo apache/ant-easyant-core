@@ -196,7 +196,7 @@ public class EasyAntEngine {
      * @param project
      * @return the configured user easyant-ivysettings.file
      */
-    private File getUserEasyAntIvySettings(Project project) {
+    protected File getUserEasyAntIvySettings(Project project) {
         // path can be specified through a property
         String path = project.getProperty(EasyAntMagicNames.USER_EASYANT_IVYSETTINGS);
         // if no property is set check the default location
@@ -215,7 +215,7 @@ public class EasyAntEngine {
      * @return the configured global easyant-ivysettings.file
      * @throws MalformedURLException
      */
-    private URL getGlobalEasyAntIvySettings(Project project) throws MalformedURLException {
+    protected URL getGlobalEasyAntIvySettings(Project project) throws MalformedURLException {
         PropertyHelper helper = PropertyHelper.getPropertyHelper(project);
         URL path = null;
         if (configuration.getEasyantIvySettingsFile() != null) {

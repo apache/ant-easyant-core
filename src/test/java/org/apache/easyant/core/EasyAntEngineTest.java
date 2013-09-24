@@ -1,19 +1,31 @@
 package org.apache.easyant.core;
 
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
 
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.configuration.EasyAntConfiguration;
+import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
+import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
+import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
+import org.apache.ivy.core.cache.EasyantResolutionCacheManager;
 import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.input.DefaultInputHandler;
@@ -128,7 +140,7 @@ public class EasyAntEngineTest {
                 instanceOf(DefaultPluginServiceImpl.class));
         assertThat(easyantEngine.getPluginService(), instanceOf(DefaultPluginServiceImpl.class));
         assertThat(easyantEngine.getPluginService(),
-                is(project.getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE)));
+                sameInstance(project.getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE)));
     }
 
     @Test
@@ -186,6 +198,97 @@ public class EasyAntEngineTest {
         assertThat(Boolean.parseBoolean(System.getProperty(ProxySetup.USE_SYSTEM_PROXIES)),
                 is(easyAntConfiguration.isProxy()));
         assertThat(project.getName(), is("EasyAnt"));
+    }
+
+    @Test
+    public void shouldConfigureEasyAntIvyInstanceWithSettingsFileFromConfiguration() throws URISyntaxException {
+        File f = new File(this.getClass().getResource("/repositories/easyant-ivysettings-test.xml").toURI());
+        easyAntConfiguration.setEasyantIvySettingsFile(f.getAbsolutePath());
+        IvyAntSettings configuredEasyAntIvyInstance = easyantEngine.configureEasyAntIvyInstance(project);
+
+        assertThat(project.getReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE), instanceOf(IvyAntSettings.class));
+        assertThat(project.getProperty(EasyAntMagicNames.EASYANT_DEFAULT_IVYSETTINGS),
+                is(this.getClass().getResource("/org/apache/easyant/core/default-easyant-ivysettings.xml")
+                        .toExternalForm()));
+        assertThat(Boolean.valueOf(project.getProperty(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS)), is(false));
+
+        assertThat(project.getProperty(EasyAntMagicNames.OFFLINE_EASYANT_RESOLVER),
+                is(EasyAntConstants.DEFAULT_OFFLINE_EASYANT_RESOLVER));
+        assertThat(project.getProperty(EasyAntMagicNames.OFFLINE_BASE_DIRECTORY), is(project.getBaseDir()
+                .getAbsolutePath() + "/offline/"));
+
+        IvyAntSettings easyantIvySettings = IvyInstanceHelper.getEasyAntIvyAntSettings(project);
+        Ivy ivyInstance = easyantIvySettings.getConfiguredIvyInstance(null);
+        assertThat(ivyInstance.getResolutionCacheManager(), instanceOf(EasyantResolutionCacheManager.class));
+        assertThat(Arrays.asList(ivyInstance.getSettings().getRepositoryCacheManagers()),
+                hasItem(isA(EasyAntRepositoryCacheManager.class)));
+
+        assertThat(configuredEasyAntIvyInstance, sameInstance(easyantIvySettings));
+    }
+
+    @Test
+    public void shouldReturnDefaultUserEasyAntIvySettingsLocation() {
+        File userEasyAntIvySettings = easyantEngine.getUserEasyAntIvySettings(project);
+        assertThat(userEasyAntIvySettings.getAbsolutePath(),
+                endsWith(EasyAntConstants.DEFAULT_USER_EASYANT_IVYSETTINGS));
+    }
+
+    @Test
+    public void shouldReturnUserEasyAntIvySettingsLocationSpecifiedByProperty() {
+        String fakeLocation = "/path/to/userSettings.xml";
+        project.setNewProperty(EasyAntMagicNames.USER_EASYANT_IVYSETTINGS, fakeLocation);
+        File userEasyAntIvySettings = easyantEngine.getUserEasyAntIvySettings(project);
+        assertThat(userEasyAntIvySettings.getAbsolutePath(), is(fakeLocation));
+    }
+
+    @Test
+    public void shouldReturnNullGlobalEasyAntIvySettingsLocationIfNoDefaultGlobalExists() throws MalformedURLException {
+        // configure default global to missing directory
+        project.setNewProperty(EasyAntMagicNames.EASYANT_HOME, "/fake/path");
+        URL globalEasyAntIvySettings = easyantEngine.getGlobalEasyAntIvySettings(project);
+        assertThat(globalEasyAntIvySettings, nullValue());
+    }
+
+    @Test
+    public void shouldReturnDefaultGlobalEasyAntIvySettingsLocationIfExists() throws IOException {
+        File f = new File(System.getProperty("java.io.tmpdir"), "easyant-ivysettings.xml");
+        f.deleteOnExit();
+        FileOutputStream fos = null;
+        try {
+            // write file
+            fos = new FileOutputStream(f);
+            project.setNewProperty(EasyAntMagicNames.EASYANT_HOME, f.getParent());
+            URL globalEasyAntIvySettings = easyantEngine.getGlobalEasyAntIvySettings(project);
+            assertThat(globalEasyAntIvySettings, notNullValue());
+            assertThat(globalEasyAntIvySettings, is(f.toURI().toURL()));
+        } finally {
+            if (fos != null) {
+                fos.close();
+            }
+        }
+    }
+
+    @Test
+    public void shouldReturnGlobalEasyAntIvySettingsLocationSpecifiedByConfigurationFile() throws MalformedURLException {
+        easyAntConfiguration.setEasyantIvySettingsFile("/path/to/fake/easyantIvySettingsFile.xml");
+        URL globalEasyAntIvySettings = easyantEngine.getGlobalEasyAntIvySettings(project);
+        assertThat(globalEasyAntIvySettings.toString(), endsWith(easyAntConfiguration.getEasyantIvySettingsFile()));
+    }
+
+    @Test
+    public void shouldReturnGlobalEasyAntIvySettingsLocationSpecifiedByConfigurationURLAsString()
+            throws MalformedURLException {
+        easyAntConfiguration.setEasyantIvySettingsUrl("file:/path/to/fake/easyantIvySettingsFile.xml");
+        URL globalEasyAntIvySettings = easyantEngine.getGlobalEasyAntIvySettings(project);
+        assertThat(globalEasyAntIvySettings.toString(), is(easyAntConfiguration.getEasyantIvySettingsUrl()));
+    }
+
+    @Test
+    public void shouldReturnGlobalEasyAntIvySettingsLocationSpecifiedByConfigurationURL() throws MalformedURLException {
+        easyAntConfiguration.setEasyantIvySettingsUrl(this.getClass().getResource(
+                "/repositories/easyant-ivysettings-test.xml"));
+        URL globalEasyAntIvySettings = easyantEngine.getGlobalEasyAntIvySettings(project);
+        assertThat(globalEasyAntIvySettings.toString(), is(easyAntConfiguration.getEasyantIvySettingsUrl()));
     }
 
 }
