@@ -204,4 +204,9 @@ public interface EasyAntMagicNames {
      */
     static final String IMPORTED_MODULES_RESOLVE_REPORT_REF = "importedModules.report.ref";
 
+    /**
+     * Name of the property containing multimodule logger implementation
+     */
+    static final String MULTIMODULE_LOGGER = "multimodule.logger";
+
 }

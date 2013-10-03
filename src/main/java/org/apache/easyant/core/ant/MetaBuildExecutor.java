@@ -40,6 +40,9 @@ public class MetaBuildExecutor extends DefaultExecutor {
 
     @Override
     public void executeTargets(Project project, String[] targets) throws BuildException {
+
+        ProjectUtils.installMultiModuleLogger(project);
+
         if (project.getReference("build-path") == null) {
             throw new BuildException("build-path is required to use MetaBuildExecutor");
         }

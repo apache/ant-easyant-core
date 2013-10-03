@@ -34,7 +34,6 @@ import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
 import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
-import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyPublish;
 import org.apache.ivy.ant.IvyResolve;
@@ -82,8 +81,6 @@ public class SubModule extends AbstractEasyAntTask {
             log("No sub-builds to iterate on", Project.MSG_WARN);
             return;
         }
-
-        ProjectUtils.replaceMainLogger(getProject(), new MultiModuleLogger());
 
         BuildException buildException = null;
         for (int i = 0; i < count; ++i) {

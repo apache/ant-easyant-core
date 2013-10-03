@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.easyant.core.EasyAntEngine;
+import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.BuildLogger;
@@ -32,6 +35,7 @@ import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.Target;
+import org.apache.tools.ant.util.ClasspathUtils;
 
 /**
  * Utilitary class to manipulate ant's project (such as creating toplevel target)
@@ -112,6 +116,16 @@ public class ProjectUtils {
         project.setProjectReference(logger);
         project.addBuildListener(logger);
 
+    }
+
+    public static void installMultiModuleLogger(Project project) {
+        String multiModuleLoggerName = project.getProperty(EasyAntMagicNames.MULTIMODULE_LOGGER);
+        if (multiModuleLoggerName == null) {
+            multiModuleLoggerName = MultiModuleLogger.class.getCanonicalName();
+        }
+        BuildLogger buildLogger = (BuildLogger) ClasspathUtils.newInstance(multiModuleLoggerName,
+                EasyAntEngine.class.getClassLoader(), BuildLogger.class);
+        replaceMainLogger(project, buildLogger);
     }
 
     /**

@@ -1,7 +1,5 @@
 package org.apache.easyant.tasks;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -11,7 +9,6 @@ import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
-import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Delete;
@@ -115,8 +112,6 @@ public class SubModuleTest extends AntTaskBaseTest {
         assertLogContaining("Executing [] on module2");
         assertLogContaining("Skipping sub-project build because no matching targets were found");
 
-        verifyBuildListener();
-
     }
 
     @Test
@@ -139,7 +134,6 @@ public class SubModuleTest extends AntTaskBaseTest {
         assertLogContaining("Executing [a-missing-target] on module2");
         assertLogContaining("Skipping undefined target 'a-missing-target' on module2");
         assertLogContaining("Skipping sub-project build because no matching targets were found");
-        verifyBuildListener();
 
     }
 
@@ -161,12 +155,7 @@ public class SubModuleTest extends AntTaskBaseTest {
         assertLogContaining("Executing [modulewithtarget:mytarget] on module1");
         assertLogContaining("Executing [modulewithtarget:mytarget] on module2");
 
-        verifyBuildListener();
         assertThat(submodule.getProject().getReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS),
                 notNullValue());
-    }
-
-    private void verifyBuildListener() {
-        assertThat(submodule.getProject().getBuildListeners(), hasItem(isA(MultiModuleLogger.class)));
     }
 }
