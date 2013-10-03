@@ -118,12 +118,19 @@ public class ProjectUtils {
 
     }
 
+    /**
+     * Install multi module logger Multi module logger specified through {@link EasyAntMagicNames}.MULTIMODULE_LOGGER
+     * property. If this property is not set use default implementation
+     * 
+     * @param project
+     *            a given project where multi module logger should be installed
+     */
     public static void installMultiModuleLogger(Project project) {
-        String multiModuleLoggerName = project.getProperty(EasyAntMagicNames.MULTIMODULE_LOGGER);
-        if (multiModuleLoggerName == null) {
-            multiModuleLoggerName = MultiModuleLogger.class.getCanonicalName();
+        String multiModuleLoggerClassName = project.getProperty(EasyAntMagicNames.MULTIMODULE_LOGGER);
+        if (multiModuleLoggerClassName == null) {
+            multiModuleLoggerClassName = MultiModuleLogger.class.getCanonicalName();
         }
-        BuildLogger buildLogger = (BuildLogger) ClasspathUtils.newInstance(multiModuleLoggerName,
+        BuildLogger buildLogger = (BuildLogger) ClasspathUtils.newInstance(multiModuleLoggerClassName,
                 EasyAntEngine.class.getClassLoader(), BuildLogger.class);
         replaceMainLogger(project, buildLogger);
     }
