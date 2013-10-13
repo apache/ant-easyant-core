@@ -155,7 +155,7 @@ public class EasyAntEngine {
 
     private static Method getLocalURL;
 
-    public static URL guessEasyantCoreJarUrl() {
+    public static synchronized URL guessEasyantCoreJarUrl() {
         URL url = EasyAntEngine.class.getResource("/org/apache/easyant/antlib.xml");
         try {
             if ("jar".equals(url.getProtocol())) {
