@@ -21,11 +21,11 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
@@ -367,21 +367,20 @@ public class SubModule extends AbstractEasyAntTask {
      * new project as well as properties named basedir or ant.file.
      * 
      * @param props
-     *            properties <code>Hashtable</code> to copy to the new project.
+     *            properties to copy to the new project.
      * @param the
      *            type of property to set (a plain Ant property, a user property or an inherited property).
      * @since Ant 1.8.0
      */
-    private void addAlmostAll(Hashtable<?, ?> props, Project subProject, PropertyType type) {
-        Enumeration<?> e = props.keys();
-        while (e.hasMoreElements()) {
-            String key = e.nextElement().toString();
+    private void addAlmostAll(Map<?, ?> props, Project subProject, PropertyType type) {
+        for (Entry<?, ?> prop : props.entrySet()) {
+            String key = prop.getKey().toString();
             if (MagicNames.PROJECT_BASEDIR.equals(key) || MagicNames.ANT_FILE.equals(key)) {
                 // basedir and ant.file get special treatment in execute()
                 continue;
             }
 
-            String value = props.get(key).toString();
+            String value = prop.getValue().toString();
             if (type == PropertyType.PLAIN) {
                 // don't re-set user properties, avoid the warning message
                 if (subProject.getProperty(key) == null) {
@@ -588,9 +587,9 @@ public class SubModule extends AbstractEasyAntTask {
      *             if a reference does not have a refid.
      */
     private void addReferences(Project subproject) throws BuildException {
-        Hashtable<?, ?> thisReferences = (Hashtable<?, ?>) getProject().getReferences().clone();
-        Hashtable<?, ?> newReferences = subproject.getReferences();
-        Enumeration<?> e;
+        @SuppressWarnings("unchecked")
+        Map<String, Object> thisReferences = (Map<String, Object>) getProject().getReferences().clone();
+        Map<String, Object> newReferences = subproject.getReferences();
         for (Ant.Reference ref : references) {
             String refid = ref.getRefId();
             if (refid == null) {
@@ -612,8 +611,7 @@ public class SubModule extends AbstractEasyAntTask {
         // Now add all references that are not defined in the
         // subproject, if inheritRefs is true
         if (inheritRefs) {
-            for (e = thisReferences.keys(); e.hasMoreElements();) {
-                String key = (String) e.nextElement();
+            for (String key : thisReferences.keySet()) {
                 if (newReferences.containsKey(key)) {
                     continue;
                 }

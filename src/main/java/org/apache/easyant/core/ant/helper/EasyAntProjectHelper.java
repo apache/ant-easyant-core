@@ -17,8 +17,8 @@
  */
 package org.apache.easyant.core.ant.helper;
 
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.easyant.core.ant.Phase;
 import org.apache.easyant.core.ant.ProjectUtils;
@@ -197,7 +197,7 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
             if (context.getCurrentTargets().get(name) != null) {
                 throw new BuildException("Duplicate target '" + name + "'", target.getLocation());
             }
-            Hashtable projectTargets = project.getTargets();
+            Map<String, Target> projectTargets = project.getTargets();
             boolean usedTarget = false;
             // If the name has not already been defined define it
             if (projectTargets.containsKey(name)) {
@@ -213,8 +213,9 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
                 if (!isInIncludeMode) {
                     target.setDepends(depends);
                 } else {
-                    for (Iterator iter = Target.parseDepends(depends, name, "depends").iterator(); iter.hasNext();) {
-                        String curTarget = (String) iter.next();
+                    for (Iterator<String> iter = Target.parseDepends(depends, name, "depends").iterator(); iter
+                            .hasNext();) {
+                        String curTarget = iter.next();
                         if (projectTargets.containsKey(curTarget) && (projectTargets.get(curTarget) instanceof Phase)) {
 
                             target.addDependency(curTarget);
