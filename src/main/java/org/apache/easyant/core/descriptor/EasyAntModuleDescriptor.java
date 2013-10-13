@@ -105,7 +105,7 @@ public interface EasyAntModuleDescriptor {
      * 
      * @return a list of {@link ExtensionPointMappingDescriptor}
      */
-    public List<ExtensionPointMappingDescriptor> getExtensionPointsMappings();
+    List<ExtensionPointMappingDescriptor> getExtensionPointsMappings();
 
     /**
      * Add a {@link ExtensionPointMappingDescriptor} to the list of all registered extension points mappings
@@ -113,14 +113,14 @@ public interface EasyAntModuleDescriptor {
      * @param extensionPointMappingDescriptor
      *            a {@link ExtensionPointMappingDescriptor}
      */
-    public void addExtensionPointMapping(ExtensionPointMappingDescriptor extensionPointMappingDescriptor);
+    void addExtensionPointMapping(ExtensionPointMappingDescriptor extensionPointMappingDescriptor);
 
     /**
      * Get configure project descriptor (defining basedir/defaulttarget etc...)
      * 
      * @return a {@link ConfigureProjectDescriptor}
      */
-    public ConfigureProjectDescriptor getConfigureProjectDescriptor();
+    ConfigureProjectDescriptor getConfigureProjectDescriptor();
 
     /**
      * Set configure project descriptor (defining basedir/defaulttarget etc...)
@@ -128,5 +128,5 @@ public interface EasyAntModuleDescriptor {
      * @param configureProjectDescriptor
      *            a {@link ConfigureProjectDescriptor}
      */
-    public void setConfigureProjectDescriptor(ConfigureProjectDescriptor configureProjectDescriptor);
+    void setConfigureProjectDescriptor(ConfigureProjectDescriptor configureProjectDescriptor);
 }

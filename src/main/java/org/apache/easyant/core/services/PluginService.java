@@ -200,5 +200,5 @@ public interface PluginService {
      *            a string representing a buildtype
      * @return a string representing the description of the module descriptor
      */
-    public String getBuildTypeDescription(String moduleRevisionId);
+    String getBuildTypeDescription(String moduleRevisionId);
 }

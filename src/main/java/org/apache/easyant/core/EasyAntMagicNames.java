@@ -31,52 +31,52 @@ public interface EasyAntMagicNames {
     /**
      * property for easyant home directory. Value: {@value}
      */
-    static final String EASYANT_HOME = "easyant.home";
+    String EASYANT_HOME = "easyant.home";
 
     /**
      * property for easyant file name. Value: {@value}
      */
-    static final String EASYANT_FILE = "easyant.file";
+    String EASYANT_FILE = "easyant.file";
 
     /**
      * Name the default ivy instance name used by easyant Value: {@value}
      */
-    static final String EASYANT_IVY_INSTANCE = "easyant.ivy.instance";
+    String EASYANT_IVY_INSTANCE = "easyant.ivy.instance";
 
     /**
      * Name of directory to store EasyAnt modules Value: {@value}
      */
-    static final String EASYANT_MODULES_DIR = "easyant.modules.dir";
+    String EASYANT_MODULES_DIR = "easyant.modules.dir";
 
     /**
      * Name the default ivy instance name used by projects Value: {@value}
      */
-    static final String PROJECT_IVY_INSTANCE = "project.ivy.instance";
+    String PROJECT_IVY_INSTANCE = "project.ivy.instance";
 
     /**
      * Name of the property that contains the project ivy setting file Value: * * {@value}
      */
-    static final String PROJECT_IVY_SETTING_FILE = "project.ivy.settings.file";
+    String PROJECT_IVY_SETTING_FILE = "project.ivy.settings.file";
 
     /**
      * Name of the property that contains the project ivy setting url Value: * * {@value}
      */
-    static final String PROJECT_IVY_SETTING_URL = "project.ivy.settings.url";
+    String PROJECT_IVY_SETTING_URL = "project.ivy.settings.url";
 
     /**
      * Name of the property that contains active build configuration Value: * * {@value}
      */
-    static final String ACTIVE_BUILD_CONFIGURATIONS = "active.build.configurations";
+    String ACTIVE_BUILD_CONFIGURATIONS = "active.build.configurations";
 
     /**
      * Name of the property that contains all active build configuration for the current project Value: {@value}
      */
-    static final String MAIN_CONFS = "main.confs";
+    String MAIN_CONFS = "main.confs";
 
     /**
      * Name of the property that contains build configuration available in current project Value: {@value}
      */
-    static final String AVAILABLE_BUILD_CONFIGURATIONS = "available.build.configurations";
+    String AVAILABLE_BUILD_CONFIGURATIONS = "available.build.configurations";
 
     /**
      * Property name used to disable core revision check if this property is set to true it means that corerevision
@@ -84,129 +84,129 @@ public interface EasyAntMagicNames {
      * 
      * @see CoreRevisionCheckerTask
      */
-    static final String SKIP_CORE_REVISION_CHECKER = "skip.corerevision.checker";
+    String SKIP_CORE_REVISION_CHECKER = "skip.corerevision.checker";
 
     /**
      * Property name containing the target directory Value: {@value}
      */
-    static final String TARGET = "target";
+    String TARGET = "target";
 
     /**
      * Name of the plugin service instance Value: {@value}
      */
-    static final String PLUGIN_SERVICE_INSTANCE = "plugin.service.instance";
+    String PLUGIN_SERVICE_INSTANCE = "plugin.service.instance";
 
     /**
      * Name of the property containing the default location of ivysettings file used by easyant ivy instance Value: * *
      * * {@value}
      */
-    static final String EASYANT_DEFAULT_IVYSETTINGS = "easyant.default.ivysettings.url";
+    String EASYANT_DEFAULT_IVYSETTINGS = "easyant.default.ivysettings.url";
 
     /**
      * Name of the property containing the default location of ivysettings file used by project ivy instance Value: * *
      * * {@value}
      */
-    static final String PROJECT_DEFAULT_IVYSETTINGS = "project.default.ivysettings.url";
+    String PROJECT_DEFAULT_IVYSETTINGS = "project.default.ivysettings.url";
 
     /**
      * Name of the property containing the url of the easyant core jar: * {@value}
      */
-    static final String EASYANT_CORE_JAR_URL = "easyant.core.jar.url";
+    String EASYANT_CORE_JAR_URL = "easyant.core.jar.url";
 
     /**
      * Name of the property containing the log stategy for easyant modules Value: {@value}
      */
-    static final String MODULE_DOWNLOAD_LOG = "easyant.modules.download.log";
+    String MODULE_DOWNLOAD_LOG = "easyant.modules.download.log";
 
     /**
      * Name of the property containing the build-scoped repository name, if configured Value: {@value}
      */
-    static final String EASYANT_BUILD_REPOSITORY = "easyant.build.repository";
+    String EASYANT_BUILD_REPOSITORY = "easyant.build.repository";
 
     /**
      * Name of the property containing agregator target directory
      */
-    static final String META_TARGET = "meta.target";
+    String META_TARGET = "meta.target";
 
     /**
      * Name of the property containing the appended to menu generator registry references Value: {@value}
      */
-    static final String MENU_GENERATOR_REGISTRY_REF = "menugen.ref";
+    String MENU_GENERATOR_REGISTRY_REF = "menugen.ref";
 
     /**
      * Name of the property containing pre module targets. In a multi project context, those targets will be executed
      * before delagating to subprojects. Value : {@value}
      */
-    static final String PRE_MODULE_TARGETS = "pre.module.targets";
+    String PRE_MODULE_TARGETS = "pre.module.targets";
 
     /**
      * Name of the property containing path to user easyant ivysettings file Value: {@value}
      */
-    static final String USER_EASYANT_IVYSETTINGS = "user.easyant.ivysettings.file";
+    String USER_EASYANT_IVYSETTINGS = "user.easyant.ivysettings.file";
 
     /**
      * Name of the property containing path to global easyant ivysettings file Value: {@value}
      */
-    static final String GLOBAL_EASYANT_IVYSETTINGS = "global.easyant.ivysettings.file";
+    String GLOBAL_EASYANT_IVYSETTINGS = "global.easyant.ivysettings.file";
 
     /**
      * Name of the property specifyinf if build repository should be used Value: {@value}
      */
-    static final String USE_BUILD_REPOSITORY = "use.build.repository";
+    String USE_BUILD_REPOSITORY = "use.build.repository";
 
     /**
      * property for easyant offline mode. Value: {@value}
      */
-    static final String EASYANT_OFFLINE = "easyant.offline";
+    String EASYANT_OFFLINE = "easyant.offline";
 
     /**
      * Property specifying if user ivysettings should be ignored Value: {@value}
      */
-    static final String IGNORE_USER_IVYSETTINGS = "ignore.user.ivysettings";
+    String IGNORE_USER_IVYSETTINGS = "ignore.user.ivysettings";
 
     /***
      * Property specifying offline project resolver name Value: {@value}
      */
-    static final String OFFLINE_PROJECT_RESOLVER = "project.buildscope.resolver";
+    String OFFLINE_PROJECT_RESOLVER = "project.buildscope.resolver";
 
     /***
      * Property specifying offline easyant resolver name Value: {@value}
      */
-    static final String OFFLINE_EASYANT_RESOLVER = "easyant.buildscope.resolver";
+    String OFFLINE_EASYANT_RESOLVER = "easyant.buildscope.resolver";
 
     /**
      * Property specifying offline base directory Value: {@value}
      */
-    static final String OFFLINE_BASE_DIRECTORY = "offline.base.directory";
+    String OFFLINE_BASE_DIRECTORY = "offline.base.directory";
 
     /**
      * Specify if easyant is running in audit mode (plugin service for instance) Value: {@value}
      */
-    static final String AUDIT_MODE = "audit.mode";
+    String AUDIT_MODE = "audit.mode";
 
     /**
      * Property specifying executed targets in current project
      */
-    static final String PROJECT_EXECUTED_TARGETS = "project.executed.targets";
+    String PROJECT_EXECUTED_TARGETS = "project.executed.targets";
 
     /**
      * Name of EasyAntEngine reference
      */
-    static final String EASYANT_ENGINE_REF = "easyant.engine.ref";
+    String EASYANT_ENGINE_REF = "easyant.engine.ref";
 
     /**
      * Name of the property telling if we are in a submodule
      */
-    static final String SUBMODULE = "submodule";
+    String SUBMODULE = "submodule";
 
     /**
      * Reference name holding resolve report for plugins and buildtype
      */
-    static final String IMPORTED_MODULES_RESOLVE_REPORT_REF = "importedModules.report.ref";
+    String IMPORTED_MODULES_RESOLVE_REPORT_REF = "importedModules.report.ref";
 
     /**
      * Name of the property containing multimodule logger implementation
      */
-    static final String MULTIMODULE_LOGGER = "multimodule.logger";
+    String MULTIMODULE_LOGGER = "multimodule.logger";
 
 }

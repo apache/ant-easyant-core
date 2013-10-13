@@ -22,83 +22,83 @@ public interface EasyAntConstants {
     /**
      * Name of the task name used for internal easyant jobs
      */
-    static final String EASYANT_TASK_NAME = "easyant";
+    String EASYANT_TASK_NAME = "easyant";
 
     /**
      * Name of the default build module
      */
-    static final String DEFAULT_BUILD_MODULE = "module.ivy";
+    String DEFAULT_BUILD_MODULE = "module.ivy";
 
     /**
      * Name of the default build file
      */
-    static final String DEFAULT_BUILD_FILE = "module.ant";
+    String DEFAULT_BUILD_FILE = "module.ant";
 
     /**
      * Name of the default override build file
      */
-    static final String DEFAULT_OVERRIDE_BUILD_FILE = "override.module.ant";
+    String DEFAULT_OVERRIDE_BUILD_FILE = "override.module.ant";
 
     /**
      * URI of easyant module descriptor namespace
      */
-    static final String EASYANT_MD_NAMESPACE = "http://www.easyant.org";
+    String EASYANT_MD_NAMESPACE = "http://www.easyant.org";
 
     /**
      * Name of the default target
      */
-    static final String DEFAULT_TARGET = "doit";
+    String DEFAULT_TARGET = "doit";
 
     /**
      * Name of the default easyant plugins organisation
      */
-    static final String EASYANT_PLUGIN_ORGANISATION = "org.apache.easyant.plugins";
+    String EASYANT_PLUGIN_ORGANISATION = "org.apache.easyant.plugins";
 
     /**
      * Name of the default easyant build types organisation
      */
-    static final String EASYANT_BUILDTYPES_ORGANISATION = "org.apache.easyant.buildtypes";
+    String EASYANT_BUILDTYPES_ORGANISATION = "org.apache.easyant.buildtypes";
 
     /**
      * Name of the default easyant skeletons organisation
      */
-    static final String EASYANT_SKELETONS_ORGANISATION = "org.apache.easyant.skeletons";
+    String EASYANT_SKELETONS_ORGANISATION = "org.apache.easyant.skeletons";
 
-    static final String DEFAULT_USER_PROJECT_IVYSETTINGS = "${user.home}/.easyant/project-ivysettings.xml";
+    String DEFAULT_USER_PROJECT_IVYSETTINGS = "${user.home}/.easyant/project-ivysettings.xml";
 
     /**
      * Default location of user's easyant ivysettings file
      */
-    static final String DEFAULT_USER_EASYANT_IVYSETTINGS = "${user.home}/.easyant/easyant-ivysettings.xml";
+    String DEFAULT_USER_EASYANT_IVYSETTINGS = "${user.home}/.easyant/easyant-ivysettings.xml";
 
     /**
      * Default location of global easyant ivysettings file
      */
-    static final String DEFAULT_GLOBAL_EASYANT_IVYSETTINGS = "${easyant.home}/easyant-ivysettings.xml";
+    String DEFAULT_GLOBAL_EASYANT_IVYSETTINGS = "${easyant.home}/easyant-ivysettings.xml";
 
     /**
      * Default location of global easyant config file
      */
-    static final String DEFAULT_GLOBAL_EASYANT_CONF_FILE = "easyant-conf.xml";
+    String DEFAULT_GLOBAL_EASYANT_CONF_FILE = "easyant-conf.xml";
 
     /**
      * Default value for pre module targets
      */
-    static final String DEFAULT_PRE_MODULE_TARGETS = "clean";
+    String DEFAULT_PRE_MODULE_TARGETS = "clean";
 
     /**
      * Default build scope repository name
      */
-    static final String BUILD_SCOPE_REPOSITORY = "project-build";
+    String BUILD_SCOPE_REPOSITORY = "project-build";
 
     /**
      * Default offline project repository name
      */
-    static final String DEFAULT_OFFLINE_PROJECT_RESOLVER = "project.buildscope.repository";
+    String DEFAULT_OFFLINE_PROJECT_RESOLVER = "project.buildscope.repository";
 
     /**
      * Default offline easyant repository name
      */
-    static final String DEFAULT_OFFLINE_EASYANT_RESOLVER = "easyant.buildscope.repository";
+    String DEFAULT_OFFLINE_EASYANT_RESOLVER = "easyant.buildscope.repository";
 
 }

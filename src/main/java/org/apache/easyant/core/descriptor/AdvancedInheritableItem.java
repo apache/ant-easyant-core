@@ -21,33 +21,39 @@ import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.ivy.core.module.descriptor.InheritableItem;
 
 /**
- * Interface for elements that can be inherited from a parent descriptor by a child descriptor
- * This interface provides some useful methods to have fine grain control on inheritable elements
+ * Interface for elements that can be inherited from a parent descriptor by a child descriptor This interface provides
+ * some useful methods to have fine grain control on inheritable elements
  */
-public interface AdvancedInheritableItem  extends InheritableItem {
-    
+public interface AdvancedInheritableItem extends InheritableItem {
+
     /**
-     * Get the current inherit scope 
-     * @return the inherit scope 
+     * Get the current inherit scope
+     * 
+     * @return the inherit scope
      */
-    public InheritableScope getInheritScope();
+    InheritableScope getInheritScope();
 
     /**
      * Set inherit scope
-     * @param inheritScope an inherit scope
+     * 
+     * @param inheritScope
+     *            an inherit scope
      */
-    public void setInheritScope(InheritableScope inheritScope);
-    
+    void setInheritScope(InheritableScope inheritScope);
+
     /**
      * Check if element can be inherited
+     * 
      * @return true if element can be inherited
      */
-    public boolean isInheritable();
-    
+    boolean isInheritable();
+
     /**
      * Specify if an element can be inherited or not
-     * @param isIneritable true if element can be inherited
+     * 
+     * @param isIneritable
+     *            true if element can be inherited
      */
-    public void setInheritable(boolean isIneritable);
+    void setInheritable(boolean isIneritable);
 
 }
