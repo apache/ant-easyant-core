@@ -307,19 +307,19 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
                 }
                 pluginDescriptor.setMrid(mrid);
             } else {
+                String module = getSettings().substitute(attributes.getValue("module"));
                 String org = attributes.getValue("org") != null ? attributes.getValue("org") : attributes
                         .getValue("organisation");
                 org = getSettings().substitute(org);
                 if (org == null) {
                     if (pluginType == PluginType.BUILDTYPE) {
-                        Message.debug("No organisation specified for buildtype " + mrid + " using the default one");
+                        Message.debug("No organisation specified for buildtype " + module + " using the default one");
                         org = EasyAntConstants.EASYANT_BUILDTYPES_ORGANISATION;
                     } else {
-                        Message.debug("No organisation specified for plugin " + mrid + " using the default one");
+                        Message.debug("No organisation specified for plugin " + module + " using the default one");
                         org = EasyAntConstants.EASYANT_PLUGIN_ORGANISATION;
                     }
                 }
-                String module = getSettings().substitute(attributes.getValue("module"));
                 String revision = attributes.getValue("rev") != null ? attributes.getValue("rev") : attributes
                         .getValue("revision");
                 revision = getSettings().substitute(revision);
