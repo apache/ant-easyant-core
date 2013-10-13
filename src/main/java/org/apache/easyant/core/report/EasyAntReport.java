@@ -227,7 +227,7 @@ public class EasyAntReport {
             } else if (module.equals(moduleRep.getModuleRevisionId().getName())) {
                 retVal = moduleRep;
                 break;
-            } else if (moduleRep.as != null && moduleRep.as.equals(module)) {
+            } else if (moduleRep.getAs() != null && moduleRep.getAs().equals(module)) {
                 retVal = moduleRep;
                 break;
             }

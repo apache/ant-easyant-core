@@ -20,15 +20,15 @@ package org.apache.easyant.core.report;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 
 public class ImportedModuleReport {
-    String module = null;
-    String organisation = null;
-    String revision = null;
-    String moduleMrid = null;
-    String type = null;
-    String as = null;
-    boolean mandatory = false;
+    private String module = null;
+    private String organisation = null;
+    private String revision = null;
+    private String moduleMrid = null;
+    private String type = null;
+    private String as = null;
+    private boolean mandatory = false;
 
-    EasyAntReport easyantReport = null;
+    private EasyAntReport easyantReport = null;
 
     public String getModule() {
         return module;

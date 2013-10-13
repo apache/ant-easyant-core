@@ -52,7 +52,7 @@ public class ProjectDependencyStrategy extends BasicConfigurationStrategy {
     @Override
     public String getSettingsRef() {
         if (settingsRef == null) {
-            settingsRef = IvyInstanceHelper.getProjectIvyInstanceName(getProject());
+            setSettingsRef(IvyInstanceHelper.getProjectIvyInstanceName(getProject()));
         }
         return settingsRef;
     }
@@ -104,48 +104,36 @@ public class ProjectDependencyStrategy extends BasicConfigurationStrategy {
         public boolean checkProjectDependencies() {
             execute();
             try {
-                ResolutionCacheManager cacheMgr = getIvyInstance()
-                        .getResolutionCacheManager();
+                ResolutionCacheManager cacheMgr = getIvyInstance().getResolutionCacheManager();
                 String[] confs = splitConfs(getConf());
                 String resolveId = getResolveId();
                 if (resolveId == null) {
-                    resolveId = ResolveOptions
-                            .getDefaultResolveId(getResolvedModuleId());
+                    resolveId = ResolveOptions.getDefaultResolveId(getResolvedModuleId());
                 }
                 XmlReportParser parser = new XmlReportParser();
                 for (int i = 0; i < confs.length; i++) {
-                    File report = cacheMgr
-                            .getConfigurationResolveReportInCache(resolveId,
-                                    confs[i]);
+                    File report = cacheMgr.getConfigurationResolveReportInCache(resolveId, confs[i]);
                     parser.parse(report);
 
                     Artifact[] artifacts = parser.getArtifacts();
                     for (int j = 0; j < artifacts.length; j++) {
                         Artifact artifact = artifacts[j];
                         ModuleRevisionId mrid = artifact.getModuleRevisionId();
-                        if (mrid.getOrganisation().equals(
-                                getOrganisationToFind())) {
+                        if (mrid.getOrganisation().equals(getOrganisationToFind())) {
                             if (mrid.getName().equals(getModuleToFind())) {
-                                log(mrid.getOrganisation() + "#"
-                                        + mrid.getName()
-                                        + " found in project dependencies !",
+                                log(mrid.getOrganisation() + "#" + mrid.getName() + " found in project dependencies !",
                                         Project.MSG_DEBUG);
                                 // use this version
-                                loadCachePath(getOrganisationToFind(),
-                                        getModuleToFind(), mrid.getRevision(),
+                                loadCachePath(getOrganisationToFind(), getModuleToFind(), mrid.getRevision(),
                                         getConfToFind(), getSettingsReference());
                                 return true;
                             } else {
                                 // if only organization is found in project
                                 // dependencies use the same version with the
                                 // required module
-                                log(
-                                        "Only organisation : "
-                                                + mrid.getOrganisation()
-                                                + " was found in project dependencies !",
-                                        Project.MSG_DEBUG);
-                                loadCachePath(mrid.getOrganisation(),
-                                        getModuleToFind(), mrid.getRevision(),
+                                log("Only organisation : " + mrid.getOrganisation()
+                                        + " was found in project dependencies !", Project.MSG_DEBUG);
+                                loadCachePath(mrid.getOrganisation(), getModuleToFind(), mrid.getRevision(),
                                         getConfToFind(), getSettingsReference());
                                 return true;
 
@@ -155,8 +143,7 @@ public class ProjectDependencyStrategy extends BasicConfigurationStrategy {
                     }
                 }
             } catch (Exception ex) {
-                throw new BuildException(
-                        "impossible to check project dependencies: " + ex, ex);
+                throw new BuildException("impossible to check project dependencies: " + ex, ex);
             }
             return false;
         }

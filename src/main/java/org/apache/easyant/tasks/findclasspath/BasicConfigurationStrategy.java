@@ -21,7 +21,7 @@ import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Reference;
 
-public class BasicConfigurationStrategy extends AbstractFindClassPathStrategy{
+public class BasicConfigurationStrategy extends AbstractFindClassPathStrategy {
     private String organisation;
     private String module;
     private String revision;
@@ -29,9 +29,8 @@ public class BasicConfigurationStrategy extends AbstractFindClassPathStrategy{
     protected String settingsRef;
 
     protected boolean doCheck() {
-        log("Checking plugin configuration ...",Project.MSG_VERBOSE);
-        loadCachePath(getOrganisation(), getModule(), getRevision(), getConf(),
-                getSettingsReference());
+        log("Checking plugin configuration ...", Project.MSG_VERBOSE);
+        loadCachePath(getOrganisation(), getModule(), getRevision(), getConf(), getSettingsReference());
         return true;
     }
 
@@ -69,7 +68,7 @@ public class BasicConfigurationStrategy extends AbstractFindClassPathStrategy{
 
     public String getSettingsRef() {
         if (settingsRef == null) {
-            settingsRef= EasyAntMagicNames.EASYANT_IVY_INSTANCE;
+            settingsRef = EasyAntMagicNames.EASYANT_IVY_INSTANCE;
         }
         return settingsRef;
     }
@@ -77,12 +76,9 @@ public class BasicConfigurationStrategy extends AbstractFindClassPathStrategy{
     public void setSettingsRef(String settingsRef) {
         this.settingsRef = settingsRef;
     }
-    
+
     public Reference getSettingsReference() {
-        return new Reference(getProject(),getSettingsRef());
+        return new Reference(getProject(), getSettingsRef());
     }
-    
-    
-    
 
 }

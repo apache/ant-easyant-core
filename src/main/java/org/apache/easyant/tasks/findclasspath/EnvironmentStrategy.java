@@ -24,9 +24,9 @@ import org.apache.tools.ant.types.FileSet;
 
 public class EnvironmentStrategy extends AbstractFindClassPathStrategy {
 
-    String env;
-    String layout = "/lib";
-    String filter;
+    private String env;
+    private String layout = "/lib";
+    private String filter;
 
     public String getEnv() {
         return env;
@@ -35,7 +35,6 @@ public class EnvironmentStrategy extends AbstractFindClassPathStrategy {
     public void setEnv(String env) {
         this.env = env;
     }
-    
 
     public String getLayout() {
         return layout;
@@ -44,7 +43,6 @@ public class EnvironmentStrategy extends AbstractFindClassPathStrategy {
     public void setLayout(String layout) {
         this.layout = layout;
     }
-    
 
     public String getFilter() {
         return filter;
@@ -64,7 +62,7 @@ public class EnvironmentStrategy extends AbstractFindClassPathStrategy {
 
         if (getEnv() != null && System.getenv(getEnv()) != null) {
             log(getEnv() + " found !", Project.MSG_VERBOSE);
-            File libDir = new File(System.getenv(getEnv()),getLayout());
+            File libDir = new File(System.getenv(getEnv()), getLayout());
             FileSet fileSet = new FileSet();
             fileSet.setDir(libDir);
             fileSet.setIncludes(getFilter());

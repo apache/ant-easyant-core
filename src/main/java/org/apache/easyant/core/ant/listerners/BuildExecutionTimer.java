@@ -53,7 +53,7 @@ public class BuildExecutionTimer implements BuildListener, SubBuildListener {
 
     // build start time
     // to be initialized in buildStarted method
-    protected long buildStartTime;
+    private long buildStartTime;
 
     public static class ExecutionResult {
         /**

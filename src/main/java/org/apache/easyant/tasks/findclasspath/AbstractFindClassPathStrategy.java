@@ -27,8 +27,8 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 
 public abstract class AbstractFindClassPathStrategy extends DataType {
-    public String pathid;
-    protected Path path;
+    private String pathid;
+    private Path path;
     private AbstractFindClassPathStrategy nextStrategy;
 
     public boolean check() {
