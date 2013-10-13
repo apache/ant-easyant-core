@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.tools.ant.BuildException;
@@ -131,7 +130,7 @@ public class ProjectUtils {
             multiModuleLoggerClassName = MultiModuleLogger.class.getCanonicalName();
         }
         BuildLogger buildLogger = (BuildLogger) ClasspathUtils.newInstance(multiModuleLoggerClassName,
-                EasyAntEngine.class.getClassLoader(), BuildLogger.class);
+                ProjectUtils.class.getClassLoader(), BuildLogger.class);
         replaceMainLogger(project, buildLogger);
     }
 
