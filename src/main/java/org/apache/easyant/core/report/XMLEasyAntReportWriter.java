@@ -235,7 +235,7 @@ public class XMLEasyAntReportWriter {
 
             ArtifactOrigin origin = madr.getArtifactOrigin();
             if (origin != null) {
-                out.print(" origin-is-local=\"" + String.valueOf(origin.isLocal()) + "\"");
+                out.print(" origin-is-local=\"" + origin.isLocal() + "\"");
                 out.print(" origin-location=\"" + XMLHelper.escape(origin.getLocation()) + "\"");
             }
             out.println("/>");
@@ -299,8 +299,8 @@ public class XMLEasyAntReportWriter {
             ArtifactOrigin origin = adr[i].getArtifactOrigin();
             if (origin != null) {
                 out.println(">");
-                out.println("\t\t\t\t\t\t<origin-location is-local=\"" + String.valueOf(origin.isLocal()) + "\""
-                        + " location=\"" + XMLHelper.escape(origin.getLocation()) + "\"/>");
+                out.println("\t\t\t\t\t\t<origin-location is-local=\"" + origin.isLocal() + "\"" + " location=\""
+                        + XMLHelper.escape(origin.getLocation()) + "\"/>");
                 out.println("\t\t\t\t\t</artifact>");
             } else {
                 out.println("/>");
