@@ -510,14 +510,10 @@ public class EasyAntMain implements AntMain {
      */
     private static void printTargets(Project project, List<String> names, List<String> descriptions, String heading,
             int maxlen) {
-        if (names.size() > 0) {
+        if (!names.isEmpty()) {
             // now, start printing the targets and their descriptions
             String lSep = System.getProperty("line.separator");
-            // got a bit annoyed that I couldn't find a pad function
-            String spaces = "    ";
-            while (spaces.length() <= maxlen) {
-                spaces += spaces;
-            }
+            String spaces = String.format("%" + maxlen + "s", ' ');
             StringBuffer msg = new StringBuffer();
             msg.append(lSep).append(heading).append(lSep).append(lSep);
             for (int i = 0; i < names.size(); i++) {
