@@ -97,7 +97,7 @@ public class LoadModuleTest extends AntTaskBaseTest {
     @Test
     public void shouldLoadModuleWithCustomBuildModule() throws URISyntaxException {
         Project project = loadModule.getProject();
-        configureProject(project, Project.MSG_DEBUG);
+        configureBuildLogger(project, Project.MSG_DEBUG);
         File moduleIvyFile = new File(this.getClass().getResource("simple/module.ivy").toURI());
         loadModule.setBuildModule(moduleIvyFile);
         loadModule.execute();
@@ -134,7 +134,7 @@ public class LoadModuleTest extends AntTaskBaseTest {
     @Test
     public void shouldNotFailWithNonExistingBuildModule() throws URISyntaxException {
         Project project = loadModule.getProject();
-        configureProject(project, Project.MSG_DEBUG);
+        configureBuildLogger(project, Project.MSG_DEBUG);
         File moduleIvyFile = new File("missingmodule.ivy");
         loadModule.setBuildModule(moduleIvyFile);
         loadModule.execute();
@@ -166,7 +166,7 @@ public class LoadModuleTest extends AntTaskBaseTest {
     @Test
     public void shouldLoadModuleWithCustomBuildFile() throws URISyntaxException {
         Project project = loadModule.getProject();
-        configureProject(project, Project.MSG_DEBUG);
+        configureBuildLogger(project, Project.MSG_DEBUG);
         File moduleAntFile = new File(this.getClass().getResource("simple/module.ant").toURI());
         loadModule.setBuildFile(moduleAntFile);
         loadModule.execute();
@@ -188,7 +188,7 @@ public class LoadModuleTest extends AntTaskBaseTest {
     @Test
     public void shouldNotFailWithNonExistingBuildFile() throws URISyntaxException {
         Project project = loadModule.getProject();
-        configureProject(project, Project.MSG_DEBUG);
+        configureBuildLogger(project, Project.MSG_DEBUG);
         File moduleAntFile = new File("missingmodule.ant");
         loadModule.setBuildFile(moduleAntFile);
         loadModule.execute();
@@ -217,7 +217,7 @@ public class LoadModuleTest extends AntTaskBaseTest {
     @Test
     public void shouldNotFailWithNoArgument() throws URISyntaxException {
         Project project = loadModule.getProject();
-        configureProject(project, Project.MSG_DEBUG);
+        configureBuildLogger(project, Project.MSG_DEBUG);
         loadModule.execute();
 
         assertLogNotContaining("Loading build module :");
@@ -235,7 +235,7 @@ public class LoadModuleTest extends AntTaskBaseTest {
     @Test
     public void shouldConfigureBuildScopeRepository() throws URISyntaxException {
         Project project = loadModule.getProject();
-        configureProject(project, Project.MSG_DEBUG);
+        configureBuildLogger(project, Project.MSG_DEBUG);
         loadModule.setUseBuildRepository(true);
         loadModule.execute();
 

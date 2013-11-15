@@ -25,13 +25,13 @@ import org.apache.tools.ant.Project;
 
 public class AntTaskBaseTest {
 
-    private AntTestListener antTestListener;
+    protected AntTestListener antTestListener;
 
     public Project configureProject(Project project) {
-        return configureProject(project, Project.MSG_INFO);
+        return configureBuildLogger(project, Project.MSG_INFO);
     }
 
-    public Project configureProject(Project project, int logLevel) {
+    public Project configureBuildLogger(Project project, int logLevel) {
         antTestListener = new AntTestListener(logLevel);
         project.addBuildListener(antTestListener);
         return project;

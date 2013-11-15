@@ -84,7 +84,7 @@ public class SubModuleTest extends AntTaskBaseTest {
 
     @Test
     public void shouldNotFailIfBuildpathAttributeIsSet() {
-        configureProject(submodule.getProject(), Project.MSG_WARN);
+        configureBuildLogger(submodule.getProject(), Project.MSG_WARN);
 
         Path path = new Path(submodule.getProject());
         path.createPath();
@@ -100,7 +100,7 @@ public class SubModuleTest extends AntTaskBaseTest {
         expectedException.expect(BuildException.class);
         expectedException.expectMessage("Invalid file:");
 
-        configureProject(submodule.getProject(), Project.MSG_WARN);
+        configureBuildLogger(submodule.getProject(), Project.MSG_WARN);
 
         Path path = new Path(submodule.getProject());
         File file2 = new File("anotherfile");
@@ -114,7 +114,7 @@ public class SubModuleTest extends AntTaskBaseTest {
 
     @Test
     public void shouldRunEvenIfNoTargetsAreSet() throws URISyntaxException {
-        configureProject(submodule.getProject(), Project.MSG_DEBUG);
+        configureBuildLogger(submodule.getProject(), Project.MSG_DEBUG);
 
         Path path = new Path(submodule.getProject());
         FileSet fs = new FileSet();
@@ -134,7 +134,7 @@ public class SubModuleTest extends AntTaskBaseTest {
 
     @Test
     public void shouldRunEvenIfTargetDoesntExistsInSubModules() throws URISyntaxException {
-        configureProject(submodule.getProject(), Project.MSG_DEBUG);
+        configureBuildLogger(submodule.getProject(), Project.MSG_DEBUG);
 
         Path path = new Path(submodule.getProject());
         FileSet fs = new FileSet();
@@ -157,7 +157,7 @@ public class SubModuleTest extends AntTaskBaseTest {
 
     @Test
     public void shouldRunMyTargetOnBothModule() throws URISyntaxException {
-        configureProject(submodule.getProject(), Project.MSG_DEBUG);
+        configureBuildLogger(submodule.getProject(), Project.MSG_DEBUG);
 
         Path path = new Path(submodule.getProject());
         FileSet fs = new FileSet();

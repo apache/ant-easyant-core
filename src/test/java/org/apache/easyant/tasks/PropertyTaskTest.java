@@ -50,7 +50,7 @@ public class PropertyTaskTest extends AntTaskBaseTest {
 
     @Test
     public void shouldNotCreatePropertyWhenConfigurationDoesntMatch() {
-        configureProject(propertyTask.getProject(), Project.MSG_DEBUG);
+        configureBuildLogger(propertyTask.getProject(), Project.MSG_DEBUG);
 
         propertyTask.getProject().setProperty(EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS, "aBuildConfNotActive");
 
@@ -65,7 +65,7 @@ public class PropertyTaskTest extends AntTaskBaseTest {
 
     @Test
     public void shouldCreatePropertyWhenConfigurationMatch() {
-        configureProject(propertyTask.getProject(), Project.MSG_DEBUG);
+        configureBuildLogger(propertyTask.getProject(), Project.MSG_DEBUG);
 
         propertyTask.getProject().setProperty(EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS, "aBuildConfActive");
         propertyTask.getProject().setProperty(EasyAntMagicNames.MAIN_CONFS, "aBuildConfActive");
