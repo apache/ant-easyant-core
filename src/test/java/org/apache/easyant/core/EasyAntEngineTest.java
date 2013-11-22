@@ -48,13 +48,12 @@ import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.input.DefaultInputHandler;
 import org.apache.tools.ant.input.PropertyFileInputHandler;
-import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.util.ProxySetup;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class EasyAntEngineTest {
     private EasyAntConfiguration easyAntConfiguration = new EasyAntConfiguration();
@@ -64,28 +63,13 @@ public class EasyAntEngineTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Before
-    public void setUp() throws URISyntaxException {
-        createCache();
+    public void setUp() throws IOException {
+        File cache = temporaryFolder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
-    }
-
-    private void createCache() {
-        cache = new File("build/cache");
-        cache.mkdirs();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        cleanCache();
-    }
-
-    private void cleanCache() {
-        Delete del = new Delete();
-        del.setProject(new Project());
-        del.setDir(cache);
-        del.execute();
     }
 
     @Test
@@ -269,8 +253,7 @@ public class EasyAntEngineTest {
 
     @Test
     public void shouldReturnDefaultGlobalEasyAntIvySettingsLocationIfExists() throws IOException {
-        File f = new File(System.getProperty("java.io.tmpdir"), "easyant-ivysettings.xml");
-        f.deleteOnExit();
+        File f = temporaryFolder.newFile("easyant-ivysettings.xml");
         FileOutputStream fos = null;
         try {
             // write file
