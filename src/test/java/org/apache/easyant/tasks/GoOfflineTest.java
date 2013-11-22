@@ -57,12 +57,12 @@ public class GoOfflineTest extends AntTaskBaseTest {
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
-        File cache = folder.newFolder("build-cache");
-
         Project project = new Project();
         ProjectUtils.configureProjectHelper(project);
-        project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
         configureBuildLogger(project, Project.MSG_VERBOSE);
+
+        File cache = folder.newFolder("build-cache");
+        project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
 
         IvyConfigure configure = new IvyConfigure();
         configure.setSettingsId(EasyAntMagicNames.EASYANT_IVY_INSTANCE);

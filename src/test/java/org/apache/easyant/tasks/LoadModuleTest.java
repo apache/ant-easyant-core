@@ -24,7 +24,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -39,25 +39,29 @@ import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.core.module.id.ModuleId;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.core.report.ResolveReport;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class LoadModuleTest extends AntTaskBaseTest {
 
-    private File cache;
-
     private LoadModule loadModule;
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Before
-    public void setUp() throws MalformedURLException, URISyntaxException {
-        createCache();
+    public void setUp() throws URISyntaxException, IOException {
         Project project = new Project();
         ProjectUtils.configureProjectHelper(project);
+
+        File cache = folder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
 
         IvyConfigure configure = new IvyConfigure();
@@ -75,23 +79,6 @@ public class LoadModuleTest extends AntTaskBaseTest {
         loadModule.setProject(project);
         loadModule.setOwningTarget(ProjectUtils.createTopLevelTarget());
         loadModule.setLocation(new Location(ProjectUtils.emulateMainScript(project).getAbsolutePath()));
-    }
-
-    private void createCache() {
-        cache = new File("build/cache");
-        cache.mkdirs();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        cleanCache();
-    }
-
-    private void cleanCache() {
-        Delete del = new Delete();
-        del.setProject(new Project());
-        del.setDir(cache);
-        del.execute();
     }
 
     @Test
@@ -154,13 +141,13 @@ public class LoadModuleTest extends AntTaskBaseTest {
 
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfBuildModuleIsADirectory() throws URISyntaxException {
-
         File moduleIvyFile = new File(this.getClass().getResource("simple").toURI());
+        expectedException.expectMessage("What? buildModule: " + moduleIvyFile.getAbsolutePath() + " is a dir!");
+
         loadModule.setBuildModule(moduleIvyFile);
         loadModule.execute();
-
     }
 
     @Test
@@ -205,10 +192,10 @@ public class LoadModuleTest extends AntTaskBaseTest {
 
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfBuildFileIsADirectory() throws URISyntaxException {
-
         File moduleAntFile = new File(this.getClass().getResource("simple").toURI());
+        expectedException.expectMessage("What? buildFile: " + moduleAntFile.getAbsolutePath() + " is a dir!");
         loadModule.setBuildFile(moduleAntFile);
         loadModule.execute();
 

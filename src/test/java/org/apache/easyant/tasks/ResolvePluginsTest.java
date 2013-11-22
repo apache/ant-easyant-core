@@ -17,8 +17,11 @@
  */
 package org.apache.easyant.tasks;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
@@ -26,22 +29,23 @@ import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.ant.IvyDependency;
 import org.apache.ivy.core.report.ResolveReport;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class ResolvePluginsTest {
-    private File cache;
 
     private ResolvePlugins resolvePlugins;
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     @Before
-    public void setUp() throws MalformedURLException, URISyntaxException {
-        createCache();
+    public void setUp() throws URISyntaxException, IOException {
         Project project = new Project();
 
+        File cache = folder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
 
         IvyConfigure configure = new IvyConfigure();
@@ -57,30 +61,13 @@ public class ResolvePluginsTest {
         resolvePlugins.setProject(project);
     }
 
-    private void createCache() {
-        cache = new File("build/cache");
-        cache.mkdirs();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        cleanCache();
-    }
-
-    private void cleanCache() {
-        Delete del = new Delete();
-        del.setProject(new Project());
-        del.setDir(cache);
-        del.execute();
-    }
-
     @Test
     public void shouldCreateEmptyResolveReport() {
         resolvePlugins.execute();
         ResolveReport report = resolvePlugins.getProject().getReference(
                 EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF);
-        Assert.assertNotNull(report);
-        Assert.assertEquals(0, report.getDependencies().size());
+        assertNotNull(report);
+        assertEquals(0, report.getDependencies().size());
     }
 
     @Test
@@ -92,9 +79,9 @@ public class ResolvePluginsTest {
         resolvePlugins.execute();
         ResolveReport report = resolvePlugins.getProject().getReference(
                 EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF);
-        Assert.assertNotNull(report);
-        Assert.assertEquals(1, report.getDependencies().size());
-        Assert.assertEquals(1, report.getUnresolvedDependencies().length);
+        assertNotNull(report);
+        assertEquals(1, report.getDependencies().size());
+        assertEquals(1, report.getUnresolvedDependencies().length);
     }
 
     @Test
@@ -106,9 +93,9 @@ public class ResolvePluginsTest {
         resolvePlugins.execute();
         ResolveReport report = resolvePlugins.getProject().getReference(
                 EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF);
-        Assert.assertNotNull(report);
-        Assert.assertEquals(1, report.getDependencies().size());
-        Assert.assertEquals(0, report.getUnresolvedDependencies().length);
+        assertNotNull(report);
+        assertEquals(1, report.getDependencies().size());
+        assertEquals(0, report.getUnresolvedDependencies().length);
     }
 
 }

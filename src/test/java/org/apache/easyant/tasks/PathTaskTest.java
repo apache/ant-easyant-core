@@ -17,15 +17,16 @@
  */
 package org.apache.easyant.tasks;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.ant.ProjectUtils;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,8 +47,9 @@ public class PathTaskTest {
         pathTask.setProject(project);
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfNoMandatoryAttributesAreSet() {
+        expectedException.expectMessage("pathid is mandatory");
         pathTask.execute();
     }
 
@@ -57,8 +59,8 @@ public class PathTaskTest {
         pathTask.setPathid(classpathName);
         pathTask.execute();
         Path classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(0, classpath.size());
+        assertNotNull(classpath);
+        assertEquals(0, classpath.size());
     }
 
     @Test
@@ -71,8 +73,8 @@ public class PathTaskTest {
         pathTask.getProject().addReference(classpathName, originalClasspath);
 
         Path classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(1, classpath.list().length);
+        assertNotNull(classpath);
+        assertEquals(1, classpath.list().length);
 
         pathTask.setPathid(classpathName);
         File file2 = new File("anotherfile");
@@ -81,10 +83,10 @@ public class PathTaskTest {
         pathTask.execute();
 
         classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(2, classpath.list().length);
-        Assert.assertEquals(file2.getAbsolutePath(), classpath.list()[0]);
-        Assert.assertEquals(file1.getAbsolutePath(), classpath.list()[1]);
+        assertNotNull(classpath);
+        assertEquals(2, classpath.list().length);
+        assertEquals(file2.getAbsolutePath(), classpath.list()[0]);
+        assertEquals(file1.getAbsolutePath(), classpath.list()[1]);
 
     }
 
@@ -98,8 +100,8 @@ public class PathTaskTest {
         pathTask.getProject().addReference(classpathName, originalClasspath);
 
         Path classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(1, classpath.list().length);
+        assertNotNull(classpath);
+        assertEquals(1, classpath.list().length);
 
         pathTask.setPathid(classpathName);
         File file2 = new File("anotherfile");
@@ -107,10 +109,10 @@ public class PathTaskTest {
         pathTask.execute();
 
         classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(2, classpath.list().length);
-        Assert.assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
-        Assert.assertEquals(file2.getAbsolutePath(), classpath.list()[1]);
+        assertNotNull(classpath);
+        assertEquals(2, classpath.list().length);
+        assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
+        assertEquals(file2.getAbsolutePath(), classpath.list()[1]);
 
     }
 
@@ -124,9 +126,9 @@ public class PathTaskTest {
         pathTask.getProject().addReference(classpathName, originalClasspath);
 
         Path classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(1, classpath.list().length);
-        Assert.assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
+        assertNotNull(classpath);
+        assertEquals(1, classpath.list().length);
+        assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
 
         pathTask.setPathid(classpathName);
         File file2 = new File("anotherfile");
@@ -135,9 +137,9 @@ public class PathTaskTest {
         pathTask.execute();
 
         classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(1, classpath.list().length);
-        Assert.assertEquals(file2.getAbsolutePath(), classpath.list()[0]);
+        assertNotNull(classpath);
+        assertEquals(1, classpath.list().length);
+        assertEquals(file2.getAbsolutePath(), classpath.list()[0]);
 
     }
 
@@ -151,9 +153,9 @@ public class PathTaskTest {
         pathTask.getProject().addReference(classpathName, originalClasspath);
 
         Path classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(1, classpath.list().length);
-        Assert.assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
+        assertNotNull(classpath);
+        assertEquals(1, classpath.list().length);
+        assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
 
         pathTask.setPathid(classpathName);
         File file2 = new File("anotherfile");
@@ -162,9 +164,9 @@ public class PathTaskTest {
         pathTask.execute();
 
         classpath = pathTask.getProject().getReference(classpathName);
-        Assert.assertNotNull(classpath);
-        Assert.assertEquals(1, classpath.list().length);
-        Assert.assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
+        assertNotNull(classpath);
+        assertEquals(1, classpath.list().length);
+        assertEquals(file1.getAbsolutePath(), classpath.list()[0]);
     }
 
     @Test

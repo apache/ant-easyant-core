@@ -47,16 +47,15 @@ public class SearchModuleTest {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
-        File cache = folder.newFolder("build-cache");
-
         Project project = new Project();
         ProjectUtils.configureProjectHelper(project);
+
+        File cache = folder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
 
         IvyConfigure configure = new IvyConfigure();
@@ -72,7 +71,6 @@ public class SearchModuleTest {
         searchModule.setOwningTarget(ProjectUtils.createTopLevelTarget());
         searchModule.setLocation(new Location(ProjectUtils.emulateMainScript(project).getAbsolutePath()));
         searchModule.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(project));
-
     }
 
     @Test

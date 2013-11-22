@@ -104,20 +104,11 @@ public class LoadModule extends AbstractEasyAntTask {
 
     public void execute() throws BuildException {
         if (buildModule != null && buildModule.exists()) {
-            IvyInfo info = new IvyInfo();
-            info.setFile(buildModule);
-            // Not sure we should bound IvyInfo to easyantIvyInstance
-            info.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(getProject()));
-            initTask(info).execute();
-            getProject().setName(getProject().getProperty("ivy.module"));
-        }
-        if (buildModule != null && buildModule.exists()) {
             // make sure it's not a directory (this falls into the ultra
             // paranoid lets check everything category
 
             if (buildModule.isDirectory()) {
-                log("What? buildModule: " + buildModule + " is a dir!");
-                throw new BuildException("Build failed");
+                throw new BuildException("What? buildModule: " + buildModule + " is a dir!");
             }
             // load override buildFile before buildModule to allow target/extension-point
             // override
@@ -129,6 +120,13 @@ public class LoadModule extends AbstractEasyAntTask {
 
             log("Loading build module : " + buildModule.getAbsolutePath());
             loadBuildModule(buildModule);
+
+            IvyInfo info = new IvyInfo();
+            info.setFile(buildModule);
+            // Not sure we should bound IvyInfo to easyantIvyInstance
+            info.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(getProject()));
+            initTask(info).execute();
+            getProject().setName(getProject().getProperty("ivy.module"));
         }
 
         if (buildFile != null && buildFile.exists()) {
@@ -136,8 +134,7 @@ public class LoadModule extends AbstractEasyAntTask {
             // paranoid lets check everything category
 
             if (buildFile.isDirectory()) {
-                log("What? buildFile: " + buildFile + " is a dir!");
-                throw new BuildException("Build failed");
+                throw new BuildException("What? buildFile: " + buildFile + " is a dir!");
             }
 
             log("Loading build file : " + buildFile.getAbsolutePath());

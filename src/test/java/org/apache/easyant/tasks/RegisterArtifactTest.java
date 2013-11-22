@@ -17,30 +17,34 @@
  */
 package org.apache.easyant.tasks;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.core.report.ResolveReport;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class RegisterArtifactTest {
-    private File cache;
 
     private RegisterArtifact registerArtifact;
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     @Before
-    public void setUp() throws MalformedURLException, URISyntaxException {
-        createCache();
+    public void setUp() throws URISyntaxException, IOException {
         Project project = new Project();
 
+        File cache = folder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
 
         IvyConfigure configure = new IvyConfigure();
@@ -54,23 +58,6 @@ public class RegisterArtifactTest {
 
         registerArtifact = new RegisterArtifact();
         registerArtifact.setProject(project);
-    }
-
-    private void createCache() {
-        cache = new File("build/cache");
-        cache.mkdirs();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        cleanCache();
-    }
-
-    private void cleanCache() {
-        Delete del = new Delete();
-        del.setProject(new Project());
-        del.setDir(cache);
-        del.execute();
     }
 
     @Test
@@ -89,15 +76,15 @@ public class RegisterArtifactTest {
         registerArtifact.execute();
 
         ResolveReport resolveReport = registerArtifact.getProject().getReference("ivy.resolved.report.myResolve");
-        Assert.assertNotNull(resolveReport);
-        Assert.assertEquals(1, resolveReport.getModuleDescriptor().getAllArtifacts().length);
-        Assert.assertEquals("my-artifact-name", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getName());
-        Assert.assertEquals("my-ext", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getExt());
-        Assert.assertEquals("my-type", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getType());
+        assertNotNull(resolveReport);
+        assertEquals(1, resolveReport.getModuleDescriptor().getAllArtifacts().length);
+        assertEquals("my-artifact-name", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getName());
+        assertEquals("my-ext", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getExt());
+        assertEquals("my-type", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getType());
         String classifierAttribute = resolveReport.getModuleDescriptor().getAllArtifacts()[0]
                 .getExtraAttribute("classifier");
-        Assert.assertNotNull(classifierAttribute);
+        assertNotNull(classifierAttribute);
 
-        Assert.assertEquals("my-classifier", classifierAttribute);
+        assertEquals("my-classifier", classifierAttribute);
     }
 }

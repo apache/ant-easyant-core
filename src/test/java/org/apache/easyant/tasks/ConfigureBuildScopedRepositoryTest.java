@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
@@ -35,22 +35,25 @@ import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.plugins.resolver.FileSystemResolver;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class ConfigureBuildScopedRepositoryTest {
-    private File cache;
     private ConfigureBuildScopedRepository configureBuildScopeRepository = new ConfigureBuildScopedRepository();
     private Ivy configuredIvyInstance;
     private int originalNbResolvers;
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     @Before
-    public void setUp() throws MalformedURLException, URISyntaxException {
-        createCache();
+    public void setUp() throws IOException, URISyntaxException {
         Project project = new Project();
         ProjectUtils.configureProjectHelper(project);
+
+        File cache = folder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
 
         IvyConfigure configure = new IvyConfigure();
@@ -72,23 +75,6 @@ public class ConfigureBuildScopedRepositoryTest {
                 EasyAntMagicNames.EASYANT_IVY_INSTANCE).getConfiguredIvyInstance(configureBuildScopeRepository);
         originalNbResolvers = configuredIvyInstance.getSettings().getResolvers().size();
 
-    }
-
-    private void createCache() {
-        cache = new File("build/cache");
-        cache.mkdirs();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        cleanCache();
-    }
-
-    private void cleanCache() {
-        Delete del = new Delete();
-        del.setProject(new Project());
-        del.setDir(cache);
-        del.execute();
     }
 
     @Test

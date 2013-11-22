@@ -17,33 +17,42 @@
  */
 package org.apache.easyant.tasks;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.ivy.ant.IvyConfigure;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.types.Path;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class ImportTest {
-    private File cache;
 
     private Import importTask;
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Before
-    public void setUp() throws MalformedURLException, URISyntaxException {
-        createCache();
+    public void setUp() throws URISyntaxException, IOException {
         Project project = new Project();
         ProjectUtils.configureProjectHelper(project);
+
+        File cache = folder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
 
         IvyConfigure configure = new IvyConfigure();
@@ -61,25 +70,10 @@ public class ImportTest {
         importTask.setLocation(new Location(ProjectUtils.emulateMainScript(project).getAbsolutePath()));
     }
 
-    private void createCache() {
-        cache = new File("build/cache");
-        cache.mkdirs();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        cleanCache();
-    }
-
-    private void cleanCache() {
-        Delete del = new Delete();
-        del.setProject(new Project());
-        del.setDir(cache);
-        del.execute();
-    }
-
-    @Test(expected = BuildException.class)
-    public void shouldFailIfNoMandatoryAttributeAreSet() {
+    @Test
+    public void shouldFailIfNoMandatoryAttribute() {
+        expectedException
+                .expectMessage("The module to import is not properly specified, you must set the mrid attribute or set organisation / module / revision attributes");
         importTask.execute();
     }
 
@@ -92,8 +86,8 @@ public class ImportTest {
         importTask.execute();
 
         Path pluginClasspath = importTask.getProject().getReference("mycompany#simpleplugin.classpath");
-        Assert.assertNotNull(pluginClasspath);
-        Assert.assertEquals(0, pluginClasspath.list().length);
+        assertNotNull(pluginClasspath);
+        assertEquals(0, pluginClasspath.list().length);
     }
 
     @Test
@@ -103,8 +97,8 @@ public class ImportTest {
         importTask.execute();
 
         // as attribute is preconfigured with module name
-        Assert.assertNotNull(importTask.getAs());
-        Assert.assertEquals("simpleplugin", importTask.getAs());
+        assertNotNull(importTask.getAs());
+        assertEquals("simpleplugin", importTask.getAs());
     }
 
     @Test
@@ -115,8 +109,8 @@ public class ImportTest {
         importTask.execute();
 
         Path pluginClasspath = importTask.getProject().getReference("mycompany#simpleplugin.classpath");
-        Assert.assertNotNull(pluginClasspath);
-        Assert.assertEquals(0, pluginClasspath.list().length);
+        assertNotNull(pluginClasspath);
+        assertEquals(0, pluginClasspath.list().length);
     }
 
     @Test
@@ -139,17 +133,17 @@ public class ImportTest {
         Assert.assertNotNull(propertiesFileLocation);
 
         String srcMainJavaProperty = importTask.getProject().getProperty("src.main.java");
-        Assert.assertNotNull(srcMainJavaProperty);
-        Assert.assertEquals(importTask.getProject().getBaseDir() + "/src/main/java", srcMainJavaProperty);
+        assertNotNull(srcMainJavaProperty);
+        assertEquals(importTask.getProject().getBaseDir() + "/src/main/java", srcMainJavaProperty);
 
         // imported from property file
         String aProperty = importTask.getProject().getProperty("aproperty");
-        Assert.assertNotNull(aProperty);
-        Assert.assertEquals("value", aProperty);
+        assertNotNull(aProperty);
+        assertEquals("value", aProperty);
 
         String anotherJavaProperty = importTask.getProject().getProperty("anotherproperty");
-        Assert.assertNotNull(anotherJavaProperty);
-        Assert.assertEquals("value", anotherJavaProperty);
+        assertNotNull(anotherJavaProperty);
+        assertEquals("value", anotherJavaProperty);
     }
 
     @Test
@@ -170,17 +164,17 @@ public class ImportTest {
 
         String propertiesFileLocation = importTask.getProject().getProperty(
                 "mycompany#simplepluginwithproperties.properties.file");
-        Assert.assertNull(propertiesFileLocation);
+        assertNull(propertiesFileLocation);
 
         String srcMainJavaProperty = importTask.getProject().getProperty("src.main.java");
-        Assert.assertNull(srcMainJavaProperty);
+        assertNull(srcMainJavaProperty);
 
         // imported from property file
         String aProperty = importTask.getProject().getProperty("aproperty");
-        Assert.assertNull(aProperty);
+        assertNull(aProperty);
 
         String anotherJavaProperty = importTask.getProject().getProperty("anotherproperty");
-        Assert.assertNull(anotherJavaProperty);
+        assertNull(anotherJavaProperty);
     }
 
     @Test
@@ -228,18 +222,18 @@ public class ImportTest {
         importTask.execute();
 
         // as attribute is preconfigured with module name
-        Assert.assertNotNull(importTask.getAs());
-        Assert.assertEquals("simpleplugin", importTask.getAs());
+        assertNotNull(importTask.getAs());
+        assertEquals("simpleplugin", importTask.getAs());
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailBuildConfAreFound() {
+        expectedException.expectMessage("there is no available build configuration");
         importTask.setOrg("mycompany");
         importTask.setModule("simplepluginwithproperties");
         importTask.setRev("0.1");
         importTask.setBuildConfigurations("amissingConf");
         importTask.execute();
-        //
     }
 
     @Test

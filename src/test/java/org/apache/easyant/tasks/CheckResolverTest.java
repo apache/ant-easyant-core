@@ -18,30 +18,35 @@
 package org.apache.easyant.tasks;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyConfigure;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class CheckResolverTest {
 
-    private File cache;
     private CheckResolver checkResolver = new CheckResolver();
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Before
-    public void setUp() throws MalformedURLException, URISyntaxException {
-        createCache();
+    public void setUp() throws IOException, URISyntaxException {
         Project project = new Project();
         ProjectUtils.configureProjectHelper(project);
+
+        File cache = folder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
 
         IvyConfigure configure = new IvyConfigure();
@@ -58,30 +63,15 @@ public class CheckResolverTest {
         checkResolver.setProject(project);
     }
 
-    private void createCache() {
-        cache = new File("build/cache");
-        cache.mkdirs();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        cleanCache();
-    }
-
-    private void cleanCache() {
-        Delete del = new Delete();
-        del.setProject(new Project());
-        del.setDir(cache);
-        del.execute();
-    }
-
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfNoMandatoryAttributesAreSet() {
+        expectedException.expectMessage("resolver attribute is mandatory");
         checkResolver.execute();
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfResolverDoesntExists() {
+        expectedException.expectMessage("resolver unknown does not exist in current project");
         checkResolver.getProject().setProperty("resolver.to.check", "unknown");
         checkResolver.setResolver("resolver.to.check");
         checkResolver.execute();

@@ -16,16 +16,20 @@
  *
  */package org.apache.easyant.tasks;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ParameterTaskTest {
 
     private ParameterTask parameterTask;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -33,8 +37,9 @@ public class ParameterTaskTest {
         parameterTask.setProject(new Project());
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfNoMandatoryAttributesAreSet() {
+        expectedException.expectMessage("at least one of these attributes is required: property, path");
         parameterTask.execute();
     }
 
@@ -62,16 +67,18 @@ public class ParameterTaskTest {
         Assert.assertEquals("a-value", property);
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfPropertyIsRequired() {
+        expectedException.expectMessage("expected property 'a-property': null");
         parameterTask.setProperty("a-property");
         parameterTask.setRequired(true);
         parameterTask.execute();
 
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfPropertyIsRequiredWithDescription() {
+        expectedException.expectMessage("expected property 'a-property': a property can be documented");
         parameterTask.setProperty("a-property");
         parameterTask.setDescription("a property can be documented");
         parameterTask.setRequired(true);
@@ -92,23 +99,28 @@ public class ParameterTaskTest {
 
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailToSetPropertyWithANonPossibleValue() {
+        expectedException
+                .expectMessage("current value of property 'a-property' doesn't match with possible values : [true, false]");
+
         parameterTask.getProject().setProperty("a-property", "a-value");
         parameterTask.setProperty("a-property");
         parameterTask.setPossibleValues("true,false");
         parameterTask.execute();
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfRequiredPathIsMissing() {
+        expectedException.expectMessage("expected path 'a-path-id': null");
         parameterTask.setPath("a-path-id");
         parameterTask.setRequired(true);
         parameterTask.execute();
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfGivenPathIdIsNotAPath() {
+        expectedException.expectMessage("reference 'a-path-id' must be a path");
         parameterTask.getProject().addReference("a-path-id", true);
         parameterTask.setPath("a-path-id");
         parameterTask.execute();

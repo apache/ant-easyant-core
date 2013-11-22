@@ -22,36 +22,36 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class SubModuleTest extends AntTaskBaseTest {
-    private File cache;
 
     private SubModule submodule;
+
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
-    public void setUp() throws MalformedURLException, URISyntaxException {
-        createCache();
+    public void setUp() throws URISyntaxException, IOException {
         Project project = new Project();
 
-        // FIXME: property are not yet inherited
+        File cache = folder.newFolder("build-cache");
         project.setUserProperty("ivy.cache.dir", cache.getAbsolutePath());
+
         File f = new File(this.getClass().getResource("/repositories/easyant-ivysettings-test.xml").toURI());
         // FIXME: property are not yet inherited
         project.setUserProperty(EasyAntMagicNames.USER_EASYANT_IVYSETTINGS, f.getAbsolutePath());
@@ -60,25 +60,9 @@ public class SubModuleTest extends AntTaskBaseTest {
         submodule.setProject(project);
     }
 
-    private void createCache() {
-        cache = new File("build/cache");
-        cache.mkdirs();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        cleanCache();
-    }
-
-    private void cleanCache() {
-        Delete del = new Delete();
-        del.setProject(new Project());
-        del.setDir(cache);
-        del.execute();
-    }
-
-    @Test(expected = BuildException.class)
+    @Test
     public void shouldFailIfNoMandatoryAttributesAreSet() {
+        expectedException.expectMessage("No buildpath specified");
         submodule.execute();
     }
 
@@ -97,7 +81,6 @@ public class SubModuleTest extends AntTaskBaseTest {
 
     @Test
     public void shouldFailIfPathContainsInvalidFile() {
-        expectedException.expect(BuildException.class);
         expectedException.expectMessage("Invalid file:");
 
         configureBuildLogger(submodule.getProject(), Project.MSG_WARN);
