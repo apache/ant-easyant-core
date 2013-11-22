@@ -103,7 +103,7 @@ public class SearchModule extends IvyTask {
                 log(sb.toString());
             }
         }
-        if (choices.size() == 0) {
+        if (choices.isEmpty()) {
             throw new BuildException("No matching module were found !");
         }
 

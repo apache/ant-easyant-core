@@ -45,8 +45,6 @@ public class GoOfflineTest extends AntTaskBaseTest {
 
     private static final String EASYANT_BUILDSCOPE_REP = "easyant-buildscope-rep";
 
-    private File cache;
-
     private GoOffline goOffline;
 
     private File easyantBuildScopeRepoFolder;
@@ -59,7 +57,7 @@ public class GoOfflineTest extends AntTaskBaseTest {
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
-        cache = folder.newFolder("build-cache");
+        File cache = folder.newFolder("build-cache");
 
         Project project = new Project();
         ProjectUtils.configureProjectHelper(project);
