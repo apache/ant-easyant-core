@@ -104,12 +104,21 @@ public class LoadModule extends AbstractEasyAntTask {
 
     public void execute() throws BuildException {
         if (buildModule != null && buildModule.exists()) {
+
             // make sure it's not a directory (this falls into the ultra
             // paranoid lets check everything category
 
             if (buildModule.isDirectory()) {
                 throw new BuildException("What? buildModule: " + buildModule + " is a dir!");
             }
+
+            IvyInfo info = new IvyInfo();
+            info.setFile(buildModule);
+            // Not sure we should bound IvyInfo to easyantIvyInstance
+            info.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(getProject()));
+            initTask(info).execute();
+            getProject().setName(getProject().getProperty("ivy.module"));
+
             // load override buildFile before buildModule to allow target/extension-point
             // override
             File f = new File(buildModule.getParent(), EasyAntConstants.DEFAULT_OVERRIDE_BUILD_FILE);
@@ -120,13 +129,6 @@ public class LoadModule extends AbstractEasyAntTask {
 
             log("Loading build module : " + buildModule.getAbsolutePath());
             loadBuildModule(buildModule);
-
-            IvyInfo info = new IvyInfo();
-            info.setFile(buildModule);
-            // Not sure we should bound IvyInfo to easyantIvyInstance
-            info.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(getProject()));
-            initTask(info).execute();
-            getProject().setName(getProject().getProperty("ivy.module"));
         }
 
         if (buildFile != null && buildFile.exists()) {
