@@ -87,7 +87,7 @@ Then run: %EASYANT_HOME%\bin\easyant
 
 The example should be compiled, as well as unit tests, which should then be executed, and a jar should be produced in target/artifacts.
 
-To find more informations check the online documentation (http://incubator.apache.org/easyant/history/trunk/index.html) or download it through our website.
+To find more informations check the online documentation (http://ant.apache.org/easyant/history/trunk/index.html) or download it through our website.
 
 
 ***************
@@ -96,13 +96,13 @@ To find more informations check the online documentation (http://incubator.apach
 Easyant is released under Apache License 2.0.
 
 Sources can be found here
-SVN Url : http://svn.apache.org/repos/asf/incubator/easyant/
+SVN Url : http://svn.apache.org/repos/asf/ant/easyant/
 
 ************
 * Web site *
 ************ 
 
-Check the website to get further information http://incubator.apache.org/easyant/
+Check the website to get further information http://ant.apache.org/easyant/
 
 **************************************
 * IRC Channel (#easyant on freenode) *
