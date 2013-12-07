@@ -28,11 +28,8 @@ import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyConfigure;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.input.InputHandler;
-import org.apache.tools.ant.input.InputRequest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -155,24 +152,6 @@ public class SearchModuleTest {
         assertThat(searchModule.getProject().getProperty("mysearch.org"), is("mycompany"));
         assertThat(searchModule.getProject().getProperty("mysearch.module"), is("simpleplugin"));
         assertThat(searchModule.getProject().getProperty("mysearch.rev"), is("0.1"));
-    }
-
-    public static class FakeInputHandler implements InputHandler {
-
-        private String input = "";
-
-        public void handleInput(InputRequest request) throws BuildException {
-            request.setInput(input);
-        }
-
-        public String getInput() {
-            return input;
-        }
-
-        public void setInput(String input) {
-            this.input = input;
-        }
-
     }
 
 }
