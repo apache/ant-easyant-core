@@ -186,35 +186,43 @@ public class ParameterTask extends Task {
 
     public void execute() throws BuildException {
         if (property != null) {
-            if (isRequired() && getProject().getProperty(property) == null) {
-                throw new BuildException("expected property '" + property + "': " + description);
-            }
-            if (!possibleValues.isEmpty()) {
-                String currentValue = getProject().getProperty(property);
-                if (!possibleValues.contains(currentValue)) {
-                    throw new BuildException("current value of property '" + property
-                            + "' doesn't match with possible values : " + possibleValues.toString());
-                }
-            }
-            if (defaultValue != null && getProject().getProperty(property) == null) {
-                Property propTask = new Property();
-                propTask.setProject(getProject());
-                propTask.setTaskName(getTaskName());
-                propTask.setName(property);
-                propTask.setValue(defaultValue);
-                propTask.execute();
-            }
+            handlePropertyParameter();
         } else if (path != null) {
-            Object p = getProject().getReference(path);
-            if (isRequired() && p == null) {
-                throw new BuildException("expected path '" + path + "': " + description);
-            } else if (!(p instanceof Path)) {
-                throw new BuildException("reference '" + path + "' must be a path");
-            }
+            handlePathParameter();
         } else if (phase != null) {
             // to be removed
         } else {
             throw new BuildException("at least one of these attributes is required: property, path");
+        }
+    }
+
+    private void handlePathParameter() {
+        Object p = getProject().getReference(path);
+        if (isRequired() && p == null) {
+            throw new BuildException("expected path '" + path + "': " + description);
+        } else if (p != null && !(p instanceof Path)) {
+            throw new BuildException("reference '" + path + "' must be a path");
+        }
+    }
+
+    private void handlePropertyParameter() {
+        if (isRequired() && getProject().getProperty(property) == null) {
+            throw new BuildException("expected property '" + property + "': " + description);
+        }
+        if (!possibleValues.isEmpty()) {
+            String currentValue = getProject().getProperty(property);
+            if (!possibleValues.contains(currentValue)) {
+                throw new BuildException("current value of property '" + property
+                        + "' doesn't match with possible values : " + possibleValues.toString());
+            }
+        }
+        if (defaultValue != null && getProject().getProperty(property) == null) {
+            Property propTask = new Property();
+            propTask.setProject(getProject());
+            propTask.setTaskName(getTaskName());
+            propTask.setName(property);
+            propTask.setValue(defaultValue);
+            propTask.execute();
         }
     }
 

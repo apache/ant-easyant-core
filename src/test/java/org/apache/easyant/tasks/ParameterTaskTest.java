@@ -119,6 +119,15 @@ public class ParameterTaskTest {
     }
 
     @Test
+    /**
+     * @see EASYANT-58
+     */
+    public void shouldNotFailIfPathIsMissingButNotRequired() {
+        parameterTask.setPath("a-path-id");
+        parameterTask.execute();
+    }
+
+    @Test
     public void shouldFailIfGivenPathIdIsNotAPath() {
         expectedException.expectMessage("reference 'a-path-id' must be a path");
         parameterTask.getProject().addReference("a-path-id", true);
