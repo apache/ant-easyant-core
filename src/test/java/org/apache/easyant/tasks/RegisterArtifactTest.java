@@ -25,15 +25,27 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.ivy.IvyInstanceHelper;
+import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.ivy.ant.IvyConfigure;
+import org.apache.ivy.ant.IvyPublish;
+import org.apache.ivy.ant.IvyResolve;
+import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
+import org.apache.ivy.core.cache.EasyantResolutionCacheManager;
 import org.apache.ivy.core.report.ResolveReport;
+import org.apache.ivy.core.settings.IvySettings;
+import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.Reference;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class RegisterArtifactTest {
+public class RegisterArtifactTest extends AntTaskBaseTest {
+
+    private static final String MY_LOCAL_RESOLVER = "my-local-resolver";
 
     private RegisterArtifact registerArtifact;
 
@@ -86,5 +98,80 @@ public class RegisterArtifactTest {
         assertNotNull(classifierAttribute);
 
         assertEquals("my-classifier", classifierAttribute);
+    }
+
+    @Test
+    @Ignore("Fails with a can't set a null property from DefaultEasyAntXmlModuleDescriptorParser")
+    public void shouldRegisterArtifactAndPublish() throws IOException {
+        configureParserAndCacheManagers();
+
+        Reference easyAntIvyReference = IvyInstanceHelper.buildEasyAntIvyReference(registerArtifact.getProject());
+        configureLocalRepository();
+
+        resolveModule(easyAntIvyReference, new File(this.getClass().getResource("simple/module.ivy").getFile()));
+
+        String artifactName = "my-artifact-name";
+        File artifact = folder.newFile(artifactName + ".jar");
+        folder.newFile("standard-java-app.jar");
+
+        registerArtifact.setSettingsRef(easyAntIvyReference);
+        registerArtifact.setName(artifactName);
+        registerArtifact.setExt("jar");
+        registerArtifact.execute();
+
+        publishToLocalRepository(easyAntIvyReference, artifact.getParent());
+        ResolveReport resolveReport = registerArtifact.getProject().getReference("ivy.resolved.report");
+        assertNotNull(resolveReport);
+        assertEquals(2, resolveReport.getModuleDescriptor().getAllArtifacts().length);
+        assertEquals("standard-java-app", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getName());
+        assertEquals("jar", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getExt());
+        assertEquals("jar", resolveReport.getModuleDescriptor().getAllArtifacts()[0].getType());
+        assertEquals("my-artifact-name", resolveReport.getModuleDescriptor().getAllArtifacts()[1].getName());
+        assertEquals("jar", resolveReport.getModuleDescriptor().getAllArtifacts()[1].getExt());
+        assertEquals("jar", resolveReport.getModuleDescriptor().getAllArtifacts()[1].getType());
+
+    }
+
+    private void configureParserAndCacheManagers() {
+        ModuleDescriptorParserRegistry.getInstance().addParser(new DefaultEasyAntXmlModuleDescriptorParser());
+        IvySettings settings = IvyInstanceHelper.getEasyAntIvyAntSettings(registerArtifact.getProject())
+                .getConfiguredIvyInstance(registerArtifact).getSettings();
+        // FIXME: hack as ResolutionCacheManager use XmlModuleDescriptorParser under the hood
+        EasyAntRepositoryCacheManager cacheManager = new EasyAntRepositoryCacheManager("default-project-cache",
+                settings, settings.getDefaultCache());
+        settings.setDefaultRepositoryCacheManager(cacheManager);
+
+        EasyantResolutionCacheManager resolutionCacheManager = new EasyantResolutionCacheManager();
+        resolutionCacheManager.setBasedir(settings.getDefaultResolutionCacheBasedir());
+        resolutionCacheManager.setSettings(settings);
+        settings.setResolutionCacheManager(resolutionCacheManager);
+    }
+
+    private void resolveModule(Reference easyAntIvyReference, File ivyFile) {
+        IvyResolve resolve = new IvyResolve();
+        resolve.setSettingsRef(easyAntIvyReference);
+        resolve.setProject(registerArtifact.getProject());
+        resolve.setFile(ivyFile);
+        resolve.execute();
+    }
+
+    private void publishToLocalRepository(Reference easyAntIvyReference, String artifactFolder) {
+        IvyPublish publish = new IvyPublish();
+        publish.setSettingsRef(easyAntIvyReference);
+        publish.setProject(registerArtifact.getProject());
+        publish.setResolver(MY_LOCAL_RESOLVER);
+        publish.setArtifactspattern(artifactFolder + "/[artifact].[ext]");
+        publish.setHaltonmissing(true);
+        publish.setStatus("integration");
+        publish.execute();
+    }
+
+    private void configureLocalRepository() throws IOException {
+        ConfigureBuildScopedRepository localRepository = new ConfigureBuildScopedRepository();
+        localRepository.setSettingsRef(IvyInstanceHelper.buildEasyAntIvyReference(registerArtifact.getProject()));
+        localRepository.setProject(registerArtifact.getProject());
+        localRepository.setName(MY_LOCAL_RESOLVER);
+        localRepository.setTarget(folder.newFolder("local-repo").getAbsolutePath());
+        localRepository.execute();
     }
 }
