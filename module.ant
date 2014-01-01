@@ -31,7 +31,8 @@
 
     <property name="retrieve.dependencies" value="true" />
 
-    <property name="test.run.excludes.pattern" value="**/*BaseTest*,**/*AntTestListener*,**/*AntOutputStream*" />
+    <property name="test.run.includes.pattern" value="**/*Test.class" />
+    <property name="test.run.excludes.pattern" value="**/*BaseTest.class" />
 
     <!-- override main artifact retrieve pattern -->
     <property name="retrieve.pattern.lib.main" value="${basedir}/lib/main/[artifact].[ext]" />
