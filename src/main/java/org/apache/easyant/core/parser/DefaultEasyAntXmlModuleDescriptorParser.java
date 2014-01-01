@@ -542,10 +542,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
 
                     easyAntModuleDescriptor.getProperties().put(key, property);
                 }
-            } else {
-                if (attributes.getValue("name") == null) {
-                    throw new SAXException("Can't set a null property!");
-                }
+            } else if (attributes.getValue("name") != null) {
                 String propertyName = getSettings().substitute(attributes.getValue("name"));
                 String value = getSettings().substitute(attributes.getValue("value"));
 

@@ -38,7 +38,6 @@ import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Reference;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -101,7 +100,6 @@ public class RegisterArtifactTest extends AntTaskBaseTest {
     }
 
     @Test
-    @Ignore("Fails with a can't set a null property from DefaultEasyAntXmlModuleDescriptorParser")
     public void shouldRegisterArtifactAndPublish() throws IOException {
         configureParserAndCacheManagers();
 
