@@ -14,15 +14,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<ivysettings>
-    <settings defaultResolver="test-plugin"/>
-    <resolvers>
-            <filesystem name="test-plugin">
-                <ivy pattern="${ivy.basedir}/src/test/resources/repositories/plugins/[organisation]/[module]/ivys/ivy-[revision].xml"/>
-                <artifact pattern="${ivy.basedir}/src/test/resources/repositories/plugins/[organisation]/[module]/[type]s/[artifact]-[revision].[ext]"/>
-            </filesystem>
-            <chain name="easyant-test-chain" returnFirst="true">
-                <resolver ref="test-plugin"/>
-            </chain>
-    </resolvers>
-</ivysettings>
+<project name="mycompany#complexplugin"  xmlns:ea="antlib:org.apache.easyant">
+	<ea:plugin organisation="mycompany" module="abstractplugin" revision="0.1"/>
+	<target name="complexplugin:mytarget">
+	    <echo>a message from mytarget</echo>
+	</target>
+	<extension-point name="package" depends="complexplugin:mytarget"/>
+</project>

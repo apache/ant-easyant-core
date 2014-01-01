@@ -75,6 +75,8 @@ public abstract class EasyAntBaseTest {
         if (project.getTargets().containsKey(tearDown)) {
             project.executeTarget(tearDown);
         }
+        cleanCache();
+        cleanTargetDirectory();
     }
 
     public void cleanTargetDirectory() {

@@ -15,7 +15,9 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-    <info organisation="mycompany" module="simpleplugin" revision="0.1" status="integration"/>
+    <info organisation="mycompany" module="simpleplugin" revision="0.1" status="integration">
+        <description>a simple plugin</description>
+    </info>
     <publications>
         <artifact type="ant" />
     </publications>

@@ -30,11 +30,6 @@ public class ModuleInheritanceTest extends EasyAntBaseTest {
         cleanTargetDirectory();
     }
 
-    @After
-    public void tearDown() {
-        cleanTargetDirectory();
-    }
-
     @Test
     public void shouldInheritProperty() {
         assertPropertyEquals("test.property", "myvalue");

@@ -59,7 +59,6 @@ public class EasyAntEngineTest {
     private EasyAntConfiguration easyAntConfiguration = new EasyAntConfiguration();
     private EasyAntEngine easyantEngine = new EasyAntEngine(easyAntConfiguration);
     private Project project = new Project();
-    private File cache;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

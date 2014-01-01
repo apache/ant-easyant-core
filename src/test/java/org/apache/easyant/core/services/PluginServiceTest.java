@@ -17,98 +17,105 @@
  */
 package org.apache.easyant.core.services;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
+import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.ExtensionPointReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
 import org.apache.easyant.core.report.TargetReport;
 import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
-import org.apache.ivy.ant.IvyAntSettings;
+import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.matcher.PatternMatcher;
 import org.apache.tools.ant.Project;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class PluginServiceTest {
 
     private static PluginService pluginService;
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
-    @BeforeClass
-    public static void setUp() throws ParseException, IOException {
+    @Before
+    public void setUp() throws IOException, URISyntaxException {
         // configure the ivyinstance
         Project p = new Project();
-        IvyAntSettings ivyAntSettings = new IvyAntSettings();
-        ivyAntSettings.setUrl(PluginServiceTest.class.getResource("/ivysettings-test.xml"));
-        ivyAntSettings.setProject(p);
-        pluginService = new DefaultPluginServiceImpl(ivyAntSettings);
 
+        File cache = folder.newFolder("build-cache");
+        p.setProperty("ivy.cache.dir", cache.getAbsolutePath());
+
+        IvyConfigure configure = new IvyConfigure();
+        configure.setProject(p);
+        configure.setFile(new File(this.getClass().getResource("/repositories/easyant-ivysettings-test.xml").toURI()));
+        configure.setSettingsId(EasyAntMagicNames.EASYANT_IVY_INSTANCE);
+        configure.execute();
+
+        pluginService = new DefaultPluginServiceImpl(IvyInstanceHelper.getEasyAntIvyAntSettings(p));
     }
 
     @Test
-    public void testDefaultResolverSearch() throws Exception {
-        ModuleRevisionId[] mrids = pluginService.search("org.apache.easyant.buildtypes", "build-std-java");
+    public void shouldFindExistingModuleWithDefaultResolverSearch() throws Exception {
+        ModuleRevisionId[] mrids = pluginService.search("mycompany", "simpleplugin");
         // the module should be found once in easyant repo default resolver
-        Assert.assertEquals(1, mrids.length);
+        assertThat(mrids.length, is(1));
     }
 
     @Test
-    public void testSearchAllResolvers() throws Exception {
-        ModuleRevisionId[] mrids = pluginService.search("org.apache.easyant.buildtypes", "build-std-java", null, null,
-                PatternMatcher.EXACT, "*");
+    public void shouldFindExistingModuleWithAllResolversSearch() throws Exception {
+        ModuleRevisionId[] mrids = pluginService.search("mycompany", "simpleplugin", null, null, PatternMatcher.EXACT,
+                "*");
         // the module should be found once each in easyant repo and in chained
         // resolver
-        Assert.assertEquals(2, mrids.length);
-        Assert.assertEquals(mrids[0], mrids[1]);
+        assertThat(mrids.length, is(2));
+        assertThat(mrids[0], equalTo(mrids[1]));
     }
 
     @Test
-    public void testSearchModule() throws Exception {
-        String[] mrids = pluginService.searchModule("org.apache.easyant.buildtypes", "build-std-java");
+    public void shouldFindExistingModule() throws Exception {
+        String[] mrids = pluginService.searchModule("mycompany", "simpleplugin");
         // the module should be found once in easyant repo default resolver
-        Assert.assertEquals(1, mrids.length);
-    }
-
-    private EasyAntReport generateReport() throws Exception {
-        File module = new File(this.getClass().getResource("module.ivy").toURI());
-        File moduleAnt = new File(this.getClass().getResource("module.ant").toURI());
-        return pluginService.generateEasyAntReport(module, moduleAnt, null);
+        assertThat(mrids.length, is(1));
     }
 
     @Test
     public void testGenerateReport() throws Exception {
         EasyAntReport eaReport = generateReport();
-        Assert.assertNotNull(eaReport);
+        assertThat(eaReport, is(notNullValue()));
+        assertThat(eaReport.getImportedModuleReport("mycompany#complexplugin;0.1"), is(notNullValue()));
+        assertThat(eaReport.getImportedModuleReport("mycompany#simpleplugin;0.1"), is(notNullValue()));
 
-        Assert.assertNotNull(eaReport.getImportedModuleReport("org.apache.easyant.buildtypes#build-std-java;0.9"));
-        Assert.assertNotNull(eaReport.getImportedModuleReport("org.apache.easyant.plugins#run-java;0.9"));
+        ImportedModuleReport complexPlugin = eaReport.getImportedModuleReport("mycompany#complexplugin;0.1");
+        assertThat(complexPlugin, is(notNullValue()));
 
-        ImportedModuleReport buildType = eaReport
-                .getImportedModuleReport("org.apache.easyant.buildtypes#build-std-java;0.9");
         // global importedModule size should be equals to :
-        // importedModule size of buildtype + 2 (buildtype itself +run-java plugin)
-        Assert.assertEquals(buildType.getEasyantReport().getImportedModuleReports().size() + 2, eaReport
+        // importedModule size of complexplugin + 2 (complexplugin itself +simpleplugin)
+        Assert.assertEquals(complexPlugin.getEasyantReport().getImportedModuleReports().size() + 2, eaReport
                 .getImportedModuleReports().size());
 
         checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("run.main.classname"),
                 "org.apache.easyant.example.Example");
 
-        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("src.main.java"), "${basedir}/src/main/java");
-        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("target.main.classes"), "${target}/main/classes");
-        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("target"), "${basedir}/target");
-        checkPropertyValueEquals(eaReport.getPropertyDescriptors().get("test.framework"), "junit");
-
-        checkPropertyDefaultValueEquals(eaReport.getPropertyDescriptors().get("target.main.artifact"),
-                "${target.artifacts}/${target.artifacts.main.jar.name}");
+        checkPropertyDefaultValueEquals(eaReport.getPropertyDescriptors().get("myproperty"), "foobar");
+        checkPropertyDefaultValueEquals(eaReport.getPropertyDescriptors().get("anotherproperty"), "foo");
 
         // the property should also be contained in getAvailableProperties which
         // list all properties (those for the current module and those in
@@ -119,75 +126,53 @@ public class PluginServiceTest {
         // check that package ExtensionPoint exists and targets are bound to
         // this extension-point
         ExtensionPointReport packageEP = eaReport.getExtensionPointReport("package");
-        Assert.assertNotNull(packageEP);
-
-        Assert.assertEquals("compile,abstract-package:package,hello-world", packageEP.getDepends());
+        assertThat(packageEP, is(notNullValue()));
+        assertThat(packageEP.getDepends(), is("complexplugin:mytarget,hello-world"));
 
         List<TargetReport> targets = packageEP.getTargetReports();
-        Set<String> expectedTargets = new HashSet<String>(Arrays.asList("hello-world"));
-        Assert.assertEquals(expectedTargets.size(), targets.size());
+        Set<String> expectedTargets = new HashSet<String>(Arrays.asList("hello-world", "complexplugin:mytarget"));
+        assertThat(targets.size(), is(expectedTargets.size()));
 
         for (TargetReport target : packageEP.getTargetReports()) {
-            Assert.assertTrue("expected to find " + target.getName(), expectedTargets.remove(target.getName()));
+            assertTrue("expected to find " + target.getName(), expectedTargets.remove(target.getName()));
         }
 
         TargetReport helloWorld = eaReport.getTargetReport("hello-world");
-        Assert.assertNotNull(helloWorld);
-        Assert.assertTrue("package".equals(helloWorld.getExtensionPoint()));
+        assertThat(helloWorld, is(notNullValue()));
+        assertThat(helloWorld.getExtensionPoint(), is("package"));
     }
 
     @Test
-    public void testGetDescription() throws Exception {
-        String description = pluginService.getPluginDescription("org.apache.easyant.plugins#run-java;0.9");
-        Assert.assertEquals("This module provides java bytecode execution feature.", description);
+    public void shouldGetDescriptionFromExistingPlugin() throws Exception {
+        String description = pluginService.getPluginDescription("mycompany#abstractplugin;0.1");
+        assertThat(description, is("an abstract plugin"));
     }
 
     @Test
-    public void testGetPluginInfo() throws Exception {
-        EasyAntReport pluginInfo = pluginService.getPluginInfo("org.apache.easyant.plugins#compile-java;0.9");
-        Assert.assertNotNull(pluginInfo);
-        Assert.assertEquals(2, pluginInfo.getImportedModuleReports().size());
-        Assert.assertNotNull(pluginInfo.getImportedModuleReport("abstract-provisioning"));
-        Assert.assertNotNull(pluginInfo.getImportedModuleReport("abstract-compile"));
-
-        checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("compile.java.includes.pattern"),
-                "**/*.java");
-        checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("target.test.integration.classes"),
-                "${target}/integration-test/classes");
+    public void shouldFindPluginInfoForExistingModule() throws Exception {
+        EasyAntReport pluginInfo = pluginService.getPluginInfo("mycompany#abstractplugin;0.1");
+        assertThat(pluginInfo, is(notNullValue()));
+        assertThat(pluginInfo.getImportedModuleReports().size(), is(0));
+        assertThat(pluginInfo.getPropertyDescriptors().size(), is(2));
+        assertThat(pluginInfo.getTargetReport("abstractplugin:init"), is(notNullValue()));
+        checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("myproperty"), "foobar");
+        checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("anotherproperty"), "foo");
     }
 
     @Test
-    public void testGetPluginInfoOnlyForCurrentPlugin() throws Exception {
-        ModuleRevisionId mrid = ModuleRevisionId.parse("org.apache.easyant.plugins#compile-java;0.9");
+    public void shouldFindGivenPluginInfoAsNestedPlugin() throws Exception {
+        ModuleRevisionId mrid = ModuleRevisionId.parse("mycompany#complexplugin;0.1");
         EasyAntReport pluginInfo = pluginService.getPluginInfo(mrid, "default");
-        Assert.assertNotNull(pluginInfo);
-        Assert.assertEquals(1, pluginInfo.getImportedModuleReportsFromCurrentModule().size());
-        ImportedModuleReport abstractCompile = pluginInfo.getImportedModuleReport("abstract-compile");
-        Assert.assertNotNull(abstractCompile);
-        Assert.assertEquals(1, abstractCompile.getEasyantReport().getImportedModuleReportsFromCurrentModule().size());
-        Assert.assertNotNull(abstractCompile.getEasyantReport().getImportedModuleReport("abstract-provisioning"));
-        checkPropertyDefaultValueEquals(
-                pluginInfo.getPropertyReportsFromCurrentModule().get("compile.java.includes.pattern"), "**/*.java");
-        checkPropertyDefaultValueEquals(
-                abstractCompile.getEasyantReport().getPropertyReportsFromCurrentModule()
-                        .get("target.test.integration.classes"), "${target}/integration-test/classes");
-    }
+        assertThat(pluginInfo, is(notNullValue()));
+        assertThat(pluginInfo.getImportedModuleReportsFromCurrentModule().size(), is(1));
+        ImportedModuleReport abstractPlugin = pluginInfo.getImportedModuleReport("abstractplugin");
 
-    @Test
-    public void testGetPluginInfoWithNestedPlugin() throws Exception {
-        EasyAntReport pluginInfo = pluginService.getPluginInfo("org.apache.easyant.plugins#compile-java;0.9");
-        Assert.assertNotNull(pluginInfo);
-
-        // verify abstract-provisioning is imported in abstract-compile
-        ImportedModuleReport importedModuleReport = pluginInfo.getImportedModuleReport("abstract-compile");
-        Assert.assertNotNull(importedModuleReport);
-        Assert.assertNotNull(importedModuleReport.getEasyantReport());
-        Assert.assertEquals(1, importedModuleReport.getEasyantReport().getImportedModuleReports().size());
-        Assert.assertNotNull(importedModuleReport.getEasyantReport().getImportedModuleReport("abstract-provisioning"));
-
-        checkPropertyDefaultValueEquals(
-                importedModuleReport.getEasyantReport().getPropertyDescriptors().get("target.test.integration.classes"),
-                "${target}/integration-test/classes");
+        assertThat(abstractPlugin, is(notNullValue()));
+        EasyAntReport abstractPluginReport = abstractPlugin.getEasyantReport();
+        assertThat(abstractPluginReport.getTargetReport("abstractplugin:init"), is(notNullValue()));
+        assertThat(abstractPluginReport.getImportedModuleReportsFromCurrentModule().size(), is(0));
+        assertThat(abstractPluginReport.getPropertyDescriptors().size(), is(2));
+        checkPropertyDefaultValueEquals(abstractPluginReport.getPropertyDescriptors().get("myproperty"), "foobar");
     }
 
     @Test
@@ -195,30 +180,36 @@ public class PluginServiceTest {
         EasyAntReport pluginInfo = pluginService.getPluginInfo(
                 new File(this.getClass().getResource("plugins/simple-plugin-without-rootlevel-tasks.ivy").toURI()),
                 new File(this.getClass().getResource("plugins").toURI()), "default");
-
-        Assert.assertEquals(0, pluginInfo.getImportedModuleReports().size());
-        Assert.assertEquals(1, pluginInfo.getPropertyDescriptors().size());
+        assertThat(pluginInfo.getImportedModuleReports().size(), is(0));
+        assertThat(pluginInfo.getPropertyDescriptors().size(), is(1));
         checkPropertyDefaultValueEquals(pluginInfo.getPropertyDescriptors().get("src.main.java"),
                 "${basedir}/src/main/java");
-        Assert.assertEquals(2, pluginInfo.getTargetReports().size());
+        assertThat(pluginInfo.getTargetReports().size(), is(2));
 
         TargetReport helloWorld = pluginInfo.getTargetReport("simple-plugin-without-rootlevel-tasks:hello-world");
-        Assert.assertNotNull(helloWorld);
-        Assert.assertEquals("hello-world description", helloWorld.getDescription());
+        assertThat(helloWorld, is(notNullValue()));
+        assertThat(helloWorld.getDescription(), is("hello-world description"));
 
         ExtensionPointReport pluginReadyEP = pluginInfo
                 .getExtensionPointReport("simple-plugin-without-rootlevel-tasks:plugin-ready");
-        Assert.assertNotNull(pluginReadyEP);
-        Assert.assertEquals("plugin-ready description", pluginReadyEP.getDescription());
+        assertThat(pluginReadyEP, is(notNullValue()));
+        assertThat(pluginReadyEP.getDescription(), is("plugin-ready description"));
     }
 
     public void checkPropertyDefaultValueEquals(PropertyDescriptor propertyDescriptor, String expectedValue) {
-        Assert.assertNotNull(propertyDescriptor);
-        Assert.assertEquals(expectedValue, propertyDescriptor.getDefaultValue());
+        assertThat(propertyDescriptor, is(notNullValue()));
+        assertThat(propertyDescriptor.getDefaultValue(), is(expectedValue));
     }
 
     public void checkPropertyValueEquals(PropertyDescriptor propertyDescriptor, String expectedValue) {
-        Assert.assertNotNull(propertyDescriptor);
-        Assert.assertEquals(expectedValue, propertyDescriptor.getValue());
+        assertThat(propertyDescriptor, is(notNullValue()));
+        assertThat(propertyDescriptor.getValue(), is(expectedValue));
     }
+
+    private EasyAntReport generateReport() throws Exception {
+        File module = new File(this.getClass().getResource("module.ivy").toURI());
+        File moduleAnt = new File(this.getClass().getResource("module.ant").toURI());
+        return pluginService.generateEasyAntReport(module, moduleAnt, null);
+    }
+
 }
