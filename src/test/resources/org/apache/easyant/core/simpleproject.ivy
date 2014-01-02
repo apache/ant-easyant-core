@@ -15,7 +15,11 @@
    limitations under the License.
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
-    <info organisation="org.apache.easyant" module="myapp-orchestrator" revision="0.2" status="integration" >
-        <ea:build module="meta-build" revision="0.9"/>
-    </info>
+    <info organisation="mycompany" module="simpleproject-app" status="integration" >
+         <ea:plugin organisation="mycompany"  module="complexplugin" revision="0.1"/>
+   </info>
+    <configurations>
+        <conf name="default" visibility="public" description="runtime dependencies and master artifact can be used with this conf"/>
+        <conf name="test" visibility="private" description="this scope indicates that the dependency is not required for normal use of the application, and is only available for the test compilation and execution phases."/>
+    </configurations>
 </ivy-module>

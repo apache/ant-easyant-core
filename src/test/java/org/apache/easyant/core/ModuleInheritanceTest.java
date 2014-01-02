@@ -18,7 +18,6 @@
 package org.apache.easyant.core;
 
 import org.apache.tools.ant.Project;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,20 +36,19 @@ public class ModuleInheritanceTest extends EasyAntBaseTest {
 
     @Test
     public void shouldInheritPluginWithScopeChild() {
-        executeTarget("source-jar:init");
+        executeTarget("modulewithtarget:mytarget");
     }
 
     @Test
     public void shouldNotInheritElements() {
-        expectBuildException("documentation:init",
-                "Target \"documentation:init\" does not exist in the project \"myapp-core\"");
-        expectPropertyUnset("validate", "my.property");
+        expectPropertyUnset("package", "aproperty");
     }
 
     @Test
     public void shouldInheritBindTarget() {
-        // this property is loaded by source-jar:init and should be bind to validate extensionPoint only if bindtarget
+        // this property is loaded by modulewithtarget:mytarget and should be bind to validate extensionPoint only if
+        // bindtarget
         // has been inherited
-        expectPropertySet("validate", "src.publish.conf", "source");
+        expectPropertySet("package", "apropertyinmytarget", "foobar");
     }
 }

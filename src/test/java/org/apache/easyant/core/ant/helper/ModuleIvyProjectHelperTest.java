@@ -17,18 +17,28 @@
  */
 package org.apache.easyant.core.ant.helper;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.ProjectHelperRepository;
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class ModuleIvyProjectHelperTest {
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     @Before
     public void setUp() {
         // ProjectHelperRepository.getInstance().registerProjectHelper("org.apache.easyant.core.ant.EasyAntProjectHelper");
@@ -38,14 +48,18 @@ public class ModuleIvyProjectHelperTest {
     }
 
     @Test
-    public void shouldHandleModuleIvyFile() throws URISyntaxException {
-        File f = new File(this.getClass().getResource("../../standardJavaProject.ivy").toURI());
+    public void shouldHandleModuleIvyFile() throws URISyntaxException, IOException {
+        File f = new File(this.getClass().getResource("../../simpleproject.ivy").toURI());
         Project p = new Project();
-        p.setBaseDir(new File(this.getClass().getResource(".").toURI()));
+        // disable project ivy instance
+        p.setNewProperty(EasyAntMagicNames.PROJECT_IVY_INSTANCE, EasyAntMagicNames.EASYANT_IVY_INSTANCE);
         p.setNewProperty(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS, "true");
         p.setNewProperty(EasyAntMagicNames.GLOBAL_EASYANT_IVYSETTINGS,
-                this.getClass().getResource("/ivysettings-test.xml").toString());
+                this.getClass().getResource("/repositories/easyant-ivysettings-test.xml").toString());
+        p.setProperty("ivy.cache.dir", folder.newFolder("build-cache").getAbsolutePath());
         ProjectHelper.configureProject(p, f);
-        Assert.assertNotNull(p.getTargets().get("clean"));
+        assertThat(p.getTargets().get("complexplugin:mytarget"), is(notNullValue()));
+        assertThat(p.getProperty("myproperty"), is("foobar"));
+
     }
 }

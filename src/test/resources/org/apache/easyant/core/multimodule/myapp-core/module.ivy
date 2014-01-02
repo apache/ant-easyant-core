@@ -17,6 +17,6 @@
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
     <info organisation="org.apache.easyant" module="myapp-core" revision="0.2" status="integration">
         <extends organisation="org.apache.easyant" module="myapp-parent" revision="latest.revision" location="../parent.ivy"/>
-        <ea:build module="build-std-java" revision="0.9"/>
+        <ea:build organisation="mycompany" module="complexplugin" revision="0.1"/>
     </info>
 </ivy-module>

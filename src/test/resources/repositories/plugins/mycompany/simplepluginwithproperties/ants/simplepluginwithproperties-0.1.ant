@@ -19,4 +19,7 @@
     <ea:parameter property="src.main.java" default="${basedir}/src/main/java" description="directory where sources to be compiled are" />
 
 	<echo>a simple plugin with properties</echo>
+	<target name="simplepluginwithproperties:init">
+		   <property name="aproperty" value="avalue"/>
+	</target>
 </project>

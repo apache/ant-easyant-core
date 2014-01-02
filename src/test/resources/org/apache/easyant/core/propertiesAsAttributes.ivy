@@ -16,9 +16,9 @@
 -->
 <ivy-module version="2.0" xmlns:ea="http://www.easyant.org"> 
     <info organisation="org.apache.easyant" module="standard-java-app" status="integration" >
-        <ea:build mrid="org.apache.easyant.buildtypes#build-std-java;0.9" my.property.inbuildtype="true"/>
-        <ea:plugin module="javadoc" revision="0.9" my.property.inplugin="true"/>
-        <ea:plugin module="javadoc" revision="0.9" my-dashes="true" my.property.inconf="true" conf="myBuild"/>
+        <ea:build organisation="mycompany" module="complexplugin" revision="0.1" my.property.inbuildtype="true"/>
+        <ea:plugin organisation="mycompany" module="simpleplugin" revision="0.1" my.property.inplugin="true"/>
+        <ea:plugin organisation="mycompany" module="simpleplugin" revision="0.1" my-dashes="true" my.property.inconf="true" conf="myBuild"/>
         <ea:configure-project defaulttarget="package" my.property.inconfigureproject="true"/>       
     </info>
     <configurations>

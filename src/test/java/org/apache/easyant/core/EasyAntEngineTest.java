@@ -108,15 +108,15 @@ public class EasyAntEngineTest {
 
     @Test
     public void shouldFindFileInCurrentDirectory() throws URISyntaxException {
-        File startFile = new File(this.getClass().getResource("multimodule/myapp-hello-world").toURI());
+        File startFile = new File(this.getClass().getResource("multimodule/myapp-core").toURI());
         File foundFile = easyantEngine.findBuildModule(startFile.getAbsolutePath(), "module.ivy");
         assertThat(foundFile.getName(), is("module.ivy"));
-        assertThat(foundFile.getParentFile().getName(), is("myapp-hello-world"));
+        assertThat(foundFile.getParentFile().getName(), is("myapp-core"));
     }
 
     @Test
     public void shouldFindFileInParentDirectory() throws URISyntaxException {
-        File startFile = new File(this.getClass().getResource("multimodule/myapp-hello-world").toURI());
+        File startFile = new File(this.getClass().getResource("multimodule/myapp-core").toURI());
         File foundFile = easyantEngine.findBuildModule(startFile.getAbsolutePath(), "parent.ivy");
         assertThat(foundFile.getName(), is("parent.ivy"));
         assertThat(foundFile.getParentFile().getName(), is("multimodule"));
@@ -125,7 +125,7 @@ public class EasyAntEngineTest {
     @Test
     public void shouldFailIfNotFound() throws URISyntaxException {
         expectedException.expectMessage("Could not locate a build file!");
-        File startFile = new File(this.getClass().getResource("multimodule/myapp-hello-world").toURI());
+        File startFile = new File(this.getClass().getResource("multimodule/myapp-core").toURI());
         easyantEngine.findBuildModule(startFile.getAbsolutePath(), "a-missing-file");
     }
 

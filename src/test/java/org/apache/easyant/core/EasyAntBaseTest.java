@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -36,6 +37,8 @@ import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.LogLevel;
 import org.junit.After;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 
 /**
  * A EasyAntBaseTest is a TestCase which executes targets from an easyant module for testing.
@@ -45,7 +48,7 @@ import org.junit.After;
  */
 public abstract class EasyAntBaseTest {
 
-    protected static final String EASYANT_CACHE_DIR = "easyant.default.cache.dir";
+    protected static final String EASYANT_CACHE_DIR = "ivy.cache.dir";
     protected Project project;
     protected EasyAntConfiguration conf;
 
@@ -54,6 +57,9 @@ public abstract class EasyAntBaseTest {
     private StringBuffer outBuffer;
     private StringBuffer errBuffer;
     private BuildException buildException;
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     /**
      * Automatically calls the target called "tearDown" from the build file tested if it exits.
@@ -75,7 +81,6 @@ public abstract class EasyAntBaseTest {
         if (project.getTargets().containsKey(tearDown)) {
             project.executeTarget(tearDown);
         }
-        cleanCache();
         cleanTargetDirectory();
     }
 
@@ -373,10 +378,15 @@ public abstract class EasyAntBaseTest {
         // to avoid side effects due to user settings we ignore this setting by
         // default for test
         conf.getDefinedProps().put(EasyAntMagicNames.IGNORE_USER_IVYSETTINGS, "true");
+        conf.getDefinedProps().put(EasyAntMagicNames.PROJECT_IVY_INSTANCE, EasyAntMagicNames.EASYANT_IVY_INSTANCE);
 
         // Configure easyant ivy instance
-        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/ivysettings-test.xml"));
-
+        conf.setEasyantIvySettingsUrl(this.getClass().getResource("/repositories/easyant-ivysettings-test.xml"));
+        try {
+            conf.getDefinedProps().put("ivy.cache.dir", folder.newFolder().getAbsolutePath());
+        } catch (IOException e) {
+            throw new BuildException(e);
+        }
         File projectModule = new File(filename);
         if (!projectModule.exists()) {
             throw new BuildException("Project " + projectModule.getAbsolutePath() + " does not exists");
@@ -398,11 +408,6 @@ public abstract class EasyAntBaseTest {
         // init the new project instance
         project = new Project();
         project.addBuildListener(new AntTestListener(conf.getMsgOutputLevel()));
-        try {
-            project.setBaseDir(new File(this.getResource(".").toURI()));
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Can't configure basedir");
-        }
         EasyAntEngine eaEngine = new EasyAntEngine(conf);
         eaEngine.initProject(project);
     }

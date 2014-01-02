@@ -17,5 +17,6 @@
 <project name="mycompany#modulewithtarget">
 	<target name="modulewithtarget:mytarget">
 	    <echo>a message from mytarget</echo>
+		<property name="apropertyinmytarget" value="foobar"/>
 	</target>
 </project>

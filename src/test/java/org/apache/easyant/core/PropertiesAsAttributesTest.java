@@ -17,8 +17,10 @@
  */
 package org.apache.easyant.core;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.apache.tools.ant.Project;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,7 +48,7 @@ public class PropertiesAsAttributesTest extends EasyAntBaseTest {
 
     @Test
     public void shouldHandlePropertiesInConfigureProject() {
-        Assert.assertEquals("dist", project.getDefaultTarget());
+        assertThat(project.getDefaultTarget(), is("package"));
         assertPropertyEquals("my.property.inconfigureproject", "true");
     }
 

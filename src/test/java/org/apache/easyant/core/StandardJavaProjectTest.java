@@ -30,13 +30,8 @@ public class StandardJavaProjectTest extends EasyAntBaseTest {
     }
 
     @Test
-    public void shouldInvokeClean() {
-        executeTarget("clean");
-    }
-
-    @Test
-    public void shouldInvokeCompile() {
-        executeTarget("compile");
+    public void shouldInvokeMyTarget() {
+        executeTarget("modulewithtarget:mytarget");
     }
 
     @Test
@@ -45,26 +40,21 @@ public class StandardJavaProjectTest extends EasyAntBaseTest {
     }
 
     @Test
-    public void shouldInvokeVerify() {
-        executeTarget("verify");
-    }
-
-    @Test
     public void shouldImportWithoutAsAttribute() {
-        // <ea:plugin module="javadoc" revision="0.1"/>
+        // <ea:plugin organisation="mycompany" module="modulewithtarget:mytarget" revision="0.1"/>
         // no "as" attribute is specified, easyant should prefix all targets with "module" value by default
-        executeTarget("javadoc:javadoc");
+        executeTarget("modulewithtarget:mytarget");
     }
 
     @Test
     public void shouldImportWithAsAttribute() {
-        // <ea:plugin module="javadoc" revision="0.1" as="foobar"/>
-        executeTarget("foobarjavadoc:javadoc");
+        // <ea:plugin organisation="mycompany" module="modulewithtarget:mytarget" revision="0.1" as="foobar"/>
+        executeTarget("foobarmodulewithtarget:mytarget");
     }
 
     @Test
     public void shouldOverrideExistingProperty() {
-        assertPropertyEquals("default.build.number", "10");
+        assertPropertyEquals("myproperty", "newvalue");
     }
 
 }
