@@ -268,7 +268,7 @@ public class SubModule extends AbstractEasyAntTask {
 
         subModule.setJavaVersionProperty();
         for (int i = 0; i < getProject().getBuildListeners().size(); i++) {
-            BuildListener buildListener = (BuildListener) getProject().getBuildListeners().elementAt(i);
+            BuildListener buildListener = getProject().getBuildListeners().elementAt(i);
             subModule.addBuildListener(buildListener);
         }
         // explicitly add the execution timer to time
@@ -560,7 +560,7 @@ public class SubModule extends AbstractEasyAntTask {
         // Needed for backward compatibility
         Set<String> set = new HashSet<String>();
         for (int i = properties.size() - 1; i >= 0; --i) {
-            Property p = (Property) properties.get(i);
+            Property p = properties.get(i);
             if (p.getName() != null && !p.getName().equals("")) {
                 if (set.contains(p.getName())) {
                     properties.remove(i);

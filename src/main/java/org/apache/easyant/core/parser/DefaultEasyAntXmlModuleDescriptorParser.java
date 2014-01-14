@@ -788,7 +788,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             }
 
             DefaultExtendsDescriptor ed = new DefaultExtendsDescriptor(parent, location,
-                    (String[]) extendTypes.toArray(new String[extendTypes.size()]), local);
+                    extendTypes.toArray(new String[extendTypes.size()]), local);
             getMd().addInheritedDescriptor(ed);
 
             mergeWithOtherModuleDescriptor(extendTypes, parent);

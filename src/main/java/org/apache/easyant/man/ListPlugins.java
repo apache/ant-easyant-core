@@ -39,11 +39,9 @@ public class ListPlugins extends EasyantOption {
         Set<ImportedModuleReport> moduleReps = getEareport().getImportedModuleReports();
         for (ImportedModuleReport importedModuleReport : moduleReps) {
             getProject()
-                    .log(
-                            "\t"
-                                    + importedModuleReport.getModuleMrid()
-                                    + (importedModuleReport.getAs() == null ? "" : ": Known as "
-                                            + importedModuleReport.getAs()));
+                    .log("\t"
+                            + importedModuleReport.getModuleMrid()
+                            + (importedModuleReport.getAs() == null ? "" : ": Known as " + importedModuleReport.getAs()));
         }
 
         getProject().log(

@@ -267,7 +267,7 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
                     }
                 }
 
-                Target t = (Target) projectTargets.get(phase);
+                Target t = projectTargets.get(phase);
                 if (t != null) {
                     if (!(t instanceof Phase)) {
                         throw new BuildException("referenced target " + phase + " is not a phase");

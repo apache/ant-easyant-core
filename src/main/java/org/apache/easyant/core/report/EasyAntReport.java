@@ -306,6 +306,7 @@ public class EasyAntReport {
      * @return a list of all the properties available in this module or in all imported modules
      * @deprecated since 0.10 use getPropertyDescriptors() method instead or getPropertiesFromCurrentModule()
      */
+    @Deprecated
     public Map<String, PropertyDescriptor> getAvailableProperties() {
         return getPropertyDescriptors();
     }

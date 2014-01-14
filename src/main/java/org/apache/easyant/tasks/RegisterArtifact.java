@@ -65,7 +65,7 @@ public class RegisterArtifact extends IvyPostResolveTask {
                     md.addArtifact(declaredConfs[j], artifact);
                 }
             } else {
-                //create configuration if it doesn't exist
+                // create configuration if it doesn't exist
                 if (md.getConfiguration(configurations[i]) == null) {
                     Configuration generatedConfiguration = new Configuration(configurations[i]);
                     md.addConfiguration(generatedConfiguration);

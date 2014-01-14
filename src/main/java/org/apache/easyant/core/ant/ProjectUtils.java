@@ -163,7 +163,7 @@ public class ProjectUtils {
             Map.Entry<?, ?> entry = (Map.Entry<?, ?>) i.next();
             String name = (String) entry.getKey();
             Target target = (Target) entry.getValue();
-            Target otherTarget = (Target) locationMap.get(target.getLocation());
+            Target otherTarget = locationMap.get(target.getLocation());
             // Place this entry in the location map if
             // a) location is not in the map
             // b) location is in map, but it's name is longer

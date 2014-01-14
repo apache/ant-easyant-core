@@ -22,19 +22,17 @@ import org.apache.tools.ant.RuntimeConfigurable;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 
-
 /**
  * A special kind of target that must be empty.
- *
+ * 
  * @since Ant 1.8.0
  */
 public class Phase extends Target {
-    
+
     // no "clone" constructor since I'm not really sure where it is
     // used
 
-    private static final String NO_CHILDREN_ALLOWED
-        = "you must not nest child elements into a phase";
+    private static final String NO_CHILDREN_ALLOWED = "you must not nest child elements into a phase";
 
     /**
      * Throws an exception.

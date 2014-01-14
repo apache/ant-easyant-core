@@ -28,86 +28,85 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
 /**
- * Base class for all classes implementing functionality
- * for project switches that are accepted on command
- * line when invoking easyant.
+ * Base class for all classes implementing functionality for project switches that are accepted on command line when
+ * invoking easyant.
  * 
- * For example,
- * <br>
- *      easyant -listTargets
+ * For example, <br>
+ * easyant -listTargets
  * 
  * <p />
- * The -listTargets and similar switches (like -describe etc.) are
- * all extending this class.
+ * The -listTargets and similar switches (like -describe etc.) are all extending this class.
  * 
- * For each manual switch that is intended to be supported by easyant,
- * a new implementing class for this class must be added that
- * implements the switch functionality.
+ * For each manual switch that is intended to be supported by easyant, a new implementing class for this class must be
+ * added that implements the switch functionality.
  * 
  */
 public abstract class EasyantOption extends Option {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     public static final String LINE_SEP = System.getProperty("line.separator");
     private Project project;
     private EasyAntReport eareport;
-    private boolean stopBuild=false;
-    
-    public EasyantOption(String opt, boolean hasArg, String description)
-            throws IllegalArgumentException {
+    private boolean stopBuild = false;
+
+    public EasyantOption(String opt, boolean hasArg, String description) throws IllegalArgumentException {
         super(opt, hasArg, description);
     }
-    public EasyantOption(String opt, String longOpt, boolean hasArg,
-            String description) throws IllegalArgumentException {
+
+    public EasyantOption(String opt, String longOpt, boolean hasArg, String description)
+            throws IllegalArgumentException {
         super(opt, longOpt, hasArg, description);
     }
-    public EasyantOption(String opt, String description)
-            throws IllegalArgumentException {
+
+    public EasyantOption(String opt, String description) throws IllegalArgumentException {
         super(opt, description);
     }
+
     public void execute() {
-        if (getProject()==null) {
+        if (getProject() == null) {
             throw new IllegalStateException("project can't be null");
         }
         project.log(LINE_SEP + "Project Manual");
         project.log("--------------");
     }
+
     public Project getProject() {
         return project;
     }
+
     public void setProject(Project project) {
         this.project = project;
     }
+
     public EasyAntReport getEareport() {
-        if (eareport==null) {
+        if (eareport == null) {
             try {
-                File moduleDescriptor = new File(
-                        project.getProperty(EasyAntMagicNames.EASYANT_FILE));
-                File optionalAntModule = new File(moduleDescriptor.getParent(),
-                        EasyAntConstants.DEFAULT_BUILD_FILE);
+                File moduleDescriptor = new File(project.getProperty(EasyAntMagicNames.EASYANT_FILE));
+                File optionalAntModule = new File(moduleDescriptor.getParent(), EasyAntConstants.DEFAULT_BUILD_FILE);
                 File overrideAntModule = new File(moduleDescriptor.getParent(),
                         EasyAntConstants.DEFAULT_OVERRIDE_BUILD_FILE);
 
-                PluginService pluginService = (PluginService)project.getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
-                setEareport(pluginService.generateEasyAntReport(moduleDescriptor,optionalAntModule,overrideAntModule));
+                PluginService pluginService = (PluginService) project
+                        .getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
+                setEareport(pluginService.generateEasyAntReport(moduleDescriptor, optionalAntModule, overrideAntModule));
             } catch (Exception e) {
-                throw new BuildException("EasyAntMan could not be initialized. Details: " + e.getMessage(),e);
+                throw new BuildException("EasyAntMan could not be initialized. Details: " + e.getMessage(), e);
             }
         }
         return eareport;
     }
+
     public void setEareport(EasyAntReport eareport) {
         this.eareport = eareport;
     }
+
     public boolean isStopBuild() {
         return stopBuild;
     }
+
     public void setStopBuild(boolean stopBuild) {
         this.stopBuild = stopBuild;
     }
-    
-    
-    
-    
+
 }

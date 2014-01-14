@@ -96,17 +96,18 @@ public class GoOffline extends AbstractEasyAntTask {
      */
     private void installBuildTypeAndPlugins(EasyAntReport easyAntReport) {
         for (ImportedModuleReport importedModule : easyAntReport.getImportedModuleReports()) {
-            install(ModuleRevisionId.parse(importedModule.getModuleMrid()),getEasyantResolverName(),EasyAntMagicNames.EASYANT_IVY_INSTANCE);
+            install(ModuleRevisionId.parse(importedModule.getModuleMrid()), getEasyantResolverName(),
+                    EasyAntMagicNames.EASYANT_IVY_INSTANCE);
             if (importedModule.getEasyantReport() != null) {
-                //install module dependencies
-                ResolveReport resolveReport=importedModule.getEasyantReport().getResolveReport();
+                // install module dependencies
+                ResolveReport resolveReport = importedModule.getEasyantReport().getResolveReport();
                 for (Iterator<?> iterator = resolveReport.getDependencies().iterator(); iterator.hasNext();) {
                     IvyNode dependency = (IvyNode) iterator.next();
                     install(dependency.getResolvedId(), getEasyantResolverName(),
                             EasyAntMagicNames.EASYANT_IVY_INSTANCE);
                 }
                 // install plugins declared inside current module
-                
+
                 installBuildTypeAndPlugins(importedModule.getEasyantReport());
             }
 

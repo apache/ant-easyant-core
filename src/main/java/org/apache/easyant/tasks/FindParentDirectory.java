@@ -27,32 +27,32 @@ import org.apache.tools.ant.Task;
  * Find parent directory containing a given file
  */
 public class FindParentDirectory extends Task {
-    
-    private String filename=null;
-    private String property=null;
-    private boolean haltonmissing=true;
-    private boolean haltonfirstfound=false;
+
+    private String filename = null;
+    private String property = null;
+    private boolean haltonmissing = true;
+    private boolean haltonfirstfound = false;
 
     public void execute() throws BuildException {
         if (getFilename() == null || getProperty() == null) {
             throw new BuildException("filename and property attributes are mandatory");
         }
-        File f = new File(getProject().getBaseDir(),getFilename());
+        File f = new File(getProject().getBaseDir(), getFilename());
         String highest = null;
-        boolean canContinue=true;
-        while (canContinue && f.getParentFile() !=null) {
+        boolean canContinue = true;
+        while (canContinue && f.getParentFile() != null) {
             f = f.getParentFile();
             File child = new File(f, getFilename());
-            log ("Searching "+ getFilename() + " in "+ child.getAbsolutePath(),Project.MSG_DEBUG);
+            log("Searching " + getFilename() + " in " + child.getAbsolutePath(), Project.MSG_DEBUG);
             if (child.exists()) {
-                log (getFilename() + " found !",Project.MSG_DEBUG);
+                log(getFilename() + " found !", Project.MSG_DEBUG);
                 highest = f.getAbsolutePath();
                 if (isHaltonfirstfound()) {
-                    canContinue=false;
+                    canContinue = false;
                 }
-            //at least halt when first is found
-            } else if(highest !=null && isHaltonmissing()) {
-                canContinue=false;
+                // at least halt when first is found
+            } else if (highest != null && isHaltonmissing()) {
+                canContinue = false;
             }
         }
         if (highest == null) {
@@ -63,6 +63,7 @@ public class FindParentDirectory extends Task {
 
     /**
      * get file name to search on parent directories
+     * 
      * @return a relative filename
      */
     public String getFilename() {
@@ -71,14 +72,17 @@ public class FindParentDirectory extends Task {
 
     /**
      * file name to search on parent directories
-     * @param filename a relative filename
+     * 
+     * @param filename
+     *            a relative filename
      */
     public void setFilename(String filename) {
         this.filename = filename;
     }
 
     /**
-     * Get property to set when parent directory contains requested file 
+     * Get property to set when parent directory contains requested file
+     * 
      * @return name of the property
      */
     public String getProperty() {
@@ -87,7 +91,9 @@ public class FindParentDirectory extends Task {
 
     /**
      * Set the property name used when parent directory contains requested file
-     * @param property name of the property
+     * 
+     * @param property
+     *            name of the property
      */
     public void setProperty(String property) {
         this.property = property;
@@ -95,7 +101,8 @@ public class FindParentDirectory extends Task {
 
     /**
      * Specify if the task should stop when a parent directory is missing the requested file
-     * @return 
+     * 
+     * @return
      */
     public boolean isHaltonmissing() {
         return haltonmissing;
@@ -103,6 +110,7 @@ public class FindParentDirectory extends Task {
 
     /**
      * Specify if the task should stop when a parent directory is missing the requested file
+     * 
      * @param haltonmissing
      */
     public void setHaltonmissing(boolean haltonmissing) {
@@ -111,6 +119,7 @@ public class FindParentDirectory extends Task {
 
     /**
      * Specify if the task should stop when first parent directory is found
+     * 
      * @return
      */
     public boolean isHaltonfirstfound() {
@@ -119,10 +128,11 @@ public class FindParentDirectory extends Task {
 
     /**
      * Specify if the task should stop when first parent directory is found
+     * 
      * @param haltonfirstfound
      */
     public void setHaltonfirstfound(boolean haltonfirstfound) {
         this.haltonfirstfound = haltonfirstfound;
     }
-    
+
 }

@@ -23,9 +23,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Property;
 
 /**
- * This task is similar to the Property task provided by ant except that you can
- * specify build configurations If no build configurations are specified the
- * property will be loaded in all cases, otherwise the property will be loaded
+ * This task is similar to the Property task provided by ant except that you can specify build configurations If no
+ * build configurations are specified the property will be loaded in all cases, otherwise the property will be loaded
  * only if the build configuration is active
  * 
  */
@@ -35,19 +34,20 @@ public class PropertyTask extends Property {
 
     @Override
     public void execute() throws BuildException {
-        //Build the message
-        StringBuilder message= new StringBuilder("property ");
-        if (getName() != null ) {
+        // Build the message
+        StringBuilder message = new StringBuilder("property ");
+        if (getName() != null) {
             message.append(getName());
         }
-        if (getFile()!=null) {
+        if (getFile() != null) {
             message.append("file ").append(getFile());
         }
-        
-        if (BuildConfigurationHelper.isBuildConfigurationActive(getBuildConfigurations(), getProject(), message.toString())) {
+
+        if (BuildConfigurationHelper.isBuildConfigurationActive(getBuildConfigurations(), getProject(),
+                message.toString())) {
             super.execute();
         } else {
-                log("this property will be skipped ", Project.MSG_DEBUG);
+            log("this property will be skipped ", Project.MSG_DEBUG);
         }
     }
 
@@ -58,7 +58,7 @@ public class PropertyTask extends Property {
     public void setBuildConfigurations(String confs) {
         this.buildConfigurations = confs;
     }
-    
+
     public void setConf(String conf) {
         this.buildConfigurations = conf;
     }

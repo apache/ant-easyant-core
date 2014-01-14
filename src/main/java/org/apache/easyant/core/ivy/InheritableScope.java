@@ -18,5 +18,5 @@
 package org.apache.easyant.core.ivy;
 
 public enum InheritableScope {
-    CHILD,BOTH 
+    CHILD, BOTH
 }

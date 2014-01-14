@@ -484,7 +484,7 @@ public class EasyAntMain implements AntMain {
     private static int findTargetPosition(List<String> names, String name) {
         int res = names.size();
         for (int i = 0; i < names.size() && res == names.size(); i++) {
-            if (name.compareTo((String) names.get(i)) < 0) {
+            if (name.compareTo(names.get(i)) < 0) {
                 res = i;
             }
         }

@@ -39,18 +39,15 @@ public class EasyantConfigurationFactory {
         return new EasyAntConfiguration();
     }
 
-    public EasyAntConfiguration createConfigurationFromFile(
-            final EasyAntConfiguration easyAntConfiguration,
+    public EasyAntConfiguration createConfigurationFromFile(final EasyAntConfiguration easyAntConfiguration,
             URL configUrl) throws Exception {
-        
-        return parser.parseAndMerge(configUrl,easyAntConfiguration);
+
+        return parser.parseAndMerge(configUrl, easyAntConfiguration);
     }
-    
-    public EasyAntConfiguration createConfigurationFromFile(
-            URL configurationFile) throws Exception {
+
+    public EasyAntConfiguration createConfigurationFromFile(URL configurationFile) throws Exception {
         EasyAntConfiguration easyAntConfiguration = createDefaultConfiguration();
-        return createConfigurationFromFile(easyAntConfiguration,
-                configurationFile);
+        return createConfigurationFromFile(easyAntConfiguration, configurationFile);
     }
 
 }

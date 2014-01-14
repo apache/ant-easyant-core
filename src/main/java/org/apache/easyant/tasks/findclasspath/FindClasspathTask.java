@@ -24,8 +24,7 @@ import org.apache.easyant.tasks.AbstractEasyAntTask;
 import org.apache.tools.ant.BuildException;
 
 /**
- * This task provides a mechanism to build a plugin classpath depending on
- * rules.
+ * This task provides a mechanism to build a plugin classpath depending on rules.
  */
 public class FindClasspathTask extends AbstractEasyAntTask {
     private String pathid;
@@ -38,7 +37,7 @@ public class FindClasspathTask extends AbstractEasyAntTask {
     private List<AbstractFindClassPathStrategy> strategies = new ArrayList<AbstractFindClassPathStrategy>();
 
     public void execute() throws BuildException {
-        //define the default strategy if there is no nested strategy
+        // define the default strategy if there is no nested strategy
         if (getStrategies().size() == 0) {
             add(createStrategy(new ProjectDependencyStrategy()));
             add(createStrategy(new BasicConfigurationStrategy()));
@@ -123,7 +122,7 @@ public class FindClasspathTask extends AbstractEasyAntTask {
             }
         }
     }
-    
+
     protected AbstractFindClassPathStrategy createStrategy(AbstractFindClassPathStrategy strategy) {
         strategy.setProject(getProject());
         return strategy;

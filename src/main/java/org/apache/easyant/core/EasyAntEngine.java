@@ -261,7 +261,7 @@ public class EasyAntEngine {
         project.addBuildListener(createLogger());
 
         for (int i = 0; i < configuration.getListeners().size(); i++) {
-            String className = (String) configuration.getListeners().get(i);
+            String className = configuration.getListeners().get(i);
             BuildListener listener = (BuildListener) ClasspathUtils.newInstance(className,
                     EasyAntEngine.class.getClassLoader(), BuildListener.class);
             project.setProjectReference(listener);

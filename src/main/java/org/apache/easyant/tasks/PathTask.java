@@ -27,13 +27,10 @@ import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Path.PathElement;
 
 /**
- * This task defines or contributes to an existing path. 
- * This task is similar to path task provided by ant but add 
- * an override attribute with these values:
- *      true: new definition will take precedence over preceding one if any 
- *      false: new definition will be discarded if any definition already exists 
- *      append: new definition will be added to the existing one if any 
- *      prepend: new definition will be added at the beginning of the existing one if any
+ * This task defines or contributes to an existing path. This task is similar to path task provided by ant but add an
+ * override attribute with these values: true: new definition will take precedence over preceding one if any false: new
+ * definition will be discarded if any definition already exists append: new definition will be added to the existing
+ * one if any prepend: new definition will be added at the beginning of the existing one if any
  */
 public class PathTask extends Task {
     public static final String OVERWRITE_TRUE = "true";
@@ -58,10 +55,8 @@ public class PathTask extends Task {
         }
         Object element = getProject().getReference(pathid);
         if (element == null) {
-            if (OVERWRITE_PREPEND.equals(overwrite)
-                    || OVERWRITE_APPEND.equals(overwrite)) {
-                throw new BuildException("destination path not found: "
-                        + pathid);
+            if (OVERWRITE_PREPEND.equals(overwrite) || OVERWRITE_APPEND.equals(overwrite)) {
+                throw new BuildException("destination path not found: " + pathid);
             }
             getProject().addReference(pathid, path);
         } else {
@@ -69,8 +64,7 @@ public class PathTask extends Task {
                 return;
             }
             if (!(element instanceof Path)) {
-                throw new BuildException("destination path is not a path: "
-                        + element.getClass());
+                throw new BuildException("destination path is not a path: " + element.getClass());
             }
             if (OVERWRITE_TRUE.equals(overwrite)) {
                 getProject().addReference(pathid, path);
@@ -114,7 +108,8 @@ public class PathTask extends Task {
     }
 
     /**
-     * Get a path id 
+     * Get a path id
+     * 
      * @return a pathId
      */
     public String getPathid() {
@@ -122,7 +117,8 @@ public class PathTask extends Task {
     }
 
     /**
-     * @param pathid a pathId 
+     * @param pathid
+     *            a pathId
      */
     public void setPathid(String pathid) {
         this.pathid = pathid;
@@ -130,6 +126,7 @@ public class PathTask extends Task {
 
     /**
      * return a string which define if a path is overwritable (Possible values are true/false/append/prepend)
+     * 
      * @return Possible values are true/false/append/prepend
      */
     public String getOverwrite() {
@@ -138,7 +135,9 @@ public class PathTask extends Task {
 
     /**
      * specify if easyant should overwrite the path (Possible values are true/false/append/prepend)
-     * @param overwrite Possible values are true/false/append/prepend
+     * 
+     * @param overwrite
+     *            Possible values are true/false/append/prepend
      */
     public void setOverwrite(String overwrite) {
         this.overwrite = overwrite;

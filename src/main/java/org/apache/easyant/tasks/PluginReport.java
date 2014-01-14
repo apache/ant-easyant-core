@@ -232,7 +232,7 @@ public class PluginReport extends AbstractEasyAntTask {
 
             // add the provided XSLT parameters
             for (Iterator<Param> it = params.iterator(); it.hasNext();) {
-                XSLTProcess.Param param = (XSLTProcess.Param) it.next();
+                XSLTProcess.Param param = it.next();
                 transformer.setParameter(param.getName(), param.getExpression());
             }
             ModuleRevisionId moduleRevisionId = easyantReport.getModuleDescriptor().getModuleRevisionId();

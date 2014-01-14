@@ -43,7 +43,7 @@ public class BindTarget extends Task {
                     Project.MSG_DEBUG);
             return;
         }
-        Target t = (Target) getProject().getTargets().get(getTarget());
+        Target t = getProject().getTargets().get(getTarget());
         if (t == null) {
             throw new BuildException("unable to find target " + getTarget());
         }
@@ -93,7 +93,7 @@ public class BindTarget extends Task {
                 throw new BuildException("can't add target " + getTarget() + " to extension-point " + getExtensionOf()
                         + " because the extension-point" + " is unknown.");
             }
-            Target p = (Target) getProject().getTargets().get(getExtensionOf());
+            Target p = getProject().getTargets().get(getExtensionOf());
 
             if (!(p instanceof ExtensionPoint)) {
                 throw new BuildException("referenced target " + getExtensionOf() + " is not a extension-point");
