@@ -34,7 +34,7 @@ goto end
 :run
 rem set the default parameters for easyant
 set EASYANT_ARGS=-lib "%EASYANT_HOME%\lib" -main org.apache.easyant.core.EasyAntMain %EASYANT_ARGS%
-set EASYANT_OPTS=-Deasyant.home=%EASYANT_HOME% %EASYANT_OPTS%
+set EASYANT_OPTS=-Deasyant.home="%EASYANT_HOME%" %EASYANT_OPTS%
 
 
 rem This part is fully inspirated by ant's script with some easyant customisation
