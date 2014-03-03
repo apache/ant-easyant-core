@@ -164,6 +164,7 @@ public class DefaultPluginServiceImpl implements PluginService {
 
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
+            resolveOptions.setUseCacheOnly(true);
             resolveOptions.setConfs(conf.split(","));
             final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
                     .resolve(moduleRevisionId, resolveOptions, true);
