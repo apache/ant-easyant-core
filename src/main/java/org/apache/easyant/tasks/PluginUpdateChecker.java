@@ -38,6 +38,7 @@ public class PluginUpdateChecker extends AbstractEasyAntTask {
     private File moduleAnt;
     private File overrideModuleAnt;
     private String revisionToCheck = "latest.release";
+    private boolean pluginUpdateDetected=false;
 
     public void execute() throws BuildException {
         PluginService pluginService = (PluginService) getProject().getReference(
@@ -67,6 +68,9 @@ public class PluginUpdateChecker extends AbstractEasyAntTask {
             for (ImportedModuleReport importedModuleReport : easyantReport.getImportedModuleReports()) {
                 checkNewRevision(importedModuleReport.getModuleRevisionId());
             }
+            if (!pluginUpdateDetected) {
+                log("\tAll plugins are up to date");
+            }
         } catch (Exception e) {
             throw new BuildException(e);
         }
@@ -92,6 +96,7 @@ public class PluginUpdateChecker extends AbstractEasyAntTask {
                     .append(" -> ")//
                     .append(resolvedRevision);
             log(sb.toString());
+            pluginUpdateDetected=true;
         }
 
     }
