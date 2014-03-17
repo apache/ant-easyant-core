@@ -90,6 +90,8 @@ public class DefaultPluginServiceImpl implements PluginService {
     private final Ivy ivyInstance;
     private final IvyAntSettings easyantIvySettings;
 
+    private boolean offlineMode;
+
     /**
      * This is the default constructor, the IvyContext should be the IvyContext configured to the easyant ivy instance
      * 
@@ -126,8 +128,8 @@ public class DefaultPluginServiceImpl implements PluginService {
 
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
-            resolveOptions.setUseCacheOnly(true);
             resolveOptions.setConfs(conf.split(","));
+            resolveOptions.setUseCacheOnly(offlineMode);
             ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
                     .resolve(pluginIvyFile.toURI().toURL(), resolveOptions);
             eaReport = new EasyAntReport();
@@ -165,8 +167,8 @@ public class DefaultPluginServiceImpl implements PluginService {
 
             ResolveOptions resolveOptions = new ResolveOptions();
             resolveOptions.setLog(ResolveOptions.LOG_QUIET);
-            resolveOptions.setUseCacheOnly(true);
             resolveOptions.setConfs(conf.split(","));
+            resolveOptions.setUseCacheOnly(offlineMode);
             final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
                     .resolve(moduleRevisionId, resolveOptions, true);
             eaReport = new EasyAntReport();
@@ -752,5 +754,9 @@ public class DefaultPluginServiceImpl implements PluginService {
             }
             return null;
         }
+    }
+
+    public void setOfflineMode(boolean offlineMode) {
+        this.offlineMode = offlineMode;
     }
 }

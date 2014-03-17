@@ -201,4 +201,10 @@ public interface PluginService {
      * @return a string representing the description of the module descriptor
      */
     String getBuildTypeDescription(String moduleRevisionId);
+
+    /**
+     * Specify if plugin service should be used offline
+     * @param offlineMode
+     */
+    void setOfflineMode(boolean offlineMode);
 }
