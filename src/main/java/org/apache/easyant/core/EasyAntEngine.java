@@ -244,6 +244,8 @@ public class EasyAntEngine {
 
     public void configurePluginService(Project project, IvyAntSettings easyantIvyInstance) {
         pluginService = new DefaultPluginServiceImpl(easyantIvyInstance);
+        String property = project.getProperty(EasyAntMagicNames.EASYANT_OFFLINE);
+        pluginService.setOfflineMode(project.toBoolean(property));
         project.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE, pluginService);
 
     }
@@ -361,14 +363,13 @@ public class EasyAntEngine {
         return file;
     }
 
+
     /**
-     * configure a given project with current configuration
+     * configure easyant (listeners, inputhandlers, proxy, easyantIvyInstance, systems plugins etc...)
      * 
-     * @param project
-     *            a given project
-     * @throws BuildException
+     * @param project a project to configure
      */
-    public void configureProject(Project project) throws BuildException {
+    public void configureEasyAnt(Project project) {
 
         project.setCoreLoader(configuration.getCoreLoader());
 
@@ -396,14 +397,6 @@ public class EasyAntEngine {
 
         project.setName("EasyAnt");
 
-    }
-
-    /**
-     * Initialize an easyant Project
-     * 
-     * @param project
-     */
-    public void initProject(Project project) {
         try {
             project.init();
             project.addReference(EasyAntMagicNames.EASYANT_ENGINE_REF, this);
@@ -418,7 +411,7 @@ public class EasyAntEngine {
 
             project.setUserProperty(EasyAntMagicNames.EASYANT_OFFLINE, Boolean.toString(configuration.isOffline()));
 
-            ProjectHelper helper = ProjectUtils.configureProjectHelper(project);
+            ProjectUtils.configureProjectHelper(project);
 
             IvyAntSettings easyantIvySettings = configureEasyAntIvyInstance(project);
             configurePluginService(project, easyantIvySettings);
@@ -438,7 +431,18 @@ public class EasyAntEngine {
                 project.setProperty(EasyAntMagicNames.ACTIVE_BUILD_CONFIGURATIONS, buildConfigurations);
             }
             loadSystemPlugins(project, true);
+        } catch (RuntimeException exc) {
+            fireBuildFinished(project, exc);
+            throw exc;
+        }
+    }
 
+    /**
+     * Load an easyant project and resolve extension points
+     * @param project 
+     */
+    public void loadProject(Project project) {
+        try {
             locateBuildModuleAndBuildFile(project);
 
             if (configuration.getBuildModule() != null || configuration.getBuildFile() != null) {
@@ -447,15 +451,12 @@ public class EasyAntEngine {
                 lm.setBuildFile(configuration.getBuildFile());
                 executeTask(lm, "load-module", project);
             }
-
-            helper.resolveExtensionOfAttributes(project);
+            ProjectUtils.getConfiguredProjectHelper(project).resolveExtensionOfAttributes(project);
         } catch (RuntimeException exc) {
             fireBuildFinished(project, exc);
             throw exc;
-        } catch (Error e) {
-            fireBuildFinished(project, e);
-            throw e;
         }
+
     }
 
     protected void fireBuildFinished(Project project, Throwable error) {
@@ -576,8 +577,8 @@ public class EasyAntEngine {
      */
     public void doBuild() throws BuildException {
         final Project project = new Project();
-        configureProject(project);
-        initProject(project);
+        configureEasyAnt(project);
+        loadProject(project);
         doBuild(project);
 
     }
@@ -652,7 +653,7 @@ public class EasyAntEngine {
     }
 
     /**
-     * This is a static method used to configure and initialize an existing project
+     * This is a static method used to configure and load an existing project
      * 
      * @param project
      *            a given project
@@ -661,11 +662,11 @@ public class EasyAntEngine {
      * @return configured project
      * @throws BuildException
      */
-    public static Project configureAndInitProject(Project project, EasyAntConfiguration eaConfiguration)
+    public static Project configureAndLoadProject(Project project, EasyAntConfiguration eaConfiguration)
             throws BuildException {
         EasyAntEngine eaEngine = new EasyAntEngine(eaConfiguration);
-        eaEngine.configureProject(project);
-        eaEngine.initProject(project);
+        eaEngine.configureEasyAnt(project);
+        eaEngine.loadProject(project);
         return project;
     }
 

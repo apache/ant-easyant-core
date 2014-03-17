@@ -69,6 +69,9 @@ public class EasyAntEngineTest {
     public void setUp() throws IOException {
         File cache = temporaryFolder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
+        easyAntConfiguration.setEasyantIvySettingsUrl(this.getClass().getResource(
+                "/repositories/easyant-ivysettings-test.xml"));
+
     }
 
     @Test
@@ -145,46 +148,46 @@ public class EasyAntEngineTest {
     }
 
     @Test
-    public void shouldConfigureProject() {
-        easyantEngine.configureProject(project);
+    public void shouldConfigureEasyAnt() {
+        easyantEngine.configureEasyAnt(project);
         assertThat(Thread.currentThread().getPriority(), is(Thread.NORM_PRIORITY));
         assertThat(easyAntConfiguration.getCoreLoader(), nullValue());
         assertThat(easyAntConfiguration.isProxy(), is(false));
-        assertProjectIsConfigured();
+        assertEasyAntIsConfigured();
     }
 
     @Test
-    public void shouldConfigureProjectWithCustomPriority() {
+    public void shouldConfigureEasyAntWithCustomPriority() {
         easyAntConfiguration.setThreadPriority(10);
-        easyantEngine.configureProject(project);
+        easyantEngine.configureEasyAnt(project);
         assertThat(Thread.currentThread().getPriority(), is(easyAntConfiguration.getThreadPriority()));
-        assertProjectIsConfigured();
+        assertEasyAntIsConfigured();
     }
 
     @Test
-    public void shouldConfigureProjectWithCustomCoreLoader() {
+    public void shouldConfigureEasyAntWithCustomCoreLoader() {
         easyAntConfiguration.setCoreLoader(this.getClass().getClassLoader());
-        easyantEngine.configureProject(project);
-        assertProjectIsConfigured();
+        easyantEngine.configureEasyAnt(project);
+        assertEasyAntIsConfigured();
         assertThat(project.getCoreLoader(), is(this.getClass().getClassLoader()));
     }
 
     @Test
-    public void shouldConfigureProjectWhenKeepGoingModeIsTrue() {
+    public void shouldConfigureEasyAntWhenKeepGoingModeIsTrue() {
         easyAntConfiguration.setKeepGoingMode(true);
-        easyantEngine.configureProject(project);
-        assertProjectIsConfigured();
+        easyantEngine.configureEasyAnt(project);
+        assertEasyAntIsConfigured();
     }
 
     @Test
-    public void shouldConfigureProjectWhenProxyIsTrue() {
+    public void shouldEasyAntProjectWhenProxyIsTrue() {
         String oldValue = System.getProperty(ProxySetup.USE_SYSTEM_PROXIES);
         System.getProperties().remove(ProxySetup.USE_SYSTEM_PROXIES);
 
         easyAntConfiguration.setProxy(true);
-        easyantEngine.configureProject(project);
+        easyantEngine.configureEasyAnt(project);
 
-        assertProjectIsConfigured();
+        assertEasyAntIsConfigured();
 
         if (oldValue != null) {
             System.setProperty(ProxySetup.USE_SYSTEM_PROXIES, oldValue);
@@ -193,7 +196,7 @@ public class EasyAntEngineTest {
         }
     }
 
-    private void assertProjectIsConfigured() {
+    private void assertEasyAntIsConfigured() {
         assertThat(project.getCoreLoader(), is(easyAntConfiguration.getCoreLoader()));
         assertThat(project.isKeepGoingMode(), is(easyAntConfiguration.isKeepGoingMode()));
         assertThat(Boolean.parseBoolean(System.getProperty(ProxySetup.USE_SYSTEM_PROXIES)),
@@ -244,6 +247,7 @@ public class EasyAntEngineTest {
 
     @Test
     public void shouldReturnNullGlobalEasyAntIvySettingsLocationIfNoDefaultGlobalExists() throws MalformedURLException {
+        easyAntConfiguration.setEasyantIvySettingsUrl((String)null);
         // configure default global to missing directory
         project.setNewProperty(EasyAntMagicNames.EASYANT_HOME, "/fake/path");
         URL globalEasyAntIvySettings = easyantEngine.getGlobalEasyAntIvySettings(project);
@@ -252,6 +256,7 @@ public class EasyAntEngineTest {
 
     @Test
     public void shouldReturnDefaultGlobalEasyAntIvySettingsLocationIfExists() throws IOException {
+        easyAntConfiguration.setEasyantIvySettingsUrl((String)null);
         File f = temporaryFolder.newFile("easyant-ivysettings.xml");
         FileOutputStream fos = null;
         try {
@@ -270,6 +275,7 @@ public class EasyAntEngineTest {
 
     @Test
     public void shouldReturnGlobalEasyAntIvySettingsLocationSpecifiedByConfigurationFile() throws MalformedURLException {
+        easyAntConfiguration.setEasyantIvySettingsUrl((String)null);
         easyAntConfiguration.setEasyantIvySettingsFile("/path/to/fake/easyantIvySettingsFile.xml");
         URL globalEasyAntIvySettings = easyantEngine.getGlobalEasyAntIvySettings(project);
         assertThat(globalEasyAntIvySettings.toString(), endsWith(easyAntConfiguration.getEasyantIvySettingsFile()));

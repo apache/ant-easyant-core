@@ -441,8 +441,8 @@ public class EasyAntMain implements AntMain {
         } else {
             EasyAntEngine eaEngine = new EasyAntEngine(easyAntConfiguration);
             Project project = new Project();
-            eaEngine.configureProject(project);
-            eaEngine.initProject(project);
+            eaEngine.configureEasyAnt(project);
+            eaEngine.loadProject(project);
             // handle other easyant option (-listTargets,-describe,etc..)
             for (int i = 0; i < line.getOptions().length; i++) {
                 if (line.getOptions()[i] instanceof EasyantOption) {
@@ -603,7 +603,7 @@ public class EasyAntMain implements AntMain {
 
         try {
 
-            EasyAntEngine.configureAndInitProject(project, easyAntConfiguration);
+            EasyAntEngine.configureAndLoadProject(project, easyAntConfiguration);
             printDescription(project);
             printTargets(project, easyAntConfiguration.getMsgOutputLevel() > Project.MSG_INFO);
 

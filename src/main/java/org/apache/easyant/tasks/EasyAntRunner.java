@@ -41,7 +41,8 @@ public class EasyAntRunner extends Task {
         if (fork) {
             eaEngine.doBuild();
         } else {
-            eaEngine.initProject(getProject());
+            eaEngine.configureEasyAnt(getProject());
+            eaEngine.loadProject(getProject());;
             getProject().executeTargets(new Vector(getEasyantConfiguration().getTargets()));
         }
     }

@@ -47,7 +47,7 @@ public class ModuleIvyProjectHelper extends ProjectHelper {
         EasyAntConfiguration eaConfiguration = new EasyAntConfiguration();
         eaConfiguration.setBuildModule(buildFile);
 
-        EasyAntEngine.configureAndInitProject(project, eaConfiguration);
+        EasyAntEngine.configureAndLoadProject(project, eaConfiguration);
     }
 
     @Override

@@ -409,7 +409,8 @@ public abstract class EasyAntBaseTest {
         project = new Project();
         project.addBuildListener(new AntTestListener(conf.getMsgOutputLevel()));
         EasyAntEngine eaEngine = new EasyAntEngine(conf);
-        eaEngine.initProject(project);
+        eaEngine.configureEasyAnt(project);
+        eaEngine.loadProject(project);//FIXME should be better handled
     }
 
     /**
