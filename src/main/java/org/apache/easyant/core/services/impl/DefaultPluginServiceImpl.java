@@ -190,7 +190,7 @@ public class DefaultPluginServiceImpl implements PluginService {
 
                         if ("ant".equals(artifact.getType())) {
                             antFile = artifact.getLocalFile();
-                        } else if ("jar".equals(artifact.getType())) {
+                        } else if (shouldBeAddedToClasspath(artifact)) {
                             path.createPathElement().setLocation(artifact.getLocalFile());
                         } else {
                             handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(),

@@ -209,4 +209,9 @@ public interface EasyAntMagicNames {
      */
     String MULTIMODULE_LOGGER = "multimodule.logger";
 
+    /**
+     * Name of the property containing a comma separated list of ivy type that must be appended to immort classpath
+     */
+    String IMPORT_CLASSPATH_TYPES = "import.classpath.types";
+
 }

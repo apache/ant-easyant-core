@@ -107,7 +107,7 @@ public class ImportDeferred extends AbstractImport implements DynamicAttribute {
                 Path path = createModulePath(moduleId);
                 for (int i = 0; i < confReport.getAllArtifactsReports().length; i++) {
                     ArtifactDownloadReport artifactReport = confReport.getAllArtifactsReports()[i];
-                    if ("jar".equals(artifactReport.getType())) {
+                    if (shouldBeAddedToClasspath(artifactReport)) {
                         path.createPathElement().setLocation(artifactReport.getLocalFile());
                     }
                 }

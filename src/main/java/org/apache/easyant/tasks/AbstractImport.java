@@ -78,7 +78,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
             ArtifactDownloadReport artifact = report.getConfigurationReport(mainConf).getAllArtifactsReports()[j];
             if ("ant".equals(artifact.getType())) {
                 antFile = artifact.getLocalFile();
-            } else if ("jar".equals(artifact.getType())) {
+            } else if (shouldBeAddedToClasspath(artifact)) {
                 path.createPathElement().setLocation(artifact.getLocalFile());
             } else {
                 handleOtherResourceFile(moduleRevisionId, artifact.getName(), artifact.getExt(),
@@ -89,6 +89,21 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
         if (antFile != null && antFile.exists()) {
             doEffectiveImport(antFile);
         }
+    }
+
+    public boolean shouldBeAddedToClasspath(ArtifactDownloadReport artifact) {
+        String[] types = null;
+        if (getProject().getProperty(EasyAntMagicNames.IMPORT_CLASSPATH_TYPES) != null) {
+            types = getProject().getProperty(EasyAntMagicNames.IMPORT_CLASSPATH_TYPES).split(",");
+        } else {
+            types = new String[] { "jar", "bundle" };
+        }
+        for (int i = 0; i < types.length; i++) {
+            if (artifact.getType().equals(types[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

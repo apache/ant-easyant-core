@@ -92,7 +92,7 @@ public class ImportTestModule extends AbstractImport {
         for (int j = 0; j < report.getConfigurationReport(getMainConf()).getAllArtifactsReports().length; j++) {
             ArtifactDownloadReport artifact = report.getConfigurationReport(getMainConf()).getAllArtifactsReports()[j];
 
-            if ("jar".equals(artifact.getType())) {
+            if (shouldBeAddedToClasspath(artifact)) {
                 path.createPathElement().setLocation(artifact.getLocalFile());
             }
         }
