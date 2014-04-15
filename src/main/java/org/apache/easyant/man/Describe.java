@@ -42,7 +42,7 @@ public class Describe extends EasyantOption {
 
     public void execute() {
         String target = getValue();
-        if (target == null || target.length() == 0) {
+        if (target == null || target.isEmpty()) {
             throw new IllegalArgumentException("No parameter specified for -describe parameter.");
         }
 

@@ -59,7 +59,7 @@ public class ListTargets extends EasyantOption {
         getProject().log(
                 LINE_SEP + "--- Available Targets for current project: " + getProject().getName() + " ---" + LINE_SEP);
         String container = getValue();
-        if (container == null || container.trim().length() == 0) {
+        if (container == null || container.trim().isEmpty()) {
             getProject().log(
                     LINE_SEP + "No ExtensionPoint / Plugin specified. Listing all targets available in the project.");
 
@@ -100,12 +100,11 @@ public class ListTargets extends EasyantOption {
      *            list of targets to print
      */
     private void printTargets(List<TargetReport> targets) {
-        if (targets.size() == 0) {
+        if (targets.isEmpty()) {
             getProject().log("\tNo targets found.");
             return;
         }
-        for (int i = 0; i < targets.size(); i++) {
-            TargetReport targetRep = targets.get(i);
+        for (TargetReport targetRep : targets) {
             getProject().log("\tTarget: " + targetRep.getName());
             getProject().log(
                     "\t\tExtension-Point: "

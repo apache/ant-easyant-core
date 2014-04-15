@@ -129,7 +129,7 @@ public class SearchModule extends IvyTask {
         h.handleInput(request);
 
         String value = request.getInput();
-        if ((value == null || value.trim().length() == 0) && defaultvalue != null) {
+        if ((value == null || value.trim().isEmpty()) && defaultvalue != null) {
             value = defaultvalue;
         }
         return value;

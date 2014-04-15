@@ -44,7 +44,7 @@ public class ListParameters extends EasyantOption {
          * those parameters will be displayed by this class.
          */
         String plugin = getValue();
-        if (plugin == null || plugin.trim().length() == 0) {
+        if (plugin == null || plugin.trim().isEmpty()) {
 
             getProject().log(LINE_SEP + "No plugin specified. Listing all parameters available in the project.");
             List<ParameterReport> parameterReports = getEareport().getParameterReports();

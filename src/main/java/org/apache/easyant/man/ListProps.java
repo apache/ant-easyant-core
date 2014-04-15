@@ -46,7 +46,7 @@ public class ListProps extends EasyantOption {
          * those properties will be displayed by this class.
          */
         String plugin = getValue();
-        if (plugin == null || plugin.trim().length() == 0) {
+        if (plugin == null || plugin.trim().isEmpty()) {
 
             getProject().log(LINE_SEP + "No plugin specified. Listing all properties available in the project.");
 

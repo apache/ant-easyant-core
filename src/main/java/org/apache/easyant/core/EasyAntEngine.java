@@ -611,7 +611,7 @@ public class EasyAntEngine {
                 System.setErr(new PrintStream(new DemuxOutputStream(project, true)));
 
                 // make sure that we have a target to execute
-                if (configuration.getTargets().size() == 0 && project.getDefaultTarget() != null) {
+                if (configuration.getTargets().isEmpty() && project.getDefaultTarget() != null) {
                     configuration.getTargets().add(project.getDefaultTarget());
                 }
                 project.executeTargets(new Vector(configuration.getTargets()));

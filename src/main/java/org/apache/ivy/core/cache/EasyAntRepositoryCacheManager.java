@@ -296,7 +296,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
 
     private int getGroupIntValue(java.util.regex.Matcher m, int groupNumber) {
         String g = m.group(groupNumber);
-        return g == null || g.length() == 0 ? 0 : Integer.parseInt(g);
+        return g == null || g.isEmpty() ? 0 : Integer.parseInt(g);
     }
 
     /**

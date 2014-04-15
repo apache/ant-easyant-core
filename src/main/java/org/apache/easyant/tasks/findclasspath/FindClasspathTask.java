@@ -38,7 +38,7 @@ public class FindClasspathTask extends AbstractEasyAntTask {
 
     public void execute() throws BuildException {
         // define the default strategy if there is no nested strategy
-        if (getStrategies().size() == 0) {
+        if (getStrategies().isEmpty()) {
             add(createStrategy(new ProjectDependencyStrategy()));
             add(createStrategy(new BasicConfigurationStrategy()));
         }

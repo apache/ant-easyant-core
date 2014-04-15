@@ -42,7 +42,7 @@ public class ListExtensionPoints extends EasyantOption {
                 LINE_SEP + "--- Available ExtensionPoints for current project: " + getProject().getName() + " ---"
                         + LINE_SEP);
         String container = getValue();
-        if (container == null || container.trim().length() == 0) {
+        if (container == null || container.trim().isEmpty()) {
             getProject().log(LINE_SEP + "No plugin specified. Listing all extension points available in the project.");
 
             List<ExtensionPointReport> extensionPoints = getEareport().getExtensionPointReports();
