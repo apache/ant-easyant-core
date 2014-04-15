@@ -63,14 +63,8 @@ public abstract class EasyantOption extends Option {
         super(opt, description);
     }
 
-    public void execute() {
-        if (getProject() == null) {
-            throw new IllegalStateException("project can't be null");
-        }
-        project.log(LINE_SEP + "Project Manual");
-        project.log("--------------");
-    }
-
+    public abstract void execute();
+    
     public Project getProject() {
         return project;
     }
