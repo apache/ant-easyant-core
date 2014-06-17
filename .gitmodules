@@ -1,0 +1,3 @@
+[submodule "src/documentation/xooki"]
+	path = src/documentation/xooki
+	url = git://git.apache.org/ant-xooki.git
