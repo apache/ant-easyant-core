@@ -170,7 +170,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             resolveOptions.setConfs(conf.split(","));
             resolveOptions.setUseCacheOnly(offlineMode);
             final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
-                    .resolve(moduleRevisionId, resolveOptions, true);
+                    .resolve(moduleRevisionId, resolveOptions, false);
             eaReport = new EasyAntReport();
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
