@@ -49,27 +49,19 @@ Here is an example of settings file :
 
 Mainly, the settings enable to configure the default cache directory used by ivy and the dependency resolvers that it will use to resolve dependencies.
 <div id="note">Note: To work, this settings file needs a property file named ivysettings-file.properties in the same directory as the settings file, with ivy variables you want in it.</div>
-If you want to have more details on this settings file we strongly recommend you to read the <a href="http://ant.apache.org/ivy/history/2.1.0-rc1/settings.html">reference documentation of settings file</a>
+If you want to have more details on this settings file we strongly recommend you to read the <a href="http://ant.apache.org/ivy/history/trunk/settings.html">reference documentation of settings file</a>
 
 EasyAnt uses two ivy instance :
 <ol>
-  <li>used to resolve/retrieve EasyAnt modules (which can be buildtypes/ plugins or skeletons) dependencies</li>
-  <li>used to resolve/retrieve project dependencies</li>
+<li>The project ivy instance is in charge to configure ivy for your project (configure repositories used to retrieve your projects dependencies for example).</li>
+<li>EasyAnt ivy instance is in charge to configure ivy for easyant internal use (configure repositories used to retrieve buildtypes/plugins/skeletons for example).</li>
 </ol>
 There is a strong separation of context, this means that plugins dependencies will not be polluting your project.
 Both instance are configurable. 
 <ul>
-  <li>Project ivy instance can be configured through an ivysettings file defined through properties. Click <a href="ref/ProjectIvyInstance.html">here</a> if you want more details.</li>
-  <li>EasyAnt ivy instance can be configured through an ivysettings file defined in easyant-config. Click <a href="ref/EasyAntconfigurationfile.html">here</a> if you want more details.</li>
+  <li><a href="ProjectIvyInstance.html">Project ivy instance</a> can be configured through an ivysettings file defined through properties.</li>
+  <li><a href="EasyAntivyinstance.html">EasyAnt ivy instance</a>  can be configured through an ivysettings file defined in easyant-config.</li>
 </ul>
-
-
-
-<h2>Project ivy instance</h2>
-The <a href="ProjectIvyInstance.html">project ivy instance</a> is in charge to configure ivy for your project (configure repositories used to retrieve your projects dependencies for example).
-
-<h2>EasyAnt ivy instance</h2>
-<a href="EasyAntivyinstance.html">EasyAnt ivy instance</a> is in charge to configure ivy for easyant internal use (configure repositories used to retrieve buildtypes/plugins/skeletons for example).
 
 </textarea>
 <script type="text/javascript">xooki.postProcess();</script>
