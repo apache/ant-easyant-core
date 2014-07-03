@@ -180,7 +180,6 @@ public class ProjectUtils {
         return ret;
     }
 
-    @SuppressWarnings("unchecked")
     public static ProjectHelper configureProjectHelper(Project project) {
         ProjectHelper helper = ProjectHelper.getProjectHelper();
         helper.getImportStack().addElement(ProjectUtils.emulateMainScript(project));

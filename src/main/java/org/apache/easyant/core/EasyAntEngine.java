@@ -56,7 +56,6 @@ import org.apache.tools.ant.Location;
 import org.apache.tools.ant.MagicNames;
 import org.apache.tools.ant.Main;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.input.DefaultInputHandler;
@@ -245,7 +244,7 @@ public class EasyAntEngine {
     public void configurePluginService(Project project, IvyAntSettings easyantIvyInstance) {
         pluginService = new DefaultPluginServiceImpl(easyantIvyInstance);
         String property = project.getProperty(EasyAntMagicNames.EASYANT_OFFLINE);
-        pluginService.setOfflineMode(project.toBoolean(property));
+        pluginService.setOfflineMode(Project.toBoolean(property));
         project.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE, pluginService);
 
     }
@@ -614,7 +613,7 @@ public class EasyAntEngine {
                 if (configuration.getTargets().isEmpty() && project.getDefaultTarget() != null) {
                     configuration.getTargets().add(project.getDefaultTarget());
                 }
-                project.executeTargets(new Vector(configuration.getTargets()));
+                project.executeTargets(new Vector<String>(configuration.getTargets()));
             } finally {
                 // put back the original security manager
                 // The following will never eval to true. (PD)
