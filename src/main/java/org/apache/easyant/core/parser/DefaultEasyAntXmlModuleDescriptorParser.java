@@ -339,13 +339,10 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
             easyAntState = EasyAntState.PLUGIN_DEPENDENCY;
             IvyDependency ivyDependency = new IvyDependency();
             ivyDependency.setOrg(getSettings().substitute(attributes.getValue("org")));
-            ivyDependency.setForce(Boolean.valueOf(getSettings().substitute(attributes.getValue("force")))
-                    .booleanValue());
-            ivyDependency.setChanging(Boolean.valueOf(getSettings().substitute(attributes.getValue("changing")))
-                    .booleanValue());
+            ivyDependency.setForce(Boolean.valueOf(getSettings().substitute(attributes.getValue("force"))));
+            ivyDependency.setChanging(Boolean.valueOf(getSettings().substitute(attributes.getValue("changing"))));
             String transitiveValue = getSettings().substitute(attributes.getValue("transitive"));
-            boolean transitive = (transitiveValue == null) ? true : Boolean.valueOf(attributes.getValue("transitive"))
-                    .booleanValue();
+            boolean transitive = (transitiveValue == null) ? true : Boolean.valueOf(attributes.getValue("transitive"));
             ivyDependency.setTransitive(transitive);
 
             ivyDependency.setName(getSettings().substitute(attributes.getValue("name")));

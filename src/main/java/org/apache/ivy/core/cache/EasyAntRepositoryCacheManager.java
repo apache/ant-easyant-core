@@ -185,17 +185,17 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
 
     public long getDefaultTTL() {
         if (defaultTTL == null) {
-            defaultTTL = Long.valueOf(parseDuration(settings.getVariable("ivy.cache.ttl.default")));
+            defaultTTL = parseDuration(settings.getVariable("ivy.cache.ttl.default"));
         }
-        return defaultTTL.longValue();
+        return defaultTTL;
     }
 
     public void setDefaultTTL(long defaultTTL) {
-        this.defaultTTL = Long.valueOf(defaultTTL);
+        this.defaultTTL = defaultTTL;
     }
 
     public void setDefaultTTL(String defaultTTL) {
-        this.defaultTTL = Long.valueOf(parseDuration(defaultTTL));
+        this.defaultTTL = parseDuration(defaultTTL);
     }
 
     public String getDataFilePattern() {
@@ -237,7 +237,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
     }
 
     public void addTTL(Map attributes, PatternMatcher matcher, long duration) {
-        ttlRules.defineRule(new MapMatcher(attributes, matcher), Long.valueOf(duration));
+        ttlRules.defineRule(new MapMatcher(attributes, matcher), duration);
     }
 
     public void addConfiguredTtl(Map/* <String,String> */attributes) {
@@ -308,17 +308,17 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
         if (checkmodified == null) {
             if (getSettings() != null) {
                 String check = getSettings().getVariable("ivy.resolver.default.check.modified");
-                return check != null ? Boolean.valueOf(check).booleanValue() : false;
+                return check != null ? Boolean.valueOf(check) : false;
             } else {
                 return false;
             }
         } else {
-            return checkmodified.booleanValue();
+            return checkmodified;
         }
     }
 
     public void setCheckmodified(boolean check) {
-        checkmodified = Boolean.valueOf(check);
+        checkmodified = check;
     }
 
     /**
@@ -332,12 +332,12 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
                 return false;
             }
         } else {
-            return useOrigin.booleanValue();
+            return useOrigin;
         }
     }
 
     public void setUseOrigin(boolean b) {
-        useOrigin = Boolean.valueOf(b);
+        useOrigin = b;
     }
 
     /**
@@ -478,7 +478,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
             String lastChecked = cdf.getProperty(getLastCheckedKey(artifact));
             String exists = cdf.getProperty(getExistsKey(artifact));
 
-            boolean isLocal = Boolean.valueOf(local).booleanValue();
+            boolean isLocal = Boolean.valueOf(local);
 
             if (location == null) {
                 // origin has not been specified, return null
@@ -490,7 +490,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
                 origin.setLastChecked(Long.valueOf(lastChecked));
             }
             if (exists != null) {
-                origin.setExist(Boolean.valueOf(exists).booleanValue());
+                origin.setExist(Boolean.valueOf(exists));
             }
 
             return origin;
@@ -764,7 +764,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
 
     public long getTTL(ModuleRevisionId mrid) {
         Long ttl = (Long) ttlRules.getRule(mrid);
-        return ttl == null ? getDefaultTTL() : ttl.longValue();
+        return ttl == null ? getDefaultTTL() : ttl;
     }
 
     public String toString() {
@@ -913,7 +913,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
                 }
             } else {
                 long start = System.currentTimeMillis();
-                origin.setLastChecked(Long.valueOf(start));
+                origin.setLastChecked(start);
                 try {
                     ResolvedResource artifactRef = new ResolvedResource(resource, Ivy.getWorkingRevision());
                     if (useOrigin && resource.isLocal()) {
@@ -998,7 +998,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
     private boolean checkCacheUptodate(File archiveFile, Resource resource, ArtifactOrigin savedOrigin,
             ArtifactOrigin origin, long ttl) {
         long time = System.currentTimeMillis();
-        if (savedOrigin.getLastChecked() != null && (time - savedOrigin.getLastChecked().longValue()) < ttl) {
+        if (savedOrigin.getLastChecked() != null && (time - savedOrigin.getLastChecked()) < ttl) {
             // still in the ttl period, no need to check, trust the cache
             if (!archiveFile.exists()) {
                 // but if the local archive doesn't exist, trust the cache only if the cached origin
@@ -1011,7 +1011,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
             // the the file doesn't exist in the cache, obviously not up to date
             return false;
         }
-        origin.setLastChecked(Long.valueOf(time));
+        origin.setLastChecked(time);
         // check if the local resource is up to date regarding the remote one
         return archiveFile.lastModified() >= resource.getLastModified();
     }
@@ -1283,7 +1283,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
     private boolean isCheckmodified(DependencyDescriptor dd, ModuleRevisionId requestedRevisionId,
             CacheMetadataOptions options) {
         if (options.isCheckmodified() != null) {
-            return options.isCheckmodified().booleanValue();
+            return options.isCheckmodified();
         }
         return isCheckmodified();
     }

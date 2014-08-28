@@ -368,8 +368,8 @@ public class EasyAntMain implements AntMain {
         if (line.hasOption("nice")) {
             easyAntConfiguration.setThreadPriority(Integer.decode(line.getOptionValue("nice")));
 
-            if (easyAntConfiguration.getThreadPriority().intValue() < Thread.MIN_PRIORITY
-                    || easyAntConfiguration.getThreadPriority().intValue() > Thread.MAX_PRIORITY) {
+            if (easyAntConfiguration.getThreadPriority() < Thread.MIN_PRIORITY
+                    || easyAntConfiguration.getThreadPriority() > Thread.MAX_PRIORITY) {
                 throw new BuildException("Niceness value is out of the range 1-10");
             }
         }

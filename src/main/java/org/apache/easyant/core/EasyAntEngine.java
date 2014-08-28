@@ -380,7 +380,7 @@ public class EasyAntEngine {
             try {
                 project.log("Setting Ant's thread priority to " + configuration.getThreadPriority(),
                         Project.MSG_VERBOSE);
-                Thread.currentThread().setPriority(configuration.getThreadPriority().intValue());
+                Thread.currentThread().setPriority(configuration.getThreadPriority());
             } catch (SecurityException swallowed) {
                 // we cannot set the priority here.
                 project.log("A security manager refused to set the -nice value");
