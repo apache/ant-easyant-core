@@ -36,7 +36,7 @@ public class ModuleIvyProjectHelper extends ProjectHelper {
 
     @Override
     public void parse(Project project, Object source) throws BuildException {
-        File buildFile = null;
+        File buildFile;
 
         if (source instanceof File) {
             buildFile = (File) source;

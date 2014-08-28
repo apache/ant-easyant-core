@@ -52,7 +52,7 @@ public class ImportDeferred extends AbstractImport implements DynamicAttribute {
     private String organisation;
 
     public void execute() {
-        ModuleId moduleId = null;
+        ModuleId moduleId;
         if (organisation != null && module != null) {
             moduleId = ModuleId.newInstance(organisation, module);
         } else {

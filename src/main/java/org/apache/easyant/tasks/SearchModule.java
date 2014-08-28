@@ -120,7 +120,7 @@ public class SearchModule extends IvyTask {
     }
 
     protected String getInput(String message, String defaultvalue, List<String> choices) {
-        InputRequest request = null;
+        InputRequest request;
         request = new MultipleChoiceInputRequest(message, new Vector(choices));
         request.setDefaultValue(defaultvalue);
 

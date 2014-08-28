@@ -635,7 +635,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         }
         ModuleRevisionId mrid = ModuleRevisionId.newInstance(organisation, moduleName, revision);
 
-        ModuleRevisionId criteria = null;
+        ModuleRevisionId criteria;
 
         if ((revision == null) || settings.getVersionMatcher().isDynamic(mrid)) {
             criteria = new ModuleRevisionId(new ModuleId(organisation, moduleName), branch, "*");

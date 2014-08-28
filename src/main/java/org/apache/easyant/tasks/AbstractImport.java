@@ -92,7 +92,7 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
     }
 
     public boolean shouldBeAddedToClasspath(ArtifactDownloadReport artifact) {
-        String[] types = null;
+        String[] types;
         if (getProject().getProperty(EasyAntMagicNames.IMPORT_CLASSPATH_TYPES) != null) {
             types = getProject().getProperty(EasyAntMagicNames.IMPORT_CLASSPATH_TYPES).split(",");
         } else {

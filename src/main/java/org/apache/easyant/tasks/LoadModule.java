@@ -451,8 +451,8 @@ public class LoadModule extends AbstractEasyAntTask {
     }
 
     protected EasyAntModuleDescriptorParser getEasyAntModuleDescriptorParser(File file) throws BuildException {
-        ModuleDescriptorParser mdp = null;
-        EasyAntModuleDescriptorParser parser = null;
+        ModuleDescriptorParser mdp;
+        EasyAntModuleDescriptorParser parser;
         try {
             mdp = ModuleDescriptorParserRegistry.getInstance().getParser(new URLResource(file.toURI().toURL()));
         } catch (MalformedURLException e) {

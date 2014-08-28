@@ -70,7 +70,7 @@ public class Import extends AbstractImport implements DynamicAttribute {
     private List<IvyConflict> conflicts = new ArrayList<IvyConflict>();
 
     public void execute() {
-        ModuleRevisionId moduleRevisionId = null;
+        ModuleRevisionId moduleRevisionId;
         if (mrid != null) {
             moduleRevisionId = ModuleRevisionId.parse(mrid);
         } else if (organisation != null && module != null && revision != null) {

@@ -322,7 +322,7 @@ public abstract class EasyAntBaseTest {
      * @throws BuildException
      */
     public void configureProject(URL url) throws BuildException {
-        File f = null;
+        File f;
         try {
             f = new File(url.toURI());
         } catch (URISyntaxException e) {
@@ -342,7 +342,7 @@ public abstract class EasyAntBaseTest {
      * @throws BuildException
      */
     public void configureProject(URL url, int logLevel) throws BuildException {
-        File f = null;
+        File f;
         try {
             f = new File(url.toURI());
         } catch (URISyntaxException e) {

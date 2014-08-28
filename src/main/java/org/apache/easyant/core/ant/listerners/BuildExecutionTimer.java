@@ -170,7 +170,7 @@ public class BuildExecutionTimer implements BuildListener, SubBuildListener {
      * @return
      */
     public String formatExecutionResults(List<ExecutionResult> results) {
-        String formattedResults = "";
+        String formattedResults;
         int constantSpaces = 10;
         int maxUnitNameLength = 0;
         int maxExecTimeLength = 0;

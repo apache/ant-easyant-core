@@ -140,7 +140,7 @@ public class EasyAntMain implements AntMain {
         easyAntConfiguration.setCoreLoader(coreLoader);
         configureOptions();
         CommandLineParser parser = new GnuParser();
-        CommandLine line = null;
+        CommandLine line;
         try {
             line = parser.parse(options, args);
             processArgs(line);
@@ -234,7 +234,7 @@ public class EasyAntMain implements AntMain {
      * @since Ant 1.6
      */
     private void processArgs(CommandLine line) {
-        String searchForThis = null;
+        String searchForThis;
         PrintStream logTo = null;
 
         if (line.hasOption("help")) {

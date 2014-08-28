@@ -64,7 +64,7 @@ public class GoOffline extends AbstractEasyAntTask {
 
         PluginService pluginService = (PluginService) getProject().getReference(
                 EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
-        EasyAntReport easyAntReport = null;
+        EasyAntReport easyAntReport;
         try {
             easyAntReport = pluginService.generateEasyAntReport(moduleIvy);
             installBuildTypeAndPlugins(easyAntReport);

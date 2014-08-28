@@ -281,7 +281,7 @@ public class EasyAntEngine {
      *                if a specified InputHandler implementation could not be loaded.
      */
     protected void addInputHandler(Project project) {
-        InputHandler handler = null;
+        InputHandler handler;
 
         if (configuration.getInputHandlerClassname() == null) {
             handler = new DefaultInputHandler();
@@ -299,7 +299,7 @@ public class EasyAntEngine {
      * @return the logger instance for this build.
      */
     protected BuildLogger createLogger() {
-        BuildLogger logger = null;
+        BuildLogger logger;
         if (configuration.getLoggerClassname() != null) {
             try {
                 logger = (BuildLogger) ClasspathUtils.newInstance(configuration.getLoggerClassname(),
@@ -594,7 +594,7 @@ public class EasyAntEngine {
             InputStream savedIn = System.in;
 
             // use a system manager that prevents from System.exit()
-            SecurityManager oldsm = null;
+            SecurityManager oldsm;
             oldsm = System.getSecurityManager();
 
             // SecurityManager can not be installed here for backwards

@@ -713,7 +713,7 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
             return null;
         }
         try {
-            String resolvedRevision = null;
+            String resolvedRevision;
             if (options.isForce()) {
                 Message.verbose("refresh mode: no check for cached resolved revision for " + mrid);
                 return null;
