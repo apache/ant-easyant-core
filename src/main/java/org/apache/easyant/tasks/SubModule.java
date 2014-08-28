@@ -659,7 +659,7 @@ public class SubModule extends AbstractEasyAntTask {
             try {
                 Method setProjectM = c.getMethod("setProject", new Class[] { Project.class });
                 if (setProjectM != null) {
-                    setProjectM.invoke(copy, new Object[] { subproject });
+                    setProjectM.invoke(copy, subproject);
                 }
             } catch (NoSuchMethodException e) {
                 // ignore this if the class being referenced does not have
