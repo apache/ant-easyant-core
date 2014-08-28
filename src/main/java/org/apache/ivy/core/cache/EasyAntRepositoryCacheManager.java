@@ -572,16 +572,15 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
 
     public ResolvedModuleRevision findModuleInCache(DependencyDescriptor dd, ModuleRevisionId requestedRevisionId,
             CacheMetadataOptions options, String expectedResolver) {
-        ModuleRevisionId mrid = requestedRevisionId;
         if (isCheckmodified(dd, requestedRevisionId, options)) {
-            Message.verbose("don't use cache for " + mrid + ": checkModified=true");
+            Message.verbose("don't use cache for " + requestedRevisionId + ": checkModified=true");
             return null;
         }
         if (isChanging(dd, requestedRevisionId, options)) {
-            Message.verbose("don't use cache for " + mrid + ": changing=true");
+            Message.verbose("don't use cache for " + requestedRevisionId + ": changing=true");
             return null;
         }
-        return doFindModuleInCache(mrid, options, expectedResolver);
+        return doFindModuleInCache(requestedRevisionId, options, expectedResolver);
     }
 
     private ResolvedModuleRevision doFindModuleInCache(ModuleRevisionId mrid, CacheMetadataOptions options,

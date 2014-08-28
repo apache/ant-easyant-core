@@ -134,9 +134,8 @@ public class ConfigureBuildScopedRepositoryTest {
     }
 
     private String buildDefaultResolverName() {
-        String resolverName = "build."
+        return "build."
                 + IvyInstanceHelper.getProjectIvyInstanceName(configureBuildScopeRepository.getProject());
-        return resolverName;
     }
 
     @Test
