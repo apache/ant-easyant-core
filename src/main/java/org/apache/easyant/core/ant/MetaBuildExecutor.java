@@ -74,7 +74,7 @@ public class MetaBuildExecutor extends DefaultExecutor {
 
         // now call the default executor to include any extra
         // targets defined in the root module.ant
-        super.executeTargets(project, preTargetsToRun.toArray(new String[] {}));
+        super.executeTargets(project, preTargetsToRun.toArray(new String[preTargetsToRun.size()]));
 
         printSubBuildsInOrder(project);
         // delegate to the ea:submodule task to execute the list of targets on
@@ -93,7 +93,7 @@ public class MetaBuildExecutor extends DefaultExecutor {
 
         // now call the default executor to include any extra targets defined in
         // the root module.ant
-        super.executeTargets(project, postTargetsToRun.toArray(new String[] {}));
+        super.executeTargets(project, postTargetsToRun.toArray(new String[postTargetsToRun.size()]));
     }
 
     /*

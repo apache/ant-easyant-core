@@ -443,7 +443,7 @@ public class LoadModule extends AbstractEasyAntTask {
             }
         }
         if (mainConfsList.size() > 0) {
-            String mainConfs = StringUtils.join(mainConfsList.toArray(new String[0]), ",");
+            String mainConfs = StringUtils.join(mainConfsList.toArray(new String[mainConfsList.size()]), ",");
             log("updating main.confs with active profile for current project :" + mainConfs, Project.MSG_DEBUG);
             getProject().setProperty(EasyAntMagicNames.MAIN_CONFS, mainConfs);
         }
