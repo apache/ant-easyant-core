@@ -17,16 +17,15 @@
  */
 package org.apache.easyant.core.ant;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.assertThat;
-
+import org.apache.easyant.CollectionTestUtil;
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.junit.Assert.assertTrue;
 
 public class MetaBuildExecutorTest {
 
@@ -39,13 +38,13 @@ public class MetaBuildExecutorTest {
     @Test
     public void shouldFailIfNoBuildPathIsFound() {
         expectedException.expectMessage("build-path is required to use MetaBuildExecutor");
-        executor.executeTargets(project, new String[] {});
+        executor.executeTargets(project, new String[]{});
     }
 
     @Test
     public void shouldNotFailIfNoSubModulesAreFound() {
         createPath();
-        executor.executeTargets(project, new String[] {});
+        executor.executeTargets(project, new String[]{});
         verifyBuildListener();
     }
 
@@ -55,7 +54,7 @@ public class MetaBuildExecutorTest {
     }
 
     private void verifyBuildListener() {
-        assertThat(project.getBuildListeners(), hasItem(isA(MultiModuleLogger.class)));
+        assertTrue(CollectionTestUtil.containsClass(project.getBuildListeners(), MultiModuleLogger.class));
     }
 
 }

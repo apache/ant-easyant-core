@@ -18,24 +18,6 @@
 
 package org.apache.easyant.core;
 
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Arrays;
-
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.configuration.EasyAntConfiguration;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
@@ -54,6 +36,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
+
+import static org.apache.easyant.CollectionTestUtil.containsClass;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class EasyAntEngineTest {
     private EasyAntConfiguration easyAntConfiguration = new EasyAntConfiguration();
@@ -82,7 +77,7 @@ public class EasyAntEngineTest {
     public void shouldAddBuildListener() {
         easyAntConfiguration.getListeners().add(MultiModuleLogger.class.getCanonicalName());
         easyantEngine.addBuildListeners(project);
-        assertThat(project.getBuildListeners(), hasItem(isA(MultiModuleLogger.class)));
+        assertTrue(containsClass(project.getBuildListeners(), MultiModuleLogger.class));
     }
 
     @Test
@@ -233,11 +228,11 @@ public class EasyAntEngineTest {
         IvyAntSettings easyantIvySettings = IvyInstanceHelper.getEasyAntIvyAntSettings(project);
         Ivy ivyInstance = easyantIvySettings.getConfiguredIvyInstance(null);
         assertThat(ivyInstance.getResolutionCacheManager(), instanceOf(EasyantResolutionCacheManager.class));
-        assertThat(Arrays.asList(ivyInstance.getSettings().getRepositoryCacheManagers()),
-                hasItem(isA(EasyAntRepositoryCacheManager.class)));
+        assertTrue(containsClass(Arrays.asList(ivyInstance.getSettings().getRepositoryCacheManagers()), EasyAntRepositoryCacheManager.class));
 
         assertThat(configuredEasyAntIvyInstance, sameInstance(easyantIvySettings));
     }
+
 
     @Test
     public void shouldReturnDefaultUserEasyAntIvySettingsLocation() {
