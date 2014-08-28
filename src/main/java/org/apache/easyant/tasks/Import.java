@@ -174,9 +174,7 @@ public class Import extends AbstractImport implements DynamicAttribute {
 
     /**
      * Set the organisation of the module to import
-     * 
-     * @param organisation
-     *            the organisation name
+     *
      */
     public void setOrg(String org) {
         this.organisation = org;
@@ -203,9 +201,7 @@ public class Import extends AbstractImport implements DynamicAttribute {
 
     /**
      * Set th revision of the module to import
-     * 
-     * @param revision
-     *            the revision
+     *
      */
     public void setRev(String rev) {
         this.revision = rev;

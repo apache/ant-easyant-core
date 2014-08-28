@@ -165,9 +165,7 @@ public class LoadModule extends AbstractEasyAntTask {
 
     /**
      * Configure project offline repository If offline mode is enabled, it will acts as dictator resolver
-     * 
-     * @param project
-     *            {@link Project} where repository will be configured
+     *
      */
     private void configureProjectOfflineResolver() {
         if (EasyAntMagicNames.EASYANT_IVY_INSTANCE.equals(IvyInstanceHelper.getProjectIvyInstanceName(getProject()))) {

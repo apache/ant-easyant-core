@@ -64,9 +64,7 @@ public class ExtensionPointMappingDescriptor implements AdvancedInheritableItem 
 
     /**
      * set a build configuration name bound to this plugin
-     * 
-     * @param buildConfigurationName
-     *            a build configuration name
+     *
      */
     public void setBuildConfigurations(String buildConfigurations) {
         this.buildConfigurations = buildConfigurations;

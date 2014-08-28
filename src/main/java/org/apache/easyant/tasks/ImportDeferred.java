@@ -172,9 +172,7 @@ public class ImportDeferred extends AbstractImport implements DynamicAttribute {
 
     /**
      * Set the organisation of the module to import
-     * 
-     * @param organisation
-     *            the organisation name
+     *
      */
     public void setOrg(String org) {
         this.organisation = org;

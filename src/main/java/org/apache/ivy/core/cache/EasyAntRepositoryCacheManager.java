@@ -413,8 +413,6 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
      * 
      * @param md
      *            the module descriptor resolved
-     * @param name
-     *            artifact resolver name
      */
     public void saveResolvers(ModuleDescriptor md, String metadataResolverName, String artifactResolverName) {
         ModuleRevisionId mrid = md.getResolvedModuleRevisionId();

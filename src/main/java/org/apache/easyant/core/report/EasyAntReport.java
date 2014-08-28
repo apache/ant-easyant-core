@@ -162,8 +162,6 @@ public class EasyAntReport {
     /**
      * Get a parameter reports by its name Return null if not found
      * 
-     * @param name
-     *            represent parameter name
      * @return a parameter report
      */
     public ParameterReport getParameterReport(String parameterName) {

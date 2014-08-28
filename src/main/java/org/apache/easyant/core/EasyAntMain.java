@@ -231,9 +231,6 @@ public class EasyAntMain implements AntMain {
      * Process command line arguments. When ant is started from Launcher, launcher-only arguments do not get passed
      * through to this routine.
      * 
-     * @param args
-     *            the command line arguments.
-     * 
      * @since Ant 1.6
      */
     private void processArgs(CommandLine line) {

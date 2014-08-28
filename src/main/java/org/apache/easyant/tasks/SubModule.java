@@ -367,8 +367,6 @@ public class SubModule extends AbstractEasyAntTask {
      * 
      * @param props
      *            properties to copy to the new project.
-     * @param the
-     *            type of property to set (a plain Ant property, a user property or an inherited property).
      * @since Ant 1.8.0
      */
     private void addAlmostAll(Map<?, ?> props, Project subProject, PropertyType type) {
@@ -418,9 +416,7 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * The targets to call on the different sub-builds.
-     * 
-     * @param target
-     *            a list of targets to execute
+     *
      */
     public void setTargets(TargetList targets) {
         this.targets = targets;
