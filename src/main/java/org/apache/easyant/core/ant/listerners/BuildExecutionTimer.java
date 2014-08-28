@@ -180,7 +180,7 @@ public class BuildExecutionTimer implements BuildListener, SubBuildListener {
             maxExecTimeLength = result.getFormattedElapsedTime().length() > maxExecTimeLength ? result
                     .getFormattedElapsedTime().length() : maxExecTimeLength;
         }
-        StringBuffer sb = new StringBuffer(org.apache.tools.ant.util.StringUtils.LINE_SEP);
+        StringBuilder sb = new StringBuilder(org.apache.tools.ant.util.StringUtils.LINE_SEP);
         for (ExecutionResult result : results) {
             String moduleName = result.getUnitName();
             int variableSpaces = maxUnitNameLength - moduleName.length() + constantSpaces;

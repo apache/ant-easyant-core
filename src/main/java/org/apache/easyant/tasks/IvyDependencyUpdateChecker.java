@@ -108,7 +108,7 @@ public class IvyDependencyUpdateChecker extends IvyPostResolveTask {
                         // .isTranstive() methods doesn't have the same meaning)
                         boolean isTransitiveDependency = latest.getDependencyDescriptor(latest.getRoot()) == null;
                         if ((!isTransitiveDependency) || (isTransitiveDependency && showTransitive)) {
-                            StringBuffer sb = new StringBuffer();
+                            StringBuilder sb = new StringBuilder();
                             sb.append("\t")//
                                     .append(originalDependency.getResolvedId().getOrganisation()) //
                                     .append('#')//

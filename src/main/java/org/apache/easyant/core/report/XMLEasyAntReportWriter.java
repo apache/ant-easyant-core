@@ -95,7 +95,7 @@ public class XMLEasyAntReportWriter {
         out.println("\t<configurations>");
 
         for (Configuration configuration : easyAntReport.getModuleDescriptor().getConfigurations()) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("\t\t<configuration name=\"");
             sb.append(XMLHelper.escape(configuration.getName()));
             sb.append("\" description=\"");
@@ -139,7 +139,7 @@ public class XMLEasyAntReportWriter {
         if (dep.getModuleRevision() != null) {
             md = dep.getModuleRevision().getDescriptor();
         }
-        StringBuffer details = new StringBuffer();
+        StringBuilder details = new StringBuilder();
         if (dep.isLoaded()) {
             details.append(" status=\"");
             details.append(XMLHelper.escape(dep.getDescriptor().getStatus()));
@@ -310,7 +310,7 @@ public class XMLEasyAntReportWriter {
     }
 
     private String toString(String[] strs) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < strs.length; i++) {
             buf.append(strs[i]);
             if (i + 1 < strs.length) {
@@ -349,7 +349,7 @@ public class XMLEasyAntReportWriter {
         for (Entry<String, PropertyDescriptor> entry : properties.entrySet()) {
             PropertyDescriptor propertyDescriptor = entry.getValue();
 
-            StringBuffer param = new StringBuffer();
+            StringBuilder param = new StringBuilder();
             param.append("\t\t\t<property name=\"");
             param.append(propertyDescriptor.getName());
             param.append("\"");
@@ -427,7 +427,7 @@ public class XMLEasyAntReportWriter {
 
         for (ImportedModuleReport importedModuleReport : importedModuleReports) {
             String mode = importedModuleReport.getMode() != null ? importedModuleReport.getMode() : "import";
-            StringBuffer importedModule = new StringBuffer();
+            StringBuilder importedModule = new StringBuilder();
             try {
                 ModuleRevisionId mrid = ModuleRevisionId.parse(importedModuleReport.getModuleMrid());
                 importedModule.append("\t\t\t<import organisation=\"").append(mrid.getOrganisation())
@@ -470,7 +470,7 @@ public class XMLEasyAntReportWriter {
             extensionPointReports = easyAntReport.getExtensionPointReportsFromCurrentModule();
         }
         for (ExtensionPointReport extensionPointReport : extensionPointReports) {
-            StringBuffer extensionPoint = new StringBuffer();
+            StringBuilder extensionPoint = new StringBuilder();
             extensionPoint.append("\t\t\t<extension-point name=\"").append(extensionPointReport.getName()).append("\"");
             if (extensionPointReport.getDescription() != null) {
                 extensionPoint.append(" description=\"");
@@ -498,7 +498,7 @@ public class XMLEasyAntReportWriter {
         }
 
         for (TargetReport targetReport : targetReports) {
-            StringBuffer target = new StringBuffer();
+            StringBuilder target = new StringBuilder();
             target.append("\t\t\t<target name=\"").append(targetReport.getName()).append("\"");
             if (targetReport.getDescription() != null) {
                 target.append(" description=\"");

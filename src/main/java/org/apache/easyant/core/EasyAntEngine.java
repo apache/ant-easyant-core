@@ -722,7 +722,7 @@ public class EasyAntEngine {
                 }
                 props.load(in);
 
-                StringBuffer msg = new StringBuffer();
+                StringBuilder msg = new StringBuilder();
                 msg.append("EasyAnt version ");
                 msg.append(props.getProperty("VERSION"));
                 msg.append(" compiled on ");

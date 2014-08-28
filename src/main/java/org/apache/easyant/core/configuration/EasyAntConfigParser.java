@@ -122,7 +122,7 @@ public class EasyAntConfigParser {
         }
 
         private String getLocationString(SAXParseException ex) {
-            StringBuffer str = new StringBuffer();
+            StringBuilder str = new StringBuilder();
 
             String systemId = ex.getSystemId();
             if (systemId != null) {
