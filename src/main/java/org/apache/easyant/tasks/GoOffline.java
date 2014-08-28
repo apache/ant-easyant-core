@@ -62,7 +62,7 @@ public class GoOffline extends AbstractEasyAntTask {
             throw new BuildException("easyantResolverName is mandatory !");
         }
 
-        PluginService pluginService = (PluginService) getProject().getReference(
+        PluginService pluginService = getProject().getReference(
                 EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
         EasyAntReport easyAntReport;
         try {

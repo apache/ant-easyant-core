@@ -310,13 +310,13 @@ public class SubModule extends AbstractEasyAntTask {
 
     @SuppressWarnings("unchecked")
     private void storeExecutionTimes(Project parent, Project child) {
-        List<ExecutionResult> allresults = (List<ExecutionResult>) parent
+        List<ExecutionResult> allresults = parent
                 .getReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
         if (allresults == null) {
             allresults = new ArrayList<ExecutionResult>();
             parent.addReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS, allresults);
         }
-        List<ExecutionResult> childResults = (List<ExecutionResult>) child
+        List<ExecutionResult> childResults = child
                 .getReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
         if (childResults != null) {
             allresults.addAll(childResults);

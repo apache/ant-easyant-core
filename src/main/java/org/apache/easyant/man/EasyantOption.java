@@ -81,7 +81,7 @@ public abstract class EasyantOption extends Option {
                 File overrideAntModule = new File(moduleDescriptor.getParent(),
                         EasyAntConstants.DEFAULT_OVERRIDE_BUILD_FILE);
 
-                PluginService pluginService = (PluginService) project
+                PluginService pluginService = project
                         .getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
                 setEareport(pluginService.generateEasyAntReport(moduleDescriptor, optionalAntModule, overrideAntModule));
             } catch (Exception e) {

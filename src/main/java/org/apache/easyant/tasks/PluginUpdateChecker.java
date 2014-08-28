@@ -41,7 +41,7 @@ public class PluginUpdateChecker extends AbstractEasyAntTask {
     private boolean pluginUpdateDetected=false;
 
     public void execute() throws BuildException {
-        PluginService pluginService = (PluginService) getProject().getReference(
+        PluginService pluginService = getProject().getReference(
                 EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
         if (moduleIvy == null) {
             String moduleIvyProperty = getProject().getProperty(EasyAntMagicNames.EASYANT_FILE);

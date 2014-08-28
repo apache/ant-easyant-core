@@ -173,7 +173,7 @@ public class PluginReport extends AbstractEasyAntTask {
             throw new BuildException("destination directory should be a directory !");
         }
 
-        PluginService pluginService = (PluginService) getProject().getReference(
+        PluginService pluginService = getProject().getReference(
                 EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE);
         OutputStream stream = null;
         try {

@@ -78,7 +78,7 @@ public class AbstractEasyAntTask extends Task {
     }
 
     protected EasyAntEngine getEasyAntEngine() {
-        EasyAntEngine easyAntEngine = (EasyAntEngine) getProject().getReference(EasyAntMagicNames.EASYANT_ENGINE_REF);
+        EasyAntEngine easyAntEngine = getProject().getReference(EasyAntMagicNames.EASYANT_ENGINE_REF);
         if (easyAntEngine == null) {
             easyAntEngine = new EasyAntEngine();
         }
