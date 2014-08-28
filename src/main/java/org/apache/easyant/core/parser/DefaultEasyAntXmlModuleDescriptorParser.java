@@ -207,9 +207,8 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
         protected void ivyModuleStarted(Attributes attributes) throws SAXException {
             super.ivyModuleStarted(attributes);
             // lookup easyant namespace
-            for (Iterator<?> iterator = getMd().getExtraAttributesNamespaces().entrySet().iterator(); iterator
-                    .hasNext();) {
-                Entry<?, ?> namespace = (Entry<?, ?>) iterator.next();
+            for (Object o : getMd().getExtraAttributesNamespaces().entrySet()) {
+                Entry<?, ?> namespace = (Entry<?, ?>) o;
                 if (EasyAntConstants.EASYANT_MD_NAMESPACE.equals(namespace.getValue())) {
                     easyantPrefix = (String) namespace.getKey();
                 }
@@ -657,8 +656,7 @@ public class DefaultEasyAntXmlModuleDescriptorParser extends XmlModuleDescriptor
          *            a map of properties that will be merged with current one
          */
         protected void mergeEasyantProperties(Map<String, PropertyDescriptor> properties) {
-            for (Iterator<PropertyDescriptor> iterator = properties.values().iterator(); iterator.hasNext();) {
-                PropertyDescriptor prop = iterator.next();
+            for (PropertyDescriptor prop : properties.values()) {
                 if (prop.isInheritable()) {
                     IvyContext.getContext().getSettings().getVariableContainer()
                             .setVariable(prop.getName(), prop.getValue(), true);

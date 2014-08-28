@@ -85,8 +85,7 @@ public class ProjectUtils {
         // since DefaultLogger doesn't offer any way to get the out / err print
         // streams we should use reflection
         // TODO: we should find a better way to do this
-        for (Iterator<?> i = project.getBuildListeners().iterator(); i.hasNext();) {
-            BuildListener l = (BuildListener) i.next();
+        for (BuildListener l : project.getBuildListeners()) {
             if (l instanceof DefaultLogger) {
                 try {
                     Field fieldOut = DefaultLogger.class.getDeclaredField("out");
@@ -159,8 +158,8 @@ public class ProjectUtils {
      */
     public static Map<String, Target> removeDuplicateTargets(Map<?, ?> targets) {
         Map<Location, Target> locationMap = new HashMap<Location, Target>();
-        for (Iterator<?> i = targets.entrySet().iterator(); i.hasNext();) {
-            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) i.next();
+        for (Map.Entry<?, ?> entry1 : targets.entrySet()) {
+            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) entry1;
             String name = (String) entry.getKey();
             Target target = (Target) entry.getValue();
             Target otherTarget = locationMap.get(target.getLocation());

@@ -213,9 +213,7 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
                 if (!isInIncludeMode) {
                     target.setDepends(depends);
                 } else {
-                    for (Iterator<String> iter = Target.parseDepends(depends, name, "depends").iterator(); iter
-                            .hasNext();) {
-                        String curTarget = iter.next();
+                    for (String curTarget : Target.parseDepends(depends, name, "depends")) {
                         if (projectTargets.containsKey(curTarget) && (projectTargets.get(curTarget) instanceof Phase)) {
 
                             target.addDependency(curTarget);
@@ -240,9 +238,7 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
             }
             if (extensionPoint != null) {
                 ProjectHelper helper = ProjectUtils.getConfiguredProjectHelper(context.getProject());
-                for (Iterator<?> iter = Target.parseDepends(extensionPoint, name, "extensionOf").iterator(); iter
-                        .hasNext();) {
-                    String tgName = (String) iter.next();
+                for (String tgName : Target.parseDepends(extensionPoint, name, "extensionOf")) {
                     if (isInIncludeMode()) {
                         tgName = prefix + sep + tgName;
                     }
@@ -252,7 +248,7 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
 
                     // defer extensionpoint resolution until the full
                     // import stack has been processed
-                    helper.getExtensionStack().add(new String[] { tgName, name, extensionPointMissing.name() });
+                    helper.getExtensionStack().add(new String[]{tgName, name, extensionPointMissing.name()});
                 }
             }
             if (phase != null) {

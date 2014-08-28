@@ -98,8 +98,8 @@ public class ImportDeferred extends AbstractImport implements DynamicAttribute {
         // Check dependency on core
         checkCoreCompliance(report, getProvidedConf());
         ConfigurationResolveReport confReport = report.getConfigurationReport(getMainConf());
-        for (Iterator<?> iterator = confReport.getModuleRevisionIds().iterator(); iterator.hasNext();) {
-            ModuleRevisionId mrid = (ModuleRevisionId) iterator.next();
+        for (Object o : confReport.getModuleRevisionIds()) {
+            ModuleRevisionId mrid = (ModuleRevisionId) o;
             if (mrid.getModuleId().equals(moduleId)) {
                 ArtifactDownloadReport[] artifactsReports = confReport.getDownloadReports(mrid);
 
@@ -113,9 +113,7 @@ public class ImportDeferred extends AbstractImport implements DynamicAttribute {
                 }
 
                 File antFile = null;
-                for (int j = 0; j < artifactsReports.length; j++) {
-                    ArtifactDownloadReport artifact = artifactsReports[j];
-
+                for (ArtifactDownloadReport artifact : artifactsReports) {
                     if ("ant".equals(artifact.getType())) {
                         antFile = artifact.getLocalFile();
                     } else {

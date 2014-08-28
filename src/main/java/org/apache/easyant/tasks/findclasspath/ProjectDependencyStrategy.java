@@ -111,13 +111,12 @@ public class ProjectDependencyStrategy extends BasicConfigurationStrategy {
                     resolveId = ResolveOptions.getDefaultResolveId(getResolvedModuleId());
                 }
                 XmlReportParser parser = new XmlReportParser();
-                for (int i = 0; i < confs.length; i++) {
-                    File report = cacheMgr.getConfigurationResolveReportInCache(resolveId, confs[i]);
+                for (String conf : confs) {
+                    File report = cacheMgr.getConfigurationResolveReportInCache(resolveId, conf);
                     parser.parse(report);
 
                     Artifact[] artifacts = parser.getArtifacts();
-                    for (int j = 0; j < artifacts.length; j++) {
-                        Artifact artifact = artifacts[j];
+                    for (Artifact artifact : artifacts) {
                         ModuleRevisionId mrid = artifact.getModuleRevisionId();
                         if (mrid.getOrganisation().equals(getOrganisationToFind())) {
                             if (mrid.getName().equals(getModuleToFind())) {

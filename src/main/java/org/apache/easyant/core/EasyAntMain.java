@@ -377,8 +377,8 @@ public class EasyAntMain implements AntMain {
             easyAntConfiguration.setProxy(true);
         }
         if (line.getArgList().size() > 0) {
-            for (Iterator<?> iterator = line.getArgList().iterator(); iterator.hasNext();) {
-                String target = (String) iterator.next();
+            for (Object o : line.getArgList()) {
+                String target = (String) o;
                 easyAntConfiguration.getTargets().add(target);
             }
         }
@@ -401,8 +401,7 @@ public class EasyAntMain implements AntMain {
 
     /** Load the property files specified by -propertyfile */
     private void loadPropertyFiles() {
-        for (int propertyFileIndex = 0; propertyFileIndex < propertyFiles.size(); propertyFileIndex++) {
-            String filename = propertyFiles.get(propertyFileIndex);
+        for (String filename : propertyFiles) {
             Properties props = new Properties();
             FileInputStream fis = null;
             try {

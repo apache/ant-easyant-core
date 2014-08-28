@@ -56,17 +56,17 @@ public class MetaBuildExecutor extends DefaultExecutor {
         List<String> postTargetsToRun = new ArrayList<String>();
         List<String> preTargetsToRun = new ArrayList<String>();
         List<String> preModuleTargetList = Arrays.asList(preModuleTargets.split(","));
-        for (int i = 0; i < targets.length; i++) {
-            if (preModuleTargetList.contains(targets[i])) {
+        for (String target : targets) {
+            if (preModuleTargetList.contains(target)) {
                 // fill a list of targets to run BEFORE subproject delegation
-                preTargetsToRun.add(targets[i]);
+                preTargetsToRun.add(target);
             } else {
                 // fill a list of target to run AFTER subproject delagation
                 // make sure target exists
-                if (project.getTargets().get(targets[i]) != null) {
-                    postTargetsToRun.add(targets[i]);
+                if (project.getTargets().get(target) != null) {
+                    postTargetsToRun.add(target);
                 } else {
-                    project.log("Skipping undefined target '" + targets[i] + "'", Project.MSG_VERBOSE);
+                    project.log("Skipping undefined target '" + target + "'", Project.MSG_VERBOSE);
                 }
 
             }
@@ -109,8 +109,8 @@ public class MetaBuildExecutor extends DefaultExecutor {
             sb.append("Build Order for Sub Modules").append(StringUtils.LINE_SEP);
             sb.append(DEMARKER).append(StringUtils.LINE_SEP);
             String[] subModules = sortedModules.split("\\,");
-            for (int i = 0; i < subModules.length; i++) {
-                sb.append(" * ").append(subModules[i].trim()).append(StringUtils.LINE_SEP);
+            for (String subModule : subModules) {
+                sb.append(" * ").append(subModule.trim()).append(StringUtils.LINE_SEP);
             }
             sb.append(DEMARKER);
             project.log(sb.toString());

@@ -292,8 +292,7 @@ public class LoadModule extends AbstractEasyAntTask {
             getProject().setProperty(EasyAntMagicNames.AVAILABLE_BUILD_CONFIGURATIONS, buildConfigurations);
             updateMainConfs();
 
-            for (Iterator<PropertyDescriptor> iterator = md.getProperties().values().iterator(); iterator.hasNext();) {
-                PropertyDescriptor property = iterator.next();
+            for (PropertyDescriptor property : md.getProperties().values()) {
                 if (canInherit(property, currentModule)) {
                     PropertyTask propTask = new PropertyTask();
                     propTask.setName(property.getName());
@@ -337,9 +336,7 @@ public class LoadModule extends AbstractEasyAntTask {
                     buildtype.setRev(md.getBuildType().getModuleRevisionId().getRevision());
                 }
             }
-            for (Iterator<?> iterator = md.getPlugins().iterator(); iterator.hasNext();) {
-                PluginDescriptor plugin = (PluginDescriptor) iterator.next();
-
+            for (PluginDescriptor plugin : md.getPlugins()) {
                 if (canInherit(plugin, currentModule)) {
                     // Import importTask = new Import();
                     // importTask.setMrid(plugin.getMrid());
@@ -376,9 +373,7 @@ public class LoadModule extends AbstractEasyAntTask {
                     initTask(importDeferredTask).perform();
                 }
             }
-            for (Iterator<?> iterator = md.getPlugins().iterator(); iterator.hasNext();) {
-                PluginDescriptor plugin = (PluginDescriptor) iterator.next();
-
+            for (PluginDescriptor plugin : md.getPlugins()) {
                 if (canInherit(plugin, currentModule)) {
                     ImportDeferred importDeferredTask = new ImportDeferred();
                     importDeferredTask.setOrganisation(plugin.getModuleRevisionId().getOrganisation());

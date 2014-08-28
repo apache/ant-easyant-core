@@ -98,8 +98,8 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
         } else {
             types = new String[] { "jar", "bundle" };
         }
-        for (int i = 0; i < types.length; i++) {
-            if (artifact.getType().equals(types[i])) {
+        for (String type : types) {
+            if (artifact.getType().equals(type)) {
                 return true;
             }
         }
@@ -222,9 +222,8 @@ public abstract class AbstractImport extends AbstractEasyAntTask {
     protected void checkCoreCompliance(ResolveReport report, String confToCheck) {
         if (report.getConfigurationReport(confToCheck) != null) {
             log("checking module's provided dependencies ...", Project.MSG_DEBUG);
-            for (Iterator<?> iterator = report.getConfigurationReport(confToCheck).getModuleRevisionIds().iterator(); iterator
-                    .hasNext();) {
-                ModuleRevisionId currentmrid = (ModuleRevisionId) iterator.next();
+            for (Object o : report.getConfigurationReport(confToCheck).getModuleRevisionIds()) {
+                ModuleRevisionId currentmrid = (ModuleRevisionId) o;
                 log("checking " + currentmrid.toString(), Project.MSG_DEBUG);
                 if (currentmrid.getOrganisation().equals("org.apache.easyant")
                         && currentmrid.getName().equals("easyant-core")) {

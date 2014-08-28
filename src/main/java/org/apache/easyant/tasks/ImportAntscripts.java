@@ -128,8 +128,8 @@ public class ImportAntscripts extends Task {
 
                 // collect the descriptor associated with each ant script
                 ModuleRevisionId[] depIds = xmlreport.getDependencyRevisionIds();
-                for (int i = 0; i < depIds.length; i++) {
-                    File depIvyFile = xmlreport.getMetadataArtifactReport(depIds[i]).getLocalFile();
+                for (ModuleRevisionId depId : depIds) {
+                    File depIvyFile = xmlreport.getMetadataArtifactReport(depId).getLocalFile();
                     dependencies.add(getMd(ivy, depIvyFile));
                 }
             } else {

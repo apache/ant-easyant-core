@@ -367,8 +367,8 @@ public class DefaultPluginServiceImpl implements PluginService {
         ResolveReport resolveReport = importTask.getProject().getReference(
                 EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF);
         if (resolveReport != null) {
-            for (Iterator<?> iterator = resolveReport.getDependencies().iterator(); iterator.hasNext();) {
-                IvyNode dependency = (IvyNode) iterator.next();
+            for (Object o : resolveReport.getDependencies()) {
+                IvyNode dependency = (IvyNode) o;
                 if (dependency.getResolvedId().getOrganisation().equals(importTask.getOrganisation()) //
                         && dependency.getResolvedId().getName().equals(importTask.getModule())) {
                     importedModuleReport.setRevision(dependency.getResolvedId().getRevision());
@@ -401,8 +401,8 @@ public class DefaultPluginServiceImpl implements PluginService {
                 try {
                     fis = new FileInputStream(f);
                     propToLoad.load(fis);
-                    for (Iterator<?> iter = propToLoad.keySet().iterator(); iter.hasNext();) {
-                        String key = (String) iter.next();
+                    for (Object o : propToLoad.keySet()) {
+                        String key = (String) o;
                         PropertyDescriptor propertyDescriptor = new PropertyDescriptor(key);
                         propertyDescriptor.setValue(propToLoad.getProperty(key));
                         if (property.getOwningTarget() != null) {
@@ -522,8 +522,7 @@ public class DefaultPluginServiceImpl implements PluginService {
             targetReport.setDescription(target.getDescription());
             targetReport.setIfCase(target.getIf());
             targetReport.setUnlessCase(target.getUnless());
-            for (Iterator<?> iterator = target.getProject().getTargets().values().iterator(); iterator.hasNext();) {
-                Target currentTarget = (Target) iterator.next();
+            for (Target currentTarget : target.getProject().getTargets().values()) {
                 if (currentTarget instanceof ExtensionPoint) {
                     Enumeration<?> dependencies = currentTarget.getDependencies();
                     while (dependencies.hasMoreElements()) {

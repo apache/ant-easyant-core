@@ -49,8 +49,7 @@ public class BindTarget extends Task {
         }
 
         // unbind current mapping
-        for (Iterator<?> iterator = getProject().getTargets().values().iterator(); iterator.hasNext();) {
-            Target current = (Target) iterator.next();
+        for (Target current : getProject().getTargets().values()) {
             if (current instanceof ExtensionPoint) {
                 Enumeration<?> dependencies = current.getDependencies();
                 StringBuilder dependsOn = new StringBuilder();

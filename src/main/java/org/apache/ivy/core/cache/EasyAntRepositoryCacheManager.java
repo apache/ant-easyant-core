@@ -1155,10 +1155,10 @@ public class EasyAntRepositoryCacheManager implements RepositoryCacheManager, Iv
                 }
                 if (deleteOldArtifacts) {
                     String[] confs = md.getConfigurationsNames();
-                    for (int i = 0; i < confs.length; i++) {
-                        Artifact[] arts = md.getArtifacts(confs[i]);
-                        for (int j = 0; j < arts.length; j++) {
-                            Artifact transformedArtifact = NameSpaceHelper.transform(arts[j], options.getNamespace()
+                    for (String conf : confs) {
+                        Artifact[] arts = md.getArtifacts(conf);
+                        for (Artifact art : arts) {
+                            Artifact transformedArtifact = NameSpaceHelper.transform(art, options.getNamespace()
                                     .getToSystemTransformer());
                             ArtifactOrigin origin = getSavedArtifactOrigin(transformedArtifact);
                             File artFile = getArchiveFileInCache(transformedArtifact, origin, false);

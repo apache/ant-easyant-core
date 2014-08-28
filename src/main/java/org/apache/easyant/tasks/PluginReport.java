@@ -231,8 +231,7 @@ public class PluginReport extends AbstractEasyAntTask {
             Transformer transformer = tFactory.newTransformer(xsltSource);
 
             // add the provided XSLT parameters
-            for (Iterator<Param> it = params.iterator(); it.hasNext();) {
-                XSLTProcess.Param param = it.next();
+            for (Param param : params) {
                 transformer.setParameter(param.getName(), param.getExpression());
             }
             ModuleRevisionId moduleRevisionId = easyantReport.getModuleDescriptor().getModuleRevisionId();

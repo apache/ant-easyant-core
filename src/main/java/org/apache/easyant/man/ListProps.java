@@ -82,8 +82,7 @@ public class ListProps extends EasyantOption {
     }
 
     private void printProperties(Map<String, PropertyDescriptor> allProjectProps) {
-        for (Iterator<Entry<String, PropertyDescriptor>> it = allProjectProps.entrySet().iterator(); it.hasNext();) {
-            Entry<String, PropertyDescriptor> entry = it.next();
+        for (Entry<String, PropertyDescriptor> entry : allProjectProps.entrySet()) {
             PropertyDescriptor prop = entry.getValue();
             getProject().log("\tProperty: " + prop.getName());
 

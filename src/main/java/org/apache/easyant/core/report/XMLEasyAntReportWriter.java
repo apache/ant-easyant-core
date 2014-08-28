@@ -116,12 +116,12 @@ public class XMLEasyAntReportWriter {
         // create a list of ModuleRevisionIds indicating the position for each dependency
         List<?> dependencies = new ArrayList(report.getModuleRevisionIds());
 
-        for (Iterator<?> iter = report.getModuleIds().iterator(); iter.hasNext();) {
-            ModuleId mid = (ModuleId) iter.next();
+        for (Object o : report.getModuleIds()) {
+            ModuleId mid = (ModuleId) o;
             out.println("\t\t<module organisation=\"" + XMLHelper.escape(mid.getOrganisation()) + "\"" + " name=\""
                     + XMLHelper.escape(mid.getName()) + "\">");
-            for (Iterator<?> it2 = report.getNodes(mid).iterator(); it2.hasNext();) {
-                IvyNode dep = (IvyNode) it2.next();
+            for (Object o1 : report.getNodes(mid)) {
+                IvyNode dep = (IvyNode) o1;
                 ouputRevision(report, out, dependencies, dep);
             }
             out.println("\t\t</module>");
@@ -168,8 +168,8 @@ public class XMLEasyAntReportWriter {
             details.append(" homepage=\"").append(XMLHelper.escape(md.getHomePage())).append("\"");
         }
         extraAttributes = md != null ? md.getExtraAttributes() : dep.getResolvedId().getExtraAttributes();
-        for (Iterator<?> iterator = extraAttributes.entrySet().iterator(); iterator.hasNext();) {
-            Entry<String, Object> entry = (Entry<String, Object>) iterator.next();
+        for (Entry<?, ?> entry1 : extraAttributes.entrySet()) {
+            Entry<String, Object> entry = (Entry<String, Object>) entry1;
             details.append(" extra-").append(entry.getKey()).append("=\"")
                     .append(XMLHelper.escape(entry.getValue().toString())).append("\"");
         }
@@ -184,14 +184,14 @@ public class XMLEasyAntReportWriter {
                 + toString(dep.getConfigurations(report.getConfiguration())) + "\"" + " position=\"" + position + "\">");
         if (md != null) {
             License[] licenses = md.getLicenses();
-            for (int i = 0; i < licenses.length; i++) {
+            for (License license : licenses) {
                 String lurl;
-                if (licenses[i].getUrl() != null) {
-                    lurl = " url=\"" + XMLHelper.escape(licenses[i].getUrl()) + "\"";
+                if (license.getUrl() != null) {
+                    lurl = " url=\"" + XMLHelper.escape(license.getUrl()) + "\"";
                 } else {
                     lurl = "";
                 }
-                out.println("\t\t\t\t<license name=\"" + XMLHelper.escape(licenses[i].getName()) + "\"" + lurl + "/>");
+                out.println("\t\t\t\t<license name=\"" + XMLHelper.escape(license.getName()) + "\"" + lurl + "/>");
             }
         }
         outputMetadataArtifact(out, dep);
@@ -206,8 +206,8 @@ public class XMLEasyAntReportWriter {
             EvictionData ed = dep.getEvictedData(report.getConfiguration());
             Collection<?> selected = ed.getSelected();
             if (selected != null) {
-                for (Iterator<?> it3 = selected.iterator(); it3.hasNext();) {
-                    IvyNode sel = (IvyNode) it3.next();
+                for (Object aSelected : selected) {
+                    IvyNode sel = (IvyNode) aSelected;
                     out.println("\t\t\t\t<evicted-by rev=\"" + XMLHelper.escape(sel.getResolvedId().getRevision())
                             + "\"/>");
                 }
@@ -245,34 +245,34 @@ public class XMLEasyAntReportWriter {
 
     private void outputCallers(ConfigurationResolveReport report, PrintWriter out, IvyNode dep) {
         Caller[] callers = dep.getCallers(report.getConfiguration());
-        for (int i = 0; i < callers.length; i++) {
+        for (Caller caller : callers) {
             StringBuffer callerDetails = new StringBuffer();
-            Map<?, ?> callerExtraAttributes = callers[i].getDependencyDescriptor().getExtraAttributes();
-            for (Iterator<?> iterator = callerExtraAttributes.entrySet().iterator(); iterator.hasNext();) {
+            Map<?, ?> callerExtraAttributes = caller.getDependencyDescriptor().getExtraAttributes();
+            for (Iterator<?> iterator = callerExtraAttributes.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<String, Object> entry = (Entry<String, Object>) iterator.next();
                 callerDetails.append(" extra-").append(entry.getKey()).append("=\"")
                         .append(XMLHelper.escape(entry.getValue().toString())).append("\"");
             }
 
             out.println("\t\t\t\t<caller organisation=\""
-                    + XMLHelper.escape(callers[i].getModuleRevisionId().getOrganisation())
+                    + XMLHelper.escape(caller.getModuleRevisionId().getOrganisation())
                     + "\""
                     + " name=\""
-                    + XMLHelper.escape(callers[i].getModuleRevisionId().getName())
+                    + XMLHelper.escape(caller.getModuleRevisionId().getName())
                     + "\""
                     + " conf=\""
-                    + XMLHelper.escape(toString(callers[i].getCallerConfigurations()))
+                    + XMLHelper.escape(toString(caller.getCallerConfigurations()))
                     + "\""
                     + " rev=\""
-                    + XMLHelper.escape(callers[i].getAskedDependencyId(dep.getData()).getRevision())
+                    + XMLHelper.escape(caller.getAskedDependencyId(dep.getData()).getRevision())
                     + "\""
                     + " rev-constraint-default=\""
-                    + XMLHelper.escape(callers[i].getDependencyDescriptor().getDependencyRevisionId().getRevision())
+                    + XMLHelper.escape(caller.getDependencyDescriptor().getDependencyRevisionId().getRevision())
                     + "\""
                     + " rev-constraint-dynamic=\""
-                    + XMLHelper.escape(callers[i].getDependencyDescriptor().getDynamicConstraintDependencyRevisionId()
-                            .getRevision()) + "\"" + " callerrev=\""
-                    + XMLHelper.escape(callers[i].getModuleRevisionId().getRevision()) + "\"" + callerDetails + "/>");
+                    + XMLHelper.escape(caller.getDependencyDescriptor().getDynamicConstraintDependencyRevisionId()
+                    .getRevision()) + "\"" + " callerrev=\""
+                    + XMLHelper.escape(caller.getModuleRevisionId().getRevision()) + "\"" + callerDetails + "/>");
         }
     }
 
@@ -280,23 +280,23 @@ public class XMLEasyAntReportWriter {
         Map<?, ?> extraAttributes;
         ArtifactDownloadReport[] adr = report.getDownloadReports(dep.getResolvedId());
         out.println("\t\t\t\t<artifacts>");
-        for (int i = 0; i < adr.length; i++) {
-            out.print("\t\t\t\t\t<artifact name=\"" + XMLHelper.escape(adr[i].getName()) + "\" type=\""
-                    + XMLHelper.escape(adr[i].getType()) + "\" ext=\"" + XMLHelper.escape(adr[i].getExt()) + "\"");
-            extraAttributes = adr[i].getArtifact().getExtraAttributes();
-            for (Iterator<?> iterator = extraAttributes.entrySet().iterator(); iterator.hasNext();) {
+        for (ArtifactDownloadReport anAdr : adr) {
+            out.print("\t\t\t\t\t<artifact name=\"" + XMLHelper.escape(anAdr.getName()) + "\" type=\""
+                    + XMLHelper.escape(anAdr.getType()) + "\" ext=\"" + XMLHelper.escape(anAdr.getExt()) + "\"");
+            extraAttributes = anAdr.getArtifact().getExtraAttributes();
+            for (Iterator<?> iterator = extraAttributes.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<String, Object> entry = (Entry<String, Object>) iterator.next();
                 out.print(" extra-" + entry.getKey() + "=\"" + XMLHelper.escape(entry.getValue().toString()) + "\"");
             }
-            out.print(" status=\"" + XMLHelper.escape(adr[i].getDownloadStatus().toString()) + "\"");
-            out.print(" details=\"" + XMLHelper.escape(adr[i].getDownloadDetails()) + "\"");
-            out.print(" size=\"" + adr[i].getSize() + "\"");
-            out.print(" time=\"" + adr[i].getDownloadTimeMillis() + "\"");
-            if (adr[i].getLocalFile() != null) {
-                out.print(" location=\"" + XMLHelper.escape(adr[i].getLocalFile().getAbsolutePath()) + "\"");
+            out.print(" status=\"" + XMLHelper.escape(anAdr.getDownloadStatus().toString()) + "\"");
+            out.print(" details=\"" + XMLHelper.escape(anAdr.getDownloadDetails()) + "\"");
+            out.print(" size=\"" + anAdr.getSize() + "\"");
+            out.print(" time=\"" + anAdr.getDownloadTimeMillis() + "\"");
+            if (anAdr.getLocalFile() != null) {
+                out.print(" location=\"" + XMLHelper.escape(anAdr.getLocalFile().getAbsolutePath()) + "\"");
             }
 
-            ArtifactOrigin origin = adr[i].getArtifactOrigin();
+            ArtifactOrigin origin = anAdr.getArtifactOrigin();
             if (origin != null) {
                 out.println(">");
                 out.println("\t\t\t\t\t\t<origin-location is-local=\"" + origin.isLocal() + "\"" + " location=\""

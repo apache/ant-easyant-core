@@ -101,8 +101,8 @@ public class GoOffline extends AbstractEasyAntTask {
             if (importedModule.getEasyantReport() != null) {
                 // install module dependencies
                 ResolveReport resolveReport = importedModule.getEasyantReport().getResolveReport();
-                for (Iterator<?> iterator = resolveReport.getDependencies().iterator(); iterator.hasNext();) {
-                    IvyNode dependency = (IvyNode) iterator.next();
+                for (Object o : resolveReport.getDependencies()) {
+                    IvyNode dependency = (IvyNode) o;
                     install(dependency.getResolvedId(), getEasyantResolverName(),
                             EasyAntMagicNames.EASYANT_IVY_INSTANCE);
                 }

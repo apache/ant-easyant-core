@@ -83,13 +83,13 @@ public class SubModule extends AbstractEasyAntTask {
         }
 
         BuildException buildException = null;
-        for (int i = 0; i < count; ++i) {
+        for (String filename : filenames) {
             File file = null;
             String subdirPath = null;
             Throwable thrownException = null;
             try {
                 File directory = null;
-                file = new File(filenames[i]);
+                file = new File(filename);
                 if (file.isDirectory()) {
                     if (verbose) {
                         subdirPath = file.getPath();
@@ -330,8 +330,7 @@ public class SubModule extends AbstractEasyAntTask {
         Set<String> filteredTargets = new HashSet<String>();
         Set<?> keys = subProject.getTargets().keySet();
 
-        for (Iterator<String> it = targets.iterator(); it.hasNext();) {
-            String target = it.next();
+        for (String target : targets) {
             if (keys.contains(target)) {
                 filteredTargets.add(target);
             } else {

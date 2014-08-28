@@ -193,19 +193,19 @@ public class EasyantResolutionCacheManager implements ResolutionCacheManager, Iv
     private void saveLocalParents(ModuleRevisionId baseMrevId, ModuleDescriptor md, File mdFile, Properties paths)
             throws ParseException, IOException {
         ExtendsDescriptor[] parents = md.getInheritedDescriptors();
-        for (int i = 0; i < parents.length; i++) {
-            if (!parents[i].isLocal()) {
+        for (ExtendsDescriptor parent1 : parents) {
+            if (!parent1.isLocal()) {
                 // we store only local parents in the cache!
                 continue;
             }
 
-            ModuleDescriptor parent = parents[i].getParentMd();
+            ModuleDescriptor parent = parent1.getParentMd();
             ModuleRevisionId pRevId = ModuleRevisionId.newInstance(baseMrevId, baseMrevId.getRevision() + "-parent."
                     + paths.size());
             File parentFile = getResolvedIvyFileInCache(pRevId);
             parent.toIvyFile(parentFile);
 
-            paths.setProperty(mdFile.getName() + "|" + parents[i].getLocation(), parentFile.getAbsolutePath());
+            paths.setProperty(mdFile.getName() + "|" + parent1.getLocation(), parentFile.getAbsolutePath());
             saveLocalParents(baseMrevId, parent, parentFile, paths);
         }
     }

@@ -57,8 +57,8 @@ public class EasyAntRunner extends Task {
 
     public void setTargets(String targets) {
         String[] targetsArray = targets.split(",");
-        for (int i = 0; i < targetsArray.length; i++) {
-            getEasyantConfiguration().getTargets().add(targetsArray[i]);
+        for (String aTargetsArray : targetsArray) {
+            getEasyantConfiguration().getTargets().add(aTargetsArray);
         }
     }
 

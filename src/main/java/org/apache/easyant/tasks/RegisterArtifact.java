@@ -57,8 +57,8 @@ public class RegisterArtifact extends IvyPostResolveTask {
         }
         MDArtifact artifact = new MDArtifact(md, artName, artType, artExt, null, extraAttributes);
         String[] configurations = getConfs().split(",");
-        for (int i = 0; i < configurations.length; i++) {
-            if ("*".equals(configurations[i])) {
+        for (String configuration : configurations) {
+            if ("*".equals(configuration)) {
                 String[] declaredConfs = md.getConfigurationsNames();
                 for (int j = 0; j < declaredConfs.length; j++) {
                     artifact.addConfiguration(declaredConfs[j]);
@@ -66,12 +66,12 @@ public class RegisterArtifact extends IvyPostResolveTask {
                 }
             } else {
                 // create configuration if it doesn't exist
-                if (md.getConfiguration(configurations[i]) == null) {
-                    Configuration generatedConfiguration = new Configuration(configurations[i]);
+                if (md.getConfiguration(configuration) == null) {
+                    Configuration generatedConfiguration = new Configuration(configuration);
                     md.addConfiguration(generatedConfiguration);
                 }
-                artifact.addConfiguration(configurations[i]);
-                md.addArtifact(configurations[i], artifact);
+                artifact.addConfiguration(configuration);
+                md.addArtifact(configuration, artifact);
             }
         }
 
