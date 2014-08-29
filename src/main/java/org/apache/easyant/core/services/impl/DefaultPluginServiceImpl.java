@@ -17,16 +17,6 @@
  */
 package org.apache.easyant.core.services.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.text.ParsePosition;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
@@ -36,20 +26,9 @@ import org.apache.easyant.core.descriptor.PluginType;
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
-import org.apache.easyant.core.report.EasyAntReport;
-import org.apache.easyant.core.report.ExtensionPointReport;
-import org.apache.easyant.core.report.ImportedModuleReport;
-import org.apache.easyant.core.report.ParameterReport;
-import org.apache.easyant.core.report.ParameterType;
-import org.apache.easyant.core.report.TargetReport;
+import org.apache.easyant.core.report.*;
 import org.apache.easyant.core.services.PluginService;
-import org.apache.easyant.tasks.AbstractImport;
-import org.apache.easyant.tasks.Import;
-import org.apache.easyant.tasks.ImportDeferred;
-import org.apache.easyant.tasks.ImportTestModule;
-import org.apache.easyant.tasks.LoadModule;
-import org.apache.easyant.tasks.ParameterTask;
-import org.apache.easyant.tasks.PathTask;
+import org.apache.easyant.tasks.*;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.core.IvyContext;
@@ -66,22 +45,21 @@ import org.apache.ivy.plugins.parser.ModuleDescriptorParserRegistry;
 import org.apache.ivy.plugins.repository.url.URLResource;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.util.Message;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.BuildListener;
-import org.apache.tools.ant.ComponentHelper;
-import org.apache.tools.ant.ExtensionPoint;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.PropertyHelper;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.UnknownElement;
+import org.apache.tools.ant.*;
 import org.apache.tools.ant.property.ParseNextProperty;
 import org.apache.tools.ant.property.PropertyExpander;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.ParsePosition;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 public class DefaultPluginServiceImpl implements PluginService {
 
@@ -94,9 +72,8 @@ public class DefaultPluginServiceImpl implements PluginService {
 
     /**
      * This is the default constructor, the IvyContext should be the IvyContext configured to the easyant ivy instance
-     * 
-     * @param easyantIvySettings
-     *            the easyant ivy instance
+     *
+     * @param easyantIvySettings the easyant ivy instance
      */
     public DefaultPluginServiceImpl(final IvyAntSettings easyantIvySettings) {
         this(easyantIvySettings, new DefaultEasyAntXmlModuleDescriptorParser());
@@ -105,11 +82,9 @@ public class DefaultPluginServiceImpl implements PluginService {
     /**
      * A custom constructor if you want to specify your own parser / configuration service, you should use this
      * constructor the IvyContext should be the IvyContext configured to the easyant ivy instance
-     * 
-     * @param easyantIvySetings
-     *            the easyant ivy instance
-     * @param parser
-     *            a valid easyantModuleDescriptor
+     *
+     * @param easyantIvySetings the easyant ivy instance
+     * @param parser            a valid easyantModuleDescriptor
      */
     public DefaultPluginServiceImpl(final IvyAntSettings easyantIvySetings, EasyAntModuleDescriptorParser parser) {
         this.easyantIvySettings = easyantIvySetings;
@@ -247,7 +222,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         return project;
     }
 
-    private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws IOException, Exception {
+    private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws IOException {
 
         // handle tasks from implicit target
         // When using import/include, ant create a "implicit target" to process root tasks. When tasks are declared
@@ -623,7 +598,7 @@ public class DefaultPluginServiceImpl implements PluginService {
     }
 
     public ModuleRevisionId[] search(String organisation, String moduleName, String revision, String branch,
-            String matcher, String resolver) throws Exception {
+                                     String matcher, String resolver) throws Exception {
         IvySettings settings = ivyInstance.getSettings();
 
         if (moduleName == null && PatternMatcher.EXACT.equals(matcher)) {

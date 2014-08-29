@@ -17,19 +17,6 @@
  */
 package org.apache.easyant.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
-
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ant.listerners.DefaultEasyAntLogger;
 import org.apache.easyant.core.configuration.EasyAntConfiguration;
@@ -47,22 +34,25 @@ import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
 import org.apache.ivy.core.cache.EasyantResolutionCacheManager;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.BuildListener;
-import org.apache.tools.ant.BuildLogger;
-import org.apache.tools.ant.DemuxInputStream;
-import org.apache.tools.ant.DemuxOutputStream;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.MagicNames;
-import org.apache.tools.ant.Main;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.PropertyHelper;
-import org.apache.tools.ant.Task;
+import org.apache.tools.ant.*;
 import org.apache.tools.ant.input.DefaultInputHandler;
 import org.apache.tools.ant.input.InputHandler;
 import org.apache.tools.ant.util.ClasspathUtils;
 import org.apache.tools.ant.util.FileUtils;
 import org.apache.tools.ant.util.ProxySetup;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 
 /**
  * This class provides everything you need to run easyant. This class should be used to bootstrap easyant from IDE for
@@ -83,7 +73,7 @@ public class EasyAntEngine {
 
     /**
      * Constructor if you want to use a custom configuration
-     * 
+     *
      * @param configuration
      */
     public EasyAntEngine(final EasyAntConfiguration configuration) {
@@ -92,9 +82,8 @@ public class EasyAntEngine {
 
     /**
      * Configure easyant ivy instance
-     * 
-     * @param project
-     *            project instance
+     *
+     * @param project project instance
      * @return a configured {@link IvyAntSettings} instance
      */
     public IvyAntSettings configureEasyAntIvyInstance(Project project) {
@@ -164,7 +153,7 @@ public class EasyAntEngine {
                 try {
                     if (getLocalURL == null
                             && "org.eclipse.osgi.framework.internal.core.BundleURLConnection".equals(conn.getClass()
-                                    .getName())) {
+                            .getName())) {
                         EasyAntEngine.getLocalURL = conn.getClass().getMethod("getLocalURL", (Class<?>) null);
                         getLocalURL.setAccessible(true);
                     }
@@ -191,7 +180,7 @@ public class EasyAntEngine {
 
     /**
      * Get user easyant-ivysettings file
-     * 
+     *
      * @param project
      * @return the configured user easyant-ivysettings.file
      */
@@ -209,7 +198,7 @@ public class EasyAntEngine {
 
     /**
      * Get global easyant-ivysettings file
-     * 
+     *
      * @param project
      * @return the configured global easyant-ivysettings.file
      * @throws MalformedURLException
@@ -252,9 +241,8 @@ public class EasyAntEngine {
     /**
      * Adds the listeners specified in the command line arguments, along with the default listener, to the specified
      * project.
-     * 
-     * @param project
-     *            The project to add listeners to. Must not be <code>null</code> .
+     *
+     * @param project The project to add listeners to. Must not be <code>null</code> .
      */
     protected void addBuildListeners(Project project) {
 
@@ -273,12 +261,9 @@ public class EasyAntEngine {
 
     /**
      * Creates the InputHandler and adds it to the project.
-     * 
-     * @param project
-     *            the project instance.
-     * 
-     * @exception BuildException
-     *                if a specified InputHandler implementation could not be loaded.
+     *
+     * @param project the project instance.
+     * @throws BuildException if a specified InputHandler implementation could not be loaded.
      */
     protected void addInputHandler(Project project) {
         InputHandler handler;
@@ -295,7 +280,7 @@ public class EasyAntEngine {
 
     /**
      * Creates the default build logger for sending build events to the ant log.
-     * 
+     *
      * @return the logger instance for this build.
      */
     protected BuildLogger createLogger() {
@@ -322,19 +307,14 @@ public class EasyAntEngine {
 
     /**
      * Search parent directories for the build file.
-     * <p>
+     * <p/>
      * Takes the given target as a suffix to append to each parent directory in search of a build file. Once the root of
      * the file-system has been reached an exception is thrown.
-     * 
-     * @param start
-     *            Leaf directory of search. Must not be <code>null</code>.
-     * @param suffix
-     *            Suffix filename to look for in parents. Must not be <code>null</code>.
-     * 
+     *
+     * @param start  Leaf directory of search. Must not be <code>null</code>.
+     * @param suffix Suffix filename to look for in parents. Must not be <code>null</code>.
      * @return A handle to the build file if one is found
-     * 
-     * @exception BuildException
-     *                if no build file is found
+     * @throws BuildException if no build file is found
      */
     protected File findBuildModule(String start, String suffix) throws BuildException {
         if (configuration.getMsgOutputLevel() >= Project.MSG_INFO) {
@@ -365,7 +345,7 @@ public class EasyAntEngine {
 
     /**
      * configure easyant (listeners, inputhandlers, proxy, easyantIvyInstance, systems plugins etc...)
-     * 
+     *
      * @param project a project to configure
      */
     public void configureEasyAnt(Project project) {
@@ -438,7 +418,8 @@ public class EasyAntEngine {
 
     /**
      * Load an easyant project and resolve extension points
-     * @param project 
+     *
+     * @param project
      */
     public void loadProject(Project project) {
         try {
@@ -458,7 +439,7 @@ public class EasyAntEngine {
 
     }
 
-    protected void fireBuildFinished(Project project, Throwable error) {
+    private void fireBuildFinished(Project project, Throwable error) {
         try {
             project.fireBuildFinished(error);
         } catch (Throwable t) {
@@ -539,9 +520,8 @@ public class EasyAntEngine {
 
     /**
      * Configure easyant offline repository If offline mode is enabled, it will acts as dictator resolver
-     * 
-     * @param project
-     *            {@link Project} where repositories will be configured
+     *
+     * @param project {@link Project} where repositories will be configured
      */
     private void configureEasyAntOfflineRepository(Project project) {
         // assign default value if not already set
@@ -571,7 +551,7 @@ public class EasyAntEngine {
 
     /**
      * this method run the build process
-     * 
+     *
      * @throws BuildException
      */
     public void doBuild() throws BuildException {
@@ -641,9 +621,8 @@ public class EasyAntEngine {
 
     /**
      * This is a static method used to run build process
-     * 
-     * @param eaConfig
-     *            an easyant configuration
+     *
+     * @param eaConfig an easyant configuration
      * @throws BuildException
      */
     public static void runBuild(EasyAntConfiguration eaConfig) throws BuildException {
@@ -653,11 +632,9 @@ public class EasyAntEngine {
 
     /**
      * This is a static method used to configure and load an existing project
-     * 
-     * @param project
-     *            a given project
-     * @param eaConfiguration
-     *            an easyant configuration
+     *
+     * @param project         a given project
+     * @param eaConfiguration an easyant configuration
      * @return configured project
      * @throws BuildException
      */
@@ -671,7 +648,7 @@ public class EasyAntEngine {
 
     /**
      * Return the configured plugin service instance
-     * 
+     *
      * @return the configured plugin service instance
      */
     public PluginService getPluginService() {
@@ -702,11 +679,9 @@ public class EasyAntEngine {
     /**
      * Returns the EasyAnt version information, if available. Once the information has been loaded once, it's cached and
      * returned from the cache on future calls.
-     * 
+     *
      * @return the Ant version information as a String (always non- <code>null</code>)
-     * 
-     * @exception BuildException
-     *                if the version information is unavailable
+     * @throws BuildException if the version information is unavailable
      */
     public static String getEasyAntVersion() {
 
@@ -722,12 +697,7 @@ public class EasyAntEngine {
                 }
                 props.load(in);
 
-                StringBuilder msg = new StringBuilder();
-                msg.append("EasyAnt version ");
-                msg.append(props.getProperty("VERSION"));
-                msg.append(" compiled on ");
-                msg.append(props.getProperty("DATE"));
-                easyantVersion = msg.toString();
+                easyantVersion = "EasyAnt version " + props.getProperty("VERSION") + " compiled on " + props.getProperty("DATE");
             } catch (IOException ioe) {
                 throw new BuildException("Could not load the version information", ioe);
             } finally {
