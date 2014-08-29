@@ -23,11 +23,12 @@ import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.SubBuildListener;
 import org.apache.tools.ant.listener.TimestampedLogger;
-import org.apache.tools.ant.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.tools.ant.util.StringUtils.LINE_SEP;
 
 public class MultiModuleLogger extends DefaultEasyAntLogger implements SubBuildListener {
 
@@ -92,8 +93,8 @@ public class MultiModuleLogger extends DefaultEasyAntLogger implements SubBuildL
 
         File base = project == null ? null : project.getBaseDir();
         String path = (base == null) ? "With no base directory" : "In " + base.getAbsolutePath();
-        printMessage(StringUtils.LINE_SEP + DEMARKER + StringUtils.LINE_SEP + "Entering project " + name
-                + StringUtils.LINE_SEP + path + StringUtils.LINE_SEP + DEMARKER, out, event.getPriority());
+        printMessage(LINE_SEP + DEMARKER + LINE_SEP + "Entering project " + name
+                + LINE_SEP + path + LINE_SEP + DEMARKER, out, event.getPriority());
     }
 
 
@@ -123,8 +124,8 @@ public class MultiModuleLogger extends DefaultEasyAntLogger implements SubBuildL
         stopTimer(event);
         String name = extractNameOrDefault(event);
         String failed = event.getException() != null ? "failing " : "";
-        printMessage(StringUtils.LINE_SEP + DEMARKER + StringUtils.LINE_SEP + "Exiting " + failed + "project "
-                + name + StringUtils.LINE_SEP + DEMARKER, out, event.getPriority());
+        printMessage(LINE_SEP + DEMARKER + LINE_SEP + "Exiting " + failed + "project "
+                + name + LINE_SEP + DEMARKER, out, event.getPriority());
     }
 
 
@@ -181,13 +182,10 @@ public class MultiModuleLogger extends DefaultEasyAntLogger implements SubBuildL
     }
 
     private void printExecutionSubBuildsExecutionTimes(Project project) {
-        String lineSep = org.apache.tools.ant.util.StringUtils.LINE_SEP;
         List<ExecutionResult> allSubBuildResults = project.getReference(EXECUTION_TIMER_BUILD_RESULTS);
         if (allSubBuildResults != null && !allSubBuildResults.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            sb.append(lineSep).append(DEMARKER).append(lineSep);
-            sb.append("Project Sub-modules Summary: ").append(lineSep).append(DEMARKER);
-            sb.append(lineSep).append(formatExecutionResults(allSubBuildResults));
+            sb.append(LINE_SEP).append("Project Sub-modules Summary: ").append(LINE_SEP).append(formatExecutionResults(allSubBuildResults));
             project.log(sb.toString());
         }
     }
@@ -202,7 +200,7 @@ public class MultiModuleLogger extends DefaultEasyAntLogger implements SubBuildL
             maxExecTimeLength = result.getFormattedElapsedTime().length() > maxExecTimeLength ? result
                     .getFormattedElapsedTime().length() : maxExecTimeLength;
         }
-        StringBuilder sb = new StringBuilder(org.apache.tools.ant.util.StringUtils.LINE_SEP);
+        StringBuilder sb = new StringBuilder(LINE_SEP);
         for (ExecutionResult result : results) {
             String moduleName = padRight(result.getUnitName(), maxUnitNameLength + 10);
             sb.append(" * ").append(moduleName);
@@ -212,11 +210,10 @@ public class MultiModuleLogger extends DefaultEasyAntLogger implements SubBuildL
                     .append(" [ took ")//
                     .append(padRight(result.getFormattedElapsedTime(), maxExecTimeLength + 1))//
                     .append("]")
-                    .append(org.apache.tools.ant.util.StringUtils.LINE_SEP);
+                    .append(LINE_SEP);
         }
 
-        formattedResults = sb.toString();
-        return formattedResults;
+        return sb.toString();
     }
 
     private String padRight(String string, int nbSpace) {
