@@ -17,33 +17,15 @@
  */
 package org.apache.easyant.tasks;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
-import org.apache.easyant.core.ant.listerners.BuildExecutionTimer.ExecutionResult;
+import org.apache.easyant.core.ant.listerners.ExecutionResult;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyPublish;
 import org.apache.ivy.ant.IvyResolve;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.BuildListener;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.MagicNames;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectComponent;
-import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.*;
 import org.apache.tools.ant.taskdefs.Ant;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Path;
@@ -51,6 +33,12 @@ import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.util.CollectionUtils;
 import org.apache.tools.ant.util.StringUtils;
+
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * This task is used to manage orchestration of submodules.
@@ -148,14 +136,11 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Runs the given target on the provided build file.
-     * 
-     * @param file
-     *            the build file to execute
-     * @param directory
-     *            the directory of the current iteration
-     * @throws BuildException
-     *             is the file cannot be found, read, is a directory, or the target called failed, but only if
-     *             <code>failOnError</code> is <code>true</code>. Otherwise, a warning log message is simply output.
+     *
+     * @param file      the build file to execute
+     * @param directory the directory of the current iteration
+     * @throws BuildException is the file cannot be found, read, is a directory, or the target called failed, but only if
+     *                        <code>failOnError</code> is <code>true</code>. Otherwise, a warning log message is simply output.
      */
     private void execute(File file, File directory) throws BuildException {
         if (!file.exists() || file.isDirectory() || !file.canRead()) {
@@ -256,7 +241,7 @@ public class SubModule extends AbstractEasyAntTask {
         } finally {
             // add execution times for the current submodule to parent
             // project references for access from MetaBuildExecutor
-            storeExecutionTimes(getProject(), subModule);
+            //   storeExecutionTimes(getProject(), subModule);
         }
 
     }
@@ -348,9 +333,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Print a message when executing the target
-     * 
-     * @param subProject
-     *            a subproject where the log will be printed
+     *
+     * @param subProject a subproject where the log will be printed
      */
     private void printExecutingTargetMsg(Project subProject) {
         final String HEADER = "======================================================================";
@@ -364,9 +348,8 @@ public class SubModule extends AbstractEasyAntTask {
     /**
      * Copies all properties from the given table to the new project - omitting those that have already been set in the
      * new project as well as properties named basedir or ant.file.
-     * 
-     * @param props
-     *            properties to copy to the new project.
+     *
+     * @param props properties to copy to the new project.
      * @since Ant 1.8.0
      */
     private void addAlmostAll(Map<?, ?> props, Project subProject, PropertyType type) {
@@ -403,10 +386,9 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * The target to call on the different sub-builds. Set to "" to execute the default target.
-     * 
-     * @param target
-     *            the target
-     *            <p>
+     *
+     * @param target the target
+     *               <p/>
      */
     // REVISIT: Defaults to the target name that contains this task if not
     // specified.
@@ -416,7 +398,6 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * The targets to call on the different sub-builds.
-     *
      */
     public void setTargets(TargetList targets) {
         this.targets = targets;
@@ -424,9 +405,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Set the buildpath to be used to find sub-projects.
-     * 
-     * @param s
-     *            an Ant Path object containing the buildpath.
+     *
+     * @param s an Ant Path object containing the buildpath.
      */
     public void setBuildpath(Path s) {
         getBuildpath().append(s);
@@ -434,7 +414,7 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Gets the implicit build path, creating it if <code>null</code>.
-     * 
+     *
      * @return the implicit build path.
      */
     private Path getBuildpath() {
@@ -446,9 +426,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Buildpath to use, by reference.
-     * 
-     * @param r
-     *            a reference to an Ant Path object containing the buildpath.
+     *
+     * @param r a reference to an Ant Path object containing the buildpath.
      */
     public void setBuildpathRef(Reference r) {
         createBuildpath().setRefid(r);
@@ -456,7 +435,7 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Creates a nested build path, and add it to the implicit build path.
-     * 
+     *
      * @return the newly created nested build path.
      */
     public Path createBuildpath() {
@@ -466,9 +445,8 @@ public class SubModule extends AbstractEasyAntTask {
     /**
      * Enable/ disable verbose log messages showing when each sub-build path is entered/ exited. The default value is
      * "false".
-     * 
-     * @param on
-     *            true to enable verbose mode, false otherwise (default).
+     *
+     * @param on true to enable verbose mode, false otherwise (default).
      */
     public void setVerbose(boolean on) {
         this.verbose = on;
@@ -476,9 +454,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Sets whether to fail with a build exception on error, or go on.
-     * 
-     * @param failOnError
-     *            the new value for this boolean flag.
+     *
+     * @param failOnError the new value for this boolean flag.
      */
     public void setFailonerror(boolean failOnError) {
         this.failOnError = failOnError;
@@ -486,9 +463,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Sets whether a submodule should use build repository or not
-     * 
-     * @param useBuildRepository
-     *            the new value for this boolean flag
+     *
+     * @param useBuildRepository the new value for this boolean flag
      */
     public void setUseBuildRepository(boolean useBuildRepository) {
         this.useBuildRepository = useBuildRepository;
@@ -504,9 +480,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Corresponds to <code>&lt;ant&gt;</code>'s <code>inheritrefs</code> attribute.
-     * 
-     * @param b
-     *            the new value for this boolean flag.
+     *
+     * @param b the new value for this boolean flag.
      */
     public void setInheritrefs(boolean b) {
         this.inheritRefs = b;
@@ -514,9 +489,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Corresponds to <code>&lt;ant&gt;</code>'s nested <code>&lt;property&gt;</code> element.
-     * 
-     * @param p
-     *            the property to pass on explicitly to the sub-build.
+     *
+     * @param p the property to pass on explicitly to the sub-build.
      */
     public void addProperty(Property p) {
         properties.add(p);
@@ -524,9 +498,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Corresponds to <code>&lt;ant&gt;</code>'s nested <code>&lt;reference&gt;</code> element.
-     * 
-     * @param r
-     *            the reference to pass on explicitly to the sub-build.
+     *
+     * @param r the reference to pass on explicitly to the sub-build.
      */
     public void addReference(Ant.Reference r) {
         references.add(r);
@@ -534,9 +507,8 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Corresponds to <code>&lt;ant&gt;</code>'s nested <code>&lt;propertyset&gt;</code> element.
-     * 
-     * @param ps
-     *            the propertset
+     *
+     * @param ps the propertset
      */
     public void addPropertyset(PropertySet ps) {
         propertySets.add(ps);
@@ -544,11 +516,9 @@ public class SubModule extends AbstractEasyAntTask {
 
     /**
      * Override the properties in the new project with the one explicitly defined as nested elements here.
-     * 
-     * @param subproject
-     *            a subproject
-     * @throws BuildException
-     *             under unknown circumstances.
+     *
+     * @param subproject a subproject
+     * @throws BuildException under unknown circumstances.
      */
     private void overrideProperties(Project subproject) throws BuildException {
         // remove duplicate properties - last property wins
@@ -575,11 +545,9 @@ public class SubModule extends AbstractEasyAntTask {
     /**
      * Add the references explicitly defined as nested elements to the new project. Also copy over all references that
      * don't override existing references in the new project if inheritrefs has been requested.
-     * 
-     * @param subproject
-     *            a subproject
-     * @throws BuildException
-     *             if a reference does not have a refid.
+     *
+     * @param subproject a subproject
+     * @throws BuildException if a reference does not have a refid.
      */
     private void addReferences(Project subproject) throws BuildException {
         @SuppressWarnings("unchecked")
@@ -619,15 +587,13 @@ public class SubModule extends AbstractEasyAntTask {
     /**
      * Try to clone and reconfigure the object referenced by oldkey in the parent project and add it to the new project
      * with the key newkey.
-     * 
+     * <p/>
      * <p>
      * If we cannot clone it, copy the referenced object itself and keep our fingers crossed.
      * </p>
-     * 
-     * @param oldKey
-     *            the reference id in the current project.
-     * @param newKey
-     *            the reference id in the new project.
+     *
+     * @param oldKey the reference id in the current project.
+     * @param newKey the reference id in the new project.
      */
     private void copyReference(Project subproject, String oldKey, String newKey) {
         Object orig = getProject().getReference(oldKey);
@@ -657,7 +623,7 @@ public class SubModule extends AbstractEasyAntTask {
             ((ProjectComponent) copy).setProject(subproject);
         } else {
             try {
-                Method setProjectM = c.getMethod("setProject", new Class[] { Project.class });
+                Method setProjectM = c.getMethod("setProject", new Class[]{Project.class});
                 if (setProjectM != null) {
                     setProjectM.invoke(copy, subproject);
                 }

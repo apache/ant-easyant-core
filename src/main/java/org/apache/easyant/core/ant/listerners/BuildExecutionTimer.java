@@ -27,7 +27,6 @@ import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildListener;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.SubBuildListener;
-import org.apache.tools.ant.util.DateUtils;
 
 /*
  * This listener is created so that it may be used to provide all statistic
@@ -54,48 +53,6 @@ public class BuildExecutionTimer implements BuildListener, SubBuildListener {
     // build start time
     // to be initialized in buildStarted method
     private long buildStartTime;
-
-    public static class ExecutionResult {
-        /**
-         * Name of the unit whose execution is timed
-         */
-        private String unitName;
-
-        /**
-         * Time taken to execute the unit
-         */
-        private long elapsedTime;
-
-        /**
-         * Formatted representation of the execution time
-         */
-        private String formattedElapsedTime;
-
-        private ExecutionStatus buildStatus;
-
-        public ExecutionResult(String unitName, long elapsedTime, ExecutionStatus buildStatus) {
-            this.unitName = unitName;
-            this.elapsedTime = elapsedTime;
-            this.formattedElapsedTime = DateUtils.formatElapsedTime(elapsedTime);
-            this.buildStatus = buildStatus;
-        }
-
-        public String getUnitName() {
-            return this.unitName;
-        }
-
-        public long getElapsedTime() {
-            return this.elapsedTime;
-        }
-
-        public String getFormattedElapsedTime() {
-            return this.formattedElapsedTime;
-        }
-
-        public ExecutionStatus getStatus() {
-            return this.buildStatus;
-        }
-    }
 
     /**
      * stops the timer and stores the result as a project reference by the key 'referenceName'
