@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  */
-package org.apache.easyant.core.services.impl;
+package org.apache.easyant.core.services;
 
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
@@ -27,7 +27,6 @@ import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.parser.DefaultEasyAntXmlModuleDescriptorParser;
 import org.apache.easyant.core.parser.EasyAntModuleDescriptorParser;
 import org.apache.easyant.core.report.*;
-import org.apache.easyant.core.services.PluginService;
 import org.apache.easyant.tasks.*;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
@@ -58,10 +57,9 @@ import java.io.IOException;
 import java.text.ParsePosition;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
-public class DefaultPluginServiceImpl implements PluginService {
+public class DefaultPluginService implements PluginService {
 
     private final EasyAntModuleDescriptorParser parser;
 
@@ -75,7 +73,7 @@ public class DefaultPluginServiceImpl implements PluginService {
      *
      * @param easyantIvySettings the easyant ivy instance
      */
-    public DefaultPluginServiceImpl(final IvyAntSettings easyantIvySettings) {
+    public DefaultPluginService(final IvyAntSettings easyantIvySettings) {
         this(easyantIvySettings, new DefaultEasyAntXmlModuleDescriptorParser());
     }
 
@@ -86,7 +84,7 @@ public class DefaultPluginServiceImpl implements PluginService {
      * @param easyantIvySetings the easyant ivy instance
      * @param parser            a valid easyantModuleDescriptor
      */
-    public DefaultPluginServiceImpl(final IvyAntSettings easyantIvySetings, EasyAntModuleDescriptorParser parser) {
+    public DefaultPluginService(final IvyAntSettings easyantIvySetings, EasyAntModuleDescriptorParser parser) {
         this.easyantIvySettings = easyantIvySetings;
         this.ivyInstance = easyantIvySetings.getConfiguredIvyInstance(easyantIvySetings);
         if (parser == null) {
@@ -101,17 +99,14 @@ public class DefaultPluginServiceImpl implements PluginService {
         EasyAntReport eaReport = null;
         try {
 
-            ResolveOptions resolveOptions = new ResolveOptions();
-            resolveOptions.setLog(ResolveOptions.LOG_QUIET);
-            resolveOptions.setConfs(conf.split(","));
-            resolveOptions.setUseCacheOnly(offlineMode);
+            ResolveOptions resolveOptions = buildResolveOptions(conf);
             ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
                     .resolve(pluginIvyFile.toURI().toURL(), resolveOptions);
             eaReport = new EasyAntReport();
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
 
-            Project project = buildProject(null);
+            Project project = buildProject();
 
             // expose resolve report for import deferred
             project.addReference(EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF, report);
@@ -135,22 +130,27 @@ public class DefaultPluginServiceImpl implements PluginService {
 
     }
 
+    private ResolveOptions buildResolveOptions(String conf) {
+        ResolveOptions resolveOptions = new ResolveOptions();
+        resolveOptions.setLog(ResolveOptions.LOG_QUIET);
+        resolveOptions.setConfs(conf.split(","));
+        resolveOptions.setUseCacheOnly(offlineMode);
+        return resolveOptions;
+    }
+
     public EasyAntReport getPluginInfo(final ModuleRevisionId moduleRevisionId, String conf) throws Exception {
         IvyContext.pushNewContext().setIvy(ivyInstance);
         EasyAntReport eaReport = null;
         try {
 
-            ResolveOptions resolveOptions = new ResolveOptions();
-            resolveOptions.setLog(ResolveOptions.LOG_QUIET);
-            resolveOptions.setConfs(conf.split(","));
-            resolveOptions.setUseCacheOnly(offlineMode);
+            ResolveOptions resolveOptions = buildResolveOptions(conf);
             final ResolveReport report = IvyContext.getContext().getIvy().getResolveEngine()
                     .resolve(moduleRevisionId, resolveOptions, false);
             eaReport = new EasyAntReport();
             eaReport.setResolveReport(report);
             eaReport.setModuleDescriptor(report.getModuleDescriptor());
 
-            Project project = buildProject(null);
+            Project project = buildProject();
             // expose resolve report for import deferred
             project.addReference(EasyAntMagicNames.IMPORTED_MODULES_RESOLVE_REPORT_REF, report);
 
@@ -192,7 +192,7 @@ public class DefaultPluginServiceImpl implements PluginService {
 
     }
 
-    private Project buildProject(Map<String, String> properties) {
+    private Project buildProject() {
         Project project = new Project();
         project.setNewProperty(EasyAntMagicNames.AUDIT_MODE, "true");
         project.setNewProperty(EasyAntMagicNames.SKIP_CORE_REVISION_CHECKER, "true");
@@ -212,17 +212,12 @@ public class DefaultPluginServiceImpl implements PluginService {
         PropertyHelper propertyHelper = PropertyHelper.getPropertyHelper(project);
         propertyHelper.add(new BypassDefaultPropertyExpander());
 
-        if (properties != null) {
-            for (Entry<String, String> entry : properties.entrySet()) {
-                project.setNewProperty(entry.getKey(), entry.getValue());
-            }
-        }
         project.init();
         ProjectUtils.configureProjectHelper(project);
         return project;
     }
 
-    private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws IOException {
+    private void analyseProject(Project project, EasyAntReport eaReport, String conf) throws Exception {
 
         // handle tasks from implicit target
         // When using import/include, ant create a "implicit target" to process root tasks. When tasks are declared
@@ -569,7 +564,7 @@ public class DefaultPluginServiceImpl implements PluginService {
         EasyAntModuleDescriptor md = getEasyAntModuleDescriptor(moduleDescriptor);
         eaReport.setModuleDescriptor(md.getIvyModuleDescriptor());
 
-        Project p = buildProject(null);
+        Project p = buildProject();
         Target implicitTarget = ProjectUtils.createTopLevelTarget();
         p.addTarget(implicitTarget);
 

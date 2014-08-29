@@ -21,7 +21,7 @@ package org.apache.easyant.core;
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.configuration.EasyAntConfiguration;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
-import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
+import org.apache.easyant.core.services.DefaultPluginService;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
@@ -140,8 +140,8 @@ public class EasyAntEngineTest {
 
         easyantEngine.configurePluginService(project, ivyAntSettings);
         assertThat(project.getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE),
-                instanceOf(DefaultPluginServiceImpl.class));
-        assertThat(easyantEngine.getPluginService(), instanceOf(DefaultPluginServiceImpl.class));
+                instanceOf(DefaultPluginService.class));
+        assertThat(easyantEngine.getPluginService(), instanceOf(DefaultPluginService.class));
         assertThat(easyantEngine.getPluginService(),
                 sameInstance(project.getReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE)));
     }

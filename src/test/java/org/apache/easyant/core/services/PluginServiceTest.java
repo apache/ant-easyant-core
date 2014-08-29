@@ -38,7 +38,6 @@ import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.ExtensionPointReport;
 import org.apache.easyant.core.report.ImportedModuleReport;
 import org.apache.easyant.core.report.TargetReport;
-import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
 import org.apache.ivy.ant.IvyConfigure;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.ivy.plugins.matcher.PatternMatcher;
@@ -69,7 +68,7 @@ public class PluginServiceTest {
         configure.setSettingsId(EasyAntMagicNames.EASYANT_IVY_INSTANCE);
         configure.execute();
 
-        pluginService = new DefaultPluginServiceImpl(IvyInstanceHelper.getEasyAntIvyAntSettings(p));
+        pluginService = new DefaultPluginService(IvyInstanceHelper.getEasyAntIvyAntSettings(p));
     }
 
     @Test

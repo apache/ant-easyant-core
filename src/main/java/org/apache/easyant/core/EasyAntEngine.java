@@ -25,7 +25,7 @@ import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.core.services.PluginService;
-import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
+import org.apache.easyant.core.services.DefaultPluginService;
 import org.apache.easyant.tasks.ConfigureBuildScopedRepository;
 import org.apache.easyant.tasks.Import;
 import org.apache.easyant.tasks.LoadModule;
@@ -231,7 +231,7 @@ public class EasyAntEngine {
     }
 
     public void configurePluginService(Project project, IvyAntSettings easyantIvyInstance) {
-        pluginService = new DefaultPluginServiceImpl(easyantIvyInstance);
+        pluginService = new DefaultPluginService(easyantIvyInstance);
         String property = project.getProperty(EasyAntMagicNames.EASYANT_OFFLINE);
         pluginService.setOfflineMode(Project.toBoolean(property));
         project.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE, pluginService);

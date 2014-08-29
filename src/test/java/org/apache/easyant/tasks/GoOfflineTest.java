@@ -28,7 +28,7 @@ import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.easyant.core.services.PluginService;
-import org.apache.easyant.core.services.impl.DefaultPluginServiceImpl;
+import org.apache.easyant.core.services.DefaultPluginService;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyAntSettings;
 import org.apache.ivy.ant.IvyConfigure;
@@ -98,7 +98,7 @@ public class GoOfflineTest extends AntTaskBaseTest {
     }
 
     private void configurePluginService(Project project) {
-        PluginService pluginService = new DefaultPluginServiceImpl(
+        PluginService pluginService = new DefaultPluginService(
                 (IvyAntSettings) project.getReference(EasyAntMagicNames.EASYANT_IVY_INSTANCE));
         project.addReference(EasyAntMagicNames.PLUGIN_SERVICE_INSTANCE, pluginService);
     }
