@@ -17,31 +17,35 @@
  */
 package org.apache.easyant.core.ant.listerners;
 
-import java.io.File;
-
+import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.ant.ExecutionStatus;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.SubBuildListener;
 import org.apache.tools.ant.listener.TimestampedLogger;
 import org.apache.tools.ant.util.StringUtils;
 
-public class MultiModuleLogger extends DefaultEasyAntLogger {
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+public class MultiModuleLogger extends DefaultEasyAntLogger implements SubBuildListener {
+
+
+    /**
+     * Reference key against which build execution results will be stored
+     */
+    public static final String EXECUTION_TIMER_BUILD_RESULTS = "execution.timer.build.results";
+
+    private static final String DEMARKER = "======================================================================";
     private volatile boolean subBuildStartedRaised = false;
     private final Object subBuildLock = new Object();
-
-    /**
-     * Header string for the log. * {@value}
-     */
-    public static final String HEADER = "======================================================================";
-    /**
-     * Footer string for the log. * {@value}
-     */
-    public static final String FOOTER = HEADER;
+    private long buildStartTime;
 
     /**
      * This is an override point: the message that indicates whether a build failed. Subclasses can change/enhance the
      * message.
-     * 
+     *
      * @return The classic "BUILD FAILED" plus a timestamp
      */
     protected String getBuildFailedMessage() {
@@ -51,75 +55,58 @@ public class MultiModuleLogger extends DefaultEasyAntLogger {
     /**
      * This is an override point: the message that indicates that a build succeeded. Subclasses can change/enhance the
      * message.
-     * 
+     *
      * @return The classic "BUILD SUCCESSFUL" plus a timestamp
      */
     protected String getBuildSuccessfulMessage() {
         return super.getBuildSuccessfulMessage() + TimestampedLogger.SPACER + getTimestamp();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @param event
-     */
     public void targetStarted(BuildEvent event) {
         maybeRaiseSubBuildStarted(event);
         targetName = extractTargetName(event);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @param event
-     */
     public void taskStarted(BuildEvent event) {
         maybeRaiseSubBuildStarted(event);
         super.taskStarted(event);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @param event
-     */
     public void buildFinished(BuildEvent event) {
+        stopTimer(event);
+        printExecutionSubBuildsExecutionTimes(event.getProject());
         maybeRaiseSubBuildStarted(event);
         subBuildFinished(event);
         super.buildFinished(event);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @param event
-     */
     public void messageLogged(BuildEvent event) {
         maybeRaiseSubBuildStarted(event);
         super.messageLogged(event);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @param event
-     *            An event with any relevant extra information. Must not be <code>null</code>.
-     */
     public void subBuildStarted(BuildEvent event) {
+        initTimer(event.getProject());
         String name = extractNameOrDefault(event);
         Project project = event.getProject();
 
         File base = project == null ? null : project.getBaseDir();
         String path = (base == null) ? "With no base directory" : "In " + base.getAbsolutePath();
-        printMessage(StringUtils.LINE_SEP + getHeader() + StringUtils.LINE_SEP + "Entering project " + name
-                + StringUtils.LINE_SEP + path + StringUtils.LINE_SEP + getFooter(), out, event.getPriority());
+        printMessage(StringUtils.LINE_SEP + DEMARKER + StringUtils.LINE_SEP + "Entering project " + name
+                + StringUtils.LINE_SEP + path + StringUtils.LINE_SEP + DEMARKER, out, event.getPriority());
+    }
+
+
+    @Override
+    public void buildStarted(BuildEvent event) {
+        initTimer(event.getProject());
+        super.buildStarted(event);
     }
 
     /**
      * Get the name of an event
-     * 
-     * @param event
-     *            the event name
+     *
+     * @param event the event name
      * @return the name or a default string
      */
     protected String extractNameOrDefault(BuildEvent event) {
@@ -132,31 +119,14 @@ public class MultiModuleLogger extends DefaultEasyAntLogger {
         return name;
     }
 
-    /** {@inheritDoc} */
     public void subBuildFinished(BuildEvent event) {
+        stopTimer(event);
         String name = extractNameOrDefault(event);
         String failed = event.getException() != null ? "failing " : "";
-        printMessage(StringUtils.LINE_SEP + getHeader() + StringUtils.LINE_SEP + "Exiting " + failed + "project "
-                + name + StringUtils.LINE_SEP + getFooter(), out, event.getPriority());
+        printMessage(StringUtils.LINE_SEP + DEMARKER + StringUtils.LINE_SEP + "Exiting " + failed + "project "
+                + name + StringUtils.LINE_SEP + DEMARKER, out, event.getPriority());
     }
 
-    /**
-     * Override point: return the header string for the entry/exit message
-     * 
-     * @return the header string
-     */
-    protected String getHeader() {
-        return HEADER;
-    }
-
-    /**
-     * Override point: return the footer string for the entry/exit message
-     * 
-     * @return the footer string
-     */
-    protected String getFooter() {
-        return FOOTER;
-    }
 
     private void maybeRaiseSubBuildStarted(BuildEvent event) {
         // double checked locking should be OK since the flag is write-once
@@ -172,9 +142,8 @@ public class MultiModuleLogger extends DefaultEasyAntLogger {
 
     /**
      * Override point, extract the target name
-     * 
-     * @param event
-     *            the event to work on
+     *
+     * @param event the event to work on
      * @return the target name -including the owning project name (if non-null)
      */
     protected String extractTargetName(BuildEvent event) {
@@ -186,5 +155,73 @@ public class MultiModuleLogger extends DefaultEasyAntLogger {
             return targetName;
         }
     }
+
+    private void initTimer(Project project) {
+        buildStartTime = System.currentTimeMillis();
+        project.addReference(EXECUTION_TIMER_BUILD_RESULTS, new ArrayList<ExecutionResult>());
+    }
+
+    /**
+     * stops the timer and stores the result as a project reference by the key 'referenceName'
+     */
+    private void stopTimer(BuildEvent event) {
+        List<ExecutionResult> results = event.getProject().getReference(EXECUTION_TIMER_BUILD_RESULTS);
+        ExecutionStatus status = ExecutionStatus.SUCCESS;
+        if (event.getException() != null) {
+            status = ExecutionStatus.FAILED;
+        } else if (event.getProject().getProperty(EasyAntMagicNames.PROJECT_EXECUTED_TARGETS) == null) {
+            status = ExecutionStatus.SKIPPED;
+        }
+
+        ExecutionResult execResult = new ExecutionResult(event.getProject().getName(), System.currentTimeMillis()
+                - buildStartTime, status);
+
+        results.add(execResult);
+
+    }
+
+    private void printExecutionSubBuildsExecutionTimes(Project project) {
+        String lineSep = org.apache.tools.ant.util.StringUtils.LINE_SEP;
+        List<ExecutionResult> allSubBuildResults = project.getReference(EXECUTION_TIMER_BUILD_RESULTS);
+        if (allSubBuildResults != null && !allSubBuildResults.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(lineSep).append(DEMARKER).append(lineSep);
+            sb.append("Project Sub-modules Summary: ").append(lineSep).append(DEMARKER);
+            sb.append(lineSep).append(formatExecutionResults(allSubBuildResults));
+            project.log(sb.toString());
+        }
+    }
+
+    private String formatExecutionResults(List<ExecutionResult> results) {
+        String formattedResults;
+        int maxUnitNameLength = 0;
+        int maxExecTimeLength = 0;
+        for (ExecutionResult result : results) {
+            maxUnitNameLength = result.getUnitName().length() > maxUnitNameLength ? result.getUnitName().length()
+                    : maxUnitNameLength;
+            maxExecTimeLength = result.getFormattedElapsedTime().length() > maxExecTimeLength ? result
+                    .getFormattedElapsedTime().length() : maxExecTimeLength;
+        }
+        StringBuilder sb = new StringBuilder(org.apache.tools.ant.util.StringUtils.LINE_SEP);
+        for (ExecutionResult result : results) {
+            String moduleName = padRight(result.getUnitName(), maxUnitNameLength + 10);
+            sb.append(" * ").append(moduleName);
+            // keeping both success and failed strings of equal length
+            String execResult = padRight(result.getStatus().toString(), 7);
+            sb.append(execResult)//
+                    .append(" [ took ")//
+                    .append(padRight(result.getFormattedElapsedTime(), maxExecTimeLength + 1))//
+                    .append("]")
+                    .append(org.apache.tools.ant.util.StringUtils.LINE_SEP);
+        }
+
+        formattedResults = sb.toString();
+        return formattedResults;
+    }
+
+    private String padRight(String string, int nbSpace) {
+        return String.format("%1$-" + nbSpace + "s", string);
+    }
+
 
 }

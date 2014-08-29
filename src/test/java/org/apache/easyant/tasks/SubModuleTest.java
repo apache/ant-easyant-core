@@ -18,15 +18,8 @@
 
 package org.apache.easyant.tasks;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
+import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
@@ -35,6 +28,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class SubModuleTest extends AntTaskBaseTest {
 
@@ -156,7 +156,7 @@ public class SubModuleTest extends AntTaskBaseTest {
         assertLogContaining("Executing [modulewithtarget:mytarget] on module1");
         assertLogContaining("Executing [modulewithtarget:mytarget] on module2");
 
-        assertThat(submodule.getProject().getReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS),
+        assertThat(submodule.getProject().getReference(MultiModuleLogger.EXECUTION_TIMER_BUILD_RESULTS),
                 notNullValue());
     }
 }

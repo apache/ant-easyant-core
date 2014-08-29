@@ -20,8 +20,8 @@ package org.apache.easyant.tasks;
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
-import org.apache.easyant.core.ant.listerners.BuildExecutionTimer;
 import org.apache.easyant.core.ant.listerners.ExecutionResult;
+import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyPublish;
 import org.apache.ivy.ant.IvyResolve;
@@ -241,7 +241,7 @@ public class SubModule extends AbstractEasyAntTask {
         } finally {
             // add execution times for the current submodule to parent
             // project references for access from MetaBuildExecutor
-            //   storeExecutionTimes(getProject(), subModule);
+            storeExecutionTimes(getProject(), subModule);
         }
 
     }
@@ -256,10 +256,6 @@ public class SubModule extends AbstractEasyAntTask {
             BuildListener buildListener = getProject().getBuildListeners().elementAt(i);
             subModule.addBuildListener(buildListener);
         }
-        // explicitly add the execution timer to time
-        // sub builds
-        subModule.addBuildListener(new BuildExecutionTimer());
-
         // copy all User properties
         addAlmostAll(getProject().getUserProperties(), subModule, PropertyType.USER);
         // inherit meta.target directory, for shared build repository.
@@ -296,13 +292,13 @@ public class SubModule extends AbstractEasyAntTask {
     @SuppressWarnings("unchecked")
     private void storeExecutionTimes(Project parent, Project child) {
         List<ExecutionResult> allresults = parent
-                .getReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+                .getReference(MultiModuleLogger.EXECUTION_TIMER_BUILD_RESULTS);
         if (allresults == null) {
             allresults = new ArrayList<ExecutionResult>();
-            parent.addReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS, allresults);
+            parent.addReference(MultiModuleLogger.EXECUTION_TIMER_BUILD_RESULTS, allresults);
         }
         List<ExecutionResult> childResults = child
-                .getReference(BuildExecutionTimer.EXECUTION_TIMER_SUBBUILD_RESULTS);
+                .getReference(MultiModuleLogger.EXECUTION_TIMER_BUILD_RESULTS);
         if (childResults != null) {
             allresults.addAll(childResults);
         }
