@@ -159,10 +159,7 @@ public class DefaultPluginService implements PluginService {
                 public void execute() throws BuildException {
                     Path path = createModulePath(moduleRevisionId.getModuleId());
                     File antFile = null;
-                    for (int j = 0; j < report.getConfigurationReport(getMainConf()).getAllArtifactsReports().length; j++) {
-                        ArtifactDownloadReport artifact = report.getConfigurationReport(getMainConf())
-                                .getAllArtifactsReports()[j];
-
+                    for (ArtifactDownloadReport artifact : report.getConfigurationReport(getMainConf()).getAllArtifactsReports()) {
                         if ("ant".equals(artifact.getType())) {
                             antFile = artifact.getLocalFile();
                         } else if (shouldBeAddedToClasspath(artifact)) {
@@ -614,7 +611,7 @@ public class DefaultPluginService implements PluginService {
         }
 
         PatternMatcher patternMatcher = settings.getMatcher(matcher);
-        if ("*".equals(resolver)) {
+        if (PatternMatcher.ANY_EXPRESSION.equals(resolver)) {
             // search in all resolvers. this can be quite slow for complex
             // repository configurations
             // with ChainResolvers, since resolvers in chains will be searched
