@@ -252,8 +252,7 @@ public class SubModule extends AbstractEasyAntTask {
         subModule.setNewProperty(EasyAntMagicNames.SUBMODULE, "true");
 
         subModule.setJavaVersionProperty();
-        for (int i = 0; i < getProject().getBuildListeners().size(); i++) {
-            BuildListener buildListener = getProject().getBuildListeners().elementAt(i);
+        for (BuildListener buildListener : getProject().getBuildListeners()) {
             subModule.addBuildListener(buildListener);
         }
         // copy all User properties
