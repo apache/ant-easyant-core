@@ -17,17 +17,18 @@
  */
 package org.apache.easyant.tasks;
 
-import java.io.File;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.configuration.EasyAntConfiguration;
 import org.apache.easyant.core.configuration.EasyantConfigurationFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+
+import java.io.File;
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 public class EasyAntRunner extends Task {
 
@@ -42,7 +43,7 @@ public class EasyAntRunner extends Task {
             eaEngine.doBuild();
         } else {
             eaEngine.configureEasyAnt(getProject());
-            eaEngine.loadProject(getProject());;
+            eaEngine.loadProject(getProject());
             getProject().executeTargets(new Vector(getEasyantConfiguration().getTargets()));
         }
     }
@@ -85,9 +86,7 @@ public class EasyAntRunner extends Task {
     public void setBuildConfiguration(String buildConfiguration) {
         String[] buildConfs = buildConfiguration.split(",");
         Set<String> buildConfigurations = new HashSet<String>();
-        for (String conf : buildConfs) {
-            buildConfigurations.add(conf);
-        }
+        Collections.addAll(buildConfigurations, buildConfs);
         getEasyantConfiguration().setActiveBuildConfigurations(buildConfigurations);
     }
 

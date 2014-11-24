@@ -17,19 +17,6 @@
  */
 package org.apache.easyant.tasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.AntMessageLogger;
 import org.apache.ivy.core.cache.DefaultRepositoryCacheManager;
@@ -62,9 +49,16 @@ import org.apache.tools.ant.taskdefs.ImportTask;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Path.PathElement;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.ParseException;
+import java.util.*;
+
 /**
  * EXPERIMENTAL, IT IS NOT INTENDED FOR PUBLIC USE
- * <p>
+ * <p/>
  * An Ant task which resolve some build scripts and import them
  */
 public class ImportAntscripts extends Task {
@@ -236,7 +230,7 @@ public class ImportAntscripts extends Task {
     }
 
     private List<ArtifactDownloadReport> sortArtifacts(Ivy ivy, ArtifactDownloadReport[] artifacts,
-            List<ModuleDescriptor> dependencies) {
+                                                       List<ModuleDescriptor> dependencies) {
         // first lets map the artifacts to their id
         Map<ModuleRevisionId, List<ArtifactDownloadReport>> artifactsById = new HashMap<ModuleRevisionId, List<ArtifactDownloadReport>>();
         for (ArtifactDownloadReport artifact : artifacts) {
@@ -271,7 +265,6 @@ public class ImportAntscripts extends Task {
     }
 
     /**
-     * 
      * @return the ivy instance corresponding to the ivysettings.xml provided by the end user
      */
     private Ivy getExternalIvy() {
@@ -346,7 +339,7 @@ public class ImportAntscripts extends Task {
      */
     private ResolveReport resolve(Ivy ivy, ModuleDescriptor md, String conf) {
         ResolveOptions options = new ResolveOptions();
-        options.setConfs(new String[] { conf });
+        options.setConfs(new String[]{conf});
         ResolveReport report;
         try {
             report = ivy.resolve(md, options);
@@ -467,7 +460,7 @@ public class ImportAntscripts extends Task {
         RetrieveOptions options = new RetrieveOptions();
         options.setSync(false);
         options.setResolveId(resolve.getResolveId());
-        options.setConfs(new String[] { conf });
+        options.setConfs(new String[]{conf});
         options.setDestIvyPattern("${easyant.localrepo.basedir}/[organization]/[module]/[revision]/ivy.xml");
         try {
             ivy.retrieve(md.getModuleRevisionId(),

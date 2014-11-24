@@ -17,21 +17,6 @@
  */
 package org.apache.easyant.core.report;
 
-import java.io.BufferedWriter;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.ivy.core.cache.ArtifactOrigin;
 import org.apache.ivy.core.module.descriptor.Configuration;
@@ -48,6 +33,10 @@ import org.apache.ivy.core.resolve.IvyNodeEviction.EvictionData;
 import org.apache.ivy.util.DateUtil;
 import org.apache.ivy.util.Message;
 import org.apache.ivy.util.XMLHelper;
+
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * XmlReportWriter allows to write ResolveReport in an xml format.
@@ -179,7 +168,7 @@ public class XMLEasyAntReportWriter {
                 + XMLHelper.escape(dep.getResolvedId().getRevision())
                 + "\""
                 + (dep.getResolvedId().getBranch() == null ? "" : " branch=\""
-                        + XMLHelper.escape(dep.getResolvedId().getBranch()) + "\"") + details + " downloaded=\""
+                + XMLHelper.escape(dep.getResolvedId().getBranch()) + "\"") + details + " downloaded=\""
                 + dep.isDownloaded() + "\"" + " searched=\"" + dep.isSearched() + "\"" + defaultValue + " conf=\""
                 + toString(dep.getConfigurations(report.getConfiguration())) + "\"" + " position=\"" + position + "\">");
         if (md != null) {
@@ -246,10 +235,9 @@ public class XMLEasyAntReportWriter {
     private void outputCallers(ConfigurationResolveReport report, PrintWriter out, IvyNode dep) {
         Caller[] callers = dep.getCallers(report.getConfiguration());
         for (Caller caller : callers) {
-            StringBuffer callerDetails = new StringBuffer();
+            StringBuilder callerDetails = new StringBuilder();
             Map<?, ?> callerExtraAttributes = caller.getDependencyDescriptor().getExtraAttributes();
-            for (Iterator<?> iterator = callerExtraAttributes.entrySet().iterator(); iterator.hasNext(); ) {
-                Entry<String, Object> entry = (Entry<String, Object>) iterator.next();
+            for (Entry<?, ?> entry : callerExtraAttributes.entrySet()) {
                 callerDetails.append(" extra-").append(entry.getKey()).append("=\"")
                         .append(XMLHelper.escape(entry.getValue().toString())).append("\"");
             }
@@ -284,8 +272,7 @@ public class XMLEasyAntReportWriter {
             out.print("\t\t\t\t\t<artifact name=\"" + XMLHelper.escape(anAdr.getName()) + "\" type=\""
                     + XMLHelper.escape(anAdr.getType()) + "\" ext=\"" + XMLHelper.escape(anAdr.getExt()) + "\"");
             extraAttributes = anAdr.getArtifact().getExtraAttributes();
-            for (Iterator<?> iterator = extraAttributes.entrySet().iterator(); iterator.hasNext(); ) {
-                Entry<String, Object> entry = (Entry<String, Object>) iterator.next();
+            for (Entry<?, ?> entry : extraAttributes.entrySet()) {
                 out.print(" extra-" + entry.getKey() + "=\"" + XMLHelper.escape(entry.getValue().toString()) + "\"");
             }
             out.print(" status=\"" + XMLHelper.escape(anAdr.getDownloadStatus().toString()) + "\"");

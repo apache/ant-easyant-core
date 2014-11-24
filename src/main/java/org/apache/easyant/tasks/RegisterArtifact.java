@@ -60,9 +60,9 @@ public class RegisterArtifact extends IvyPostResolveTask {
         for (String configuration : configurations) {
             if ("*".equals(configuration)) {
                 String[] declaredConfs = md.getConfigurationsNames();
-                for (int j = 0; j < declaredConfs.length; j++) {
-                    artifact.addConfiguration(declaredConfs[j]);
-                    md.addArtifact(declaredConfs[j], artifact);
+                for (String declaredConf : declaredConfs) {
+                    artifact.addConfiguration(declaredConf);
+                    md.addArtifact(declaredConf, artifact);
                 }
             } else {
                 // create configuration if it doesn't exist
