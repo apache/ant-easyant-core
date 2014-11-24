@@ -22,7 +22,6 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * This task is responsible of checking existance of a resolver in a given ivy instance
- * 
  */
 public class CheckResolver extends IvyTask {
 
@@ -59,7 +58,7 @@ public class CheckResolver extends IvyTask {
 
     /**
      * Get property resolver name to check
-     * 
+     *
      * @return the property name representing the resolver
      */
     public String getResolver() {
@@ -68,9 +67,8 @@ public class CheckResolver extends IvyTask {
 
     /**
      * Set the property resolver name to check
-     * 
-     * @param resolver
-     *            a property name representing the resolver
+     *
+     * @param resolver a property name representing the resolver
      */
     public void setResolver(String resolver) {
         this.resolver = resolver;
@@ -78,7 +76,7 @@ public class CheckResolver extends IvyTask {
 
     /**
      * Get a description to the property / path / extension-point
-     * 
+     *
      * @return the description
      */
     public String getDescription() {
@@ -87,9 +85,8 @@ public class CheckResolver extends IvyTask {
 
     /**
      * set a description to the property / path / extension-point
-     * 
-     * @param description
-     *            the description
+     *
+     * @param description the description
      */
     public void setDescription(String description) {
         this.description = description;
@@ -97,11 +94,11 @@ public class CheckResolver extends IvyTask {
 
     /**
      * Appends CDATA text inside the Ant task to description
-     * 
+     *
      * @see #setDescription(String)
      */
     public void addText(String descriptionText) {
-        if (descriptionText.trim().length() > 0) {
+        if (!descriptionText.trim().isEmpty()) {
             descriptionText = getProject().replaceProperties(descriptionText);
             if (getDescription() == null) {
                 setDescription(descriptionText);

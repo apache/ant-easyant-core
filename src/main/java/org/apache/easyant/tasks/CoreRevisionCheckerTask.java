@@ -17,14 +17,14 @@
  */
 package org.apache.easyant.tasks;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.ivy.core.module.id.ModuleRevisionId;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * <p>
@@ -54,11 +54,11 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
 
     /**
      * Appends CDATA text inside the Ant task to the error message used if the revision check fails.
-     * 
+     *
      * @see #setMessage(String)
      */
     public void addText(String messageText) {
-        if (messageText.trim().length() > 0) {
+        if (!messageText.trim().isEmpty()) {
             messageText = getProject().replaceProperties(messageText);
             if (this.message == null) {
                 this.message = messageText;
@@ -70,7 +70,7 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
 
     /**
      * Get the requiredRevision
-     * 
+     *
      * @return a string that represent the required revision
      */
     public String getRequiredRevision() {
@@ -79,9 +79,8 @@ public class CoreRevisionCheckerTask extends AbstractEasyAntTask {
 
     /**
      * Set the requiredRevision
-     * 
-     * @param requiredRevision
-     *            a string that represent the required revision
+     *
+     * @param requiredRevision a string that represent the required revision
      */
     public void setRequiredRevision(String requiredRevision) {
         this.requiredRevision = requiredRevision;

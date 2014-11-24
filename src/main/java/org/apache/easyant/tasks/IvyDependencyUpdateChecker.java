@@ -17,11 +17,6 @@
  */
 package org.apache.easyant.tasks;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.ivy.ant.IvyPostResolveTask;
 import org.apache.ivy.core.module.descriptor.Configuration;
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor;
@@ -33,9 +28,13 @@ import org.apache.ivy.core.resolve.IvyNode;
 import org.apache.ivy.core.resolve.ResolveOptions;
 import org.apache.tools.ant.BuildException;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Backport of IvyDependencyUpdateChecker until a new version of ivy will be released
- * 
  */
 public class IvyDependencyUpdateChecker extends IvyPostResolveTask {
 
@@ -138,7 +137,7 @@ public class IvyDependencyUpdateChecker extends IvyPostResolveTask {
             }
         }
 
-        if (listOfMissingDependencyOnLatest.size() > 0) {
+        if (!listOfMissingDependencyOnLatest.isEmpty()) {
             log("List of missing dependency on latest resolve :");
             for (Object aListOfMissingDependencyOnLatest : listOfMissingDependencyOnLatest) {
                 ModuleRevisionId moduleRevisionId = (ModuleRevisionId) aListOfMissingDependencyOnLatest;
@@ -163,7 +162,7 @@ public class IvyDependencyUpdateChecker extends IvyPostResolveTask {
                 listOfNewDependencyOnLatest.add(latest.getId());
             }
         }
-        if (listOfNewDependencyOnLatest.size() > 0) {
+        if (!listOfNewDependencyOnLatest.isEmpty()) {
             log("List of new dependency on latest resolve :");
             for (Object aListOfNewDependencyOnLatest : listOfNewDependencyOnLatest) {
                 ModuleRevisionId moduleRevisionId = (ModuleRevisionId) aListOfNewDependencyOnLatest;

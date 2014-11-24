@@ -17,10 +17,10 @@
  */
 package org.apache.easyant.man;
 
-import java.util.List;
-
 import org.apache.easyant.core.report.ImportedModuleReport;
 import org.apache.easyant.core.report.ParameterReport;
+
+import java.util.List;
 
 /**
  * Lists all parameters (deep search - includes all imported modules) available in the specified build module.
@@ -48,7 +48,7 @@ public class ListParameters extends EasyantOption {
 
             getProject().log(LINE_SEP + "No plugin specified. Listing all parameters available in the project.");
             List<ParameterReport> parameterReports = getEareport().getParameterReports();
-            if (parameterReports.size() > 0) {
+            if (!parameterReports.isEmpty()) {
                 printParameters(parameterReports);
 
             } else {
@@ -64,7 +64,7 @@ public class ListParameters extends EasyantOption {
                 getProject().log("\tNo Module / Plugin found by given name: " + plugin);
             } else {
                 List<ParameterReport> parameterReports = moduleRep.getEasyantReport().getParameterReports();
-                if (parameterReports.size() > 0) {
+                if (!parameterReports.isEmpty()) {
                     printParameters(parameterReports);
                 } else {
                     getProject().log(LINE_SEP + "No parameter found in the plugin: " + plugin);

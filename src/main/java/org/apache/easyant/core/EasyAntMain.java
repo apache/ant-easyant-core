@@ -17,47 +17,17 @@
  */
 package org.apache.easyant.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.configuration.EasyAntConfiguration;
 import org.apache.easyant.core.configuration.EasyantConfigurationFactory;
-import org.apache.easyant.man.Describe;
-import org.apache.easyant.man.EasyantOption;
-import org.apache.easyant.man.ListExtensionPoints;
-import org.apache.easyant.man.ListParameters;
-import org.apache.easyant.man.ListPlugins;
-import org.apache.easyant.man.ListProps;
-import org.apache.easyant.man.ListTargets;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Diagnostics;
-import org.apache.tools.ant.ExitStatusException;
-import org.apache.tools.ant.ExtensionPoint;
-import org.apache.tools.ant.Main;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
+import org.apache.easyant.man.*;
+import org.apache.tools.ant.*;
 import org.apache.tools.ant.launch.AntMain;
 import org.apache.tools.ant.util.FileUtils;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * Command line entry point into EasyAnt. This class is entered via the canonical `public static void main` entry point
@@ -73,6 +43,7 @@ public class EasyAntMain implements AntMain {
      */
     private static final Set<String> LAUNCH_COMMANDS = new HashSet<String>();
     private boolean isLogFileUsed;
+
     static {
         LAUNCH_COMMANDS.add("-lib");
         LAUNCH_COMMANDS.add("-cp");
@@ -81,6 +52,7 @@ public class EasyAntMain implements AntMain {
         LAUNCH_COMMANDS.add("-nouserlib");
         LAUNCH_COMMANDS.add("-main");
     }
+
     private EasyAntConfiguration easyAntConfiguration;
     private boolean projectHelp;
 
@@ -94,9 +66,8 @@ public class EasyAntMain implements AntMain {
 
     /**
      * Prints the message of the Throwable if it (the message) is not <code>null</code>.
-     * 
-     * @param t
-     *            Throwable to print the message of. Must not be <code>null</code>.
+     *
+     * @param t Throwable to print the message of. Must not be <code>null</code>.
      */
     private static void printMessage(Throwable t) {
         String message = t.getMessage();
@@ -108,15 +79,12 @@ public class EasyAntMain implements AntMain {
     /**
      * Creates a new instance of this class using the arguments specified, gives it any extra user properties which have
      * been specified, and then runs the build using the classloader provided.
-     * 
-     * @param args
-     *            Command line arguments. Must not be <code>null</code>.
-     * @param additionalUserProperties
-     *            Any extra properties to use in this build. May be <code>null</code>, which is the equivalent to
-     *            passing in an empty set of properties.
-     * @param coreLoader
-     *            Classloader used for core classes. May be <code>null</code> in which case the system classloader is
-     *            used.
+     *
+     * @param args                     Command line arguments. Must not be <code>null</code>.
+     * @param additionalUserProperties Any extra properties to use in this build. May be <code>null</code>, which is the equivalent to
+     *                                 passing in an empty set of properties.
+     * @param coreLoader               Classloader used for core classes. May be <code>null</code> in which case the system classloader is
+     *                                 used.
      */
     public static void start(String[] args, Properties additionalUserProperties, ClassLoader coreLoader) {
         EasyAntMain m = new EasyAntMain();
@@ -125,14 +93,10 @@ public class EasyAntMain implements AntMain {
 
     /**
      * Start Ant
-     * 
-     * @param args
-     *            command line args
-     * @param additionalUserProperties
-     *            properties to set beyond those that may be specified on the args list
-     * @param coreLoader
-     *            - not used
-     * 
+     *
+     * @param args                     command line args
+     * @param additionalUserProperties properties to set beyond those that may be specified on the args list
+     * @param coreLoader               - not used
      * @since Ant 1.6
      */
     public void startAnt(String[] args, Properties additionalUserProperties, ClassLoader coreLoader) {
@@ -188,9 +152,8 @@ public class EasyAntMain implements AntMain {
     /**
      * This operation is expected to call {@link System#exit(int)}, which is what the base version does. However, it is
      * possible to do something else.
-     * 
-     * @param exitCode
-     *            code to exit with
+     *
+     * @param exitCode code to exit with
      */
     protected void exit(int exitCode) {
         System.exit(exitCode);
@@ -198,7 +161,7 @@ public class EasyAntMain implements AntMain {
 
     /**
      * Close logfiles, if we have been writing to them.
-     * 
+     *
      * @since Ant 1.6
      */
     private void handleLogfile() {
@@ -211,9 +174,8 @@ public class EasyAntMain implements AntMain {
     /**
      * Command line entry point. This method kicks off the building of a project object and executes a build using
      * either a given target or the default target.
-     * 
-     * @param args
-     *            Command line arguments. Must not be <code>null</code>.
+     *
+     * @param args Command line arguments. Must not be <code>null</code>.
      */
     public static void main(String[] args) {
         start(args, null, null);
@@ -229,7 +191,7 @@ public class EasyAntMain implements AntMain {
     /**
      * Process command line arguments. When ant is started from Launcher, launcher-only arguments do not get passed
      * through to this routine.
-     * 
+     *
      * @since Ant 1.6
      */
     private void processArgs(CommandLine line) {
@@ -372,7 +334,7 @@ public class EasyAntMain implements AntMain {
         if (line.hasOption("autoproxy")) {
             easyAntConfiguration.setProxy(true);
         }
-        if (line.getArgList().size() > 0) {
+        if (!line.getArgList().isEmpty()) {
             for (Object o : line.getArgList()) {
                 String target = (String) o;
                 easyAntConfiguration.getTargets().add(target);
@@ -395,7 +357,9 @@ public class EasyAntMain implements AntMain {
     // other methods
     // --------------------------------------------------------
 
-    /** Load the property files specified by -propertyfile */
+    /**
+     * Load the property files specified by -propertyfile
+     */
     private void loadPropertyFiles() {
         for (String filename : propertyFiles) {
             Properties props = new Properties();
@@ -423,9 +387,8 @@ public class EasyAntMain implements AntMain {
     /**
      * Executes the build. If the constructor for this instance failed (e.g. returned after issuing a warning), this
      * method returns immediately.
-     * 
-     * @exception BuildException
-     *                if the build fails
+     *
+     * @throws BuildException if the build fails
      */
     private void runBuild(CommandLine line) throws BuildException {
         if (!readyToRun) {
@@ -456,9 +419,8 @@ public class EasyAntMain implements AntMain {
 
     /**
      * Prints the description of a project (if there is one) to <code>System.out</code>.
-     * 
-     * @param project
-     *            The project to display a description of. Must not be <code>null</code>.
+     *
+     * @param project The project to display a description of. Must not be <code>null</code>.
      */
     protected void printDescription(Project project) {
         if (project.getDescription() != null) {
@@ -468,12 +430,9 @@ public class EasyAntMain implements AntMain {
 
     /**
      * Searches for the correct place to insert a name into a list so as to keep the list sorted alphabetically.
-     * 
-     * @param names
-     *            The current list of names. Must not be <code>null</code>.
-     * @param name
-     *            The name to find a place for. Must not be <code>null</code>.
-     * 
+     *
+     * @param names The current list of names. Must not be <code>null</code>.
+     * @param name  The name to find a place for. Must not be <code>null</code>.
      * @return the correct place in the list for the given name
      */
     private static int findTargetPosition(List<String> names, String name) {
@@ -488,23 +447,17 @@ public class EasyAntMain implements AntMain {
 
     /**
      * Writes a formatted list of target names to <code>System.out</code> with an optional description.
-     * 
-     * 
-     * @param project
-     *            the project instance.
-     * @param names
-     *            The names to be printed. Must not be <code>null</code>.
-     * @param descriptions
-     *            The associated target descriptions. May be <code>null</code>, in which case no descriptions are
-     *            displayed. If non- <code>null</code>, this should have as many elements as <code>names</code>.
-     * @param heading
-     *            The heading to display. Should not be <code>null</code>.
-     * @param maxlen
-     *            The maximum length of the names of the targets. If descriptions are given, they are padded to this
-     *            position so they line up (so long as the names really <i>are</i> shorter than this).
+     *
+     * @param project      the project instance.
+     * @param names        The names to be printed. Must not be <code>null</code>.
+     * @param descriptions The associated target descriptions. May be <code>null</code>, in which case no descriptions are
+     *                     displayed. If non- <code>null</code>, this should have as many elements as <code>names</code>.
+     * @param heading      The heading to display. Should not be <code>null</code>.
+     * @param maxlen       The maximum length of the names of the targets. If descriptions are given, they are padded to this
+     *                     position so they line up (so long as the names really <i>are</i> shorter than this).
      */
     private static void printTargets(Project project, List<String> names, List<String> descriptions, String heading,
-            int maxlen) {
+                                     int maxlen) {
         if (!names.isEmpty()) {
             // now, start printing the targets and their descriptions
             String lSep = System.getProperty("line.separator");
@@ -527,11 +480,9 @@ public class EasyAntMain implements AntMain {
     /**
      * Prints a list of all targets in the specified project to <code>System.out</code>, optionally including
      * subtargets.
-     * 
-     * @param project
-     *            The project to display a description of. Must not be <code>null</code>.
-     * @param printSubTargets
-     *            Whether or not subtarget names should also be printed.
+     *
+     * @param project         The project to display a description of. Must not be <code>null</code>.
+     * @param printSubTargets Whether or not subtarget names should also be printed.
      */
     protected static void printTargets(Project project, boolean printSubTargets) {
         // find the target with the longest name
@@ -576,7 +527,7 @@ public class EasyAntMain implements AntMain {
         printTargets(project, topNames, topDescriptions, "Main targets:", maxLength);
         // if there were no main targets, we list all subtargets
         // as it means nothing has a description
-        if (topNames.size() == 0) {
+        if (topNames.isEmpty()) {
             printSubTargets = true;
         }
         if (printSubTargets) {
@@ -700,9 +651,8 @@ public class EasyAntMain implements AntMain {
 
     /**
      * Prints the EasyAnt version information to <code>System.out</code>.
-     * 
-     * @exception BuildException
-     *                if the version information is unavailable
+     *
+     * @throws BuildException if the version information is unavailable
      */
     private static void printVersion() throws BuildException {
         System.out.println(EasyAntEngine.getEasyAntVersion());
@@ -717,11 +667,9 @@ public class EasyAntMain implements AntMain {
     /**
      * Returns the Ant version information, if available. Once the information has been loaded once, it's cached and
      * returned from the cache on future calls.
-     * 
+     *
      * @return the Ant version information as a String (always non- <code>null</code>)
-     * 
-     * @exception BuildException
-     *                if the version information is unavailable
+     * @throws BuildException if the version information is unavailable
      */
     public static synchronized String getAntVersion() throws BuildException {
         if (antVersion == null) {

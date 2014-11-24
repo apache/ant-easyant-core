@@ -17,10 +17,6 @@
  */
 package org.apache.easyant.core.ant;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.easyant.core.EasyAntConstants;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.tasks.SubModule;
@@ -30,6 +26,10 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.helper.DefaultExecutor;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Recursively executes build targets on sub-modules for a multi-module project.
@@ -103,7 +103,7 @@ public class MetaBuildExecutor extends DefaultExecutor {
         // print all sub modules and order in which they will
         // be executed
         String sortedModules = project.getProperty("ivy.sorted.modules");
-        if (sortedModules != null && sortedModules.length() > 0) {
+        if (sortedModules != null && !sortedModules.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             sb.append(DEMARKER).append(StringUtils.LINE_SEP);
             sb.append("Build Order for Sub Modules").append(StringUtils.LINE_SEP);

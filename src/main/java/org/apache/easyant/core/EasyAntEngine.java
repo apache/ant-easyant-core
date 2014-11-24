@@ -24,8 +24,8 @@ import org.apache.easyant.core.configuration.EasyantConfigurationFactory;
 import org.apache.easyant.core.descriptor.PluginDescriptor;
 import org.apache.easyant.core.ivy.InheritableScope;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
-import org.apache.easyant.core.services.PluginService;
 import org.apache.easyant.core.services.DefaultPluginService;
+import org.apache.easyant.core.services.PluginService;
 import org.apache.easyant.tasks.ConfigureBuildScopedRepository;
 import org.apache.easyant.tasks.Import;
 import org.apache.easyant.tasks.LoadModule;
@@ -396,7 +396,7 @@ public class EasyAntEngine {
             configurePluginService(project, easyantIvySettings);
 
             // Profile
-            if (configuration.getActiveBuildConfigurations().size() != 0) {
+            if (!configuration.getActiveBuildConfigurations().isEmpty()) {
                 String buildConfigurations = null;
                 for (String conf : configuration.getActiveBuildConfigurations()) {
                     if (buildConfigurations == null) {
@@ -456,7 +456,7 @@ public class EasyAntEngine {
     }
 
     public void loadSystemPlugins(Project project, boolean isRootProject) {
-        if (isRootProject && configuration.getSystemPlugins().size() > 0) {
+        if (isRootProject && !configuration.getSystemPlugins().isEmpty()) {
             project.log("Loading System Plugins...");
         }
         for (PluginDescriptor systemPlugin : configuration.getSystemPlugins()) {

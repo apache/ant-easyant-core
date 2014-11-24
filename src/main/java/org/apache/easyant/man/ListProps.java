@@ -17,11 +17,11 @@
  */
 package org.apache.easyant.man;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.easyant.core.descriptor.PropertyDescriptor;
 import org.apache.easyant.core.report.ImportedModuleReport;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Lists all properties (deep search - includes all imported modules) available in the specified build module.
@@ -50,7 +50,7 @@ public class ListProps extends EasyantOption {
             getProject().log(LINE_SEP + "No plugin specified. Listing all properties available in the project.");
 
             Map<String, PropertyDescriptor> allProjectProps = getEareport().getPropertyDescriptors();
-            if (allProjectProps.size() > 0) {
+            if (!allProjectProps.isEmpty()) {
                 printProperties(allProjectProps);
 
             } else {
@@ -67,7 +67,7 @@ public class ListProps extends EasyantOption {
             } else {
                 Map<String, PropertyDescriptor> allprops = moduleRep.getEasyantReport().getPropertyDescriptors();
 
-                if (allprops.size() > 0) {
+                if (!allprops.isEmpty()) {
                     printProperties(allprops);
                 } else {
                     getProject().log(LINE_SEP + "No property found in the plugin: " + plugin);

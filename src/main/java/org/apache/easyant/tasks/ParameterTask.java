@@ -17,9 +17,6 @@
  */
 package org.apache.easyant.tasks;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -27,14 +24,16 @@ import org.apache.tools.ant.Task;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Path;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * parameter tasks is used to :
- * 
+ * <p/>
  * document properties / paths check if properties /paths are required set default values if properties are not set
- * 
+ * <p/>
  * This could be usefull in precondition of each modules, to check if property/path are set. And much more usefull to
  * document our modules.
- * 
  */
 public class ParameterTask extends Task {
     private String property;
@@ -48,7 +47,7 @@ public class ParameterTask extends Task {
 
     /**
      * Get a description to the property / path
-     * 
+     *
      * @return the description
      */
     public String getDescription() {
@@ -57,9 +56,8 @@ public class ParameterTask extends Task {
 
     /**
      * set a description to the property / path
-     * 
-     * @param description
-     *            the description
+     *
+     * @param description the description
      */
     public void setDescription(String description) {
         this.description = description;
@@ -67,11 +65,11 @@ public class ParameterTask extends Task {
 
     /**
      * Appends CDATA text inside the Ant task to description
-     * 
+     *
      * @see #setDescription(String)
      */
     public void addText(String descriptionText) {
-        if (descriptionText.trim().length() > 0) {
+        if (!descriptionText.trim().isEmpty()) {
             descriptionText = getProject().replaceProperties(descriptionText);
             if (getDescription() == null) {
                 setDescription(descriptionText);
@@ -83,7 +81,7 @@ public class ParameterTask extends Task {
 
     /**
      * Get the property name to check
-     * 
+     *
      * @return a property name
      */
     public String getProperty() {
@@ -92,9 +90,8 @@ public class ParameterTask extends Task {
 
     /**
      * Set the property name to check
-     * 
-     * @param property
-     *            a property name
+     *
+     * @param property a property name
      */
     public void setProperty(String property) {
         this.property = property;
@@ -102,7 +99,7 @@ public class ParameterTask extends Task {
 
     /**
      * Get the path to check
-     * 
+     *
      * @return a pathId
      */
     public String getPath() {
@@ -111,7 +108,7 @@ public class ParameterTask extends Task {
 
     /**
      * Set the path to check
-     * 
+     *
      * @param path
      */
     public void setPath(String path) {
@@ -120,7 +117,7 @@ public class ParameterTask extends Task {
 
     /**
      * Get the default value (only available for property)
-     * 
+     *
      * @return a string that represents the default value
      */
     public String getDefault() {
@@ -129,9 +126,8 @@ public class ParameterTask extends Task {
 
     /**
      * Set the default value (only available for property)
-     * 
-     * @param defaultValue
-     *            a string that represents the default value
+     *
+     * @param defaultValue a string that represents the default value
      */
     public void setDefault(String defaultValue) {
         this.defaultValue = defaultValue;
@@ -139,7 +135,7 @@ public class ParameterTask extends Task {
 
     /**
      * Is the refererenced property / path required?
-     * 
+     *
      * @return
      */
     public boolean isRequired() {
@@ -153,7 +149,7 @@ public class ParameterTask extends Task {
 
     /**
      * specify if the property / path is mandatory
-     * 
+     *
      * @param required
      */
     public void setRequired(boolean required) {
@@ -162,7 +158,7 @@ public class ParameterTask extends Task {
 
     /**
      * Get list of possible values of a property
-     * 
+     *
      * @return a list of values
      */
     public List<String> getPossibleValues() {
@@ -171,9 +167,8 @@ public class ParameterTask extends Task {
 
     /**
      * Set list of possible values of a property
-     * 
-     * @param possibleValuesAsString
-     *            a comma separated list of values
+     *
+     * @param possibleValuesAsString a comma separated list of values
      */
     public void setPossibleValues(String possibleValuesAsString) {
         if (possibleValuesAsString != null) {

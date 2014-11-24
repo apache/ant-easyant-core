@@ -17,25 +17,19 @@
  */
 package org.apache.easyant.core.ant.helper;
 
-import java.util.Map;
-
 import org.apache.easyant.core.ant.Phase;
 import org.apache.easyant.core.ant.ProjectUtils;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.ExtensionPoint;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.Target;
+import org.apache.tools.ant.*;
 import org.apache.tools.ant.helper.AntXMLContext;
 import org.apache.tools.ant.helper.ProjectHelper2;
 import org.apache.tools.ant.types.Resource;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXParseException;
 
+import java.util.Map;
+
 /**
  * This class is the custom project helper used by easyant introducing support for phase concept
- * 
  */
 public class EasyAntProjectHelper extends ProjectHelper2 {
 
@@ -58,22 +52,15 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
         /**
          * Handles the start of a top-level element within the project. An appropriate handler is created and
          * initialised with the details of the element.
-         * 
-         * @param uri
-         *            The namespace URI for this element.
-         * @param name
-         *            The name of the element being started. Will not be <code>null</code>.
-         * @param qname
-         *            The qualified name for this element.
-         * @param attrs
-         *            Attributes of the element being started. Will not be <code>null</code>.
-         * @param context
-         *            The context for this element.
+         *
+         * @param uri     The namespace URI for this element.
+         * @param name    The name of the element being started. Will not be <code>null</code>.
+         * @param qname   The qualified name for this element.
+         * @param attrs   Attributes of the element being started. Will not be <code>null</code>.
+         * @param context The context for this element.
          * @return a target or an element handler.
-         * 
-         * @exception org.xml.sax.SAXParseException
-         *                if the tag given is not <code>"taskdef"</code>, <code>"typedef"</code>,
-         *                <code>"property"</code>, <code>"target"</code>, <code>"phase"</code> or a data type definition
+         * @throws org.xml.sax.SAXParseException if the tag given is not <code>"taskdef"</code>, <code>"typedef"</code>,
+         *                                       <code>"property"</code>, <code>"target"</code>, <code>"phase"</code> or a data type definition
          */
         public AntHandler onStartChild(String uri, String name, String qname, Attributes attrs, AntXMLContext context)
                 throws SAXParseException {
@@ -92,21 +79,14 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
          * Initialisation routine called after handler creation with the element name and attributes. The attributes
          * which this handler can deal with are: <code>"name"</code>, <code>"depends"</code>, <code>"if"</code>,
          * <code>"unless"</code>, <code>"id"</code> and <code>"description"</code>.
-         * 
-         * @param uri
-         *            The namespace URI for this element.
-         * @param tag
-         *            Name of the element which caused this handler to be created. Should not be <code>null</code>.
-         *            Ignored in this implementation.
-         * @param qname
-         *            The qualified name for this element.
-         * @param attrs
-         *            Attributes of the element which caused this handler to be created. Must not be <code>null</code>.
-         * @param context
-         *            The current context.
-         * 
-         * @exception SAXParseException
-         *                if an unexpected attribute is encountered or if the <code>"name"</code> attribute is missing.
+         *
+         * @param uri     The namespace URI for this element.
+         * @param tag     Name of the element which caused this handler to be created. Should not be <code>null</code>.
+         *                Ignored in this implementation.
+         * @param qname   The qualified name for this element.
+         * @param attrs   Attributes of the element which caused this handler to be created. Must not be <code>null</code>.
+         * @param context The current context.
+         * @throws SAXParseException if an unexpected attribute is encountered or if the <code>"name"</code> attribute is missing.
          */
         public void onStartElement(String uri, String tag, String qname, Attributes attrs, AntXMLContext context)
                 throws SAXParseException {
@@ -208,7 +188,7 @@ public class EasyAntProjectHelper extends ProjectHelper2 {
                 usedTarget = true;
             }
 
-            if (depends.length() > 0) {
+            if (!depends.isEmpty()) {
                 if (!isInIncludeMode) {
                     target.setDepends(depends);
                 } else {
