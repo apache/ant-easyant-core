@@ -315,13 +315,7 @@ public class SubModule extends AbstractEasyAntTask {
             if (keys.contains(target)) {
                 filteredTargets.add(target);
             } else {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Skipping undefined target '")//
-                        .append(target)//
-                        .append("'")//
-                        .append(" on ")//
-                        .append(subProject.getName());
-                subProject.log(sb.toString(), Project.MSG_VERBOSE);
+                subProject.log("Skipping undefined target '" + target + "'" + " on " + subProject.getName(), Project.MSG_VERBOSE);
             }
         }
         return CollectionUtils.flattenToString(filteredTargets);
@@ -334,11 +328,7 @@ public class SubModule extends AbstractEasyAntTask {
      */
     private void printExecutingTargetMsg(Project subProject) {
         final String HEADER = "======================================================================";
-        StringBuilder sb = new StringBuilder();
-        sb.append(HEADER).append(StringUtils.LINE_SEP);
-        sb.append("Executing ").append(targets).append(" on ").append(subProject.getName());
-        sb.append(StringUtils.LINE_SEP).append(HEADER);
-        subProject.log(sb.toString());
+        subProject.log(HEADER + StringUtils.LINE_SEP + "Executing " + targets + " on " + subProject.getName() + StringUtils.LINE_SEP + HEADER);
     }
 
     /**

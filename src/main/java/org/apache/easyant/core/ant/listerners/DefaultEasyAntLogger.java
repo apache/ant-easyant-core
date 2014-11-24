@@ -34,7 +34,7 @@ public class DefaultEasyAntLogger extends NoBannerLogger {
 
     private long startTime = System.currentTimeMillis();
 
-    protected static void throwableMessage(StringBuffer m, Throwable error, boolean verbose) {
+    protected static void throwableMessage(StringBuilder m, Throwable error, boolean verbose) {
 
         while (error != null) {
             Throwable cause = error.getCause();
@@ -73,7 +73,7 @@ public class DefaultEasyAntLogger extends NoBannerLogger {
     @Override
     public void buildFinished(BuildEvent event) {
         Throwable error = event.getException();
-        StringBuffer message = new StringBuffer();
+        StringBuilder message = new StringBuilder();
         if (error == null) {
             message.append(StringUtils.LINE_SEP);
             message.append(getBuildSuccessfulMessage());

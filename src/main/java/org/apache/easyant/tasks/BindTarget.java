@@ -17,14 +17,10 @@
  */
 package org.apache.easyant.tasks;
 
-import java.util.Enumeration;
-
 import org.apache.easyant.core.BuildConfigurationHelper;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.ExtensionPoint;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.Task;
+import org.apache.tools.ant.*;
+
+import java.util.Enumeration;
 
 public class BindTarget extends Task {
 
@@ -34,10 +30,9 @@ public class BindTarget extends Task {
     private String buildConfigurations;
 
     public void execute() throws BuildException {
-        StringBuilder message = new StringBuilder();
-        message.append("extension-point mapping for target ").append(getTarget()).append(" ");
+        String message = "extension-point mapping for target " + getTarget();
         if (!BuildConfigurationHelper.isBuildConfigurationActive(getBuildConfigurations(), getProject(),
-                message.toString())) {
+                message)) {
             log("no matching build configuration for this extension-point mapping, this mapping will be ignored",
                     Project.MSG_DEBUG);
             return;

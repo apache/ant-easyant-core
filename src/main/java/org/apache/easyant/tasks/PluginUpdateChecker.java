@@ -86,16 +86,7 @@ public class PluginUpdateChecker extends AbstractEasyAntTask {
         String resolvedRevision = report.getModuleDescriptor().getDependencies()[0].getDependencyRevisionId()
                 .getRevision();
         if (!resolvedRevision.equals(moduleRevisionId.getRevision())) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\t")//
-                    .append(moduleRevisionId.getOrganisation()) //
-                    .append('#')//
-                    .append(moduleRevisionId.getName())//
-                    .append("\t")//
-                    .append(moduleRevisionId.getRevision())//
-                    .append(" -> ")//
-                    .append(resolvedRevision);
-            log(sb.toString());
+            log("\t" + moduleRevisionId.getOrganisation() + '#' + moduleRevisionId.getName() + "\t" + moduleRevisionId.getRevision() + " -> " + resolvedRevision);
             pluginUpdateDetected=true;
         }
 

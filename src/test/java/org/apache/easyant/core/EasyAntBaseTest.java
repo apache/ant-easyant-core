@@ -52,10 +52,10 @@ public abstract class EasyAntBaseTest {
     protected Project project;
     protected EasyAntConfiguration conf;
 
-    private StringBuffer logBuffer;
-    private StringBuffer fullLogBuffer;
-    private StringBuffer outBuffer;
-    private StringBuffer errBuffer;
+    private StringBuilder logBuffer;
+    private StringBuilder fullLogBuffer;
+    private StringBuilder outBuffer;
+    private StringBuilder errBuffer;
     private BuildException buildException;
 
     @Rule
@@ -276,7 +276,7 @@ public abstract class EasyAntBaseTest {
         return buildException;
     }
 
-    private String cleanBuffer(StringBuffer buffer) {
+    private String cleanBuffer(StringBuilder buffer) {
         StringBuilder cleanedBuffer = new StringBuilder();
         for (int i = 0; i < buffer.length(); i++) {
             char ch = buffer.charAt(i);
@@ -403,8 +403,8 @@ public abstract class EasyAntBaseTest {
             throw new RuntimeException("You must call the configureProject method before initProject()");
         }
         // Flush the buffer
-        logBuffer = new StringBuffer();
-        fullLogBuffer = new StringBuffer();
+        logBuffer = new StringBuilder();
+        fullLogBuffer = new StringBuilder();
         // init the new project instance
         project = new Project();
         project.addBuildListener(new AntTestListener(conf.getMsgOutputLevel()));
@@ -426,14 +426,14 @@ public abstract class EasyAntBaseTest {
         try {
             sysOut.flush();
             sysErr.flush();
-            outBuffer = new StringBuffer();
+            outBuffer = new StringBuilder();
             PrintStream out = new PrintStream(new AntOutputStream(outBuffer));
             System.setOut(out);
-            errBuffer = new StringBuffer();
+            errBuffer = new StringBuilder();
             PrintStream err = new PrintStream(new AntOutputStream(errBuffer));
             System.setErr(err);
-            logBuffer = new StringBuffer();
-            fullLogBuffer = new StringBuffer();
+            logBuffer = new StringBuilder();
+            fullLogBuffer = new StringBuilder();
             buildException = null;
             project.executeTarget(targetName);
         } finally {
@@ -601,9 +601,9 @@ public abstract class EasyAntBaseTest {
      * an output stream which saves stuff to our buffer.
      */
     private static class AntOutputStream extends java.io.OutputStream {
-        private StringBuffer buffer;
+        private StringBuilder buffer;
 
-        public AntOutputStream(StringBuffer buffer) {
+        public AntOutputStream(StringBuilder buffer) {
             this.buffer = buffer;
         }
 

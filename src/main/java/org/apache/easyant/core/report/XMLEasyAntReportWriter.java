@@ -84,19 +84,7 @@ public class XMLEasyAntReportWriter {
         out.println("\t<configurations>");
 
         for (Configuration configuration : easyAntReport.getModuleDescriptor().getConfigurations()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\t\t<configuration name=\"");
-            sb.append(XMLHelper.escape(configuration.getName()));
-            sb.append("\" description=\"");
-            sb.append(XMLHelper.escape(configuration.getDescription()));
-            sb.append("\" extends=\"");
-            sb.append(XMLHelper.escape(Arrays.toString(configuration.getExtends())));
-            sb.append("\" deprecated=\"");
-            sb.append(XMLHelper.escape(configuration.getDeprecated()));
-            sb.append("\" visibility=\"");
-            sb.append(XMLHelper.escape(configuration.getVisibility().toString()));
-            sb.append("\"/>");
-            out.println(sb.toString());
+            out.println("\t\t<configuration name=\"" + XMLHelper.escape(configuration.getName()) + "\" description=\"" + XMLHelper.escape(configuration.getDescription()) + "\" extends=\"" + XMLHelper.escape(Arrays.toString(configuration.getExtends())) + "\" deprecated=\"" + XMLHelper.escape(configuration.getDeprecated()) + "\" visibility=\"" + XMLHelper.escape(configuration.getVisibility().toString()) + "\"/>");
         }
         out.println("\t</configurations>");
 
@@ -374,7 +362,7 @@ public class XMLEasyAntReportWriter {
             parameterReports = easyAntReport.getParameterReportsFromCurrentModule();
         }
         for (ParameterReport paramReport : parameterReports) {
-            StringBuffer param = new StringBuffer();
+            StringBuilder param = new StringBuilder();
 
             if (!ParameterType.PROPERTY.equals(paramReport.getType())) {
                 if (ParameterType.PATH.equals(paramReport.getType())) {

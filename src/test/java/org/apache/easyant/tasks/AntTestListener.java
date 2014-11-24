@@ -29,7 +29,7 @@ public class AntTestListener implements BuildListener {
 
     private int logLevel;
 
-    private StringBuffer buildLog = new StringBuffer();
+    private StringBuilder buildLog = new StringBuilder();
 
     /**
      * Constructs a test listener which will ignore log events above the given level.

@@ -184,9 +184,7 @@ public class MultiModuleLogger extends DefaultEasyAntLogger implements SubBuildL
     private void printExecutionSubBuildsExecutionTimes(Project project) {
         List<ExecutionResult> allSubBuildResults = project.getReference(EXECUTION_TIMER_BUILD_RESULTS);
         if (allSubBuildResults != null && !allSubBuildResults.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(LINE_SEP).append("Project Sub-modules Summary: ").append(LINE_SEP).append(formatExecutionResults(allSubBuildResults));
-            project.log(sb.toString());
+                project.log(LINE_SEP + "Project Sub-modules Summary: " + LINE_SEP + formatExecutionResults(allSubBuildResults));
         }
     }
 

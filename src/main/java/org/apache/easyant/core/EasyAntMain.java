@@ -734,12 +734,7 @@ public class EasyAntMain implements AntMain {
                 }
                 props.load(in);
 
-                StringBuilder msg = new StringBuilder();
-                msg.append("Apache Ant version ");
-                msg.append(props.getProperty("VERSION"));
-                msg.append(" compiled on ");
-                msg.append(props.getProperty("DATE"));
-                antVersion = msg.toString();
+                antVersion = "Apache Ant version " + props.getProperty("VERSION") + " compiled on " + props.getProperty("DATE");
             } catch (IOException ioe) {
                 throw new BuildException("Could not load the version information", ioe);
             } finally {

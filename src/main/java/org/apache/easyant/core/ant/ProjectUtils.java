@@ -17,27 +17,19 @@
  */
 package org.apache.easyant.core.ant;
 
+import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
+import org.apache.tools.ant.*;
+import org.apache.tools.ant.util.ClasspathUtils;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.easyant.core.EasyAntMagicNames;
-import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.BuildListener;
-import org.apache.tools.ant.BuildLogger;
-import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.Location;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.util.ClasspathUtils;
-
 /**
  * Utilitary class to manipulate ant's project (such as creating toplevel target)
- * 
  */
 public class ProjectUtils {
 
@@ -48,7 +40,7 @@ public class ProjectUtils {
 
     /**
      * emulates a top level target
-     * 
+     *
      * @return a top level target
      */
     public static Target createTopLevelTarget() {
@@ -60,7 +52,7 @@ public class ProjectUtils {
     /**
      * Emulate an empty project import task check that projectHelper is at toplevel by checking the size of
      * projectHelper.getImportTask()
-     * 
+     *
      * @return a temporary file acting as a mainscript
      */
     public static File emulateMainScript(Project project) {
@@ -69,11 +61,9 @@ public class ProjectUtils {
 
     /**
      * Replace main logger implementation
-     * 
-     * @param project
-     *            a given project
-     * @param logger
-     *            {@link BuildLogger} implementation to use
+     *
+     * @param project a given project
+     * @param logger  {@link BuildLogger} implementation to use
      */
     public static void replaceMainLogger(Project project, BuildLogger logger) {
         // Change the default output logger
@@ -118,9 +108,8 @@ public class ProjectUtils {
     /**
      * Install multi module logger Multi module logger specified through {@link EasyAntMagicNames}.MULTIMODULE_LOGGER
      * property. If this property is not set use default implementation
-     * 
-     * @param project
-     *            a given project where multi module logger should be installed
+     *
+     * @param project a given project where multi module logger should be installed
      */
     public static void installMultiModuleLogger(Project project) {
         String multiModuleLoggerClassName = project.getProperty(EasyAntMagicNames.MULTIMODULE_LOGGER);
@@ -134,9 +123,8 @@ public class ProjectUtils {
 
     /**
      * Print memory details
-     * 
-     * @param project
-     *            a given project
+     *
+     * @param project a given project
      */
     public static void printMemoryDetails(Project project) {
         project.log("---- Memory Details ----");
@@ -150,15 +138,13 @@ public class ProjectUtils {
     /**
      * Targets in imported files with a project name and not overloaded by the main build file will be in the target map
      * twice. This method removes the duplicate target.
-     * 
-     * @param targets
-     *            the targets to filter.
+     *
+     * @param targets the targets to filter.
      * @return the filtered targets.
      */
     public static Map<String, Target> removeDuplicateTargets(Map<?, ?> targets) {
         Map<Location, Target> locationMap = new HashMap<Location, Target>();
-        for (Map.Entry<?, ?> entry1 : targets.entrySet()) {
-            Map.Entry<?, ?> entry = (Map.Entry<?, ?>) entry1;
+        for (Map.Entry<?, ?> entry : targets.entrySet()) {
             String name = (String) entry.getKey();
             Target target = (Target) entry.getValue();
             Target otherTarget = locationMap.get(target.getLocation());

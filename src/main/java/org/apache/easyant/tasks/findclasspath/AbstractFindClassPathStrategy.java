@@ -63,12 +63,7 @@ public abstract class AbstractFindClassPathStrategy extends DataType {
      *            ivy instance reference
      */
     protected void loadCachePath(String organisation, String module, String revision, String conf, Reference ivyRef) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Building classpath (").append(getPathid()).append(")");
-        sb.append(" with ");
-        sb.append(organisation).append("#").append(module).append(";").append(revision);
-        sb.append(" conf=").append(conf);
-        log(sb.toString(), Project.MSG_DEBUG);
+        log("Building classpath (" + getPathid() + ")" + " with " + organisation + "#" + module + ";" + revision + " conf=" + conf, Project.MSG_DEBUG);
         IvyCachePath pluginCachePath = new IvyCachePath();
         pluginCachePath.setOrganisation(organisation);
         pluginCachePath.setModule(module);
