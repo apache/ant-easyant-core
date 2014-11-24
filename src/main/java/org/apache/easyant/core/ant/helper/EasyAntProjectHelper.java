@@ -17,7 +17,6 @@
  */
 package org.apache.easyant.core.ant.helper;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.easyant.core.ant.Phase;

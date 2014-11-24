@@ -21,7 +21,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.easyant.core.BuildConfigurationHelper;

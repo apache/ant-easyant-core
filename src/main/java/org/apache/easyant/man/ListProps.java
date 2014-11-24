@@ -17,7 +17,6 @@
  */
 package org.apache.easyant.man;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 

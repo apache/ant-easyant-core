@@ -18,7 +18,6 @@
 package org.apache.easyant.tasks;
 
 import java.util.Enumeration;
-import java.util.Iterator;
 
 import org.apache.easyant.core.BuildConfigurationHelper;
 import org.apache.tools.ant.BuildException;

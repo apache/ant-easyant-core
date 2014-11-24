@@ -18,7 +18,6 @@
 package org.apache.easyant.tasks;
 
 import java.io.File;
-import java.util.Iterator;
 
 import org.apache.easyant.core.BuildConfigurationHelper;
 import org.apache.easyant.core.EasyAntMagicNames;
