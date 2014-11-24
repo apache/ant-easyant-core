@@ -44,10 +44,12 @@ import org.junit.rules.TemporaryFolder;
 public class GoOfflineTest extends AntTaskBaseTest {
 
     private static final String EASYANT_BUILDSCOPE_REP = "easyant-buildscope-rep";
+    private static final String PROJECT_BUILDSCOPE_REP = "project-buildscope-rep";
 
     private GoOffline goOffline;
 
     private File easyantBuildScopeRepoFolder;
+    private File projectBuildScopeRepoFolder;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -63,17 +65,17 @@ public class GoOfflineTest extends AntTaskBaseTest {
 
         File cache = folder.newFolder("build-cache");
         project.setProperty("ivy.cache.dir", cache.getAbsolutePath());
+        File projectCache = folder.newFolder("easyant-cache-test");
+        project.setProperty("easyant.default.cache.dir", projectCache.getAbsolutePath());
 
-        IvyConfigure configure = new IvyConfigure();
-        configure.setSettingsId(EasyAntMagicNames.EASYANT_IVY_INSTANCE);
-        configure.setProject(project);
-        configure.setFile(new File(this.getClass().getResource("/repositories/easyant-ivysettings-test.xml").toURI()));
-        configure.execute();
+        configureEasyantSettings(project);
+        configureProjectSettings(project);
 
         project.setBaseDir(new File(this.getClass().getResource("simple").toURI()));
 
         configurePluginService(project);
         configureEasyantBuildScopeRepository(project);
+        configureProjectBuildScopeRepository(project);
 
         goOffline = new GoOffline();
         goOffline.setProject(project);
@@ -82,19 +84,50 @@ public class GoOfflineTest extends AntTaskBaseTest {
 
     }
 
+    private void configureEasyantSettings(Project project) throws URISyntaxException{
+        configureSettings(project, EasyAntMagicNames.EASYANT_IVY_INSTANCE, "/repositories/easyant-ivysettings-test.xml");
+    }
+    
+    private void configureProjectSettings(Project project) throws URISyntaxException{
+        configureSettings(project, IvyInstanceHelper.getProjectIvyInstanceName(project), "/ivysettings-test.xml");
+    }
+    
+    private void configureSettings(Project project, String settingsId, String settingsFile) throws URISyntaxException{
+        IvyConfigure configure = new IvyConfigure();
+        configure.setSettingsId(settingsId);
+        configure.setProject(project);
+        configure.setFile(new File(this.getClass().getResource(settingsFile).toURI()));
+        configure.execute();
+    }
+    
     private void configureEasyantBuildScopeRepository(Project project) throws IOException {
         easyantBuildScopeRepoFolder = folder.newFolder("ea-build-repo");
-
-        FileSystemResolver easyantBuildScopeRepo = new FileSystemResolver();
-        easyantBuildScopeRepo.setName(EASYANT_BUILDSCOPE_REP);
-        easyantBuildScopeRepo.addArtifactPattern(easyantBuildScopeRepoFolder.getAbsolutePath()
-                + "/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]");
-        easyantBuildScopeRepo.addIvyPattern(easyantBuildScopeRepoFolder.getAbsolutePath()
-                + "/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]");
-
+        FileSystemResolver resolver = newResolver(project, easyantBuildScopeRepoFolder, EASYANT_BUILDSCOPE_REP);
+        
         Ivy easyantIvyInstance = IvyInstanceHelper.getEasyAntIvyAntSettings(project)
                 .getConfiguredIvyInstance(goOffline);
-        easyantIvyInstance.getSettings().addResolver(easyantBuildScopeRepo);
+        easyantIvyInstance.getSettings().addResolver(resolver);
+    }
+    
+    private void configureProjectBuildScopeRepository(Project project) throws IOException {
+        projectBuildScopeRepoFolder = folder.newFolder("project-build-repo");
+        FileSystemResolver resolver = newResolver(project, projectBuildScopeRepoFolder, PROJECT_BUILDSCOPE_REP);
+        
+        Ivy projecttIvyInstance = IvyInstanceHelper.getProjectIvyAntSettings(project)
+                .getConfiguredIvyInstance(goOffline);
+        projecttIvyInstance.getSettings().addResolver(resolver);
+    }
+    
+    private FileSystemResolver newResolver(Project project, File repoFolder, String resolverName ) throws IOException {
+        
+        FileSystemResolver resolver = new FileSystemResolver();
+        resolver.setName(resolverName);
+        resolver.addArtifactPattern(repoFolder.getAbsolutePath()
+                + "/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]");
+        resolver.addIvyPattern(repoFolder.getAbsolutePath()
+                + "/[organisation]/[module]/[revision]/[artifact](-[classifier]).[ext]");
+        
+        return resolver;
     }
 
     private void configurePluginService(Project project) {
@@ -140,4 +173,25 @@ public class GoOfflineTest extends AntTaskBaseTest {
                 + "/mycompany/simpleplugin/0.1/simpleplugin.ant");
         assertThat(antFile.exists(), is(true));
     }
+    
+    @Test
+    public void shouldInstallPluginsAndDependenciesTransitive() throws URISyntaxException {
+        goOffline.setEasyantResolverName(EASYANT_BUILDSCOPE_REP);
+        goOffline.setProjectResolverName(PROJECT_BUILDSCOPE_REP);
+        goOffline.setModuleIvy(new File(this.getClass().getResource("dependencies/module.ivy").toURI()));
+        goOffline.execute();
+        
+        assertLogContaining("installing mycompany#simpleplugin;0.1");
+        assertLogContaining("installing junit#junit;4.4");
+        assertLogContaining("installing org.mortbay.jetty#jetty;6.1.14");
+               
+        assertFileExists(easyantBuildScopeRepoFolder,"/mycompany/simpleplugin/0.1/ivy.xml");
+        assertFileExists(easyantBuildScopeRepoFolder,"/mycompany/simpleplugin/0.1/simpleplugin.ant");
+        
+        assertFileExists(projectBuildScopeRepoFolder, "/junit/junit/4.4/junit.jar");
+        assertFileExists(projectBuildScopeRepoFolder, "/org.mortbay.jetty/jetty/6.1.14/jetty.jar");
+        assertFileExists(projectBuildScopeRepoFolder, "/org.mortbay.jetty/jetty-util/6.1.14/jetty-util.jar");
+    }
+    
+
 }

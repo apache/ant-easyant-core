@@ -129,6 +129,7 @@ public class GoOffline extends AbstractEasyAntTask {
         install.setRevision(moduleRevisionId.getRevision());
         install.setOverwrite(true);
         install.setHaltonfailure(false);
+        install.setTransitive(true);
         initTask(install).execute();
 
     }

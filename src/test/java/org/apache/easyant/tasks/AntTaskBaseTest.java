@@ -18,8 +18,11 @@
 package org.apache.easyant.tasks;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+
+import java.io.File;
 
 import org.apache.tools.ant.Project;
 
@@ -47,6 +50,11 @@ public class AntTaskBaseTest {
         checkAntListener();
         String realLog = antTestListener.getLog();
         assertThat(realLog, not(containsString(substring)));
+    }
+    
+    public void assertFileExists(File root, String relativeFilename){
+        File file = new File(root.getAbsolutePath() + relativeFilename);
+        assertThat(file.exists(), is(true));
     }
 
     private void checkAntListener() {

@@ -16,7 +16,7 @@
 -->
 <ivysettings>
     <property name="apache.easyant.public.url" value="http://repository.easyant.org/apache-easyant"/>
-    <property name="easyant.default.cache.dir" value="${basedir}/easyant-cache-test"/>
+    <property name="easyant.default.cache.dir" value="${basedir}/easyant-cache-test" override="false"/>
 
     <settings defaultResolver="easyant-test-chain"/>
     <caches defaultCacheDir="${easyant.default.cache.dir}" useOrigin="true" />
