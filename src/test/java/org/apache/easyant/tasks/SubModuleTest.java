@@ -18,8 +18,16 @@
 
 package org.apache.easyant.tasks;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.listerners.MultiModuleLogger;
+import org.apache.easyant.tasks.SubModule.TargetList;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
@@ -28,13 +36,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 public class SubModuleTest extends AntTaskBaseTest {
 
@@ -156,6 +157,31 @@ public class SubModuleTest extends AntTaskBaseTest {
         assertLogContaining("Executing [modulewithtarget:mytarget] on module1");
         assertLogContaining("Executing [modulewithtarget:mytarget] on module2");
 
+        assertThat(submodule.getProject().getReference(MultiModuleLogger.EXECUTION_TIMER_BUILD_RESULTS),
+                notNullValue());
+    }
+        
+    @Test
+    public void shouldRunTargetInRightOrder() throws URISyntaxException {
+        configureBuildLogger(submodule.getProject(), Project.MSG_DEBUG);
+        
+        Path path = new Path(submodule.getProject());
+        FileSet fs = new FileSet();
+        File multimodule = new File(this.getClass().getResource("multimodule").toURI());
+        fs.setDir(multimodule);
+        path.addFileset(fs);
+        path.createPath();
+        
+        submodule.setBuildpath(path);
+        submodule.setTargets(new TargetList("modulewithtarget:firstTarget", "modulewithtarget:secondTarget", "modulewithtarget:thirdTarget"));
+        submodule.execute();
+                
+        assertLogContaining("Executing [modulewithtarget:firstTarget, modulewithtarget:secondTarget, modulewithtarget:thirdTarget] on module1");
+        assertLogContaining("Executing [modulewithtarget:firstTarget, modulewithtarget:secondTarget, modulewithtarget:thirdTarget] on module2");
+        assertLogContaining("ant.project.invoked-targets -> modulewithtarget:firstTarget,modulewithtarget:secondTarget,modulewithtarget:thirdTarget");
+        assertLogContaining("project.executed.targets -> modulewithtarget:firstTarget,modulewithtarget:secondTarget,modulewithtarget:thirdTarget");
+        assertLogContaining("firstProperty=first secondProperty=second thirdProperty=third");
+        
         assertThat(submodule.getProject().getReference(MultiModuleLogger.EXECUTION_TIMER_BUILD_RESULTS),
                 notNullValue());
     }

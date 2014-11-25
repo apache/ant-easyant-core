@@ -307,7 +307,7 @@ public class SubModule extends AbstractEasyAntTask {
      * Filter the active set of targets to only those defined in the given project.
      */
     private String filterTargets(Project subProject) {
-        Set<String> filteredTargets = new HashSet<String>();
+        List<String> filteredTargets = new ArrayList<String>();
         Set<?> keys = subProject.getTargets().keySet();
 
         for (String target : targets) {

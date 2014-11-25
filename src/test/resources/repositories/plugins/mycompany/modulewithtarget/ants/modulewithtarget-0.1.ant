@@ -19,4 +19,22 @@
 	    <echo>a message from mytarget</echo>
 		<property name="apropertyinmytarget" value="foobar"/>
 	</target>
+	
+	<target name="modulewithtarget:firstTarget">
+		<property name="firstProperty" value="first"/>
+	</target>
+	
+	<target name="modulewithtarget:secondTarget">
+		<property name="firstProperty" value="invalid"/>
+		<property name="secondProperty" value="second"/>
+	</target>
+	
+	<target name="modulewithtarget:thirdTarget">	    
+		<property name="firstProperty" value="invalid"/>
+		<property name="secondProperty" value="invalid"/>
+		<property name="thirdProperty" value="third"/>
+		
+		<echo>firstProperty=${firstProperty} secondProperty=${secondProperty} thirdProperty=${thirdProperty}</echo>
+	</target>
+	
 </project>
