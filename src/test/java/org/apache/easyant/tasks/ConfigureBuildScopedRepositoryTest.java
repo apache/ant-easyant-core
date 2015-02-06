@@ -31,7 +31,7 @@ import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.Ivy;
 import org.apache.ivy.ant.IvyConfigure;
-import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
+import org.apache.easyant.core.ivy.EasyAntRepositoryCacheManager;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.plugins.resolver.FileSystemResolver;
 import org.apache.tools.ant.Project;

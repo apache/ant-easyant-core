@@ -22,7 +22,7 @@ import java.io.File;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
 import org.apache.ivy.ant.IvyTask;
-import org.apache.ivy.core.cache.EasyAntRepositoryCacheManager;
+import org.apache.easyant.core.ivy.EasyAntRepositoryCacheManager;
 import org.apache.ivy.core.settings.IvySettings;
 import org.apache.ivy.plugins.resolver.ChainResolver;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
