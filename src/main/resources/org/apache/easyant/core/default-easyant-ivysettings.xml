@@ -17,7 +17,7 @@
 <ivysettings>
     <property name="apache.easyant.public.url" value="http://repository.easyant.org/apache-easyant"/>
     <settings defaultResolver="easyant-default-chain"/>
-    <caches defaultCacheDir="${user.home}/.easyant/easyant-cache" useOrigin="true" />
+    <caches defaultCacheDir="${user.home}/.easyant/easyant-cache"/>
     <resolvers>
         <jar name="easyant-core-modules" url="${easyant.core.jar.url}" descriptor="required">
             <ivy pattern="repository/core/[organisation]/[module]/[revision]/[module].ivy"/>
