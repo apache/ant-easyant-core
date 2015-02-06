@@ -17,13 +17,6 @@
  */
 package org.apache.easyant.tasks;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.ant.ProjectUtils;
 import org.apache.easyant.core.ivy.IvyInstanceHelper;
@@ -36,11 +29,18 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public class SearchModuleTest {
 
-    private SearchModule searchModule = new SearchModule();
+    private final SearchModule searchModule = new SearchModule();
 
-    private FakeInputHandler fakeInputHandler = new FakeInputHandler();
+    private final FakeInputHandler fakeInputHandler = new FakeInputHandler();
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -129,13 +129,13 @@ public class SearchModuleTest {
 
     @Test
     public void shouldFindExistingModuleWithRegexpParameter() {
-        searchModule.setOrganisation("mycompany");
+        searchModule.setOrganisation("anothercompany");
         searchModule.setModule("*");
         searchModule.setRevision("*");
         searchModule.setPropertyPrefix("mysearch");
         fakeInputHandler.setInput("0");
         searchModule.execute();
-        assertThat(searchModule.getProject().getProperty("mysearch.org"), is("mycompany"));
+        assertThat(searchModule.getProject().getProperty("mysearch.org"), is("anothercompany"));
         assertThat(searchModule.getProject().getProperty("mysearch.module"), is("simpleplugin"));
         assertThat(searchModule.getProject().getProperty("mysearch.rev"), is("0.1"));
     }
