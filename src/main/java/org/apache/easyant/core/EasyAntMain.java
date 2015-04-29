@@ -531,7 +531,7 @@ public class EasyAntMain implements AntMain {
             printSubTargets = true;
         }
         if (printSubTargets) {
-            printTargets(project, subNames, null, "Other targets:", 0);
+            printTargets(project, subNames, null, "Other targets:", maxLength);
         } else {
             project.log("Run easyant with '-v' or '--verbose' option to have the whole list of available targets / extension points");
         }
