@@ -154,11 +154,11 @@ public class EasyAntEngine {
                     if (getLocalURL == null
                             && "org.eclipse.osgi.framework.internal.core.BundleURLConnection".equals(conn.getClass()
                             .getName())) {
-                        EasyAntEngine.getLocalURL = conn.getClass().getMethod("getLocalURL", (Class<?>) null);
+                        EasyAntEngine.getLocalURL = conn.getClass().getMethod("getLocalURL", null);
                         getLocalURL.setAccessible(true);
                     }
                     if (getLocalURL != null && conn != null) {
-                        URL localJarUrl = (URL) getLocalURL.invoke(conn, (Class<?>) null);
+                        URL localJarUrl = (URL) getLocalURL.invoke(conn,  null);
                         return getJarUrl(localJarUrl);
                     }
                 } catch (Throwable throwable) {
