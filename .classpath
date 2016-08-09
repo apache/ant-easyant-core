@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="lib/main/ant-launcher.jar"/>
 	<classpathentry kind="lib" path="lib/main/ant.jar"/>
 	<classpathentry kind="lib" path="lib/main/ant-contrib.jar"/>
-	<classpathentry kind="lib" path="lib/test/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="lib/test/junit-4.12.jar"/>
 	<classpathentry kind="lib" path="lib/main/commons-cli.jar"/>
 	<classpathentry kind="lib" path="lib/main/ivy.jar"/>
 	<classpathentry kind="lib" path="lib/test/hamcrest-core-1.3.jar"/>
