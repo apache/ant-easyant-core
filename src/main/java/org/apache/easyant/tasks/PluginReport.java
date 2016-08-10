@@ -17,15 +17,22 @@
  */
 package org.apache.easyant.tasks;
 
+import java.awt.image.ImagingOpException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -36,6 +43,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.easyant.core.EasyAntEngine;
 import org.apache.easyant.core.EasyAntMagicNames;
 import org.apache.easyant.core.report.EasyAntReport;
 import org.apache.easyant.core.report.XMLEasyAntReportWriter;
@@ -204,12 +212,53 @@ public class PluginReport extends AbstractEasyAntTask {
         // style should be a file (and not an url)
         // so we have to copy it from classpath to cache
         ResolutionCacheManager cacheMgr = getEasyAntIvyInstance().getResolutionCacheManager();
-        File style = new File(cacheMgr.getResolutionCacheRoot(), "easyant-report.xsl");
+        String styleName = "easyant-report.xsl";
+        File style = new File(cacheMgr.getResolutionCacheRoot(), styleName);
         if (!style.exists()) {
             Message.debug("copying easyant-report.xsl to " + style.getAbsolutePath());
-            FileUtil.copy(XMLEasyAntReportWriter.class.getResourceAsStream("easyant-report.xsl"), style, null);
+            FileUtil.copy(XMLEasyAntReportWriter.class.getResourceAsStream(styleName), style, null);
+        } else {
+            // Check cached and jar style content
+            // If EasyAnt has been updated, maybe the style file is different from the one in previous version
+            InputStream cacheIs = new FileInputStream(style);
+            InputStream jarIs = XMLEasyAntReportWriter.class.getResourceAsStream(styleName);
+            if (!isSame(cacheIs, jarIs)) {
+                Message.debug("Update cache style file");
+                style.delete();
+                FileUtil.copy(XMLEasyAntReportWriter.class.getResourceAsStream(styleName), style, null);
+            }
         }
         return style;
+    }
+    
+    public boolean isSame(InputStream is1, InputStream is2) throws IOException {
+        byte[] buffer1 = new byte[1024];
+        byte[] buffer2 = new byte[1024];
+
+        try {
+            while (true) {
+                int count1 = is1.read(buffer1);
+                int count2 = is2.read(buffer2);
+
+                if (count1 > -1) {
+                    if (count2 != count1) {
+                        // not same number of byte in files
+                        return false;
+                    }
+
+                    if (!Arrays.equals(buffer1, buffer2)) {
+                        // same byte count, but contents are different
+                        return false;
+                    }
+                } else {
+                    // same content if is1 and is2 have no more byte to read
+                    return count2 == -1;
+                }
+            }
+        } finally {
+            is1.close();
+            is2.close();
+        }
     }
 
     private String getOutputPattern(ModuleRevisionId moduleRevisionId, String conf, String ext) {

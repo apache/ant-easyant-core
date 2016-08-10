@@ -18,6 +18,7 @@
 package org.apache.easyant.tasks;
 
 import org.apache.easyant.core.EasyAntMagicNames;
+import org.apache.easyant.core.services.PluginService;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -145,6 +146,21 @@ public class ParameterTask extends Task {
         } else {
             return required;
         }
+    }
+    
+    /**
+     * Gets if this parameter is required or not.
+     *
+     * <p>
+     * This is the unsafe version of {@link #isRequired()}, this method does not check if project is in audit mode. This
+     * method should not be use in EasyAnt engine, but only to output the required value in {@link PluginService}.
+     * 
+     * @return {@code true} if this parameter is required, {@code false} otherwise.
+     * 
+     * @see EasyAntMagicNames#AUDIT_MODE
+     */
+    public boolean isRequiredUnsafe() {
+        return required;
     }
 
     /**

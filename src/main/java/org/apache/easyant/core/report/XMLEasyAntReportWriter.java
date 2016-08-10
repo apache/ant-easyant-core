@@ -84,7 +84,13 @@ public class XMLEasyAntReportWriter {
         out.println("\t<configurations>");
 
         for (Configuration configuration : easyAntReport.getModuleDescriptor().getConfigurations()) {
-            out.println("\t\t<configuration name=\"" + XMLHelper.escape(configuration.getName()) + "\" description=\"" + XMLHelper.escape(configuration.getDescription()) + "\" extends=\"" + XMLHelper.escape(Arrays.toString(configuration.getExtends())) + "\" deprecated=\"" + XMLHelper.escape(configuration.getDeprecated()) + "\" visibility=\"" + XMLHelper.escape(configuration.getVisibility().toString()) + "\"/>");
+            // deprecated file can be null (see Javadoc)
+            String deprecated = XMLHelper.escape(configuration.getDeprecated());
+            if (deprecated == null) {
+                // Avoid to display null in the report
+                deprecated = "";
+            }
+            out.println("\t\t<configuration name=\"" + XMLHelper.escape(configuration.getName()) + "\" description=\"" + XMLHelper.escape(configuration.getDescription()) + "\" extends=\"" + XMLHelper.escape(Arrays.toString(configuration.getExtends())) + "\" deprecated=\"" + deprecated + "\" visibility=\"" + XMLHelper.escape(configuration.getVisibility().toString()) + "\"/>");
         }
         out.println("\t</configurations>");
 
@@ -378,11 +384,9 @@ public class XMLEasyAntReportWriter {
                     param.append(paramReport.getDescription());
                     param.append("\"");
                 }
-                if (paramReport.isRequired()) {
-                    param.append(" required=\"");
-                    param.append(paramReport.isRequired());
-                    param.append("\"");
-                }
+                param.append(" required=\"");
+                param.append(paramReport.isRequired());
+                param.append("\"");
                 param.append("/>");
             }
             out.println(param);

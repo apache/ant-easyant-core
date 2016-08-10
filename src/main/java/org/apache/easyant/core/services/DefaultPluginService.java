@@ -407,7 +407,9 @@ public class DefaultPluginService implements PluginService {
         if (parameterTask.getProperty() != null) {
             PropertyDescriptor propertyDescriptor = new PropertyDescriptor(parameterTask.getProperty());
             propertyDescriptor.setDefaultValue(parameterTask.getDefault());
-            propertyDescriptor.setRequired(parameterTask.isRequired());
+            // Use unsafe version since we are in audit mode and we want the real value of the required field 
+            // (#isRequired method will always return false in audit mode)
+            propertyDescriptor.setRequired(parameterTask.isRequiredUnsafe());
             propertyDescriptor.setDescription(parameterTask.getDescription());
             if (parameterTask.getOwningTarget() != null) {
                 propertyDescriptor.setOwningTarget(parameterTask.getOwningTarget().getName());
@@ -417,7 +419,9 @@ public class DefaultPluginService implements PluginService {
         } else if (parameterTask.getPath() != null) {
             ParameterReport parameterReport = new ParameterReport(ParameterType.PATH);
             parameterReport.setName(parameterTask.getPath());
-            parameterReport.setRequired(parameterTask.isRequired());
+            // Use unsafe version since we are in audit mode and we want the real value of the required field 
+            // (#isRequired method will always return false in audit mode)
+            parameterReport.setRequired(parameterTask.isRequiredUnsafe());
             parameterReport.setDescription(parameterTask.getDescription());
             if (parameterTask.getOwningTarget() != null) {
                 parameterReport.setOwningTarget(parameterTask.getOwningTarget().getName());

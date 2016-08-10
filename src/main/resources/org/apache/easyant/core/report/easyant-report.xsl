@@ -261,25 +261,25 @@
                 </tr>
             </thead>
             <tbody>
-                <xsl-foreach select="configuration">
+                <xsl:for-each select="configuration">
                     <tr>
                         <td>
-                            <xsl:value-of select="configuration/@name" />
+                            <xsl:value-of select="@name" />
                         </td>
                         <td>
-                            <xsl:value-of select="configuration/@description" />
+                            <xsl:value-of select="@description" />
                         </td>
                         <td>
-                            <xsl:value-of select="configuration/@extends" />
+                            <xsl:value-of select="@extends" />
                         </td>
                         <td>
-                            <xsl:value-of select="configuration/@visibility" />
+                            <xsl:value-of select="@visibility" />
                         </td>
                         <td>
-                            <xsl:value-of select="configuration/@deprecated" />
+                            <xsl:value-of select="@deprecated" />
                         </td>
                     </tr>
-                </xsl-foreach>
+                </xsl:for-each>
             </tbody>
         </table>
     </xsl:template>
@@ -696,7 +696,7 @@
             </table>
         </xsl:if>
 
-        <xsl:if test="count(parameters/parameter) > 0">
+        <xsl:if test="count(parameters/path) > 0">
             <h3>Paths</h3>
             <table>
                 <thead>
