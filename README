@@ -16,6 +16,14 @@ Our goals are :
           o what if you already have an existing project ? Since Easyant is fully based on top of ant, you can keep your existing project along with the "old school" ant scripts. This should ease the migration to Easyant. 
 
 ************************
+* Status               *
+************************
+
+This is a retired project.
+No further development will be done.
+
+
+************************
 * How to run examples  *
 ************************
 
